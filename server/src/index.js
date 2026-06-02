@@ -49,14 +49,25 @@ function ensureKey(res) {
   return true;
 }
 
-/** 마크다운 코드펜스 제거 후 JSON 파싱 */
+/** 마크다운 코드펜스/preamble 제거 후 JSON 파싱 (객체·배열 모두 지원) */
 function parseJsonLoose(text) {
   let t = (text || '').trim();
-  t = t.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-  // 응답 앞뒤에 텍스트가 있을 수 있어 첫 { ~ 마지막 } 추출 시도
-  const first = t.indexOf('{');
-  const last = t.lastIndexOf('}');
-  if (first >= 0 && last > first) t = t.slice(first, last + 1);
+  // 1) 본문 어디에 있든 모든 ```/```json 펜스 제거
+  t = t.replace(/```(?:json)?/gi, '').trim();
+  // 2) 객체와 배열 중 가장 바깥쪽 컨테이너 추출 (preamble/잡설이 앞에 와도 안전)
+  const firstBrace = t.indexOf('{');
+  const lastBrace = t.lastIndexOf('}');
+  const firstBracket = t.indexOf('[');
+  const lastBracket = t.lastIndexOf(']');
+  const candidates = [];
+  if (firstBrace >= 0 && lastBrace > firstBrace) candidates.push({ s: firstBrace, e: lastBrace });
+  if (firstBracket >= 0 && lastBracket > firstBracket) candidates.push({ s: firstBracket, e: lastBracket });
+  if (candidates.length > 0) {
+    // 가장 먼저 시작하는 컨테이너 선택 (전체를 감싸고 있을 가능성)
+    candidates.sort((a, b) => a.s - b.s);
+    const pick = candidates[0];
+    t = t.slice(pick.s, pick.e + 1);
+  }
   return JSON.parse(t);
 }
 

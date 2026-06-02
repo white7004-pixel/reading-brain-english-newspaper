@@ -4,7 +4,28 @@ import Worksheet, { Book, CombinedBook, CombinedWorksheet } from './Worksheet';
 
 type Mode = 'single' | 'book';
 type Step = 'config' | 'category' | 'topics' | 'preview' | 'book-topics' | 'book-preview';
-type PrintMode = 'single' | 'combined';
+type PrintMode = 'idle' | 'single' | 'combined';
+
+/** 동시 호출 청크 크기 — Tier 1 OpenAI/신규 Anthropic 키의 RPM 보호 */
+const BOOK_CONCURRENCY = 3;
+
+/** unknown 에러를 안전한 메시지로 변환 (TS strict 호환) */
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  try { return JSON.stringify(e); } catch { return String(e); }
+}
+
+/** 청크 단위 동시 실행 — 동시성 limit 적용 */
+async function runChunked<T, R>(items: T[], size: number, fn: (item: T, index: number) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  for (let i = 0; i < items.length; i += size) {
+    const chunk = items.slice(i, i + size);
+    const results = await Promise.all(chunk.map((item, j) => fn(item, i + j)));
+    results.forEach((r, j) => { out[i + j] = r; });
+  }
+  return out;
+}
 
 export default function App() {
   const [mode, setMode] = useState<Mode>('book');
@@ -30,20 +51,30 @@ export default function App() {
   const [loading, setLoading] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [showAnswers, setShowAnswers] = useState<boolean>(false);
-  const [printMode, setPrintMode] = useState<PrintMode>('single');
+  const [printMode, setPrintMode] = useState<PrintMode>('idle');
+  const [failedSections, setFailedSections] = useState<string[]>([]);
 
   useEffect(() => {
-    const onAfter = () => setPrintMode('single');
+    const onAfter = () => setPrintMode('idle');
     window.addEventListener('afterprint', onAfter);
     return () => window.removeEventListener('afterprint', onAfter);
   }, []);
+
+  // 인쇄 트리거: 상태 변경 후 React 커밋 → 브라우저 페인트 완료를 보장(rAF 2회)
+  useEffect(() => {
+    if (printMode === 'idle') return;
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => window.print())
+    );
+    return () => cancelAnimationFrame(id);
+  }, [printMode]);
 
   useEffect(() => {
     fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || [])).catch(() => {});
   }, []);
 
-  function printSingle() { setPrintMode('single'); setTimeout(() => window.print(), 50); }
-  function printCombined() { setPrintMode('combined'); setTimeout(() => window.print(), 200); }
+  function printSingle() { setPrintMode('single'); }
+  function printCombined() { setPrintMode('combined'); }
 
   // ─────── 단일 모드 ───────
   async function fetchTopics(cat: Category) {
@@ -58,8 +89,8 @@ export default function App() {
       const d = await r.json();
       setTopics(d.topics || []);
       setStep('topics');
-    } catch (e: any) {
-      setError(`주제 생성 실패: ${e.message}`);
+    } catch (e: unknown) {
+      setError(`주제 생성 실패: ${errMsg(e)}`);
     } finally { setLoading(''); }
   }
 
@@ -76,8 +107,8 @@ export default function App() {
       const d = await r.json();
       setData(d);
       setStep('preview');
-    } catch (e: any) {
-      setError(`교재 생성 실패: ${e.message}`);
+    } catch (e: unknown) {
+      setError(`교재 생성 실패: ${errMsg(e)}`);
     } finally { setLoading(''); }
   }
 
@@ -99,8 +130,8 @@ export default function App() {
       results.forEach(r => { sel[r.categoryId] = r.topics[0] || null; });
       setBookSelections(sel);
       setStep('book-topics');
-    } catch (e: any) {
-      setError(`주제 생성 실패: ${e.message}`);
+    } catch (e: unknown) {
+      setError(`주제 생성 실패: ${errMsg(e)}`);
     } finally { setLoading(''); }
   }
 
@@ -116,13 +147,14 @@ export default function App() {
       const newTopics: TopicSuggestion[] = d.topics || [];
       setBookTopics(prev => prev.map(p => p.categoryId === categoryId ? { ...p, topics: newTopics } : p));
       setBookSelections(prev => ({ ...prev, [categoryId]: newTopics[0] || null }));
-    } catch (e: any) {
-      setError(`주제 새로고침 실패: ${e.message}`);
+    } catch (e: unknown) {
+      setError(`주제 새로고침 실패: ${errMsg(e)}`);
     }
   }
 
   async function generateBook() {
     setError('');
+    setFailedSections([]);
     const selected = bookTopics
       .map(ct => ({ ct, t: bookSelections[ct.categoryId] }))
       .filter((x): x is { ct: CategoryTopics; t: TopicSuggestion } => !!x.t);
@@ -131,42 +163,67 @@ export default function App() {
     setBookProgress({ done: 0, total: selected.length });
     setLoading(`교재 책 생성 중… (0/${selected.length} 섹션)`);
 
-    try {
-      const promises = selected.map(({ ct, t }) =>
-        fetch('/api/generate', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic: t.title, angle: t.angle, category: ct.categoryId, ar, grade, length })
-        })
-          .then(async r => {
-            if (!r.ok) throw new Error(await r.text());
-            const d: WorkbookData = await r.json();
-            setBookProgress(prev => {
-              const done = prev.done + 1;
-              setLoading(`교재 책 생성 중… (${done}/${prev.total} 섹션)`);
-              return { done, total: prev.total };
-            });
-            return d;
-          })
-      );
-      const sections = await Promise.all(promises);
+    // 외부 카운터로 부수 효과를 state updater 밖에 둠
+    let doneCount = 0;
+    const total = selected.length;
+    const failures: string[] = [];
 
-      const now = new Date();
-      const issueLabel = `Vol. ${now.getFullYear()} · ${now.toLocaleString('en-US', { month: 'short' }).toUpperCase()} Edition`;
-      const book: BookData = {
-        sections,
-        meta: { ar, grade, length, generated_at: now.toISOString(), issue_label: issueLabel }
-      };
-      setBookData(book);
-      setStep('book-preview');
-    } catch (e: any) {
-      setError(`책 생성 실패: ${e.message}`);
-    } finally { setLoading(''); setBookProgress({ done: 0, total: 0 }); }
+    type SectionResult = { ok: true; data: WorkbookData } | { ok: false; categoryLabel: string };
+
+    // 청크(BOOK_CONCURRENCY) 단위 동시 호출 + 개별 catch로 부분 성공 허용
+    const results = await runChunked<typeof selected[number], SectionResult>(
+      selected, BOOK_CONCURRENCY,
+      async ({ ct, t }) => {
+        try {
+          const r = await fetch('/api/generate', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic: t.title, angle: t.angle, category: ct.categoryId, ar, grade, length })
+          });
+          if (!r.ok) throw new Error(await r.text());
+          const data: WorkbookData = await r.json();
+          doneCount++;
+          setBookProgress({ done: doneCount, total });
+          setLoading(`교재 책 생성 중… (${doneCount}/${total} 섹션)`);
+          return { ok: true, data };
+        } catch (e: unknown) {
+          console.error(`[book] ${ct.categoryLabel} 실패:`, e);
+          failures.push(ct.categoryLabel);
+          doneCount++;
+          setBookProgress({ done: doneCount, total });
+          setLoading(`교재 책 생성 중… (${doneCount}/${total} 섹션, 실패 ${failures.length})`);
+          return { ok: false, categoryLabel: ct.categoryLabel };
+        }
+      }
+    );
+
+    const sections = results.flatMap(r => r.ok ? [r.data] : []);
+    setLoading('');
+    setBookProgress({ done: 0, total: 0 });
+
+    if (sections.length === 0) {
+      setError(`모든 섹션 생성에 실패했습니다. 키/네트워크/요청 한도를 확인하세요. (실패: ${failures.join(', ')})`);
+      return;
+    }
+
+    if (failures.length > 0) {
+      setFailedSections(failures);
+    }
+
+    const now = new Date();
+    const issueLabel = `Vol. ${now.getFullYear()} · ${now.toLocaleString('en-US', { month: 'short' }).toUpperCase()} Edition`;
+    const book: BookData = {
+      sections,
+      meta: { ar, grade, length, generated_at: now.toISOString(), issue_label: issueLabel }
+    };
+    setBookData(book);
+    setStep('book-preview');
   }
 
   function reset() {
     setData(null); setSelectedTopic(null); setTopics([]); setCategory(null);
     setBookData(null); setBookTopics([]); setBookSelections({});
     setShowAnswers(false);
+    setFailedSections([]);
     setStep('config');
   }
 
@@ -245,13 +302,21 @@ export default function App() {
         )}
 
         {step === 'book-preview' && bookData && (
-          <PreviewControls
-            mode="book"
-            showAnswers={showAnswers} setShowAnswers={setShowAnswers}
-            onReset={reset}
-            onPrintSingle={printSingle} onPrintCombined={printCombined}
-            label={`${bookData.sections.length}-Section Monthly Book · ${bookData.meta.issue_label}`}
-          />
+          <>
+            {failedSections.length > 0 && (
+              <div className="mb-3 bg-amber-50 border border-amber-300 text-amber-900 text-sm p-3 rounded">
+                <b>일부 섹션 생성에 실패했습니다.</b> 아래 분야는 책에서 제외되었습니다 — 잠시 후 "처음부터" 또는 다시 시도해 주세요.
+                <div className="mt-1 text-xs">실패 분야: {failedSections.join(', ')}</div>
+              </div>
+            )}
+            <PreviewControls
+              mode="book"
+              showAnswers={showAnswers} setShowAnswers={setShowAnswers}
+              onReset={reset}
+              onPrintSingle={printSingle} onPrintCombined={printCombined}
+              label={`${bookData.sections.length}-Section Monthly Book · ${bookData.meta.issue_label}`}
+            />
+          </>
         )}
       </main>
 
@@ -396,6 +461,11 @@ function ConfigStep(props: {
               </button>
             ))}
           </div>
+          {props.length === 'long' && (
+            <div className="mt-1 text-xs text-amber-700">
+              ⚠ Long 옵션은 신문 1면 본문이 자동 축소되며, 분량에 따라 페이지가 늘어날 수 있습니다.
+            </div>
+          )}
         </div>
       </div>
 

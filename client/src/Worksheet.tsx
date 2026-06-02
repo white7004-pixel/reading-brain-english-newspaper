@@ -275,16 +275,26 @@ function Edition({ data, showAnswers, academyName }: { data: WorkbookData; showA
             {data.article.byline} · {dateStr}
           </div>
 
-          <div className="font-serif columns-2 gap-6 text-[14px] leading-relaxed text-justify">
-            {data.article.body_paragraphs.map((p, i) => (
-              <p key={i} className="mb-3">
-                {i === 0 && data.article.dateline && (
-                  <span className="font-bold uppercase tracking-wider">{data.article.dateline}</span>
-                )}
-                {p}
-              </p>
-            ))}
-          </div>
+          {(() => {
+            const wc = Number(data.article.word_count) || 0;
+            // 본문 분량에 따라 폰트 크기 자동 축소: long 본문은 1면에 들어가도록 13px → 12px → 11.5px
+            const sizeClass = wc > 600 ? 'text-[11.5px] leading-snug'
+              : wc > 480 ? 'text-[12px] leading-snug'
+              : wc > 360 ? 'text-[13px] leading-relaxed'
+              : 'text-[14px] leading-relaxed';
+            return (
+              <div className={`font-serif columns-2 gap-6 ${sizeClass} text-justify`}>
+                {data.article.body_paragraphs.map((p, i) => (
+                  <p key={i} className="mb-3">
+                    {i === 0 && data.article.dateline && (
+                      <span className="font-bold uppercase tracking-wider">{data.article.dateline}</span>
+                    )}
+                    {p}
+                  </p>
+                ))}
+              </div>
+            );
+          })()}
 
           <div className="mt-4 text-[10px] text-slate-500 text-right">
             Words: {data.article.word_count} · Original content for classroom use only.
