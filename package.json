@@ -1,0 +1,15 @@
+{
+  "name": "readingbrain-newspaper-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "리딩브레인영어학원 영자신문반 교재 자동 제작 도구",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -k -n SERVER,CLIENT -c blue,green \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
