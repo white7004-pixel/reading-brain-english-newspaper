@@ -7,7 +7,9 @@
     "install:all": "npm install && npm --prefix server install && npm --prefix client install",
     "dev": "concurrently -k -n SERVER,CLIENT -c blue,green \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "build": "npm --prefix client run build",
-    "start": "npm --prefix server start"
+    "start": "npm --prefix server start",
+    "check": "node scripts/check-setup.mjs",
+    "typecheck": "npm --prefix client exec -- tsc -b --noEmit"
   },
   "devDependencies": {
     "concurrently": "^9.0.1"

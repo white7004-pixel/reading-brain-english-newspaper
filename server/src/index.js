@@ -35,9 +35,19 @@ if (!getActiveKey()) {
   console.warn(`[warn] ${getKeyName()}가 설정되지 않았습니다. server/.env 파일을 확인하세요. (provider: ${getProvider()})`);
 }
 
-/** 매 요청마다 .env를 다시 읽어 반영 (재시작 없이 키 변경 가능) */
+/** 매 요청마다 .env를 다시 읽어 반영 (재시작 없이 키 변경 가능). PowerShell의 UTF-8 BOM도 처리. */
 function reloadEnv() {
-  try { dotenv.config({ override: true }); } catch {}
+  try {
+    dotenv.config({ override: true });
+    // PowerShell `Set-Content -Encoding UTF8` 가 BOM을 추가해 첫 변수가 깨지는 경우 대응
+    for (const k of Object.keys(process.env)) {
+      if (k.charCodeAt(0) === 0xFEFF) {
+        const cleanKey = k.slice(1);
+        process.env[cleanKey] = process.env[k];
+        delete process.env[k];
+      }
+    }
+  } catch {}
 }
 
 function ensureKey(res) {

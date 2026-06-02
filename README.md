@@ -2,10 +2,14 @@
 
 AR(ATOS) 지수와 학년을 입력하면 AI가 분야별 주제를 추천하고, 선택한 주제로 **영자신문 본문 + 워크북(어휘·독해·요약·토론·작문·문법)** 을 자동 생성하여 인쇄용 PDF로 저장할 수 있는 웹 애플리케이션입니다.
 
+> 🤖 **Claude Code 사용자**: 프로젝트 컨텍스트는 [`CLAUDE.md`](./CLAUDE.md)에 정리되어 있습니다. `claude` 명령으로 진입하면 자동 로드됩니다.
+
 ## 1. 사전 준비
 
 - Node.js 18 이상 (`node --version`)
-- OpenAI API 키 (https://platform.openai.com/api-keys)
+- LLM API 키 — 다음 중 하나
+  - OpenAI: https://platform.openai.com/api-keys
+  - **Anthropic Claude (권장)**: https://console.anthropic.com/settings/keys
 
 ## 2. 설치
 
@@ -24,13 +28,30 @@ Copy-Item server\.env.example server\.env
 notepad server\.env
 ```
 
+**Anthropic Claude 사용 시 (권장)** — 영자신문체 자연스러움이 OpenAI보다 우수:
 ```
+LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-여기에_키_붙여넣기
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+PORT=3001
+```
+
+**OpenAI 사용 시** — 비용 최저:
+```
+LLM_PROVIDER=openai
 OPENAI_API_KEY=sk-여기에_키_붙여넣기
 OPENAI_MODEL=gpt-4o-mini
 PORT=3001
 ```
 
-비용을 더 들이고 품질을 높이려면 `OPENAI_MODEL=gpt-4o` 로 변경하세요.
+| 모델 | 책 1권 (8섹션) 비용 | 특징 |
+|---|---|---|
+| `claude-3-5-sonnet-20241022` | ~$0.30 | **영자신문 자연스러움 최상 (권장)** |
+| `claude-3-5-haiku-20241022` | ~$0.05 | Claude 저가형 |
+| `gpt-4o` | ~$0.40 | OpenAI 고품질 |
+| `gpt-4o-mini` | ~$0.05 | OpenAI 저가형 |
+
+> 💡 서버는 매 요청마다 `.env`를 다시 읽으므로, **재시작 없이** 키나 모델 변경이 즉시 반영됩니다.
 
 ## 4. 실행
 
