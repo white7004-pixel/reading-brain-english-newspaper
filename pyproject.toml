@@ -1,0 +1,32 @@
+[project]
+name = "reading-brain-director-assistant"
+version = "0.1.0"
+description = "KakaoTalk to Notion assistant for a Reading Brain academy director"
+requires-python = ">=3.11"
+dependencies = [
+  "httpx>=0.27.0",
+  "openai>=1.40.0",
+  "pydantic>=2.8.0",
+  "python-dotenv>=1.0.1",
+  "typer>=0.12.3",
+  "rich>=13.7.1",
+  "pyperclip>=1.9.0",
+  "pyautogui>=0.9.54"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2.0", "pytest-mock>=3.14.0"]
+
+[project.scripts]
+rb-assistant = "rb_assistant.cli:app"
+
+[build-system]
+requires = ["setuptools>=70.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
