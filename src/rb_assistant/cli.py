@@ -11,7 +11,7 @@ from rb_assistant.parser import parse_kakaotalk_text
 from rb_assistant.summary import build_daily_summary
 
 
-app = typer.Typer(help="Reading Brain director assistant", invoke_without_command=False)
+app = typer.Typer(help="Reading Brain director assistant")
 console = Console()
 
 
