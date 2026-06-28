@@ -11,11 +11,11 @@ from rb_assistant.parser import parse_kakaotalk_text
 from rb_assistant.summary import build_daily_summary
 
 
-app = typer.Typer(help="Reading Brain director assistant")
+app = typer.Typer(help="Reading Brain director assistant", invoke_without_command=False)
 console = Console()
 
 
-@app.command()
+@app.command("sync-file")
 def sync_file(
     path: Path = typer.Argument(...),
     source_chat: str = typer.Option("원장단톡방", help="Selected KakaoTalk room name."),
@@ -36,3 +36,9 @@ def sync_file(
     console.print(summary)
     console.print(f"\nProcessed messages: {len(new_messages)}")
     console.print(f"Extracted items: {len(items)}")
+
+
+@app.command("version")
+def version() -> None:
+    """Show the version of the CLI tool."""
+    console.print("rb-assistant 0.1.0")
