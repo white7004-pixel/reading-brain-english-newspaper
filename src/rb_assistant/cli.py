@@ -17,7 +17,7 @@ console = Console()
 
 @app.command("sync-file")
 def sync_file(
-    path: Path = typer.Argument(...),
+    path: Path,
     source_chat: str = typer.Option("원장단톡방", help="Selected KakaoTalk room name."),
     dry_run: bool = typer.Option(True, help="Do not write to Notion."),
 ) -> None:
