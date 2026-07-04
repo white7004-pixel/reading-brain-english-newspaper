@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Reading Brain 로고">
+  <defs>
+    <path id="rb-arc" d="M 74 80 Q 120 56 166 80" fill="none"/>
+    <!-- 월계수 잎 -->
+    <ellipse id="rb-leaf" cx="0" cy="0" rx="4.6" ry="10" fill="#8e1f24"/>
+  </defs>
+
+  <!-- ===== 월계수 (왼쪽) ===== -->
+  <g stroke="#8e1f24" stroke-width="3" fill="none">
+    <path d="M 118 196 Q 70 192 52 152 Q 44 132 46 112"/>
+    <path d="M 122 196 Q 170 192 188 152 Q 196 132 194 112"/>
+  </g>
+  <g>
+    <use href="#rb-leaf" transform="translate(46,108) rotate(-8)"/>
+    <use href="#rb-leaf" transform="translate(42,126) rotate(-42)"/>
+    <use href="#rb-leaf" transform="translate(56,122) rotate(28)"/>
+    <use href="#rb-leaf" transform="translate(48,146) rotate(-48)"/>
+    <use href="#rb-leaf" transform="translate(64,142) rotate(24)"/>
+    <use href="#rb-leaf" transform="translate(60,166) rotate(-58)"/>
+    <use href="#rb-leaf" transform="translate(78,160) rotate(16)"/>
+    <use href="#rb-leaf" transform="translate(76,184) rotate(-72)"/>
+    <use href="#rb-leaf" transform="translate(96,176) rotate(6)"/>
+    <use href="#rb-leaf" transform="translate(98,196) rotate(-84)"/>
+  </g>
+  <!-- ===== 월계수 (오른쪽, 미러) ===== -->
+  <g>
+    <use href="#rb-leaf" transform="translate(194,108) rotate(8)"/>
+    <use href="#rb-leaf" transform="translate(198,126) rotate(42)"/>
+    <use href="#rb-leaf" transform="translate(184,122) rotate(-28)"/>
+    <use href="#rb-leaf" transform="translate(192,146) rotate(48)"/>
+    <use href="#rb-leaf" transform="translate(176,142) rotate(-24)"/>
+    <use href="#rb-leaf" transform="translate(180,166) rotate(58)"/>
+    <use href="#rb-leaf" transform="translate(162,160) rotate(-16)"/>
+    <use href="#rb-leaf" transform="translate(164,184) rotate(72)"/>
+    <use href="#rb-leaf" transform="translate(144,176) rotate(-6)"/>
+    <use href="#rb-leaf" transform="translate(142,196) rotate(84)"/>
+  </g>
+  <!-- 월계수 매듭 -->
+  <path d="M 112 196 L 128 196 L 124 208 L 116 208 Z" fill="#8e1f24"/>
+
+  <!-- ===== 방패 ===== -->
+  <path d="M 120 26 L 158 32 Q 170 34 170 46 L 170 104 Q 170 146 120 172 Q 70 146 70 104 L 70 46 Q 70 34 82 32 Z"
+        fill="#ffffff" stroke="#16395e" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M 120 40 L 152 45 Q 160 46 160 54 L 160 102 Q 160 136 120 158 Q 80 136 80 102 L 80 54 Q 80 46 88 45 Z"
+        fill="none" stroke="#16395e" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- 상단 아치 텍스트 -->
+  <text font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="8.8" font-weight="700"
+        fill="#16395e" letter-spacing="0.5">
+    <textPath href="#rb-arc" startOffset="50%" text-anchor="middle">READING BRAIN</textPath>
+  </text>
+
+  <!-- ===== 책 + 펜촉 엠블럼 ===== -->
+  <g fill="#8e1f24">
+    <!-- 왼쪽 페이지(날개) -->
+    <path d="M 114 84 Q 104 76 92 78 L 92 122 Q 104 116 114 121 Q 111 102 114 84 Z"/>
+    <path d="M 90 82 Q 84 84 82 88 L 82 126 Q 87 122 92 122 L 92 82 Z" opacity="0.92"/>
+    <!-- 오른쪽 페이지(날개) -->
+    <path d="M 126 84 Q 136 76 148 78 L 148 122 Q 136 116 126 121 Q 129 102 126 84 Z"/>
+    <path d="M 150 82 Q 156 84 158 88 L 158 126 Q 153 122 148 122 L 148 82 Z" opacity="0.92"/>
+    <!-- 중앙 펜촉 -->
+    <path d="M 120 80 L 113 118 Q 120 134 127 118 Z"/>
+  </g>
+  <circle cx="120" cy="114" r="3.6" fill="#ffffff"/>
+  <line x1="120" y1="118" x2="120" y2="128" stroke="#ffffff" stroke-width="1.6"/>
+
+  <!-- ===== 워드마크 ===== -->
+  <text x="120" y="226" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="21" font-weight="800" fill="#16395e" letter-spacing="1.5">READING BRAIN</text>
+  <text x="120" y="238" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="8.5" font-weight="700" fill="#16395e" letter-spacing="0.5">Reading Is The Only Way!</text>
+</svg>
