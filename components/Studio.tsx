@@ -18,6 +18,7 @@ import {
   NewsletterPreview,
   SmsPreview,
 } from "./Previews";
+import { LogoMark } from "./Logo";
 
 const TABS: {
   key: TabKey;
@@ -306,7 +307,9 @@ export default function Studio() {
       {/* ---------- 사이드바 ---------- */}
       <aside className="sidebar">
         <div className="logo">
-          <div className="logo-mark">🧠</div>
+          <div className="logo-mark">
+            <LogoMark size={34} />
+          </div>
           <div className="logo-text">
             <b>리딩브레인</b>
             <span>콘텐츠 스튜디오</span>
@@ -341,7 +344,7 @@ export default function Studio() {
         <div className="sidebar-footer">
           {academyName}
           <br />
-          AI 기반 학원 콘텐츠 자동 생성
+          Reading Is The Only Way!
         </div>
       </aside>
 
