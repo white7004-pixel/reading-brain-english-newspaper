@@ -6,12 +6,13 @@ import { exportJson, importJson } from '../storage'
 interface Props {
   exams: Exam[]
   onOpen: (id: string) => void
+  onOpenSchool: (school: string) => void
   onCreate: () => void
   onImport: (exams: Exam[]) => void
   onLoadDemo: () => void
 }
 
-export function ExamList({ exams, onOpen, onCreate, onImport, onLoadDemo }: Props) {
+export function ExamList({ exams, onOpen, onOpenSchool, onCreate, onImport, onLoadDemo }: Props) {
   const [school, setSchool] = useState('전체')
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -37,6 +38,20 @@ export function ExamList({ exams, onOpen, onCreate, onImport, onLoadDemo }: Prop
             ))}
           </select>
         )}
+        {(() => {
+          // 필터로 학교가 특정되면 그 학교, 전체인데 학교가 하나뿐이면 그 학교의 경향 분석
+          const target = school !== '전체' ? school : schools.length === 2 ? schools[1] : null
+          return (
+            <button
+              className="btn-secondary"
+              disabled={!target}
+              title={target ? undefined : '학교를 선택하면 경향 분석을 볼 수 있습니다'}
+              onClick={() => target && onOpenSchool(target)}
+            >
+              경향 분석
+            </button>
+          )
+        })()}
         <div className="toolbar-spacer" />
         <button className="btn-secondary" onClick={() => exportJson(exams)} disabled={exams.length === 0}>
           백업(JSON)

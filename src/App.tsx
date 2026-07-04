@@ -5,6 +5,7 @@ import { loadExams, saveExams } from './storage'
 import { demoExams } from './seed'
 import { ExamList } from './components/ExamList'
 import { ExamDetail } from './components/ExamDetail'
+import { SchoolTrend } from './components/SchoolTrend'
 
 function blankExam(): Exam {
   const now = new Date()
@@ -24,6 +25,7 @@ function blankExam(): Exam {
 export default function App() {
   const [exams, setExams] = useState<Exam[]>(() => loadExams())
   const [openId, setOpenId] = useState<string | null>(null)
+  const [openSchool, setOpenSchool] = useState<string | null>(null)
 
   useEffect(() => {
     saveExams(exams)
@@ -34,7 +36,15 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header no-print">
-        <div className="brand" onClick={() => setOpenId(null)} role="button" tabIndex={0}>
+        <div
+          className="brand"
+          onClick={() => {
+            setOpenId(null)
+            setOpenSchool(null)
+          }}
+          role="button"
+          tabIndex={0}
+        >
           <span className="brand-mark">RB</span>
           <div>
             <h1>리딩브레인 영어 학교시험 분석</h1>
@@ -54,10 +64,13 @@ export default function App() {
               setOpenId(null)
             }}
           />
+        ) : openSchool ? (
+          <SchoolTrend school={openSchool} exams={exams} onBack={() => setOpenSchool(null)} onOpen={setOpenId} />
         ) : (
           <ExamList
             exams={exams}
             onOpen={setOpenId}
+            onOpenSchool={setOpenSchool}
             onCreate={() => {
               const e = blankExam()
               setExams([...exams, e])
