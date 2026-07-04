@@ -780,21 +780,27 @@
   }
 
   function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-    const words = text.split(/\s+/);
+    const words = text.split(/\s+/).filter(Boolean);
     let line = "", lines = 0;
-    for (const w of words) {
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
       const test = line ? line + " " + w : w;
       if (ctx.measureText(test).width > maxWidth && line) {
-        ctx.fillText(line, x, y);
-        y += lineHeight;
         lines++;
-        if (maxLines && lines >= maxLines - 1) {
-          let rest = w;
-          for (const w2 of words.slice(words.indexOf(w) + 1)) rest += " " + w2;
-          while (ctx.measureText(rest + "…").width > maxWidth && rest.length > 1) rest = rest.slice(0, -1);
-          ctx.fillText(rest + "…", x, y);
+        if (maxLines && lines >= maxLines) {
+          // 마지막 허용 줄: 남은 텍스트를 전부 시도하고, 넘치면 말줄임
+          let rest = [w, ...words.slice(i + 1)].join(" ");
+          let lastLine = line + " " + rest;
+          if (ctx.measureText(lastLine).width <= maxWidth) {
+            ctx.fillText(lastLine, x, y);
+          } else {
+            while (ctx.measureText(line + "…").width > maxWidth && line.length > 1) line = line.slice(0, -1);
+            ctx.fillText(line + "…", x, y);
+          }
           return y + lineHeight;
         }
+        ctx.fillText(line, x, y);
+        y += lineHeight;
         line = w;
       } else line = test;
     }
@@ -809,27 +815,58 @@
     return [c, ctx];
   }
   const FONT = "'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif";
+  const PAPER = "#faf8f4", INK = "#22211f", INK_MUTE = "#8b8880", TRACK = "#e7e3da", TINT = "#eef2f7";
+  const MARGIN = 90;
 
-  function cardFrame(ctx, title, pageNo, pageTotal) {
-    ctx.fillStyle = "#fbfaf7";
-    ctx.fillRect(0, 0, 1080, 1080);
-    ctx.fillStyle = BRAND_NAVY;
-    ctx.fillRect(0, 0, 1080, 150);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 44px " + FONT;
+  function setSpacing(ctx, px) { try { ctx.letterSpacing = px + "px"; } catch (_) {} }
+
+  /* 상단 헤더: 영문 아이브로우 + 한글 타이틀 + 헤어라인 */
+  function cardHeader(ctx, eyebrow, title) {
     ctx.textAlign = "left";
-    ctx.fillText(title, 60, 95);
-    ctx.font = "500 30px " + FONT;
-    ctx.textAlign = "right";
-    ctx.fillText(`${pageNo} / ${pageTotal}`, 1020, 95);
-    // 하단 브랜드 밴드
     ctx.fillStyle = BRAND_BURGUNDY;
-    ctx.fillRect(0, 1030, 1080, 50);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 26px " + FONT;
+    ctx.font = "700 26px " + FONT;
+    setSpacing(ctx, 6);
+    ctx.fillText(eyebrow.toUpperCase(), MARGIN, 140);
+    setSpacing(ctx, 0);
+    ctx.fillStyle = BRAND_NAVY;
+    ctx.font = "800 64px " + FONT;
+    ctx.fillText(title, MARGIN, 226);
+    ctx.strokeStyle = "#d9d4c8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(MARGIN, 268);
+    ctx.lineTo(1080 - MARGIN, 268);
+    ctx.stroke();
+  }
+
+  /* 하단 푸터: 페이지 도트 + 브랜드 캡션 */
+  function cardFooter(ctx, pageNo, total, dark) {
+    const cy = 1002;
+    for (let i = 0; i < total; i++) {
+      ctx.beginPath();
+      ctx.arc(540 + (i - (total - 1) / 2) * 34, cy, i + 1 === pageNo ? 7 : 5, 0, Math.PI * 2);
+      if (dark) ctx.fillStyle = i + 1 === pageNo ? "#ffffff" : "rgba(255,255,255,0.35)";
+      else ctx.fillStyle = i + 1 === pageNo ? BRAND_BURGUNDY : "#cfcabd";
+      ctx.fill();
+    }
+    ctx.fillStyle = dark ? "rgba(255,255,255,0.55)" : INK_MUTE;
+    ctx.font = "600 22px " + FONT;
+    setSpacing(ctx, 4);
     ctx.textAlign = "center";
-    ctx.fillText("READING BRAIN · Reading Is The Only Way!", 540, 1064);
+    ctx.fillText("READING BRAIN · 중고등특목2관", 540, 1046);
+    setSpacing(ctx, 0);
     ctx.textAlign = "left";
+  }
+
+  /* 라벨 칩 */
+  function labelChip(ctx, text, x, y, color) {
+    ctx.font = "700 28px " + FONT;
+    const w = ctx.measureText(text).width + 44;
+    ctx.fillStyle = color;
+    roundRect(ctx, x, y - 34, w, 48, 24);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(text, x + 22, y);
+    return w;
   }
 
   async function generateCardNews() {
@@ -838,105 +875,184 @@
     const logo = await logoImage();
     const cards = [];
     const maskedName = r.student.name.length > 1 ? r.student.name[0] + "ㅇ".repeat(r.student.name.length - 1) : r.student.name;
-    const dateStr = new Date(r.date).toLocaleDateString("ko-KR");
+    const dateStr = new Date(r.date).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
 
-    // ---- 1. 표지 ----
+    /* ================= 1. 표지 ================= */
     {
       const [c, ctx] = newCard();
+      // 네이비 그라운드 + 은은한 대형 링 장식
       ctx.fillStyle = BRAND_NAVY;
       ctx.fillRect(0, 0, 1080, 1080);
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.arc(540, 380, 230, 0, Math.PI * 2);
-      ctx.fill();
-      if (logo) ctx.drawImage(logo, 340, 180, 400, 404);
-      ctx.fillStyle = "#ffffff";
-      ctx.textAlign = "center";
-      ctx.font = "bold 66px " + FONT;
-      ctx.fillText("오늘의 학습 리포트", 540, 740);
-      ctx.font = "500 42px " + FONT;
-      ctx.fillText(`${r.activityName} · ${maskedName} 학생 (${r.student.grade})`, 540, 820);
-      ctx.font = "400 34px " + FONT;
-      ctx.fillStyle = "rgba(255,255,255,0.75)";
-      ctx.fillText(dateStr + " · 리딩브레인 영어학원 중고등특목2관", 540, 890);
-      cards.push(c);
-    }
+      ctx.strokeStyle = "rgba(255,255,255,0.06)";
+      ctx.lineWidth = 90;
+      ctx.beginPath(); ctx.arc(1020, 80, 320, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(40, 1040, 260, 0, Math.PI * 2); ctx.stroke();
 
-    // ---- 2. 성취도 ----
-    {
-      const [c, ctx] = newCard();
-      cardFrame(ctx, "📊 성취도 분석", 2, 3);
-      // 점수 원
-      ctx.beginPath();
-      ctx.arc(280, 400, 150, 0, Math.PI * 2);
-      ctx.fillStyle = "#eaf1fb";
-      ctx.fill();
-      ctx.strokeStyle = BRAND_NAVY;
-      ctx.lineWidth = 10;
-      ctx.stroke();
-      ctx.fillStyle = BRAND_NAVY;
-      ctx.textAlign = "center";
-      ctx.font = "bold 120px " + FONT;
-      ctx.fillText(String(r.total), 280, 430);
-      ctx.font = "bold 44px " + FONT;
-      ctx.fillText(r.grade + " 등급", 280, 500);
-      // 축 바
-      ctx.textAlign = "left";
-      let y = 280;
-      r.axes.forEach((a) => {
-        ctx.fillStyle = "#333";
-        ctx.font = "600 34px " + FONT;
-        ctx.fillText(a.axis, 520, y);
-        ctx.fillStyle = "#e2e0d8";
-        roundRect(ctx, 520, y + 16, 440, 26, 13);
-        ctx.fillStyle = BRAND_BURGUNDY;
-        roundRect(ctx, 520, y + 16, Math.max(440 * a.score / 100, 26), 26, 13);
-        ctx.fillStyle = BRAND_NAVY;
-        ctx.font = "bold 32px " + FONT;
-        ctx.fillText(a.score + "점", 975, y + 40);
-        y += 110;
-      });
-      ctx.fillStyle = "#555";
-      ctx.font = "400 32px " + FONT;
-      ctx.fillText(`발화 ${fmtDur(r.metrics.durationSec)} · ${r.metrics.totalWords}단어 · ${Math.round(r.metrics.wpm)}단어/분`, 100, 940);
-      cards.push(c);
-    }
+      // 로고 메달리온 (이중 링)
+      ctx.beginPath(); ctx.arc(540, 360, 218, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff"; ctx.fill();
+      ctx.beginPath(); ctx.arc(540, 360, 244, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 3; ctx.stroke();
+      if (logo) ctx.drawImage(logo, 362, 172, 356, 360);
 
-    // ---- 3. 선생님 코멘트 ----
-    {
-      const [c, ctx] = newCard();
-      cardFrame(ctx, "💬 선생님 한마디", 3, 3);
-      let y = 260;
-      ctx.fillStyle = BRAND_NAVY;
-      ctx.font = "bold 40px " + FONT;
-      ctx.fillText("✅ 오늘 잘한 점", 80, y);
-      y += 60;
-      ctx.fillStyle = "#333";
-      ctx.font = "400 34px " + FONT;
-      for (const s of r.strengths.slice(0, 2)) {
-        y = wrapText(ctx, "· " + s, 80, y, 920, 48, 3) + 14;
-      }
-      y += 30;
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.font = "700 26px " + FONT;
+      setSpacing(ctx, 8);
+      ctx.fillText("READING BRAIN LEARNING REPORT", 540, 682);
+      setSpacing(ctx, 0);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 88px " + FONT;
+      ctx.fillText("오늘의 학습 리포트", 540, 786);
+
+      // 버건디 포인트 라인
       ctx.fillStyle = BRAND_BURGUNDY;
-      ctx.font = "bold 40px " + FONT;
-      ctx.fillText("📈 함께 보완할 점", 80, y);
-      y += 60;
-      ctx.fillStyle = "#333";
-      ctx.font = "400 34px " + FONT;
-      for (const s of r.improvements.slice(0, 2)) {
-        y = wrapText(ctx, "· " + s, 80, y, 920, 48, 3) + 14;
-      }
-      const teacher = $("#teacherComment").value.trim();
-      if (teacher && y < 830) {
-        y += 30;
+      ctx.fillRect(508, 822, 64, 6);
+
+      ctx.font = "700 42px " + FONT;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(r.activityName, 540, 894);
+      ctx.font = "500 32px " + FONT;
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      ctx.fillText(`${maskedName} 학생 · ${r.student.grade} · ${dateStr}`, 540, 946);
+
+      cardFooter(ctx, 1, 3, true);
+      cards.push(c);
+    }
+
+    /* ================= 2. 성취도 ================= */
+    {
+      const [c, ctx] = newCard();
+      ctx.fillStyle = PAPER;
+      ctx.fillRect(0, 0, 1080, 1080);
+      cardHeader(ctx, "Achievement Report", "성취도 분석");
+
+      // 도넛 게이지
+      const dx = 290, dy = 520, dr = 158;
+      ctx.lineWidth = 36;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = TRACK;
+      ctx.beginPath(); ctx.arc(dx, dy, dr, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = BRAND_NAVY;
+      ctx.beginPath();
+      ctx.arc(dx, dy, dr, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (r.total / 100));
+      ctx.stroke();
+      ctx.lineCap = "butt";
+      ctx.textAlign = "center";
+      ctx.fillStyle = BRAND_NAVY;
+      ctx.font = "800 118px " + FONT;
+      ctx.fillText(String(r.total), dx, dy + 24);
+      ctx.fillStyle = INK_MUTE;
+      ctx.font = "600 28px " + FONT;
+      ctx.fillText("종합 점수", dx, dy + 74);
+      // 등급 필
+      ctx.font = "800 34px " + FONT;
+      const gw = ctx.measureText(r.grade + " 등급").width + 60;
+      ctx.fillStyle = BRAND_BURGUNDY;
+      roundRect(ctx, dx - gw / 2, dy + 208, gw, 62, 31);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(r.grade + " 등급", dx, dy + 251);
+
+      // 영역별 바
+      ctx.textAlign = "left";
+      const bx = 560, bw = 430;
+      let y = 360;
+      r.axes.forEach((a) => {
+        ctx.fillStyle = INK;
+        ctx.font = "700 32px " + FONT;
+        ctx.fillText(a.axis, bx, y);
         ctx.fillStyle = BRAND_NAVY;
-        ctx.font = "bold 40px " + FONT;
-        ctx.fillText("👩‍🏫 담당 선생님 코멘트", 80, y);
-        y += 60;
-        ctx.fillStyle = "#333";
-        ctx.font = "400 34px " + FONT;
-        wrapText(ctx, teacher, 80, y, 920, 48, Math.max(Math.floor((980 - y) / 48), 1));
+        ctx.font = "800 32px " + FONT;
+        ctx.textAlign = "right";
+        ctx.fillText(a.score, bx + bw, y);
+        ctx.textAlign = "left";
+        ctx.fillStyle = TRACK;
+        roundRect(ctx, bx, y + 18, bw, 20, 10);
+        ctx.fillStyle = BRAND_NAVY;
+        roundRect(ctx, bx, y + 18, Math.max(bw * a.score / 100, 20), 20, 10);
+        y += 106;
+      });
+
+      // 하단 지표 스트립
+      ctx.fillStyle = TINT;
+      roundRect(ctx, MARGIN, 856, 1080 - MARGIN * 2, 104, 16);
+      const stats = [
+        ["발화 시간", fmtDur(r.metrics.durationSec)],
+        ["총 단어", r.metrics.totalWords + "개"],
+        ["말 속도", Math.round(r.metrics.wpm) + "단어/분"],
+      ];
+      const cellW = (1080 - MARGIN * 2) / 3;
+      stats.forEach(([label, val], i) => {
+        const cxm = MARGIN + cellW * i + cellW / 2;
+        ctx.textAlign = "center";
+        ctx.fillStyle = INK_MUTE;
+        ctx.font = "600 24px " + FONT;
+        ctx.fillText(label, cxm, 898);
+        ctx.fillStyle = BRAND_NAVY;
+        ctx.font = "800 34px " + FONT;
+        ctx.fillText(val, cxm, 942);
+        if (i) {
+          ctx.strokeStyle = "#d9d4c8"; ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(MARGIN + cellW * i, 880);
+          ctx.lineTo(MARGIN + cellW * i, 936);
+          ctx.stroke();
+        }
+      });
+      ctx.textAlign = "left";
+
+      cardFooter(ctx, 2, 3, false);
+      cards.push(c);
+    }
+
+    /* ================= 3. 선생님 한마디 ================= */
+    {
+      const [c, ctx] = newCard();
+      ctx.fillStyle = PAPER;
+      ctx.fillRect(0, 0, 1080, 1080);
+      cardHeader(ctx, "Teacher's Note", "선생님 한마디");
+
+      let y = 340;
+      const teacher = $("#teacherComment").value.trim();
+      const quote = teacher || state.aiFeedbackText || r.strengths[0] || "";
+      if (quote) {
+        // 인용 블록: 좌측 버건디 룰 + 큰 따옴표
+        ctx.fillStyle = BRAND_BURGUNDY;
+        ctx.fillRect(MARGIN, y - 44, 6, 250);
+        ctx.font = "800 120px Georgia, serif";
+        ctx.fillStyle = "rgba(142,31,36,0.25)";
+        ctx.fillText("“", MARGIN + 34, y + 26);
+        ctx.fillStyle = INK;
+        ctx.font = "500 36px " + FONT;
+        y = wrapText(ctx, quote, MARGIN + 110, y, 1080 - MARGIN * 2 - 130, 58, 5);
+        y += 56;
       }
+
+      // 잘한 점
+      labelChip(ctx, "오늘 잘한 점", MARGIN, y, BRAND_NAVY);
+      y += 56;
+      ctx.font = "400 32px " + FONT;
+      for (const s of r.strengths.slice(0, 2)) {
+        ctx.fillStyle = BRAND_NAVY;
+        ctx.fillRect(MARGIN + 6, y - 22, 12, 12);
+        ctx.fillStyle = INK;
+        y = wrapText(ctx, s, MARGIN + 40, y, 1080 - MARGIN * 2 - 40, 46, 2) + 14;
+      }
+      y += 34;
+      // 보완할 점
+      labelChip(ctx, "함께 보완할 점", MARGIN, y, BRAND_BURGUNDY);
+      y += 56;
+      ctx.font = "400 32px " + FONT;
+      for (const s of r.improvements.slice(0, 2)) {
+        if (y > 930) break;
+        ctx.fillStyle = BRAND_BURGUNDY;
+        ctx.fillRect(MARGIN + 6, y - 22, 12, 12);
+        ctx.fillStyle = INK;
+        y = wrapText(ctx, s, MARGIN + 40, y, 1080 - MARGIN * 2 - 40, 46, 2) + 14;
+      }
+
+      cardFooter(ctx, 3, 3, false);
       cards.push(c);
     }
     return cards;
