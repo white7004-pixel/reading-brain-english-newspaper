@@ -1,5 +1,29 @@
+"use client";
+
+import { useState } from "react";
+
 export const BRAND_NAVY = "#1b3a5c";
 export const BRAND_BURGUNDY = "#8e1f23";
+
+/**
+ * 브랜드 로고 — public/logo.png(원본 파일)가 있으면 그대로 사용하고,
+ * 없는 경우에만 SVG 재현본으로 대체합니다.
+ */
+export function BrandLogo({ size = 40 }: { size?: number }) {
+  const [useFallback, setUseFallback] = useState(false);
+  if (useFallback) return <LogoMark size={size} />;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo.png"
+      width={size}
+      height={size}
+      alt="리딩브레인 로고"
+      style={{ objectFit: "contain", display: "block" }}
+      onError={() => setUseFallback(true)}
+    />
+  );
+}
 
 /**
  * 리딩브레인 엠블럼 — 방패 + 책/펜촉 + 월계수 (SVG 재현)

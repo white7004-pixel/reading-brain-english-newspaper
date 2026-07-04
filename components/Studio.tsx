@@ -18,7 +18,7 @@ import {
   NewsletterPreview,
   SmsPreview,
 } from "./Previews";
-import { LogoMark } from "./Logo";
+import { BrandLogo } from "./Logo";
 
 const TABS: {
   key: TabKey;
@@ -308,7 +308,7 @@ export default function Studio() {
       <aside className="sidebar">
         <div className="logo">
           <div className="logo-mark">
-            <LogoMark size={34} />
+            <BrandLogo size={34} />
           </div>
           <div className="logo-text">
             <b>리딩브레인</b>

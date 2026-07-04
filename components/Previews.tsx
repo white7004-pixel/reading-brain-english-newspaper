@@ -7,7 +7,7 @@ import type {
   NewsletterContent,
   SmsContent,
 } from "@/lib/types";
-import { LogoMark } from "./Logo";
+import { BrandLogo } from "./Logo";
 
 export function NewspaperPreview({
   data,
@@ -20,7 +20,7 @@ export function NewspaperPreview({
     <div className="newspaper" id="newspaper-print">
       <header className="np-masthead">
         <div className="np-emblem">
-          <LogoMark size={66} />
+          <BrandLogo size={80} />
         </div>
         <div className="np-title">{data.masthead}</div>
         <div className="np-tagline">Reading Is The Only Way!</div>
