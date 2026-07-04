@@ -85,6 +85,15 @@ export function strategyNotes(exam: Exam): string[] {
       `고난도(상) 문항이 ${Math.round(s.hardRatio * 100)}%로 변별력이 높은 시험입니다. 상위권 목표라면 고난도 변형문제 훈련이 필요합니다.`,
     )
   }
+  const hard = qs.filter((q) => q.difficulty === '상')
+  if (hard.length > 0) {
+    const byHardType = new Map<string, number>()
+    for (const q of hard) byHardType.set(q.type, (byHardType.get(q.type) ?? 0) + 1)
+    const focus = [...byHardType.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
+    notes.push(
+      `고난도 문항(${hard.map((q) => `${q.number}번`).join(', ')})은 ${focus.map(([t, n]) => `${t}(${n})`).join(', ')} 유형에 집중되어 있습니다. 이 유형을 고난도 변형으로 훈련하면 변별 구간을 잡을 수 있습니다.`,
+    )
+  }
   if (s.externalRatio >= 0.4) {
     notes.push(
       `교과서 외 출처(부교재·모의고사·외부지문) 비율이 ${Math.round(s.externalRatio * 100)}%입니다. 범위 내 부교재와 모의고사 지문 변형 대비가 필수입니다.`,

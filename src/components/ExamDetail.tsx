@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import type { Exam } from '../types'
 import { GRADES, EXAM_KINDS } from '../types'
 import { byType, bySource, byDifficulty, examStats, strategyNotes } from '../analysis'
+import { starRating } from '../cardnews'
 import { HBarChart, StackedBar, StatTile } from './charts'
 import { QuestionTable } from './QuestionTable'
+import { CardNewsModal } from './CardNewsModal'
 
 interface Props {
   exam: Exam
@@ -14,6 +16,7 @@ interface Props {
 
 export function ExamDetail({ exam, onChange, onBack, onDelete }: Props) {
   const patch = (p: Partial<Exam>) => onChange({ ...exam, ...p, updatedAt: new Date().toISOString() })
+  const [showCards, setShowCards] = useState(false)
 
   const stats = useMemo(() => examStats(exam.questions), [exam.questions])
   const typeRows = useMemo(() => [...byType(exam.questions)].sort((a, b) => b.count - a.count), [exam.questions])
@@ -30,6 +33,9 @@ export function ExamDetail({ exam, onChange, onBack, onDelete }: Props) {
           ← 목록
         </button>
         <div className="toolbar-spacer" />
+        <button className="btn-primary" onClick={() => setShowCards(true)} disabled={exam.questions.length === 0}>
+          인스타 카드뉴스
+        </button>
         <button className="btn-secondary" onClick={() => window.print()}>
           리포트 인쇄
         </button>
@@ -125,6 +131,43 @@ export function ExamDetail({ exam, onChange, onBack, onDelete }: Props) {
       </div>
 
       <section className="card">
+        <h2>문항별 난이도 맵</h2>
+        {exam.questions.length === 0 ? (
+          <p className="empty-note">문항을 입력하면 문항별 난이도가 표시됩니다.</p>
+        ) : (
+          <>
+            <div className="legend" style={{ marginTop: 0, marginBottom: 10 }}>
+              <span className="legend-item">
+                <span className="legend-swatch diff-low" /> 하 · 기본
+              </span>
+              <span className="legend-item">
+                <span className="legend-swatch diff-mid" /> 중 · 표준
+              </span>
+              <span className="legend-item">
+                <span className="legend-swatch diff-high" /> 상 · 고난도
+              </span>
+              <span className="legend-item">
+                체감 난이도 {'★'.repeat(starRating(exam.questions).stars)}
+                {'☆'.repeat(5 - starRating(exam.questions).stars)} {starRating(exam.questions).label}
+              </span>
+            </div>
+            <div className="diff-map">
+              {exam.questions.map((q) => (
+                <div
+                  key={q.id}
+                  className={`diff-chip ${q.difficulty === '상' ? 'diff-high' : q.difficulty === '중' ? 'diff-mid' : 'diff-low'}`}
+                  title={`${q.number}번 · ${q.type} · ${q.source} · ${q.difficulty} · ${q.points}점${q.note ? ` · ${q.note}` : ''}`}
+                >
+                  <strong>{q.number}</strong>
+                  <span>{q.type.length > 6 ? q.type.slice(0, 6) + '…' : q.type}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </section>
+
+      <section className="card">
         <h2>배점 구성 (객관식 vs 서술형)</h2>
         <StackedBar
           segments={[
@@ -173,6 +216,8 @@ export function ExamDetail({ exam, onChange, onBack, onDelete }: Props) {
           </tbody>
         </table>
       </section>
+
+      {showCards && <CardNewsModal exam={exam} onClose={() => setShowCards(false)} />}
     </div>
   )
 }
