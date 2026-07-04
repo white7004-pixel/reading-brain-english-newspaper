@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>리딩브레인 관리형 독서실 · 관제 대시보드</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ─────────── 사이드바 ─────────── -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <button class="side-btn active" data-view="admin" title="관리자">
+        <span class="side-icon">▦</span><span class="side-label">관리자</span>
+      </button>
+      <button class="side-btn" data-view="studentapp" title="학생앱">
+        <span class="side-icon">📱</span><span class="side-label">학생앱</span>
+      </button>
+      <button class="side-btn" data-view="report" title="보고서">
+        <span class="side-icon">📋</span><span class="side-label">보고서</span>
+      </button>
+      <button class="side-btn" data-view="aidetect" title="AI감지">
+        <span class="side-icon">🛡</span><span class="side-label">AI감지</span>
+      </button>
+    </nav>
+    <div class="side-bottom">
+      <button class="side-btn" id="btnNotify" title="알림">
+        <span class="side-icon">🔔</span>
+        <span class="notify-badge" id="notifyCount">0</span>
+        <span class="side-label">알림</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─────────── 메인 ─────────── -->
+  <main class="main">
+
+    <!-- ── 관리자 대시보드 ── -->
+    <section class="view" id="view-admin">
+
+      <div class="stat-row" id="statRow"><!-- 통계 카드 렌더링 --></div>
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="학생 이름·학교 검색" />
+          </div>
+          <div class="chip-group" id="branchGroup">
+            <button class="chip dark active" data-branch="all">전체 지점</button>
+            <button class="chip" data-branch="maseok">마석 본원</button>
+          </div>
+          <div class="chip-group" id="modeGroup">
+            <button class="chip dark active" data-mode="all">전체</button>
+            <button class="chip" data-mode="스파르타">스파르타</button>
+            <button class="chip" data-mode="집중">집중</button>
+            <button class="chip" data-mode="자율">자율</button>
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <span class="sort-label">정렬</span>
+          <div class="chip-group" id="sortGroup">
+            <button class="chip mint active" data-sort="name">이름순</button>
+            <button class="chip" data-sort="achieve">성취율↓</button>
+            <button class="chip" data-sort="eff">효율↓</button>
+            <button class="chip" data-sort="warn">경고순</button>
+          </div>
+          <label class="mask-toggle" title="학생 이름 가리기">
+            <input type="checkbox" id="maskToggle" checked />
+            <span>이름 가림</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card-grid" id="cardGrid"><!-- 학생 카드 렌더링 --></div>
+    </section>
+
+    <!-- ── 학생앱 미리보기 ── -->
+    <section class="view hidden" id="view-studentapp">
+      <h2 class="view-title">학생앱 미리보기</h2>
+      <p class="view-desc">학생을 선택하면 학생용 앱 화면을 미리 볼 수 있습니다.</p>
+      <div class="studentapp-wrap">
+        <div class="student-picker" id="studentPicker"></div>
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen" id="phoneScreen"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 보고서 ── -->
+    <section class="view hidden" id="view-report">
+      <h2 class="view-title">일일 학습 보고서 <span class="report-date" id="reportDate"></span></h2>
+      <div class="report-summary" id="reportSummary"></div>
+      <div class="table-wrap">
+        <table class="report-table" id="reportTable">
+          <thead>
+            <tr>
+              <th>학생</th><th>학교/학년</th><th>모드</th><th>상태</th>
+              <th>진행률</th><th>성취율</th><th>학습효율</th>
+              <th>진행</th><th>순공</th><th>외출</th><th>기타</th><th>경고</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── AI 감지 로그 ── -->
+    <section class="view hidden" id="view-aidetect">
+      <h2 class="view-title">AI 감지 로그</h2>
+      <p class="view-desc">카메라 AI가 감지한 졸음·자리 이탈 이벤트가 실시간으로 기록됩니다.</p>
+      <div class="ai-log" id="aiLog"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ─────────── 학생 상세 모달 ─────────── -->
+<div class="modal-backdrop hidden" id="modalBackdrop">
+  <div class="modal" id="studentModal"></div>
+</div>
+
+<!-- ─────────── 알림 패널 ─────────── -->
+<div class="notify-panel hidden" id="notifyPanel">
+  <div class="notify-head">
+    <strong>알림</strong>
+    <button id="notifyClear">모두 읽음</button>
+  </div>
+  <div class="notify-list" id="notifyList"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
