@@ -705,6 +705,45 @@
     );
   });
 
+  /* 영상 + 리포트 함께 보내기: 모바일 공유시트(카카오톡 선택) → 폴백: 다운로드+복사 */
+  $("#btnShareVideo").addEventListener("click", async () => {
+    const report = buildReport();
+    if (!state.videoBlob) {
+      alert("이번 분석에는 영상 파일이 없습니다. 촬영 또는 업로드한 영상이 있을 때 사용할 수 있어요.");
+      return;
+    }
+    const r = state.result;
+    const file = new File(
+      [state.videoBlob],
+      `리딩브레인_${r ? r.student.name : "학습"}영상.${(state.videoBlob.type || "").includes("mp4") ? "mp4" : "webm"}`,
+      { type: state.videoBlob.type || "video/webm" }
+    );
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "리딩브레인 학습 리포트",
+          text: report,
+        });
+        return;
+      } catch (e) {
+        if (e.name === "AbortError") return; // 사용자가 공유 취소
+      }
+    }
+    // PC 등 파일 공유 미지원: 영상 다운로드 + 리포트 복사
+    await copyText(report);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(state.videoBlob);
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    alert(
+      "이 기기에서는 파일 공유창을 지원하지 않아,\n① 영상 파일을 다운로드했고 ② 리포트를 복사해 두었습니다.\n" +
+      "카카오톡 어머님 대화방에 영상 파일을 첨부하고 리포트를 붙여넣어 함께 보내주세요.\n\n" +
+      "(휴대폰에서 열면 공유 버튼 한 번으로 영상+리포트가 카카오톡으로 바로 전송됩니다.)"
+    );
+  });
+
   $("#btnChannelChat").addEventListener("click", () => {
     const channel = (localStorage.getItem(KAKAO_CHANNEL) || DEFAULT_CHANNEL).trim();
     const id = channel.startsWith("_") ? channel : "_" + channel;
@@ -762,22 +801,43 @@
   const BRAND_NAVY = "#16395e";
   const BRAND_BURGUNDY = "#8e1f24";
 
+  /* 원본 로고 파일(assets/logo.png)이 있으면 우선 사용, 없으면 인라인 SVG 재현본 사용 */
   function logoImage() {
     return new Promise((resolve) => {
-      const svgEl = document.querySelector(".brand-logo");
-      if (!svgEl) return resolve(null);
-      const clone = svgEl.cloneNode(true);
-      clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-      clone.setAttribute("width", "400");
-      clone.setAttribute("height", "404");
-      const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(blob);
-      const img = new Image();
-      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-      img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
-      img.src = url;
+      const png = new Image();
+      png.onload = () => resolve(png);
+      png.onerror = () => {
+        const svgEl = document.querySelector(".brand-logo");
+        if (!svgEl) return resolve(null);
+        const clone = svgEl.cloneNode(true);
+        clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        clone.setAttribute("width", "400");
+        clone.setAttribute("height", "404");
+        const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+        img.src = url;
+      };
+      png.src = "assets/logo.png";
     });
   }
+
+  /* 원본 로고가 있으면 헤더 SVG도 원본으로 교체 */
+  (function swapHeaderLogo() {
+    const png = new Image();
+    png.onload = () => {
+      const svgEl = document.querySelector(".brand-logo");
+      if (!svgEl) return;
+      const img = document.createElement("img");
+      img.src = "assets/logo.png";
+      img.alt = "Reading Brain 로고";
+      img.className = "brand-logo";
+      svgEl.replaceWith(img);
+    };
+    png.src = "assets/logo.png";
+  })();
 
   function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
     const words = text.split(/\s+/).filter(Boolean);
