@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>리딩브레인 학습영상 분석 — 중고등특목2관</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎥</text></svg>" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">🧠</span>
+        <div>
+          <h1>리딩브레인 영어학원 <span class="branch">중고등특목2관</span></h1>
+          <p class="tagline">학습 영상 AI 분석 — 문법하브루타 · 독해 읽고해석 · 단어 구술테스트</p>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-view="home" role="tab">새 분석</button>
+        <button class="tab" data-view="history" role="tab">성장 기록</button>
+        <button class="tab" data-view="settings" role="tab">설정</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HOME: 학생정보 + 활동선택 ============ -->
+    <section id="view-home" class="view active">
+      <div class="card">
+        <h2>1단계 · 학생 정보</h2>
+        <div class="form-grid">
+          <label>이름
+            <input type="text" id="studentName" placeholder="예: 김리딩" autocomplete="off" />
+          </label>
+          <label>학년
+            <select id="studentGrade">
+              <option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option>
+              <option value="고1">고1</option><option value="고2">고2</option><option value="고3">고3</option>
+            </select>
+          </label>
+          <label>반 (선택)
+            <input type="text" id="studentClass" placeholder="예: 특목A반" autocomplete="off" />
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2단계 · 활동 선택</h2>
+        <div class="activity-grid">
+          <button class="activity-card" data-activity="havruta">
+            <span class="activity-icon">💬</span>
+            <strong>문법 하브루타</strong>
+            <p>문법 개념을 친구·짝과 질문하고 설명하는 토론 학습</p>
+            <ul>
+              <li>질문 생성력 · 문법 용어 활용</li>
+              <li>논리적 설명 · 발화 지속력</li>
+            </ul>
+          </button>
+          <button class="activity-card" data-activity="reading">
+            <span class="activity-icon">📖</span>
+            <strong>독해 읽고 해석</strong>
+            <p>영어 지문을 소리 내어 읽고 우리말로 해석하기</p>
+            <ul>
+              <li>영어 낭독 · 해석 완성도</li>
+              <li>문장 구조 파악 · 유창성</li>
+            </ul>
+          </button>
+          <button class="activity-card" data-activity="vocab">
+            <span class="activity-icon">🗣️</span>
+            <strong>단어 구술테스트</strong>
+            <p>영어 단어를 보고 뜻을 소리 내어 말하는 암기 점검</p>
+            <ul>
+              <li>정확도 · 응답 속도</li>
+              <li>암기량 · 발음 명료도</li>
+            </ul>
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="vocabListCard" hidden>
+        <h2>단어 리스트 (선택)</h2>
+        <p class="hint">오늘 테스트할 단어를 입력하면 정답률을 더 정확하게 계산합니다. 한 줄에 <code>영어단어 - 뜻</code> 형식으로 입력하세요.</p>
+        <textarea id="vocabList" rows="6" placeholder="apple - 사과&#10;consider - 고려하다&#10;significant - 중요한"></textarea>
+      </div>
+
+      <div class="card">
+        <h2>3단계 · 영상 입력 방식</h2>
+        <div class="mode-row">
+          <button class="btn primary big" id="btnStartRecord" disabled>📹 지금 촬영하기</button>
+          <button class="btn big" id="btnUpload" disabled>📂 영상 파일 업로드</button>
+        </div>
+        <input type="file" id="fileInput" accept="video/*" hidden />
+        <p class="hint">촬영 모드에서는 말하는 내용이 실시간으로 자동 전사됩니다(크롬/엣지 권장). 업로드 시에는 영상 재생 후 전사 내용을 직접 입력·수정할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ============ RECORD ============ -->
+    <section id="view-record" class="view">
+      <div class="card">
+        <div class="record-head">
+          <h2 id="recordTitle">촬영</h2>
+          <div class="rec-status"><span class="rec-dot" id="recDot"></span><span id="recTimer">00:00</span></div>
+        </div>
+        <video id="preview" autoplay muted playsinline></video>
+        <div class="lang-toggle" id="langToggle">
+          <span>음성 인식 언어:</span>
+          <button class="chip active" data-lang="ko-KR">한국어</button>
+          <button class="chip" data-lang="en-US">English</button>
+        </div>
+        <div class="transcript-box">
+          <div class="transcript-label">실시간 전사</div>
+          <div id="liveTranscript" class="live-transcript" aria-live="polite"></div>
+        </div>
+        <div class="mode-row">
+          <button class="btn danger big" id="btnStopRecord">⏹ 촬영 종료 및 분석</button>
+          <button class="btn" id="btnCancelRecord">취소</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ UPLOAD REVIEW ============ -->
+    <section id="view-upload" class="view">
+      <div class="card">
+        <h2>업로드한 영상 확인</h2>
+        <video id="uploadPreview" controls playsinline></video>
+        <p class="hint">영상 길이는 자동으로 인식됩니다. 아래에 영상에서 말한 내용을 입력(또는 붙여넣기)하면 상세 분석이 가능합니다.</p>
+        <textarea id="manualTranscript" rows="8" placeholder="영상에서 말한 내용을 입력하세요. 내용이 정확할수록 분석이 정밀해집니다."></textarea>
+        <div class="mode-row">
+          <button class="btn primary big" id="btnAnalyzeUpload">분석하기</button>
+          <button class="btn" id="btnCancelUpload">취소</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <section id="view-result" class="view">
+      <div class="card result-summary">
+        <div class="result-head">
+          <div>
+            <h2 id="resultActivityName">분석 결과</h2>
+            <p class="result-meta" id="resultMeta"></p>
+          </div>
+          <div class="score-badge">
+            <div class="score-num" id="totalScore">0</div>
+            <div class="score-grade" id="gradeLabel">-</div>
+          </div>
+        </div>
+        <div class="metric-tiles" id="metricTiles"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>영역별 성취도</h3>
+          <div id="radarChart" class="chart-wrap"></div>
+        </div>
+        <div class="card">
+          <h3>세부 점수</h3>
+          <div id="axisBars"></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card feedback-good">
+          <h3>✅ 잘한 점</h3>
+          <ul id="strengthsList"></ul>
+        </div>
+        <div class="card feedback-improve">
+          <h3>📈 개선할 점</h3>
+          <ul id="improvementsList"></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ai-head">
+          <h3>🤖 AI 선생님 심층 피드백</h3>
+          <button class="btn primary" id="btnAiFeedback">AI 피드백 받기</button>
+        </div>
+        <p class="hint" id="aiHint">설정 탭에서 API 키를 등록하면 전사 내용을 바탕으로 맞춤 피드백을 받을 수 있습니다.</p>
+        <div id="aiFeedback" class="ai-feedback" hidden></div>
+      </div>
+
+      <div class="card">
+        <h3>전사 내용</h3>
+        <div class="transcript-view" id="finalTranscript"></div>
+        <div class="mode-row">
+          <button class="btn primary big" id="btnSaveResult">💾 기록 저장</button>
+          <button class="btn" id="btnDownloadVideo" hidden>⬇ 영상 다운로드</button>
+          <button class="btn" id="btnNewAnalysis">새 분석 시작</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY ============ -->
+    <section id="view-history" class="view">
+      <div class="card">
+        <div class="history-head">
+          <h2>성장 기록</h2>
+          <div class="filter-row" id="historyFilter">
+            <button class="chip active" data-filter="all">전체</button>
+            <button class="chip" data-filter="havruta">문법하브루타</button>
+            <button class="chip" data-filter="reading">독해 읽고해석</button>
+            <button class="chip" data-filter="vocab">단어구술테스트</button>
+          </div>
+        </div>
+        <div id="trendChart" class="chart-wrap"></div>
+      </div>
+      <div class="card">
+        <h3>기록 목록</h3>
+        <div id="historyList" class="history-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section id="view-settings" class="view">
+      <div class="card">
+        <h2>AI 피드백 설정</h2>
+        <label>Anthropic API 키
+          <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" />
+        </label>
+        <p class="hint">⚠️ API 키는 이 기기 브라우저(localStorage)에만 저장됩니다. 공용 PC에서는 사용 후 반드시 삭제하세요.</p>
+        <div class="mode-row">
+          <button class="btn primary" id="btnSaveKey">저장</button>
+          <button class="btn danger" id="btnDeleteKey">키 삭제</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>데이터 관리</h2>
+        <div class="mode-row">
+          <button class="btn" id="btnExportData">기록 내보내기(JSON)</button>
+          <button class="btn danger" id="btnClearData">모든 기록 삭제</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>이용 안내</h2>
+        <ul class="guide">
+          <li>실시간 전사는 <strong>크롬 또는 엣지 브라우저</strong>에서 가장 잘 작동합니다.</li>
+          <li>카메라·마이크 권한을 허용해야 촬영이 가능합니다.</li>
+          <li>영상 자체는 서버로 전송되지 않으며, 분석은 브라우저 안에서만 이뤄집니다.</li>
+          <li>독해 활동은 영어 낭독 시 <strong>English</strong>, 해석 시 <strong>한국어</strong>로 인식 언어를 전환하면 정확합니다.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">리딩브레인 영어학원 중고등특목2관 · 학습영상 분석 도우미</footer>
+
+  <script src="js/analysis.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
