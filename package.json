@@ -1,0 +1,23 @@
+{
+  "name": "reading-brain-content-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "리딩브레인 영어학원 AI 콘텐츠 스튜디오 - 영자신문 자동 생성 플랫폼",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}
