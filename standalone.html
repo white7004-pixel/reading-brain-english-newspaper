@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<!-- ============================================================
+  리딩브레인 영어학원 중고등특목2관 · 학습영상 분석 웹앱 (단일 파일 버전)
+  이 파일 하나만 있으면 실행됩니다. index.html 등 다른 파일 불필요.
+  사용법: 이 내용 전체를 "리딩브레인.html"로 저장 → 브라우저로 열기
+  (카메라 촬영은 http 서버 또는 GitHub Pages에서 열었을 때 동작)
+============================================================ -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>리딩브레인 학습영상 분석 — 중고등특목2관</title>
+  <style>
+/* ============ Design tokens (dataviz reference palette) ============ */
+:root {
+  --surface-1: #fcfcfb;
+  --page: #f9f9f7;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --series-1: #2a78d6;
+  --series-1-soft: #cde2fb;
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+    --series-1: #3987e5;
+    --series-1-soft: #10315c;
+    --good-text: #0ca30c;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  background: var(--page);
+  color: var(--text-primary);
+  line-height: 1.55;
+}
+
+/* ============ Header ============ */
+.app-header {
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 20;
+}
+.header-inner {
+  max-width: 1040px; margin: 0 auto; padding: 14px 20px;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+}
+.brand { display: flex; gap: 12px; align-items: center; }
+.brand-icon { font-size: 2rem; }
+.brand-logo { width: 48px; height: 48px; flex-shrink: 0; }
+.brand h1 { font-size: 1.05rem; margin: 0; }
+.branch { color: var(--series-1); }
+.tagline { margin: 2px 0 0; font-size: 0.78rem; color: var(--text-secondary); }
+.tabs { display: flex; gap: 6px; }
+.tab {
+  border: 1px solid var(--border); background: transparent; color: var(--text-secondary);
+  padding: 8px 16px; border-radius: 999px; cursor: pointer; font-size: 0.9rem;
+}
+.tab.active { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+
+/* ============ Layout ============ */
+main { max-width: 1040px; margin: 0 auto; padding: 20px; }
+.view { display: none; }
+.view.active { display: block; }
+.card {
+  background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 18px;
+}
+.card h2 { margin: 0 0 14px; font-size: 1.05rem; }
+.card h3 { margin: 0 0 12px; font-size: 0.98rem; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+.hint { font-size: 0.82rem; color: var(--text-secondary); }
+.hint code { background: var(--page); padding: 1px 5px; border-radius: 4px; }
+
+/* ============ Forms ============ */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: 0.86rem; color: var(--text-secondary); }
+input, select, textarea {
+  font: inherit; color: var(--text-primary); background: var(--page);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--series-1); outline-offset: -1px; }
+textarea { width: 100%; resize: vertical; }
+
+/* ============ Activity cards ============ */
+.activity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.activity-card {
+  text-align: left; background: var(--page); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 16px; cursor: pointer; color: var(--text-primary);
+  font: inherit; transition: border-color 0.15s, transform 0.1s;
+}
+.activity-card:hover { transform: translateY(-2px); }
+.activity-card.selected { border-color: var(--series-1); background: var(--series-1-soft); }
+.activity-icon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+.activity-card strong { font-size: 1rem; }
+.activity-card p { margin: 6px 0; font-size: 0.82rem; color: var(--text-secondary); }
+.activity-card ul { margin: 0; padding-left: 18px; font-size: 0.78rem; color: var(--muted); }
+
+/* ============ Buttons ============ */
+.btn {
+  font: inherit; padding: 9px 18px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+}
+.btn:hover { border-color: var(--series-1); }
+.btn.primary { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+.btn.danger { background: var(--critical); border-color: var(--critical); color: #fff; }
+.btn.big { padding: 13px 26px; font-size: 1rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.mode-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+
+.chip {
+  font: inherit; font-size: 0.82rem; padding: 6px 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer;
+}
+.chip.active { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+
+/* ============ Record ============ */
+.record-head { display: flex; justify-content: space-between; align-items: center; }
+.rec-status { display: flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; font-weight: 600; }
+.rec-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--critical); animation: blink 1.2s infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+video { width: 100%; max-height: 420px; background: #000; border-radius: 10px; margin: 12px 0; }
+.lang-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px; }
+.transcript-box { border: 1px solid var(--border); border-radius: 10px; background: var(--page); padding: 12px; }
+.transcript-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
+.live-transcript { min-height: 70px; max-height: 180px; overflow-y: auto; font-size: 0.92rem; white-space: pre-wrap; }
+.live-transcript .interim { color: var(--muted); }
+
+/* ============ Result ============ */
+.result-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.result-meta { color: var(--text-secondary); font-size: 0.85rem; margin: 4px 0 0; }
+.score-badge {
+  text-align: center; background: var(--series-1-soft); border-radius: var(--radius);
+  padding: 12px 26px; min-width: 110px;
+}
+.score-num { font-size: 2.4rem; font-weight: 700; color: var(--series-1); line-height: 1.1; }
+.score-grade { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); }
+
+.metric-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px; }
+.metric-tile { background: var(--page); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+.metric-tile .m-label { font-size: 0.72rem; color: var(--muted); }
+.metric-tile .m-value { font-size: 1.15rem; font-weight: 700; }
+.metric-tile .m-unit { font-size: 0.75rem; color: var(--text-secondary); font-weight: 400; }
+
+.chart-wrap { width: 100%; overflow-x: auto; }
+.chart-wrap svg { display: block; margin: 0 auto; max-width: 100%; }
+
+.axis-bar-row { margin-bottom: 12px; }
+.axis-bar-head { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
+.axis-bar-head .val { font-weight: 700; font-variant-numeric: tabular-nums; }
+.axis-bar-track { height: 10px; border-radius: 5px; background: var(--grid); overflow: hidden; }
+.axis-bar-fill { height: 100%; border-radius: 5px 4px 4px 5px; background: var(--series-1); transition: width 0.6s ease; }
+
+.feedback-good h3 { color: var(--good-text); }
+.feedback-improve h3 { color: var(--serious); }
+.feedback-good ul, .feedback-improve ul { margin: 0; padding-left: 20px; font-size: 0.9rem; }
+.feedback-good li, .feedback-improve li { margin-bottom: 8px; }
+
+.ai-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.ai-feedback {
+  margin-top: 12px; background: var(--page); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; white-space: pre-wrap; font-size: 0.92rem;
+}
+.transcript-view {
+  background: var(--page); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px; font-size: 0.9rem; max-height: 240px; overflow-y: auto; white-space: pre-wrap;
+}
+
+/* ============ History ============ */
+.history-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+.history-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: var(--page); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px;
+}
+.history-item .h-info { font-size: 0.88rem; }
+.history-item .h-meta { font-size: 0.76rem; color: var(--muted); }
+.history-item .h-score { font-weight: 700; color: var(--series-1); font-size: 1.1rem; white-space: nowrap; }
+.history-item .h-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; }
+.history-item .h-del:hover { color: var(--critical); }
+.empty-msg { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 30px 0; }
+
+.guide { font-size: 0.88rem; color: var(--text-secondary); padding-left: 20px; }
+.guide li { margin-bottom: 6px; }
+
+/* ---- 카카오 아이덴티티 (채널 글쓰기 창 · 카카오 버튼) ---- */
+.btn.kakao {
+  background: #fee500; border-color: #fee500; color: #191919; font-weight: 700;
+}
+.btn.kakao:hover { border-color: #191919; }
+.kakao-input {
+  background: #fee500 !important; color: #191919 !important;
+  border: 2px solid #e6cf00 !important; font-weight: 500;
+}
+.kakao-input::placeholder { color: rgba(25, 25, 25, 0.55); }
+.kakao-input:focus { outline: 3px solid #191919 !important; outline-offset: -2px; }
+.kakao-badge {
+  display: inline-block; background: #fee500; color: #191919; font-weight: 800;
+  font-size: 0.7rem; padding: 3px 10px; border-radius: 6px; margin-left: 8px; vertical-align: middle;
+}
+
+.cardnews-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+.cardnews-canvas { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
+
+.report-details { margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary); }
+.report-details summary { cursor: pointer; }
+.report-preview {
+  background: var(--page); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px; font-family: inherit; font-size: 0.84rem; white-space: pre-wrap;
+  max-height: 300px; overflow-y: auto; margin: 10px 0 0;
+}
+
+.app-footer { text-align: center; color: var(--muted); font-size: 0.78rem; padding: 24px 0 36px; }
+
+/* chart text */
+.chart-wrap text { font-family: inherit; }
+
+/* tooltip for trend chart */
+.viz-tooltip {
+  position: fixed; pointer-events: none; z-index: 50;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: var(--shadow); padding: 8px 12px; font-size: 0.8rem; display: none;
+}
+.viz-tooltip .t-title { font-weight: 600; }
+.viz-tooltip .t-sub { color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="brand-logo" viewBox="20 14 200 202" aria-label="Reading Brain 로고">
+          <defs><ellipse id="hl" cx="0" cy="0" rx="4.6" ry="10" fill="#8e1f24"/></defs>
+          <g stroke="#8e1f24" stroke-width="3" fill="none">
+            <path d="M 118 196 Q 70 192 52 152 Q 44 132 46 112"/>
+            <path d="M 122 196 Q 170 192 188 152 Q 196 132 194 112"/>
+          </g>
+          <g>
+            <use href="#hl" transform="translate(46,108) rotate(-8)"/><use href="#hl" transform="translate(42,126) rotate(-42)"/>
+            <use href="#hl" transform="translate(56,122) rotate(28)"/><use href="#hl" transform="translate(48,146) rotate(-48)"/>
+            <use href="#hl" transform="translate(64,142) rotate(24)"/><use href="#hl" transform="translate(60,166) rotate(-58)"/>
+            <use href="#hl" transform="translate(78,160) rotate(16)"/><use href="#hl" transform="translate(76,184) rotate(-72)"/>
+            <use href="#hl" transform="translate(96,176) rotate(6)"/><use href="#hl" transform="translate(98,196) rotate(-84)"/>
+            <use href="#hl" transform="translate(194,108) rotate(8)"/><use href="#hl" transform="translate(198,126) rotate(42)"/>
+            <use href="#hl" transform="translate(184,122) rotate(-28)"/><use href="#hl" transform="translate(192,146) rotate(48)"/>
+            <use href="#hl" transform="translate(176,142) rotate(-24)"/><use href="#hl" transform="translate(180,166) rotate(58)"/>
+            <use href="#hl" transform="translate(162,160) rotate(-16)"/><use href="#hl" transform="translate(164,184) rotate(72)"/>
+            <use href="#hl" transform="translate(144,176) rotate(-6)"/><use href="#hl" transform="translate(142,196) rotate(84)"/>
+          </g>
+          <path d="M 112 196 L 128 196 L 124 208 L 116 208 Z" fill="#8e1f24"/>
+          <path d="M 120 26 L 158 32 Q 170 34 170 46 L 170 104 Q 170 146 120 172 Q 70 146 70 104 L 70 46 Q 70 34 82 32 Z"
+                fill="#ffffff" stroke="#16395e" stroke-width="9" stroke-linejoin="round"/>
+          <path d="M 120 40 L 152 45 Q 160 46 160 54 L 160 102 Q 160 136 120 158 Q 80 136 80 102 L 80 54 Q 80 46 88 45 Z"
+                fill="none" stroke="#16395e" stroke-width="2.5" stroke-linejoin="round"/>
+          <g fill="#8e1f24">
+            <path d="M 114 84 Q 104 76 92 78 L 92 122 Q 104 116 114 121 Q 111 102 114 84 Z"/>
+            <path d="M 90 82 Q 84 84 82 88 L 82 126 Q 87 122 92 122 L 92 82 Z" opacity="0.92"/>
+            <path d="M 126 84 Q 136 76 148 78 L 148 122 Q 136 116 126 121 Q 129 102 126 84 Z"/>
+            <path d="M 150 82 Q 156 84 158 88 L 158 126 Q 153 122 148 122 L 148 82 Z" opacity="0.92"/>
+            <path d="M 120 80 L 113 118 Q 120 134 127 118 Z"/>
+          </g>
+          <circle cx="120" cy="114" r="3.6" fill="#ffffff"/>
+        </svg>
+        <div>
+          <h1>리딩브레인 영어학원 <span class="branch">중고등특목2관</span></h1>
+          <p class="tagline">학습 영상 AI 분석 — 문법하브루타 · 독해 읽고해석 · 단어 구술테스트</p>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-view="home" role="tab">새 분석</button>
+        <button class="tab" data-view="history" role="tab">성장 기록</button>
+        <button class="tab" data-view="settings" role="tab">설정</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HOME: 학생정보 + 활동선택 ============ -->
+    <section id="view-home" class="view active">
+      <div class="card">
+        <h2>1단계 · 학생 정보</h2>
+        <div class="form-grid">
+          <label>이름
+            <input type="text" id="studentName" placeholder="예: 김리딩" autocomplete="off" />
+          </label>
+          <label>학년
+            <select id="studentGrade">
+              <option value="중1">중1</option><option value="중2">중2</option><option value="중3">중3</option>
+              <option value="고1">고1</option><option value="고2">고2</option><option value="고3">고3</option>
+            </select>
+          </label>
+          <label>반 (선택)
+            <input type="text" id="studentClass" placeholder="예: 특목A반" autocomplete="off" />
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2단계 · 활동 선택</h2>
+        <div class="activity-grid">
+          <button class="activity-card" data-activity="havruta">
+            <span class="activity-icon">💬</span>
+            <strong>문법 하브루타</strong>
+            <p>문법 개념을 친구·짝과 질문하고 설명하는 토론 학습</p>
+            <ul>
+              <li>질문 생성력 · 문법 용어 활용</li>
+              <li>논리적 설명 · 발화 지속력</li>
+            </ul>
+          </button>
+          <button class="activity-card" data-activity="reading">
+            <span class="activity-icon">📖</span>
+            <strong>독해 읽고 해석</strong>
+            <p>영어 지문을 소리 내어 읽고 우리말로 해석하기</p>
+            <ul>
+              <li>영어 낭독 · 해석 완성도</li>
+              <li>문장 구조 파악 · 유창성</li>
+            </ul>
+          </button>
+          <button class="activity-card" data-activity="vocab">
+            <span class="activity-icon">🗣️</span>
+            <strong>단어 구술테스트</strong>
+            <p>영어 단어를 보고 뜻을 소리 내어 말하는 암기 점검</p>
+            <ul>
+              <li>정확도 · 응답 속도</li>
+              <li>암기량 · 발음 명료도</li>
+            </ul>
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="vocabListCard" hidden>
+        <h2>단어 리스트 (선택)</h2>
+        <p class="hint">오늘 테스트할 단어를 입력하면 정답률을 더 정확하게 계산합니다. 한 줄에 <code>영어단어 - 뜻</code> 형식으로 입력하세요.</p>
+        <textarea id="vocabList" rows="6" placeholder="apple - 사과&#10;consider - 고려하다&#10;significant - 중요한"></textarea>
+      </div>
+
+      <div class="card">
+        <h2>3단계 · 영상 입력 방식</h2>
+        <div class="mode-row">
+          <button class="btn primary big" id="btnStartRecord" disabled>📹 지금 촬영하기</button>
+          <button class="btn big" id="btnUpload" disabled>📂 영상 파일 업로드</button>
+        </div>
+        <input type="file" id="fileInput" accept="video/*" hidden />
+        <p class="hint">촬영 모드에서는 말하는 내용이 실시간으로 자동 전사됩니다(크롬/엣지 권장). 업로드 시에는 영상 재생 후 전사 내용을 직접 입력·수정할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ============ RECORD ============ -->
+    <section id="view-record" class="view">
+      <div class="card">
+        <div class="record-head">
+          <h2 id="recordTitle">촬영</h2>
+          <div class="rec-status"><span class="rec-dot" id="recDot"></span><span id="recTimer">00:00</span></div>
+        </div>
+        <video id="preview" autoplay muted playsinline></video>
+        <div class="lang-toggle" id="langToggle">
+          <span>음성 인식 언어:</span>
+          <button class="chip active" data-lang="ko-KR">한국어</button>
+          <button class="chip" data-lang="en-US">English</button>
+        </div>
+        <div class="transcript-box">
+          <div class="transcript-label">실시간 전사</div>
+          <div id="liveTranscript" class="live-transcript" aria-live="polite"></div>
+        </div>
+        <div class="mode-row">
+          <button class="btn danger big" id="btnStopRecord">⏹ 촬영 종료 및 분석</button>
+          <button class="btn" id="btnCancelRecord">취소</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ UPLOAD REVIEW ============ -->
+    <section id="view-upload" class="view">
+      <div class="card">
+        <h2>업로드한 영상 확인</h2>
+        <video id="uploadPreview" controls playsinline></video>
+        <p class="hint">영상 길이는 자동으로 인식됩니다. 아래에 영상에서 말한 내용을 입력(또는 붙여넣기)하면 상세 분석이 가능합니다.</p>
+        <textarea id="manualTranscript" rows="8" placeholder="영상에서 말한 내용을 입력하세요. 내용이 정확할수록 분석이 정밀해집니다."></textarea>
+        <div class="mode-row">
+          <button class="btn primary big" id="btnAnalyzeUpload">분석하기</button>
+          <button class="btn" id="btnCancelUpload">취소</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <section id="view-result" class="view">
+      <div class="card result-summary">
+        <div class="result-head">
+          <div>
+            <h2 id="resultActivityName">분석 결과</h2>
+            <p class="result-meta" id="resultMeta"></p>
+          </div>
+          <div class="score-badge">
+            <div class="score-num" id="totalScore">0</div>
+            <div class="score-grade" id="gradeLabel">-</div>
+          </div>
+        </div>
+        <div class="metric-tiles" id="metricTiles"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>영역별 성취도</h3>
+          <div id="radarChart" class="chart-wrap"></div>
+        </div>
+        <div class="card">
+          <h3>세부 점수</h3>
+          <div id="axisBars"></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card feedback-good">
+          <h3>✅ 잘한 점</h3>
+          <ul id="strengthsList"></ul>
+        </div>
+        <div class="card feedback-improve">
+          <h3>📈 개선할 점</h3>
+          <ul id="improvementsList"></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ai-head">
+          <h3>🤖 AI 선생님 심층 피드백</h3>
+          <button class="btn primary" id="btnAiFeedback">AI 피드백 받기</button>
+        </div>
+        <p class="hint" id="aiHint">설정 탭에서 API 키를 등록하면 전사 내용을 바탕으로 맞춤 피드백을 받을 수 있습니다.</p>
+        <div id="aiFeedback" class="ai-feedback" hidden></div>
+      </div>
+
+      <div class="card">
+        <div class="ai-head">
+          <h3>👩‍🏫 선생님 코멘트</h3>
+          <button class="btn" id="btnTeacherDraft">🤖 AI 초안 생성</button>
+        </div>
+        <p class="hint">AI가 선생님 관점의 코멘트 초안을 작성하면, 내용을 자유롭게 수정·추가한 뒤 리포트에 포함해 전송할 수 있습니다.</p>
+        <textarea id="teacherComment" rows="5" placeholder="학부모님께 전할 선생님 코멘트를 입력하거나, 'AI 초안 생성'을 눌러 초안을 받아 수정하세요."></textarea>
+      </div>
+
+      <div class="card">
+        <h3>📨 학부모 리포트 전송</h3>
+        <p class="hint">분석 결과 + AI 피드백 + 선생님 코멘트가 하나의 리포트로 만들어져 어머님께 바로 전송됩니다.</p>
+        <div class="mode-row">
+          <button class="btn primary" id="btnShareVideo">🎬 영상+리포트 함께 보내기</button>
+          <button class="btn kakao" id="btnKakaoShare">💬 카카오톡으로 전송</button>
+          <button class="btn kakao" id="btnChannelChat">📢 학원 카카오톡 채널</button>
+          <button class="btn" id="btnCopyReport">📋 리포트 전문 복사</button>
+        </div>
+        <details class="report-details">
+          <summary>리포트 미리보기</summary>
+          <pre id="reportPreview" class="report-preview"></pre>
+        </details>
+      </div>
+
+      <div class="card">
+        <div class="ai-head">
+          <h3>📰 채널 콘텐츠 만들기<span class="kakao-badge">kakao</span></h3>
+          <div class="mode-row" style="margin:0">
+            <button class="btn kakao" id="btnChannelPost">✍️ 채널 어투 소식글 생성</button>
+            <button class="btn" id="btnCardNews">🖼️ 카드뉴스 생성</button>
+          </div>
+        </div>
+        <p class="hint">리딩브레인 카카오톡 채널(pf.kakao.com/_KnBMb)에 올릴 소식글과 카드뉴스를 만듭니다.
+        설정 탭에 채널 게시글을 붙여넣어 두면 그 어투와 이모지 스타일을 학습해 작성합니다.</p>
+        <textarea id="channelPost" class="kakao-input" rows="7" hidden placeholder="💬 생성된 채널 소식글이 여기에 표시됩니다. 자유롭게 수정한 뒤 복사해 채널에 올리세요."></textarea>
+        <div class="mode-row" id="channelPostActions" hidden>
+          <button class="btn" id="btnCopyChannelPost">📋 소식글 복사</button>
+          <button class="btn" id="btnOpenChannelAdmin">📢 채널 관리자센터 열기</button>
+        </div>
+        <div id="cardNewsWrap" class="cardnews-wrap" hidden></div>
+        <div class="mode-row" id="cardNewsActions" hidden>
+          <button class="btn primary" id="btnDownloadCards">⬇ 카드뉴스 전체 다운로드</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>전사 내용</h3>
+        <div class="transcript-view" id="finalTranscript"></div>
+        <div class="mode-row">
+          <button class="btn primary big" id="btnSaveResult">💾 기록 저장</button>
+          <button class="btn" id="btnDownloadVideo" hidden>⬇ 영상 다운로드</button>
+          <button class="btn" id="btnNewAnalysis">새 분석 시작</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY ============ -->
+    <section id="view-history" class="view">
+      <div class="card">
+        <div class="history-head">
+          <h2>성장 기록</h2>
+          <div class="filter-row" id="historyFilter">
+            <button class="chip active" data-filter="all">전체</button>
+            <button class="chip" data-filter="havruta">문법하브루타</button>
+            <button class="chip" data-filter="reading">독해 읽고해석</button>
+            <button class="chip" data-filter="vocab">단어구술테스트</button>
+          </div>
+        </div>
+        <div id="trendChart" class="chart-wrap"></div>
+      </div>
+      <div class="card">
+        <h3>기록 목록</h3>
+        <div id="historyList" class="history-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section id="view-settings" class="view">
+      <div class="card">
+        <h2>AI 피드백 설정</h2>
+        <label>Anthropic API 키
+          <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" />
+        </label>
+        <p class="hint">⚠️ API 키는 이 기기 브라우저(localStorage)에만 저장됩니다. 공용 PC에서는 사용 후 반드시 삭제하세요.</p>
+        <div class="mode-row">
+          <button class="btn primary" id="btnSaveKey">저장</button>
+          <button class="btn danger" id="btnDeleteKey">키 삭제</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>카카오톡 연결<span class="kakao-badge">kakao</span></h2>
+        <div class="form-grid">
+          <label>카카오 JavaScript 키
+            <input type="password" id="kakaoKey" placeholder="developers.kakao.com에서 발급" autocomplete="off" />
+          </label>
+          <label>카카오톡 채널 ID
+            <input type="text" id="kakaoChannel" placeholder="예: _KnBMb (pf.kakao.com/ 뒤 부분)" autocomplete="off" />
+          </label>
+        </div>
+        <p class="hint">
+          ① <strong>developers.kakao.com</strong>에서 앱 생성 → JavaScript 키 복사 → 앱 설정의 플랫폼(Web)에 이 사이트 주소 등록.<br />
+          ② 학원 카카오톡 채널 주소가 <code>pf.kakao.com/_xaBcDe</code>라면 채널 ID는 <code>_xaBcDe</code>입니다.<br />
+          키가 없어도 <strong>리포트 복사</strong>·기기 공유 기능으로 카카오톡에 붙여넣어 전송할 수 있습니다.
+        </p>
+        <div class="mode-row">
+          <button class="btn primary" id="btnSaveKakao">저장</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>채널 어투 학습<span class="kakao-badge">kakao</span></h2>
+        <p class="hint">리딩브레인 카카오톡 채널(<a href="https://pf.kakao.com/_KnBMb" target="_blank" rel="noopener">pf.kakao.com/_KnBMb</a>)의
+        게시글 2~3개를 복사해 붙여넣어 두면, AI가 소식글을 쓸 때 <strong>실제 채널의 어투·이모지 스타일</strong>을 따라 작성합니다.</p>
+        <textarea id="channelSamples" class="kakao-input" rows="8" placeholder="💬 채널 게시글 원문을 붙여넣으세요. 여러 개는 빈 줄로 구분합니다."></textarea>
+        <div class="mode-row">
+          <button class="btn primary" id="btnSaveSamples">어투 샘플 저장</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>데이터 관리</h2>
+        <div class="mode-row">
+          <button class="btn" id="btnExportData">기록 내보내기(JSON)</button>
+          <button class="btn danger" id="btnClearData">모든 기록 삭제</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>이용 안내</h2>
+        <ul class="guide">
+          <li>실시간 전사는 <strong>크롬 또는 엣지 브라우저</strong>에서 가장 잘 작동합니다.</li>
+          <li>카메라·마이크 권한을 허용해야 촬영이 가능합니다.</li>
+          <li>영상 자체는 서버로 전송되지 않으며, 분석은 브라우저 안에서만 이뤄집니다.</li>
+          <li>독해 활동은 영어 낭독 시 <strong>English</strong>, 해석 시 <strong>한국어</strong>로 인식 언어를 전환하면 정확합니다.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">리딩브레인 영어학원 중고등특목2관 · 학습영상 분석 도우미</footer>
+<script>
+/* =====================================================================
+ * 리딩브레인 학습영상 분석 엔진 (규칙 기반)
+ * 전사 텍스트 + 발화 시간으로 활동별 5개 영역 성취도를 산출한다.
+ * ===================================================================== */
+(function (global) {
+  "use strict";
+
+  const ACTIVITIES = {
+    havruta: {
+      name: "문법 하브루타",
+      axes: ["발화 지속력", "질문 생성력", "문법 용어 활용", "논리 전개", "유창성"],
+    },
+    reading: {
+      name: "독해 읽고 해석",
+      axes: ["낭독 분량", "영어 낭독", "해석 완성도", "문장 완성도", "유창성"],
+    },
+    vocab: {
+      name: "단어 구술테스트",
+      axes: ["암기량", "응답 속도", "정확도", "영·한 짝짓기", "유창성"],
+    },
+  };
+
+  const FILLERS = ["음", "어", "그", "아", "막", "뭐지", "그니까", "um", "uh", "erm", "hmm", "like"];
+  const CONNECTIVES = [
+    "왜냐하면", "그래서", "그러니까", "따라서", "예를 들어", "예를들어", "즉", "먼저", "다음으로",
+    "반면에", "그런데", "결론적으로", "because", "so", "therefore", "for example", "first", "then", "however",
+  ];
+  const QUESTION_WORDS = [
+    "왜", "어떻게", "무엇", "뭐야", "뭘까", "일까", "인가요", "할까", "어때", "맞아", "맞나",
+    "why", "how", "what", "which", "when", "who", "right?",
+  ];
+  const GRAMMAR_TERMS = [
+    "주어", "동사", "목적어", "보어", "수식", "관계대명사", "관계부사", "관계사", "분사", "분사구문",
+    "부정사", "to부정사", "동명사", "수동태", "능동태", "가정법", "시제", "현재완료", "과거완료", "미래완료",
+    "접속사", "전치사", "형용사", "부사", "명사절", "부사절", "형용사절", "비교급", "최상급", "원급",
+    "도치", "강조", "생략", "수일치", "일치", "문장성분", "5형식", "4형식", "3형식", "2형식", "1형식",
+    "구", "절", "선행사", "의문사", "조동사", "사역동사", "지각동사",
+  ];
+
+  /* ---------- 기초 지표 ---------- */
+  function baseMetrics(transcript, durationSec) {
+    const text = (transcript || "").trim();
+    const tokens = text.length ? text.split(/\s+/).filter(Boolean) : [];
+    const isEng = (t) => /[a-zA-Z]/.test(t) && !/[가-힣]/.test(t);
+    const isKor = (t) => /[가-힣]/.test(t);
+
+    const englishTokens = tokens.filter(isEng);
+    const koreanTokens = tokens.filter(isKor);
+    const minutes = Math.max(durationSec, 1) / 60;
+
+    const lower = text.toLowerCase();
+    const countOcc = (list) =>
+      list.reduce((n, w) => {
+        let i = 0, c = 0;
+        const needle = w.toLowerCase();
+        while ((i = lower.indexOf(needle, i)) !== -1) { c++; i += needle.length; }
+        return n + c;
+      }, 0);
+
+    const fillerCount = tokens.filter((t) =>
+      FILLERS.includes(t.replace(/[.,!?~…]/g, "").toLowerCase())
+    ).length;
+
+    const sentences = text.split(/[.!?。\n]+/).map((s) => s.trim()).filter((s) => s.length > 1);
+    const uniqueTokens = new Set(tokens.map((t) => t.toLowerCase()));
+
+    let questionCount = (text.match(/\?/g) || []).length;
+    questionCount += countOcc(QUESTION_WORDS.filter((w) => w !== "right?"));
+
+    return {
+      durationSec,
+      minutes,
+      totalWords: tokens.length,
+      englishWords: englishTokens.length,
+      koreanWords: koreanTokens.length,
+      englishRatio: tokens.length ? englishTokens.length / tokens.length : 0,
+      koreanRatio: tokens.length ? koreanTokens.length / tokens.length : 0,
+      wpm: tokens.length / minutes,
+      fillerCount,
+      fillerRate: tokens.length ? fillerCount / tokens.length : 0,
+      sentenceCount: sentences.length,
+      avgSentenceLen: sentences.length
+        ? sentences.reduce((n, s) => n + s.split(/\s+/).length, 0) / sentences.length
+        : 0,
+      uniqueRatio: tokens.length ? uniqueTokens.size / tokens.length : 0,
+      questionCount,
+      connectiveCount: countOcc(CONNECTIVES),
+      grammarTermCount: countOcc(GRAMMAR_TERMS),
+      tokens,
+    };
+  }
+
+  /* 목표 구간 기반 점수화: value가 [lo, hi] 안이면 100, 밖이면 선형 감점 */
+  function bandScore(value, lo, hi, zero) {
+    if (value >= lo && value <= hi) return 100;
+    if (value < lo) return clamp(100 * (value / Math.max(lo, 0.0001)), 0, 100);
+    // hi 초과: zero 지점에서 40점까지 감소
+    const over = value - hi;
+    const range = Math.max(zero - hi, 0.0001);
+    return clamp(100 - (over / range) * 60, 40, 100);
+  }
+  /* 목표치 도달 비율 점수화 */
+  function ratioScore(value, target) {
+    return clamp((value / Math.max(target, 0.0001)) * 100, 0, 100);
+  }
+  function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+  const round = (v) => Math.round(v);
+
+  /* ---------- 활동별 채점 ---------- */
+  function scoreHavruta(m) {
+    const fluency = clamp(100 - m.fillerRate * 400 - (m.wpm < 40 ? (40 - m.wpm) : 0), 0, 100);
+    return [
+      { axis: "발화 지속력", score: round(ratioScore(m.durationSec, 150) * 0.6 + ratioScore(m.totalWords, 200) * 0.4) },
+      { axis: "질문 생성력", score: round(ratioScore(m.questionCount / m.minutes, 3)) },
+      { axis: "문법 용어 활용", score: round(ratioScore(m.grammarTermCount, 8)) },
+      { axis: "논리 전개", score: round(ratioScore((m.connectiveCount / Math.max(m.totalWords, 1)) * 100, 3)) },
+      { axis: "유창성", score: round(fluency) },
+    ];
+  }
+
+  function scoreReading(m) {
+    const fluency = clamp(100 - m.fillerRate * 400, 0, 100);
+    return [
+      { axis: "낭독 분량", score: round(ratioScore(m.totalWords, 150) * 0.6 + ratioScore(m.durationSec, 120) * 0.4) },
+      { axis: "영어 낭독", score: round(bandScore(m.englishRatio, 0.3, 0.7, 1.0)) },
+      { axis: "해석 완성도", score: round(ratioScore(m.koreanWords, 60) * 0.6 + ratioScore(m.sentenceCount, 8) * 0.4) },
+      { axis: "문장 완성도", score: round(bandScore(m.avgSentenceLen, 6, 18, 35)) },
+      { axis: "유창성", score: round(fluency) },
+    ];
+  }
+
+  function parseVocabList(raw) {
+    if (!raw) return [];
+    return raw.split(/\n+/).map((line) => {
+      const parts = line.split(/[-–—:=]/);
+      if (parts.length < 2) return null;
+      const word = parts[0].trim().toLowerCase();
+      const meaning = parts.slice(1).join(" ").trim();
+      return word && meaning ? { word, meaning } : null;
+    }).filter(Boolean);
+  }
+
+  function scoreVocab(m, transcript, vocabList) {
+    const fluency = clamp(100 - m.fillerRate * 400, 0, 100);
+    // 영어 토큰 뒤에 한국어 토큰이 따라오는 "단어-뜻" 짝 감지
+    let pairCount = 0;
+    for (let i = 0; i < m.tokens.length - 1; i++) {
+      const cur = m.tokens[i], next = m.tokens[i + 1];
+      if (/[a-zA-Z]/.test(cur) && !/[가-힣]/.test(cur) && /[가-힣]/.test(next)) pairCount++;
+    }
+
+    let accuracy;
+    let accuracyDetail = null;
+    if (vocabList && vocabList.length) {
+      const lower = (transcript || "").toLowerCase();
+      let hit = 0;
+      const missed = [];
+      vocabList.forEach(({ word, meaning }) => {
+        const meaningCore = meaning.replace(/[^가-힣a-zA-Z]/g, "").slice(0, 4);
+        const saidWord = lower.includes(word);
+        const saidMeaning = meaningCore.length >= 2 && lower.includes(meaningCore.slice(0, 2));
+        if (saidWord && saidMeaning) hit++;
+        else missed.push(word);
+      });
+      accuracy = round((hit / vocabList.length) * 100);
+      accuracyDetail = { hit, total: vocabList.length, missed: missed.slice(0, 10) };
+    } else {
+      // 리스트가 없으면 짝 패턴 밀도로 추정
+      accuracy = round(ratioScore(pairCount, Math.max(m.englishWords * 0.7, 5)));
+    }
+
+    return {
+      axes: [
+        { axis: "암기량", score: round(ratioScore(m.englishWords, 20)) },
+        { axis: "응답 속도", score: round(bandScore(m.wpm, 50, 130, 220)) },
+        { axis: "정확도", score: accuracy },
+        { axis: "영·한 짝짓기", score: round(ratioScore(pairCount, 15)) },
+        { axis: "유창성", score: round(fluency) },
+      ],
+      accuracyDetail,
+    };
+  }
+
+  /* ---------- 피드백 문구 ---------- */
+  const FEEDBACK = {
+    havruta: {
+      "발화 지속력": {
+        good: "충분한 시간 동안 끊기지 않고 설명을 이어갔어요. 하브루타의 기본기가 탄탄합니다.",
+        bad: "발화 시간이 짧아요. 개념 하나를 설명할 때 '정의 → 예문 → 이유' 3단계로 말하면 자연스럽게 길어집니다.",
+      },
+      "질문 생성력": {
+        good: "스스로 질문을 만들어 던지는 힘이 좋아요. 하브루타의 핵심을 잘 실천하고 있습니다.",
+        bad: "질문이 적었어요. 설명 중간에 '왜 이렇게 될까?', '이 자리에 다른 게 오면 어떻게 될까?' 같은 질문을 최소 3개 이상 던져보세요.",
+      },
+      "문법 용어 활용": {
+        good: "관계대명사, 분사구문 같은 문법 용어를 정확하게 사용하며 설명했어요.",
+        bad: "문법 용어 사용이 부족해요. '이거', '저거' 대신 주어·동사·선행사 같은 정확한 용어로 바꿔 말하는 연습을 해보세요.",
+      },
+      "논리 전개": {
+        good: "'왜냐하면', '예를 들어' 같은 연결 표현으로 논리적으로 설명했어요.",
+        bad: "설명이 나열식이에요. '왜냐하면 ~', '예를 들어 ~', '그래서 ~' 연결어를 넣어 이유와 예시가 있는 설명으로 만들어 보세요.",
+      },
+      "유창성": {
+        good: "군더더기 없이 또렷하게 말했어요. 전달력이 좋습니다.",
+        bad: "'음', '어' 같은 추임새가 많아요. 말하기 전에 머릿속으로 문장을 한 번 완성한 뒤 말하면 훨씬 매끄러워집니다.",
+      },
+    },
+    reading: {
+      "낭독 분량": {
+        good: "충분한 분량을 읽고 해석했어요. 꾸준한 훈련량이 느껴집니다.",
+        bad: "읽은 분량이 적어요. 한 번에 최소 한 단락(5~8문장)을 목표로 낭독해 보세요.",
+      },
+      "영어 낭독": {
+        good: "영어 원문을 소리 내어 읽는 비중이 적절해요. 낭독과 해석의 균형이 좋습니다.",
+        bad: "영어 낭독 비중이 목표 구간을 벗어났어요. '영어 문장 낭독 → 우리말 해석' 순서를 문장 단위로 지켜 보세요.",
+      },
+      "해석 완성도": {
+        good: "우리말 해석이 풍부하고 문장 단위로 완결되어 있어요.",
+        bad: "해석이 부족하거나 끊겨 있어요. 단어 뜻 나열이 아니라 '완성된 우리말 문장'으로 해석을 끝맺는 연습이 필요합니다.",
+      },
+      "문장 완성도": {
+        good: "문장을 알맞은 길이로 끊어 읽고 해석했어요. 구문 감각이 좋습니다.",
+        bad: "문장이 너무 짧게 끊기거나 길게 늘어져요. 주어+동사 단위로 의미 덩어리(청킹)를 나눠 읽어 보세요.",
+      },
+      "유창성": {
+        good: "머뭇거림 없이 읽고 해석했어요. 유창성이 좋습니다.",
+        bad: "머뭇거림이 잦아요. 같은 지문을 3회 반복 낭독한 뒤 촬영하면 유창성 점수가 크게 올라갑니다.",
+      },
+    },
+    vocab: {
+      "암기량": {
+        good: "많은 단어를 소화했어요. 어휘 훈련량이 충분합니다.",
+        bad: "말한 단어 수가 적어요. 하루 목표 단어(20개 이상)를 정하고 전부 소리 내어 테스트해 보세요.",
+      },
+      "응답 속도": {
+        good: "단어를 보자마자 뜻이 나오는 속도예요. 암기가 장기기억으로 잘 넘어갔습니다.",
+        bad: "응답 속도가 느려요. 3초 안에 뜻이 안 나오는 단어는 '모르는 단어'로 분류해 별도로 복습하세요.",
+      },
+      "정확도": {
+        good: "단어와 뜻을 정확하게 연결했어요. 정답률이 높습니다.",
+        bad: "틀리거나 빠뜨린 단어가 있어요. 틀린 단어만 모아 미니 테스트를 다시 진행해 보세요.",
+      },
+      "영·한 짝짓기": {
+        good: "'영어 단어 → 우리말 뜻' 형식을 일정하게 지키며 테스트했어요.",
+        bad: "단어와 뜻이 짝을 이루지 않는 구간이 있어요. 반드시 '단어 말하기 → 뜻 말하기' 순서를 지켜 주세요.",
+      },
+      "유창성": {
+        good: "발음이 명료하고 흐름이 끊기지 않았어요.",
+        bad: "중간에 멈칫하는 구간이 많아요. 자신 없는 단어일수록 더 크고 또렷하게 발음해 보세요.",
+      },
+    },
+  };
+
+  function grade(total) {
+    if (total >= 95) return "A+";
+    if (total >= 90) return "A";
+    if (total >= 85) return "B+";
+    if (total >= 80) return "B";
+    if (total >= 70) return "C+";
+    if (total >= 60) return "C";
+    return "D";
+  }
+
+  /**
+   * 메인 진입점.
+   * @returns {{activity, activityName, axes:[{axis,score}], total, grade, metrics, strengths, improvements, accuracyDetail}}
+   */
+  function analyze({ activity, transcript, durationSec, vocabListRaw }) {
+    const m = baseMetrics(transcript, durationSec);
+    let axes, accuracyDetail = null;
+
+    if (activity === "havruta") axes = scoreHavruta(m);
+    else if (activity === "reading") axes = scoreReading(m);
+    else {
+      const r = scoreVocab(m, transcript, parseVocabList(vocabListRaw));
+      axes = r.axes;
+      accuracyDetail = r.accuracyDetail;
+    }
+
+    const total = round(axes.reduce((n, a) => n + a.score, 0) / axes.length);
+    const fb = FEEDBACK[activity];
+    const strengths = [];
+    const improvements = [];
+    axes.forEach(({ axis, score }) => {
+      if (score >= 80) strengths.push(fb[axis].good);
+      else if (score < 70) improvements.push(fb[axis].bad);
+    });
+    if (!strengths.length) strengths.push("영상을 촬영해 스스로 점검한 것 자체가 큰 발전이에요. 꾸준함이 실력을 만듭니다!");
+    if (!improvements.length) improvements.push("전 영역이 고르게 우수해요. 다음에는 난도를 한 단계 올려 도전해 보세요.");
+    if (accuracyDetail && accuracyDetail.missed.length) {
+      improvements.push(`다시 복습할 단어: ${accuracyDetail.missed.join(", ")}`);
+    }
+
+    return {
+      activity,
+      activityName: ACTIVITIES[activity].name,
+      axes, total, grade: grade(total),
+      metrics: m, strengths, improvements, accuracyDetail,
+    };
+  }
+
+  global.RBAnalysis = { analyze, ACTIVITIES };
+})(window);
+</script>
+<script>
+/* =====================================================================
+ * 리딩브레인 학습영상 분석 웹앱 — UI / 촬영 / 음성인식 / 차트 / 저장
+ * ===================================================================== */
+(function () {
+  "use strict";
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const STORAGE_KEY = "rb_records_v1";
+  const APIKEY_KEY = "rb_api_key";
+  const KAKAO_KEY = "rb_kakao_key";
+  const KAKAO_CHANNEL = "rb_kakao_channel";
+
+  const state = {
+    activity: null,
+    stream: null,
+    recorder: null,
+    chunks: [],
+    videoBlob: null,
+    recognition: null,
+    recogLang: "ko-KR",
+    finalTranscript: "",
+    recordStart: 0,
+    timerId: null,
+    uploadDuration: 0,
+    result: null,
+    resultSaved: false,
+    aiFeedbackText: "",
+  };
+
+  /* ================= 탭/화면 전환 ================= */
+  function showView(id) {
+    $$(".view").forEach((v) => v.classList.remove("active"));
+    $("#view-" + id).classList.add("active");
+    $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.view === id));
+    window.scrollTo({ top: 0 });
+  }
+  $$(".tab").forEach((t) =>
+    t.addEventListener("click", () => {
+      if (t.dataset.view === "history") renderHistory();
+      showView(t.dataset.view);
+    })
+  );
+
+  /* ================= 활동 선택 ================= */
+  $$(".activity-card").forEach((card) =>
+    card.addEventListener("click", () => {
+      $$(".activity-card").forEach((c) => c.classList.remove("selected"));
+      card.classList.add("selected");
+      state.activity = card.dataset.activity;
+      $("#vocabListCard").hidden = state.activity !== "vocab";
+      $("#btnStartRecord").disabled = false;
+      $("#btnUpload").disabled = false;
+      // 활동별 기본 인식 언어
+      state.recogLang = state.activity === "vocab" ? "en-US" : "ko-KR";
+    })
+  );
+
+  function validateStudent() {
+    if (!$("#studentName").value.trim()) {
+      alert("학생 이름을 입력해 주세요.");
+      return false;
+    }
+    if (!state.activity) {
+      alert("활동을 선택해 주세요.");
+      return false;
+    }
+    return true;
+  }
+
+  /* ================= 촬영 ================= */
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  $("#btnStartRecord").addEventListener("click", async () => {
+    if (!validateStudent()) return;
+    try {
+      state.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    } catch (e) {
+      alert("카메라/마이크 권한이 필요합니다. 브라우저 설정에서 허용해 주세요.");
+      return;
+    }
+    $("#recordTitle").textContent = RBAnalysis.ACTIVITIES[state.activity].name + " 촬영 중";
+    $("#preview").srcObject = state.stream;
+    $("#liveTranscript").innerHTML = "";
+    state.finalTranscript = "";
+    state.chunks = [];
+    state.videoBlob = null;
+
+    state.recorder = new MediaRecorder(state.stream);
+    state.recorder.ondataavailable = (e) => e.data.size && state.chunks.push(e.data);
+    state.recorder.start(1000);
+
+    state.recordStart = Date.now();
+    state.timerId = setInterval(updateTimer, 500);
+
+    syncLangChips();
+    startRecognition();
+    showView("record");
+  });
+
+  function updateTimer() {
+    const s = Math.floor((Date.now() - state.recordStart) / 1000);
+    $("#recTimer").textContent =
+      String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }
+
+  function startRecognition() {
+    if (!SR) {
+      $("#liveTranscript").innerHTML =
+        '<span class="interim">이 브라우저는 실시간 음성 인식을 지원하지 않습니다. 촬영 후 전사 내용을 직접 입력할 수 있습니다.</span>';
+      return;
+    }
+    stopRecognition();
+    const rec = new SR();
+    rec.lang = state.recogLang;
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) state.finalTranscript += r[0].transcript + " ";
+        else interim += r[0].transcript;
+      }
+      const box = $("#liveTranscript");
+      box.innerHTML =
+        escapeHtml(state.finalTranscript) +
+        (interim ? '<span class="interim">' + escapeHtml(interim) + "</span>" : "");
+      box.scrollTop = box.scrollHeight;
+    };
+    rec.onend = () => {
+      // 사용자가 종료한 게 아니면 자동 재시작 (크롬은 주기적으로 세션을 끊음)
+      if (state.recognition === rec) {
+        try { rec.start(); } catch (_) {}
+      }
+    };
+    rec.onerror = () => {};
+    state.recognition = rec;
+    try { rec.start(); } catch (_) {}
+  }
+
+  function stopRecognition() {
+    if (state.recognition) {
+      const r = state.recognition;
+      state.recognition = null; // onend 재시작 방지
+      try { r.stop(); } catch (_) {}
+    }
+  }
+
+  // 인식 언어 전환 (독해: 영어 낭독 ↔ 한국어 해석)
+  $("#langToggle").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-lang]");
+    if (!btn) return;
+    state.recogLang = btn.dataset.lang;
+    syncLangChips();
+    if (state.recognition) startRecognition();
+  });
+  function syncLangChips() {
+    $$("#langToggle .chip").forEach((c) =>
+      c.classList.toggle("active", c.dataset.lang === state.recogLang)
+    );
+  }
+
+  $("#btnStopRecord").addEventListener("click", () => {
+    const durationSec = Math.max(Math.round((Date.now() - state.recordStart) / 1000), 1);
+    stopRecognition();
+    clearInterval(state.timerId);
+
+    const recorder = state.recorder;
+    if (recorder && recorder.state !== "inactive") {
+      recorder.onstop = () => {
+        state.videoBlob = new Blob(state.chunks, { type: recorder.mimeType || "video/webm" });
+        cleanupStream();
+        runAnalysis(state.finalTranscript, durationSec, true);
+      };
+      recorder.stop();
+    } else {
+      cleanupStream();
+      runAnalysis(state.finalTranscript, durationSec, true);
+    }
+  });
+
+  $("#btnCancelRecord").addEventListener("click", () => {
+    stopRecognition();
+    clearInterval(state.timerId);
+    if (state.recorder && state.recorder.state !== "inactive") {
+      state.recorder.onstop = null;
+      state.recorder.stop();
+    }
+    cleanupStream();
+    showView("home");
+  });
+
+  function cleanupStream() {
+    if (state.stream) {
+      state.stream.getTracks().forEach((t) => t.stop());
+      state.stream = null;
+    }
+    $("#preview").srcObject = null;
+  }
+
+  /* ================= 업로드 ================= */
+  $("#btnUpload").addEventListener("click", () => {
+    if (!validateStudent()) return;
+    $("#fileInput").click();
+  });
+
+  $("#fileInput").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const video = $("#uploadPreview");
+    video.src = url;
+    video.onloadedmetadata = () => {
+      state.uploadDuration = isFinite(video.duration) ? Math.round(video.duration) : 60;
+    };
+    state.videoBlob = file;
+    $("#manualTranscript").value = "";
+    showView("upload");
+    e.target.value = "";
+  });
+
+  $("#btnAnalyzeUpload").addEventListener("click", () => {
+    const transcript = $("#manualTranscript").value.trim();
+    if (!transcript) {
+      if (!confirm("전사 내용 없이 분석하면 발화 내용 기반 점수가 낮게 나옵니다. 계속할까요?")) return;
+    }
+    runAnalysis(transcript, state.uploadDuration || 60, false);
+  });
+  $("#btnCancelUpload").addEventListener("click", () => showView("home"));
+
+  /* ================= 분석 실행 & 결과 렌더링 ================= */
+  function runAnalysis(transcript, durationSec, fromRecording) {
+    const result = RBAnalysis.analyze({
+      activity: state.activity,
+      transcript,
+      durationSec,
+      vocabListRaw: state.activity === "vocab" ? $("#vocabList").value : "",
+    });
+    result.student = {
+      name: $("#studentName").value.trim(),
+      grade: $("#studentGrade").value,
+      klass: $("#studentClass").value.trim(),
+    };
+    result.transcript = transcript;
+    result.date = new Date().toISOString();
+    state.result = result;
+    state.resultSaved = false;
+    renderResult(result, fromRecording);
+    showView("result");
+  }
+
+  function renderResult(r, fromRecording) {
+    $("#resultActivityName").textContent = r.activityName + " 분석 결과";
+    $("#resultMeta").textContent =
+      `${r.student.name} · ${r.student.grade}${r.student.klass ? " · " + r.student.klass : ""} · ` +
+      new Date(r.date).toLocaleString("ko-KR") +
+      ` · 발화 ${fmtDur(r.metrics.durationSec)}`;
+    $("#totalScore").textContent = r.total;
+    $("#gradeLabel").textContent = r.grade + " 등급";
+
+    // 지표 타일
+    const m = r.metrics;
+    const tiles = [
+      ["총 단어 수", m.totalWords, "개"],
+      ["말 속도", Math.round(m.wpm), "단어/분"],
+      ["영어 비율", Math.round(m.englishRatio * 100), "%"],
+      ["추임새", m.fillerCount, "회"],
+    ];
+    if (r.activity === "havruta") tiles.push(["질문 횟수", m.questionCount, "회"], ["문법 용어", m.grammarTermCount, "회"]);
+    if (r.activity === "reading") tiles.push(["문장 수", m.sentenceCount, "문장"]);
+    if (r.accuracyDetail) tiles.push(["단어 정답", `${r.accuracyDetail.hit}/${r.accuracyDetail.total}`, "개"]);
+    $("#metricTiles").innerHTML = tiles
+      .map(
+        ([label, value, unit]) =>
+          `<div class="metric-tile"><div class="m-label">${label}</div>` +
+          `<div class="m-value">${value}<span class="m-unit"> ${unit}</span></div></div>`
+      )
+      .join("");
+
+    renderRadar(r.axes);
+    $("#axisBars").innerHTML = r.axes
+      .map(
+        (a) =>
+          `<div class="axis-bar-row"><div class="axis-bar-head"><span>${a.axis}</span>` +
+          `<span class="val">${a.score}점</span></div>` +
+          `<div class="axis-bar-track"><div class="axis-bar-fill" style="width:${a.score}%"></div></div></div>`
+      )
+      .join("");
+
+    $("#strengthsList").innerHTML = r.strengths.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+    $("#improvementsList").innerHTML = r.improvements.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+    $("#finalTranscript").textContent = r.transcript || "(전사 내용 없음)";
+
+    $("#aiFeedback").hidden = true;
+    $("#aiFeedback").textContent = "";
+    $("#aiHint").hidden = !!localStorage.getItem(APIKEY_KEY);
+    state.aiFeedbackText = "";
+    $("#teacherComment").value = "";
+    updateReportPreview();
+
+    $("#btnDownloadVideo").hidden = !state.videoBlob;
+  }
+
+  /* ---------- 레이더 차트 (SVG) ---------- */
+  function renderRadar(axes) {
+    const W2 = 400, H2 = 320, cx = W2 / 2, cy = H2 / 2 + 6, R = 105;
+    const n = axes.length;
+    const angle = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
+    const pt = (i, r) => [cx + Math.cos(angle(i)) * r, cy + Math.sin(angle(i)) * r];
+
+    let svg = `<svg viewBox="0 0 ${W2} ${H2}" width="${W2}" height="${H2}" role="img" aria-label="영역별 성취도 레이더 차트">`;
+    // 배경 그리드 (25점 간격)
+    for (let level = 1; level <= 4; level++) {
+      const r = (R * level) / 4;
+      const pts = axes.map((_, i) => pt(i, r).map((v) => v.toFixed(1)).join(",")).join(" ");
+      svg += `<polygon points="${pts}" fill="none" stroke="var(--grid)" stroke-width="1"/>`;
+    }
+    // 축선 + 라벨
+    axes.forEach((a, i) => {
+      const [x, y] = pt(i, R);
+      svg += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--baseline)" stroke-width="1"/>`;
+      const [lx, ly] = pt(i, R + 24);
+      const anchor = Math.abs(lx - cx) < 8 ? "middle" : lx > cx ? "start" : "end";
+      svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="12" fill="var(--text-secondary)">${a.axis}</text>`;
+      svg += `<text x="${lx.toFixed(1)}" y="${(ly + 14).toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="11" font-weight="700" fill="var(--text-primary)">${a.score}</text>`;
+    });
+    // 데이터 폴리곤
+    const dataPts = axes.map((a, i) => pt(i, (R * a.score) / 100).map((v) => v.toFixed(1)).join(",")).join(" ");
+    svg += `<polygon points="${dataPts}" fill="var(--series-1)" fill-opacity="0.18" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>`;
+    axes.forEach((a, i) => {
+      const [x, y] = pt(i, (R * a.score) / 100);
+      svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"><title>${a.axis}: ${a.score}점</title></circle>`;
+    });
+    svg += "</svg>";
+    $("#radarChart").innerHTML = svg;
+  }
+
+  /* ================= 결과 저장/다운로드 ================= */
+  $("#btnSaveResult").addEventListener("click", () => {
+    if (!state.result) return;
+    if (state.resultSaved) { alert("이미 저장된 결과입니다."); return; }
+    const records = loadRecords();
+    const r = state.result;
+    records.push({
+      id: Date.now(),
+      date: r.date,
+      activity: r.activity,
+      activityName: r.activityName,
+      student: r.student,
+      total: r.total,
+      grade: r.grade,
+      axes: r.axes,
+      metrics: {
+        durationSec: r.metrics.durationSec,
+        totalWords: r.metrics.totalWords,
+        wpm: Math.round(r.metrics.wpm),
+        fillerCount: r.metrics.fillerCount,
+      },
+      aiFeedback: state.aiFeedbackText,
+      teacherComment: $("#teacherComment").value.trim(),
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    state.resultSaved = true;
+    alert("기록이 저장되었습니다. '성장 기록' 탭에서 추이를 확인하세요.");
+  });
+
+  $("#btnDownloadVideo").addEventListener("click", () => {
+    if (!state.videoBlob) return;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(state.videoBlob);
+    const name = state.result ? state.result.student.name : "video";
+    a.download = `리딩브레인_${name}_${new Date().toISOString().slice(0, 10)}.webm`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("#btnNewAnalysis").addEventListener("click", () => showView("home"));
+
+  /* ================= 기록 / 추이 차트 ================= */
+  let historyFilter = "all";
+  $("#historyFilter").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+    historyFilter = btn.dataset.filter;
+    $$("#historyFilter .chip").forEach((c) => c.classList.toggle("active", c === btn));
+    renderHistory();
+  });
+
+  function loadRecords() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch (_) { return []; }
+  }
+
+  function renderHistory() {
+    const all = loadRecords().sort((a, b) => new Date(a.date) - new Date(b.date));
+    const records = historyFilter === "all" ? all : all.filter((r) => r.activity === historyFilter);
+    renderTrend(records);
+
+    const list = $("#historyList");
+    if (!records.length) {
+      list.innerHTML = '<div class="empty-msg">저장된 기록이 없습니다. 분석 후 "기록 저장"을 눌러 보세요.</div>';
+      return;
+    }
+    list.innerHTML = records
+      .slice()
+      .reverse()
+      .map(
+        (r) =>
+          `<div class="history-item"><div class="h-info"><strong>${escapeHtml(r.student.name)}</strong> · ${r.activityName}` +
+          `<div class="h-meta">${new Date(r.date).toLocaleString("ko-KR")} · ${fmtDur(r.metrics.durationSec)} · ${r.metrics.totalWords}단어</div></div>` +
+          `<div class="h-score">${r.total}점 <small>${r.grade}</small></div>` +
+          `<button class="h-del" data-id="${r.id}" title="삭제">✕</button></div>`
+      )
+      .join("");
+    list.querySelectorAll(".h-del").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        if (!confirm("이 기록을 삭제할까요?")) return;
+        const remain = loadRecords().filter((r) => String(r.id) !== btn.dataset.id);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(remain));
+        renderHistory();
+      })
+    );
+  }
+
+  /* ---------- 성장 추이 라인 차트 (SVG) ---------- */
+  function renderTrend(records) {
+    const wrap = $("#trendChart");
+    if (records.length < 2) {
+      wrap.innerHTML = '<div class="empty-msg">기록이 2개 이상 쌓이면 성장 추이 그래프가 표시됩니다.</div>';
+      return;
+    }
+    const W = Math.max(560, records.length * 60), H = 260;
+    const padL = 40, padR = 20, padT = 16, padB = 34;
+    const x = (i) => padL + (i / (records.length - 1)) * (W - padL - padR);
+    const y = (v) => padT + (1 - v / 100) * (H - padT - padB);
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="점수 성장 추이">`;
+    // y축 그리드
+    [0, 25, 50, 75, 100].forEach((v) => {
+      svg += `<line x1="${padL}" y1="${y(v)}" x2="${W - padR}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+      svg += `<text x="${padL - 8}" y="${y(v)}" text-anchor="end" dominant-baseline="middle" font-size="10" fill="var(--muted)">${v}</text>`;
+    });
+    // 라인
+    const path = records.map((r, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(r.total).toFixed(1)}`).join(" ");
+    svg += `<path d="${path}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>`;
+    // 포인트 + x라벨
+    records.forEach((r, i) => {
+      const d = new Date(r.date);
+      svg += `<circle class="trend-pt" data-i="${i}" cx="${x(i).toFixed(1)}" cy="${y(r.total).toFixed(1)}" r="5" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>`;
+      svg += `<text x="${x(i).toFixed(1)}" y="${H - 12}" text-anchor="middle" font-size="10" fill="var(--muted)">${d.getMonth() + 1}/${d.getDate()}</text>`;
+    });
+    svg += "</svg>";
+    wrap.innerHTML = svg;
+
+    // hover 툴팁
+    const tip = getTooltip();
+    wrap.querySelectorAll(".trend-pt").forEach((c) => {
+      c.addEventListener("mouseenter", (e) => {
+        const r = records[+c.dataset.i];
+        tip.innerHTML =
+          `<div class="t-title">${r.total}점 (${r.grade})</div>` +
+          `<div class="t-sub">${escapeHtml(r.student.name)} · ${r.activityName}<br>${new Date(r.date).toLocaleDateString("ko-KR")}</div>`;
+        tip.style.display = "block";
+        positionTip(tip, e);
+      });
+      c.addEventListener("mousemove", (e) => positionTip(tip, e));
+      c.addEventListener("mouseleave", () => (tip.style.display = "none"));
+    });
+  }
+
+  function getTooltip() {
+    let tip = $(".viz-tooltip");
+    if (!tip) {
+      tip = document.createElement("div");
+      tip.className = "viz-tooltip";
+      document.body.appendChild(tip);
+    }
+    return tip;
+  }
+  function positionTip(tip, e) {
+    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 180) + "px";
+    tip.style.top = e.clientY - 10 + "px";
+  }
+
+  /* ================= Claude API 공통 호출 ================= */
+  async function callClaude(system, userContent) {
+    const key = localStorage.getItem(APIKEY_KEY);
+    if (!key) {
+      alert("설정 탭에서 Anthropic API 키를 먼저 등록해 주세요.");
+      showView("settings");
+      return null;
+    }
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-opus-4-8",
+        max_tokens: 1500,
+        system,
+        messages: [{ role: "user", content: userContent }],
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API 오류 (${res.status})`);
+    }
+    const data = await res.json();
+    if (data.stop_reason === "refusal") throw new Error("AI가 이 요청을 처리하지 못했습니다.");
+    return (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n");
+  }
+
+  function resultContext(r) {
+    return (
+      `활동: ${r.activityName}\n학생: ${r.student.name} (${r.student.grade}${r.student.klass ? " " + r.student.klass : ""})\n` +
+      `발화 시간: ${fmtDur(r.metrics.durationSec)}\n` +
+      `자동 분석 점수: 총점 ${r.total}점(${r.grade}) / ` +
+      r.axes.map((a) => `${a.axis} ${a.score}점`).join(", ") +
+      `\n\n--- 전사 내용 ---\n${r.transcript}`
+    );
+  }
+
+  /* ================= AI 심층 피드백 (학생용) ================= */
+  $("#btnAiFeedback").addEventListener("click", async () => {
+    const r = state.result;
+    if (!r) return;
+    if (!r.transcript) { alert("전사 내용이 없어 AI 피드백을 생성할 수 없습니다."); return; }
+    const btn = $("#btnAiFeedback");
+    const out = $("#aiFeedback");
+    btn.disabled = true;
+    btn.textContent = "분석 중...";
+    out.hidden = false;
+    out.textContent = "AI 선생님이 영상 내용을 분석하고 있어요...";
+    try {
+      const text = await callClaude(
+        "당신은 리딩브레인 영어학원 중고등특목2관의 베테랑 영어 강사입니다. " +
+          "학생의 학습 활동 영상 전사 내용과 자동 분석 지표를 보고, 따뜻하지만 구체적인 한국어 피드백을 작성하세요. " +
+          "형식: ① 오늘 잘한 점 2~3가지 (전사 내용에서 실제 표현을 인용) ② 고칠 점 2~3가지 (틀린 문법 용어 설명이나 어색한 해석이 있으면 정확히 짚고 교정) ③ 다음 학습 미션 1가지. " +
+          "중고등학생이 읽기 쉽게, 500자 내외로 작성하세요.",
+        resultContext(r)
+      );
+      if (text !== null) {
+        out.textContent = text || "응답이 비어 있습니다.";
+        state.aiFeedbackText = text || "";
+        updateReportPreview();
+      } else {
+        out.hidden = true;
+      }
+    } catch (e) {
+      out.textContent = "AI 피드백 요청 실패: " + e.message + "\nAPI 키와 네트워크 연결을 확인해 주세요.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "AI 피드백 받기";
+    }
+  });
+
+  /* ================= 선생님 코멘트 AI 초안 ================= */
+  $("#btnTeacherDraft").addEventListener("click", async () => {
+    const r = state.result;
+    if (!r) return;
+    if (!r.transcript) { alert("전사 내용이 없어 초안을 생성할 수 없습니다."); return; }
+    const btn = $("#btnTeacherDraft");
+    btn.disabled = true;
+    btn.textContent = "초안 작성 중...";
+    try {
+      const existing = $("#teacherComment").value.trim();
+      const text = await callClaude(
+        "당신은 리딩브레인 영어학원 중고등특목2관 담당 선생님입니다. " +
+          "학부모님(어머님)께 카카오톡으로 보낼 코멘트를 선생님의 목소리로 작성하세요. " +
+          "존댓말로 정중하고 따뜻하게, 오늘 학생이 잘한 점 → 보완할 점 → 가정에서 도와주실 부분 순서로, 300자 내외. " +
+          "인사말(예: '어머님, 안녕하세요. 리딩브레인 중고등특목2관입니다.')로 시작하세요." +
+          (existing ? " 선생님이 미리 적어 둔 메모를 자연스럽게 반영하세요: " + existing : ""),
+        resultContext(r)
+      );
+      if (text !== null) {
+        $("#teacherComment").value = text.trim();
+        updateReportPreview();
+      }
+    } catch (e) {
+      alert("초안 생성 실패: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🤖 AI 초안 생성";
+    }
+  });
+  $("#teacherComment").addEventListener("input", updateReportPreview);
+
+  /* ================= 학부모 리포트 생성/전송 ================= */
+  function buildReport() {
+    const r = state.result;
+    if (!r) return "";
+    const lines = [
+      "📚 리딩브레인 영어학원 중고등특목2관",
+      "오늘의 학습 리포트",
+      "─────────────────",
+      `학생: ${r.student.name} (${r.student.grade}${r.student.klass ? " · " + r.student.klass : ""})`,
+      `활동: ${r.activityName}`,
+      `일시: ${new Date(r.date).toLocaleString("ko-KR")}`,
+      `발화 시간: ${fmtDur(r.metrics.durationSec)}`,
+      "",
+      `🏆 종합 성취도: ${r.total}점 (${r.grade} 등급)`,
+      ...r.axes.map((a) => `  · ${a.axis}: ${a.score}점`),
+      "",
+      "✅ 잘한 점",
+      ...r.strengths.map((s) => `  · ${s}`),
+      "",
+      "📈 개선할 점",
+      ...r.improvements.map((s) => `  · ${s}`),
+    ];
+    if (state.aiFeedbackText) {
+      lines.push("", "🤖 AI 선생님 심층 피드백", state.aiFeedbackText);
+    }
+    const teacher = $("#teacherComment").value.trim();
+    if (teacher) {
+      lines.push("", "👩‍🏫 담당 선생님 코멘트", teacher);
+    }
+    lines.push("", "─────────────────", "리딩브레인 영어학원 중고등특목2관 드림");
+    return lines.join("\n");
+  }
+
+  function updateReportPreview() {
+    const el = $("#reportPreview");
+    if (el) el.textContent = buildReport();
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    }
+  }
+
+  $("#btnCopyReport").addEventListener("click", async () => {
+    const ok = await copyText(buildReport());
+    alert(ok ? "리포트가 복사되었습니다. 카카오톡 대화방에 붙여넣어 전송하세요." : "복사에 실패했습니다.");
+  });
+
+  /* ---------- 카카오 SDK ---------- */
+  function ensureKakao() {
+    return new Promise((resolve) => {
+      const key = localStorage.getItem(KAKAO_KEY);
+      if (!key) return resolve(null);
+      if (window.Kakao && window.Kakao.isInitialized()) return resolve(window.Kakao);
+      if (window.Kakao) {
+        try { window.Kakao.init(key); } catch (_) {}
+        return resolve(window.Kakao.isInitialized() ? window.Kakao : null);
+      }
+      const s = document.createElement("script");
+      s.src = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js";
+      s.crossOrigin = "anonymous";
+      s.onload = () => {
+        try { window.Kakao.init(key); resolve(window.Kakao); }
+        catch (_) { resolve(null); }
+      };
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+  }
+
+  $("#btnKakaoShare").addEventListener("click", async () => {
+    const report = buildReport();
+    if (!report) return;
+    // 전문은 항상 클립보드에 (카카오 텍스트 템플릿은 200자 제한)
+    await copyText(report);
+    const kakao = await ensureKakao();
+    if (kakao && kakao.Share) {
+      const r = state.result;
+      const summary =
+        `[리딩브레인] ${r.student.name} 학생 ${r.activityName} 리포트\n` +
+        `종합 ${r.total}점 (${r.grade} 등급) · ${new Date(r.date).toLocaleDateString("ko-KR")}\n` +
+        `상세 리포트 전문은 이어지는 메시지로 붙여넣어 보내드립니다.`;
+      try {
+        kakao.Share.sendDefault({
+          objectType: "text",
+          text: summary.slice(0, 200),
+          link: { webUrl: location.href, mobileWebUrl: location.href },
+        });
+        alert("카카오톡 공유창이 열렸습니다.\n리포트 전문은 이미 복사되어 있으니, 같은 대화방에 붙여넣어 이어서 보내주세요.");
+        return;
+      } catch (_) { /* 아래 폴백으로 */ }
+    }
+    // 폴백: 기기 공유 → 안내
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "리딩브레인 학습 리포트", text: report });
+        return;
+      } catch (_) { /* 사용자가 취소했거나 미지원 */ }
+    }
+    alert(
+      "리포트가 복사되었습니다!\n카카오톡에서 어머님 대화방을 열어 붙여넣기 하시면 바로 전송됩니다.\n\n" +
+      "(설정 탭에 카카오 JavaScript 키를 등록하면 공유창이 바로 열립니다.)"
+    );
+  });
+
+  /* 영상 + 리포트 함께 보내기: 모바일 공유시트(카카오톡 선택) → 폴백: 다운로드+복사 */
+  $("#btnShareVideo").addEventListener("click", async () => {
+    const report = buildReport();
+    if (!state.videoBlob) {
+      alert("이번 분석에는 영상 파일이 없습니다. 촬영 또는 업로드한 영상이 있을 때 사용할 수 있어요.");
+      return;
+    }
+    const r = state.result;
+    const file = new File(
+      [state.videoBlob],
+      `리딩브레인_${r ? r.student.name : "학습"}영상.${(state.videoBlob.type || "").includes("mp4") ? "mp4" : "webm"}`,
+      { type: state.videoBlob.type || "video/webm" }
+    );
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "리딩브레인 학습 리포트",
+          text: report,
+        });
+        return;
+      } catch (e) {
+        if (e.name === "AbortError") return; // 사용자가 공유 취소
+      }
+    }
+    // PC 등 파일 공유 미지원: 영상 다운로드 + 리포트 복사
+    await copyText(report);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(state.videoBlob);
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    alert(
+      "이 기기에서는 파일 공유창을 지원하지 않아,\n① 영상 파일을 다운로드했고 ② 리포트를 복사해 두었습니다.\n" +
+      "카카오톡 어머님 대화방에 영상 파일을 첨부하고 리포트를 붙여넣어 함께 보내주세요.\n\n" +
+      "(휴대폰에서 열면 공유 버튼 한 번으로 영상+리포트가 카카오톡으로 바로 전송됩니다.)"
+    );
+  });
+
+  $("#btnChannelChat").addEventListener("click", () => {
+    const channel = (localStorage.getItem(KAKAO_CHANNEL) || DEFAULT_CHANNEL).trim();
+    const id = channel.startsWith("_") ? channel : "_" + channel;
+    window.open(`https://pf.kakao.com/${id}/chat`, "_blank", "noopener");
+  });
+
+  /* ================= 채널 소식글 생성 (채널 어투 학습) ================= */
+  const DEFAULT_CHANNEL = "_KnBMb"; // 리딩브레인 영어학원 공식 채널
+  const SAMPLES_KEY = "rb_channel_samples";
+  // 채널 게시글 샘플이 없을 때 사용하는 기본 어투 프로필
+  const DEFAULT_STYLE =
+    "밝고 활기찬 학원 공지 어투. 존댓말 사용, 문장 끝에 어울리는 이모지(📚✨💪🎉😊👏🔥)를 자연스럽게 1개씩 배치. " +
+    "'안녕하세요! 리딩브레인 영어학원입니다 😊' 류의 인사로 시작, 핵심 내용은 짧은 문단·줄바꿈으로 보기 좋게 구성, " +
+    "학생 칭찬을 아끼지 않고, 마지막은 '오늘도 리딩브레인과 함께 성장해요! 💙' 같은 응원 문구로 마무리.";
+
+  $("#btnChannelPost").addEventListener("click", async () => {
+    const r = state.result;
+    if (!r) return;
+    const btn = $("#btnChannelPost");
+    btn.disabled = true;
+    btn.textContent = "작성 중...";
+    try {
+      const samples = (localStorage.getItem(SAMPLES_KEY) || "").trim();
+      const styleGuide = samples
+        ? "아래는 우리 채널의 실제 게시글들이다. 문체, 인사말, 이모지 사용 패턴, 문단 구성을 그대로 따라 하라.\n\n--- 채널 게시글 샘플 ---\n" + samples
+        : "채널 어투 가이드: " + DEFAULT_STYLE;
+      const text = await callClaude(
+        "당신은 리딩브레인 영어학원(중고등특목2관) 카카오톡 채널 운영자입니다. " +
+          "학생의 오늘 학습 성과를 소개하는 채널 소식글을 작성하세요. 이모지를 적극 활용하고, " +
+          "학생 개인정보 보호를 위해 이름은 성만 남기고 'ㅇ' 처리하세요(예: 김ㅇㅇ 학생). 400자 내외.\n\n" + styleGuide,
+        resultContext(r)
+      );
+      if (text !== null) {
+        $("#channelPost").hidden = false;
+        $("#channelPost").value = text.trim();
+        $("#channelPostActions").hidden = false;
+      }
+    } catch (e) {
+      alert("소식글 생성 실패: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "✍️ 채널 어투 소식글 생성";
+    }
+  });
+
+  $("#btnCopyChannelPost").addEventListener("click", async () => {
+    const ok = await copyText($("#channelPost").value);
+    alert(ok ? "소식글이 복사되었습니다. 채널 관리자센터의 '소식 올리기'에 붙여넣으세요." : "복사에 실패했습니다.");
+  });
+  $("#btnOpenChannelAdmin").addEventListener("click", () => {
+    window.open("https://center-pf.kakao.com/", "_blank", "noopener");
+  });
+
+  /* ================= 카드뉴스 생성 (Canvas) ================= */
+  const BRAND_NAVY = "#16395e";
+  const BRAND_BURGUNDY = "#8e1f24";
+
+  /* 원본 로고 파일(assets/logo.png)이 있으면 우선 사용, 없으면 인라인 SVG 재현본 사용 */
+  function logoImage() {
+    return new Promise((resolve) => {
+      const png = new Image();
+      png.onload = () => resolve(png);
+      png.onerror = () => {
+        const svgEl = document.querySelector(".brand-logo");
+        if (!svgEl) return resolve(null);
+        const clone = svgEl.cloneNode(true);
+        clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        clone.setAttribute("width", "400");
+        clone.setAttribute("height", "404");
+        const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+        img.src = url;
+      };
+      png.src = "assets/logo.png";
+    });
+  }
+
+  /* 원본 로고가 있으면 헤더 SVG도 원본으로 교체 */
+  (function swapHeaderLogo() {
+    const png = new Image();
+    png.onload = () => {
+      const svgEl = document.querySelector(".brand-logo");
+      if (!svgEl) return;
+      const img = document.createElement("img");
+      img.src = "assets/logo.png";
+      img.alt = "Reading Brain 로고";
+      img.className = "brand-logo";
+      svgEl.replaceWith(img);
+    };
+    png.src = "assets/logo.png";
+  })();
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+    const words = text.split(/\s+/).filter(Boolean);
+    let line = "", lines = 0;
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      const test = line ? line + " " + w : w;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines++;
+        if (maxLines && lines >= maxLines) {
+          // 마지막 허용 줄: 남은 텍스트를 전부 시도하고, 넘치면 말줄임
+          let rest = [w, ...words.slice(i + 1)].join(" ");
+          let lastLine = line + " " + rest;
+          if (ctx.measureText(lastLine).width <= maxWidth) {
+            ctx.fillText(lastLine, x, y);
+          } else {
+            while (ctx.measureText(line + "…").width > maxWidth && line.length > 1) line = line.slice(0, -1);
+            ctx.fillText(line + "…", x, y);
+          }
+          return y + lineHeight;
+        }
+        ctx.fillText(line, x, y);
+        y += lineHeight;
+        line = w;
+      } else line = test;
+    }
+    if (line) { ctx.fillText(line, x, y); y += lineHeight; }
+    return y;
+  }
+
+  function newCard() {
+    const c = document.createElement("canvas");
+    c.width = 1080; c.height = 1080;
+    const ctx = c.getContext("2d");
+    return [c, ctx];
+  }
+  const FONT = "'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif";
+  const PAPER = "#faf8f4", INK = "#22211f", INK_MUTE = "#8b8880", TRACK = "#e7e3da", TINT = "#eef2f7";
+  const MARGIN = 90;
+
+  function setSpacing(ctx, px) { try { ctx.letterSpacing = px + "px"; } catch (_) {} }
+
+  /* 상단 헤더: 영문 아이브로우 + 한글 타이틀 + 헤어라인 */
+  function cardHeader(ctx, eyebrow, title) {
+    ctx.textAlign = "left";
+    ctx.fillStyle = BRAND_BURGUNDY;
+    ctx.font = "700 26px " + FONT;
+    setSpacing(ctx, 6);
+    ctx.fillText(eyebrow.toUpperCase(), MARGIN, 140);
+    setSpacing(ctx, 0);
+    ctx.fillStyle = BRAND_NAVY;
+    ctx.font = "800 64px " + FONT;
+    ctx.fillText(title, MARGIN, 226);
+    ctx.strokeStyle = "#d9d4c8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(MARGIN, 268);
+    ctx.lineTo(1080 - MARGIN, 268);
+    ctx.stroke();
+  }
+
+  /* 하단 푸터: 페이지 도트 + 브랜드 캡션 */
+  function cardFooter(ctx, pageNo, total, dark) {
+    const cy = 1002;
+    for (let i = 0; i < total; i++) {
+      ctx.beginPath();
+      ctx.arc(540 + (i - (total - 1) / 2) * 34, cy, i + 1 === pageNo ? 7 : 5, 0, Math.PI * 2);
+      if (dark) ctx.fillStyle = i + 1 === pageNo ? "#ffffff" : "rgba(255,255,255,0.35)";
+      else ctx.fillStyle = i + 1 === pageNo ? BRAND_BURGUNDY : "#cfcabd";
+      ctx.fill();
+    }
+    ctx.fillStyle = dark ? "rgba(255,255,255,0.55)" : INK_MUTE;
+    ctx.font = "600 22px " + FONT;
+    setSpacing(ctx, 4);
+    ctx.textAlign = "center";
+    ctx.fillText("READING BRAIN · 중고등특목2관", 540, 1046);
+    setSpacing(ctx, 0);
+    ctx.textAlign = "left";
+  }
+
+  /* 라벨 칩 */
+  function labelChip(ctx, text, x, y, color) {
+    ctx.font = "700 28px " + FONT;
+    const w = ctx.measureText(text).width + 44;
+    ctx.fillStyle = color;
+    roundRect(ctx, x, y - 34, w, 48, 24);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(text, x + 22, y);
+    return w;
+  }
+
+  async function generateCardNews() {
+    const r = state.result;
+    if (!r) return [];
+    const logo = await logoImage();
+    const cards = [];
+    const maskedName = r.student.name.length > 1 ? r.student.name[0] + "ㅇ".repeat(r.student.name.length - 1) : r.student.name;
+    const dateStr = new Date(r.date).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+
+    /* ================= 1. 표지 ================= */
+    {
+      const [c, ctx] = newCard();
+      // 네이비 그라운드 + 은은한 대형 링 장식
+      ctx.fillStyle = BRAND_NAVY;
+      ctx.fillRect(0, 0, 1080, 1080);
+      ctx.strokeStyle = "rgba(255,255,255,0.06)";
+      ctx.lineWidth = 90;
+      ctx.beginPath(); ctx.arc(1020, 80, 320, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(40, 1040, 260, 0, Math.PI * 2); ctx.stroke();
+
+      // 로고 메달리온 (이중 링)
+      ctx.beginPath(); ctx.arc(540, 360, 218, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff"; ctx.fill();
+      ctx.beginPath(); ctx.arc(540, 360, 244, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 3; ctx.stroke();
+      if (logo) ctx.drawImage(logo, 362, 172, 356, 360);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.font = "700 26px " + FONT;
+      setSpacing(ctx, 8);
+      ctx.fillText("READING BRAIN LEARNING REPORT", 540, 682);
+      setSpacing(ctx, 0);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 88px " + FONT;
+      ctx.fillText("오늘의 학습 리포트", 540, 786);
+
+      // 버건디 포인트 라인
+      ctx.fillStyle = BRAND_BURGUNDY;
+      ctx.fillRect(508, 822, 64, 6);
+
+      ctx.font = "700 42px " + FONT;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(r.activityName, 540, 894);
+      ctx.font = "500 32px " + FONT;
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      ctx.fillText(`${maskedName} 학생 · ${r.student.grade} · ${dateStr}`, 540, 946);
+
+      cardFooter(ctx, 1, 3, true);
+      cards.push(c);
+    }
+
+    /* ================= 2. 성취도 ================= */
+    {
+      const [c, ctx] = newCard();
+      ctx.fillStyle = PAPER;
+      ctx.fillRect(0, 0, 1080, 1080);
+      cardHeader(ctx, "Achievement Report", "성취도 분석");
+
+      // 도넛 게이지
+      const dx = 290, dy = 520, dr = 158;
+      ctx.lineWidth = 36;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = TRACK;
+      ctx.beginPath(); ctx.arc(dx, dy, dr, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = BRAND_NAVY;
+      ctx.beginPath();
+      ctx.arc(dx, dy, dr, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (r.total / 100));
+      ctx.stroke();
+      ctx.lineCap = "butt";
+      ctx.textAlign = "center";
+      ctx.fillStyle = BRAND_NAVY;
+      ctx.font = "800 118px " + FONT;
+      ctx.fillText(String(r.total), dx, dy + 24);
+      ctx.fillStyle = INK_MUTE;
+      ctx.font = "600 28px " + FONT;
+      ctx.fillText("종합 점수", dx, dy + 74);
+      // 등급 필
+      ctx.font = "800 34px " + FONT;
+      const gw = ctx.measureText(r.grade + " 등급").width + 60;
+      ctx.fillStyle = BRAND_BURGUNDY;
+      roundRect(ctx, dx - gw / 2, dy + 208, gw, 62, 31);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(r.grade + " 등급", dx, dy + 251);
+
+      // 영역별 바
+      ctx.textAlign = "left";
+      const bx = 560, bw = 430;
+      let y = 360;
+      r.axes.forEach((a) => {
+        ctx.fillStyle = INK;
+        ctx.font = "700 32px " + FONT;
+        ctx.fillText(a.axis, bx, y);
+        ctx.fillStyle = BRAND_NAVY;
+        ctx.font = "800 32px " + FONT;
+        ctx.textAlign = "right";
+        ctx.fillText(a.score, bx + bw, y);
+        ctx.textAlign = "left";
+        ctx.fillStyle = TRACK;
+        roundRect(ctx, bx, y + 18, bw, 20, 10);
+        ctx.fillStyle = BRAND_NAVY;
+        roundRect(ctx, bx, y + 18, Math.max(bw * a.score / 100, 20), 20, 10);
+        y += 106;
+      });
+
+      // 하단 지표 스트립
+      ctx.fillStyle = TINT;
+      roundRect(ctx, MARGIN, 856, 1080 - MARGIN * 2, 104, 16);
+      const stats = [
+        ["발화 시간", fmtDur(r.metrics.durationSec)],
+        ["총 단어", r.metrics.totalWords + "개"],
+        ["말 속도", Math.round(r.metrics.wpm) + "단어/분"],
+      ];
+      const cellW = (1080 - MARGIN * 2) / 3;
+      stats.forEach(([label, val], i) => {
+        const cxm = MARGIN + cellW * i + cellW / 2;
+        ctx.textAlign = "center";
+        ctx.fillStyle = INK_MUTE;
+        ctx.font = "600 24px " + FONT;
+        ctx.fillText(label, cxm, 898);
+        ctx.fillStyle = BRAND_NAVY;
+        ctx.font = "800 34px " + FONT;
+        ctx.fillText(val, cxm, 942);
+        if (i) {
+          ctx.strokeStyle = "#d9d4c8"; ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(MARGIN + cellW * i, 880);
+          ctx.lineTo(MARGIN + cellW * i, 936);
+          ctx.stroke();
+        }
+      });
+      ctx.textAlign = "left";
+
+      cardFooter(ctx, 2, 3, false);
+      cards.push(c);
+    }
+
+    /* ================= 3. 선생님 한마디 ================= */
+    {
+      const [c, ctx] = newCard();
+      ctx.fillStyle = PAPER;
+      ctx.fillRect(0, 0, 1080, 1080);
+      cardHeader(ctx, "Teacher's Note", "선생님 한마디");
+
+      let y = 340;
+      const teacher = $("#teacherComment").value.trim();
+      const quote = teacher || state.aiFeedbackText || r.strengths[0] || "";
+      if (quote) {
+        // 인용 블록: 좌측 버건디 룰 + 큰 따옴표
+        ctx.fillStyle = BRAND_BURGUNDY;
+        ctx.fillRect(MARGIN, y - 44, 6, 250);
+        ctx.font = "800 120px Georgia, serif";
+        ctx.fillStyle = "rgba(142,31,36,0.25)";
+        ctx.fillText("“", MARGIN + 34, y + 26);
+        ctx.fillStyle = INK;
+        ctx.font = "500 36px " + FONT;
+        y = wrapText(ctx, quote, MARGIN + 110, y, 1080 - MARGIN * 2 - 130, 58, 5);
+        y += 56;
+      }
+
+      // 잘한 점
+      labelChip(ctx, "오늘 잘한 점", MARGIN, y, BRAND_NAVY);
+      y += 56;
+      ctx.font = "400 32px " + FONT;
+      for (const s of r.strengths.slice(0, 2)) {
+        ctx.fillStyle = BRAND_NAVY;
+        ctx.fillRect(MARGIN + 6, y - 22, 12, 12);
+        ctx.fillStyle = INK;
+        y = wrapText(ctx, s, MARGIN + 40, y, 1080 - MARGIN * 2 - 40, 46, 2) + 14;
+      }
+      y += 34;
+      // 보완할 점
+      labelChip(ctx, "함께 보완할 점", MARGIN, y, BRAND_BURGUNDY);
+      y += 56;
+      ctx.font = "400 32px " + FONT;
+      for (const s of r.improvements.slice(0, 2)) {
+        if (y > 930) break;
+        ctx.fillStyle = BRAND_BURGUNDY;
+        ctx.fillRect(MARGIN + 6, y - 22, 12, 12);
+        ctx.fillStyle = INK;
+        y = wrapText(ctx, s, MARGIN + 40, y, 1080 - MARGIN * 2 - 40, 46, 2) + 14;
+      }
+
+      cardFooter(ctx, 3, 3, false);
+      cards.push(c);
+    }
+    return cards;
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  let cardCanvases = [];
+  $("#btnCardNews").addEventListener("click", async () => {
+    const btn = $("#btnCardNews");
+    btn.disabled = true;
+    btn.textContent = "생성 중...";
+    try {
+      cardCanvases = await generateCardNews();
+      const wrap = $("#cardNewsWrap");
+      wrap.innerHTML = "";
+      cardCanvases.forEach((c) => {
+        c.className = "cardnews-canvas";
+        wrap.appendChild(c);
+      });
+      wrap.hidden = false;
+      $("#cardNewsActions").hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🖼️ 카드뉴스 생성";
+    }
+  });
+
+  $("#btnDownloadCards").addEventListener("click", () => {
+    const name = state.result ? state.result.student.name : "리포트";
+    cardCanvases.forEach((c, i) => {
+      const a = document.createElement("a");
+      a.href = c.toDataURL("image/png");
+      a.download = `리딩브레인_카드뉴스_${name}_${i + 1}.png`;
+      a.click();
+    });
+  });
+
+  /* ================= 설정 ================= */
+  $("#apiKey").value = localStorage.getItem(APIKEY_KEY) || "";
+  $("#kakaoKey").value = localStorage.getItem(KAKAO_KEY) || "";
+  $("#kakaoChannel").value = localStorage.getItem(KAKAO_CHANNEL) || "_KnBMb";
+  $("#channelSamples").value = localStorage.getItem(SAMPLES_KEY) || "";
+
+  $("#btnSaveKakao").addEventListener("click", () => {
+    localStorage.setItem(KAKAO_KEY, $("#kakaoKey").value.trim());
+    localStorage.setItem(KAKAO_CHANNEL, $("#kakaoChannel").value.trim() || "_KnBMb");
+    alert("카카오톡 연결 정보가 저장되었습니다.");
+  });
+  $("#btnSaveSamples").addEventListener("click", () => {
+    localStorage.setItem(SAMPLES_KEY, $("#channelSamples").value.trim());
+    alert("채널 어투 샘플이 저장되었습니다. 이제 소식글을 이 어투로 작성합니다.");
+  });
+  $("#btnSaveKey").addEventListener("click", () => {
+    const v = $("#apiKey").value.trim();
+    if (!v) { alert("API 키를 입력해 주세요."); return; }
+    localStorage.setItem(APIKEY_KEY, v);
+    alert("API 키가 이 브라우저에 저장되었습니다.");
+  });
+  $("#btnDeleteKey").addEventListener("click", () => {
+    localStorage.removeItem(APIKEY_KEY);
+    $("#apiKey").value = "";
+    alert("API 키가 삭제되었습니다.");
+  });
+
+  $("#btnExportData").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(loadRecords(), null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `리딩브레인_기록_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  $("#btnClearData").addEventListener("click", () => {
+    if (!confirm("모든 학습 기록을 삭제할까요? 되돌릴 수 없습니다.")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    renderHistory();
+    alert("모든 기록이 삭제되었습니다.");
+  });
+
+  /* ================= 유틸 ================= */
+  function fmtDur(sec) {
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return m ? `${m}분 ${s}초` : `${s}초`;
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+    );
+  }
+})();
+</script>
+</body>
+</html>
