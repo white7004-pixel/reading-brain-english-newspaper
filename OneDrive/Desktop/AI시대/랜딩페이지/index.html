@@ -1,0 +1,3494 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>리딩브레인 영어학원 | 원서와 입시영어가 만나는 곳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Reading Brain — classic academy brand system */
+
+:root {
+  --brand-navy:  #0C354D;
+  --brand-burgundy: #8B1E24;
+  --brand-ivory: #F6F2E9;
+  --brand-gold:  #B89A62;
+  --brand-ink:   #18242D;
+  --maroon:      var(--brand-burgundy);
+  --gold:        var(--brand-gold);
+  --pink:        var(--brand-burgundy);
+  --pink-hover:  #70171C;
+  --pink-dim:    rgba(139,30,36,0.09);
+  --pink-light:  #F8ECEB;
+  --navy:        var(--brand-navy);
+  --navy-2:      #164D69;
+  --navy-dim:    rgba(12,53,77,0.07);
+  --dark:        var(--brand-navy);
+  --dark-2:      #164D69;
+  --text:        var(--brand-ink);
+  --text-muted:  #5D6870;
+  --white:       #FFFFFF;
+  --off-white:   var(--brand-ivory);
+  --gray-50:     #F2EEE6;
+  --gray-100:    #E8E1D6;
+  --gray-200:    #D5CCBE;
+  --gray-400:    #8B9296;
+  --gray-500:    #69737A;
+  --radius:      6px;
+  --radius-lg:   12px;
+  --radius-xl:   20px;
+  --transition:  0.22s ease;
+  --sp-xl:       88px;
+  --sp-lg:       64px;
+  --sp-header:   48px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; scroll-padding-top: 76px; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* ── Utility ── */
+.container { max-width: 1200px; margin: 0 auto; width: 100%; }
+.text-center { text-align: center; margin-bottom: 56px; }
+.section-title {
+  font-size: clamp(26px, 3.8vw, 50px);
+  font-weight: 900;
+  color: var(--dark);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+.section-title em { font-style: normal; color: var(--pink); }
+.section-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ── Section label chip ── */
+.section-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  background: var(--pink-dim);
+  color: var(--pink);
+  border: 1px solid rgba(255,77,141,0.25);
+}
+
+/* ── Buttons ── */
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--pink);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 900;
+  padding: 16px 36px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  letter-spacing: -0.02em;
+}
+.btn-gold:hover { background: var(--pink-hover); transform: translateY(-2px); }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 15px 32px;
+  border-radius: var(--radius);
+  border: 2px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+  letter-spacing: -0.02em;
+}
+.btn-outline:hover { border-color: var(--pink); color: var(--pink); }
+
+/* ── NAV ── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-200);
+  height: 68px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  gap: 40px;
+  transition: box-shadow var(--transition);
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.nav-logo img {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.nav-logo-text {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--dark);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.nav-logo-text small {
+  display: block;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--pink);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+  list-style: none;
+  overflow: hidden;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color var(--transition);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.nav-links a:hover { color: var(--dark); }
+.nav-links a.active { color: var(--pink); font-weight: 700; }
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  background: var(--pink);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 15px;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: background var(--transition), transform var(--transition);
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
+}
+.nav-cta:hover { background: var(--pink-hover); transform: translateY(-1px); }
+
+.nav-mobile {
+  display: none;
+  background: none;
+  border: 1.5px solid var(--gray-200);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius);
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+.nav-mobile:hover { border-color: var(--pink); background: var(--pink-light); }
+.nav-mobile svg { display: block; stroke: var(--dark); transition: stroke var(--transition); }
+.nav-mobile:hover svg { stroke: var(--pink); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--dark);
+}
+
+.hero-video-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #111827;
+}
+
+.hero-video,
+.hero-video-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-video {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.hero-video-poster {
+  z-index: -1;
+  background: url("images/hero/hero-books-poster.jpg") center center / cover no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(12,53,77,0.96) 0%,
+    rgba(12,53,77,0.72) 53%,
+    rgba(12,53,77,0.22) 100%
+  );
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 40px 80px;
+  width: 100%;
+}
+
+.hero-offer {
+  display: inline-block;
+  background: var(--pink);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 2px;
+  margin-bottom: 28px;
+}
+
+.hero-title {
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  margin-bottom: 20px;
+}
+.hero-title em { font-style: normal; color: var(--pink); }
+
+.hero-subtitle {
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: 500;
+  color: rgba(255,255,255,0.80);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  max-width: 600px;
+}
+
+.hero-description {
+  max-width: 650px;
+  margin: 0 0 18px;
+  color: rgba(255,255,255,0.72);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.hero-tagline {
+  font-size: 14px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 36px;
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.hero-credentials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+.hero-cred {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.85);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 56px;
+}
+
+.hero-proof { display: flex; flex-wrap: wrap; gap: 36px; }
+.hero-proof-item { display: flex; flex-direction: column; gap: 4px; }
+.hero-proof-item strong {
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 900;
+  color: var(--pink);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.hero-proof-item span { font-size: 12px; color: rgba(255,255,255,0.50); font-weight: 500; }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.hero-scroll::after {
+  content: '';
+  display: block;
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.40), transparent);
+  animation: scrollPulse 1.8s ease infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* ── QUICK MENU ── */
+.quick-menu { background: var(--pink); padding: 0; }
+.quick-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+.quick-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--white);
+  border-right: 1px solid rgba(255,255,255,0.20);
+  text-align: center;
+  transition: background var(--transition);
+  cursor: pointer;
+  text-decoration: none;
+}
+.quick-item:last-child { border-right: none; }
+.quick-item:hover { background: rgba(255,255,255,0.15); }
+.quick-icon { font-size: 20px; line-height: 1; }
+
+/* ── CONVERSION ── */
+.conversion { background: var(--off-white); padding: 80px 40px; }
+.conversion-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.conversion-panel {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+}
+.conversion-panel h3 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--dark);
+  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+}
+.conversion-steps { list-style: none; display: flex; flex-direction: column; gap: 16px; counter-reset: step; }
+.conversion-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  counter-increment: step;
+}
+.conversion-step::before {
+  content: counter(step, decimal-leading-zero);
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: var(--pink-dim);
+  color: var(--pink);
+  font-size: 11px; font-weight: 900;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.conversion-note {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--gray-400);
+  line-height: 1.6;
+  border-top: 1px solid var(--gray-100);
+  padding-top: 16px;
+}
+
+/* ── ACADEMY STORY ── */
+.academy-story { background: var(--white); padding: 100px 40px; }
+.story-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.story-mark {
+  max-width: 520px;
+}
+.story-mark h2 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  color: var(--dark);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+}
+.story-mark h2 em { font-style: normal; color: var(--pink); }
+.story-mark p { font-size: 15px; color: var(--text-muted); line-height: 1.8; }
+.story-line { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 12px; }
+.story-line strong { color: var(--dark); font-weight: 700; }
+
+/* ── CURIOUS ── */
+.curious { background: var(--off-white); padding: 100px 40px; }
+.curious .section-header { text-align: center; margin-bottom: 56px; }
+.curious .section-header h2 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.2;
+}
+.curious .section-header p {
+  margin-top: 14px; font-size: 15px;
+  color: var(--text-muted); line-height: 1.7;
+}
+.curious-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.curious-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 36px 30px;
+  position: relative; overflow: hidden;
+  border: 1px solid var(--gray-200);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.curious-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--pink);
+}
+.curious-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255,77,141,0.10); border-color: var(--pink); }
+.curious-card h3 { font-size: 17px; font-weight: 900; color: var(--dark); margin-bottom: 10px; letter-spacing: -0.02em; line-height: 1.3; }
+.curious-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+.curious-card .card-num {
+  font-size: 48px; font-weight: 900; color: var(--pink); opacity: 0.08;
+  position: absolute; top: 16px; right: 20px; line-height: 1; letter-spacing: -0.04em;
+}
+
+/* ── WHY RB ── */
+.why-rb { background: var(--white); padding: 100px 40px; }
+.why-rb-header { max-width: 1200px; margin: 0 auto 56px; }
+.why-rb-header h2 {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15; margin-bottom: 16px;
+}
+.why-rb-header h2 em { font-style: normal; color: var(--pink); }
+.why-copy { font-size: 15px; color: var(--text-muted); line-height: 1.7; max-width: 600px; }
+
+.why-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.why-card {
+  background: var(--off-white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 30px 24px;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.why-card:hover { border-color: var(--pink); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255,77,141,0.08); }
+.why-card .why-num { font-size: 11px; font-weight: 700; color: var(--pink); letter-spacing: 0.1em; margin-bottom: 14px; }
+.why-card h3 { font-size: 16px; font-weight: 900; color: var(--dark); line-height: 1.3; margin-bottom: 10px; letter-spacing: -0.02em; }
+.why-card p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+/* ── DIRECTOR ── */
+.director { background: var(--off-white); padding: 100px 40px; }
+.director-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 400px 1fr; gap: 60px; align-items: center;
+}
+.director-photo { position: relative; }
+.director-photo-img {
+  width: 100%; aspect-ratio: 3/4;
+  object-fit: cover; border-radius: var(--radius-lg); display: block;
+}
+.director-photo::after {
+  content: '';
+  position: absolute; bottom: -12px; right: -12px;
+  width: 60%; height: 60%;
+  background: var(--pink); opacity: 0.20;
+  border-radius: var(--radius-lg); z-index: -1;
+}
+.director-role {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--pink); margin-bottom: 12px;
+}
+.director-content h2 {
+  font-size: clamp(26px, 3.5vw, 44px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 20px;
+}
+.director-content h2 em { font-style: normal; color: var(--pink); }
+.director-content p { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 12px; }
+.director-quote {
+  margin-top: 28px; padding: 20px 24px;
+  background: var(--white); border-left: 4px solid var(--pink);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  font-size: 15px; font-weight: 700; color: var(--dark); line-height: 1.6; font-style: italic;
+}
+
+/* ── PHILOSOPHY ── */
+.philosophy { background: var(--white); padding: 100px 40px; }
+.philosophy-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.philosophy-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.philosophy-header h2 em { font-style: normal; color: var(--pink); }
+.philosophy-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+
+.phil-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.phil-card {
+  background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 36px 28px; text-align: center;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.phil-card:hover { border-color: var(--pink); transform: translateY(-4px); box-shadow: 0 16px 36px rgba(255,77,141,0.08); }
+.phil-icon {
+  width: 60px; height: 60px; background: var(--pink-dim); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 20px;
+}
+.phil-card h3 { font-size: 17px; font-weight: 900; color: var(--dark); margin-bottom: 10px; letter-spacing: -0.02em; }
+.phil-card p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+/* ── PROGRAMS ── */
+.programs { background: var(--off-white); padding: 100px 40px; }
+.programs-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.programs-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.programs-header h2 em { font-style: normal; color: var(--pink); }
+.programs-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+
+.program-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.program-card {
+  position: relative;
+  background: var(--white); border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--gray-200);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  display: flex; flex-direction: column;
+}
+.program-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--pc-color, var(--pink));
+  z-index: 1;
+}
+.program-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,0.08); border-color: var(--pc-color, var(--pink)); }
+
+/* ── PROGRAM CARD COLOR VARIANTS ── */
+.pc-1 { --pc-color: #4A90D9; }
+.pc-2 { --pc-color: #FF4D8D; }
+.pc-3 { --pc-color: #2EBD8A; }
+.pc-4 { --pc-color: #7C5CE8; }
+.pc-5 { --pc-color: #F97B3D; }
+.pc-6 { --pc-color: #27AE60; }
+.pc-7 { --pc-color: #C459A0; }
+.pc-8 { --pc-color: #E8A020; }
+
+.pc-1 .program-header { background: #EEF4FB; }
+.pc-2 .program-header { background: #FFF0F5; }
+.pc-3 .program-header { background: #E8F6F2; }
+.pc-4 .program-header { background: #F0EDFB; }
+.pc-5 .program-header { background: #FEF3EC; }
+.pc-6 .program-header { background: #E9F5EE; }
+.pc-7 .program-header { background: #FAEBF5; }
+.pc-8 .program-header { background: #FDF5E4; }
+
+.pc-1 .program-badge { background: rgba(74,144,217,0.12); color: #4A90D9; }
+.pc-2 .program-badge { background: rgba(255,77,141,0.12); color: #FF4D8D; }
+.pc-3 .program-badge { background: rgba(46,189,138,0.12); color: #2EBD8A; }
+.pc-4 .program-badge { background: rgba(124,92,232,0.12); color: #7C5CE8; }
+.pc-5 .program-badge { background: rgba(249,123,61,0.12); color: #F97B3D; }
+.pc-6 .program-badge { background: rgba(39,174,96,0.12); color: #27AE60; }
+.pc-7 .program-badge { background: rgba(196,89,160,0.12); color: #C459A0; }
+.pc-8 .program-badge { background: rgba(232,160,32,0.12); color: #E8A020; }
+
+.program-header { background: var(--gray-100); padding: 24px; }
+.program-badge {
+  display: inline-block; background: var(--pink-dim); color: var(--pink);
+  font-size: 10px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 2px; margin-bottom: 10px;
+}
+.program-header h3 {
+  font-size: 20px; font-weight: 900; color: var(--dark);
+  letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 8px;
+}
+.program-target { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.program-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.program-details { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.program-details h4 {
+  font-size: 13px; font-weight: 700; color: var(--gray-400);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+}
+.program-detail-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.program-detail-list li {
+  font-size: 13px; color: var(--text-muted); line-height: 1.5;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.program-detail-list li::before { content: '▪'; color: var(--pink); flex-shrink: 0; font-size: 10px; margin-top: 3px; }
+
+.track-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.track { background: var(--off-white); border-radius: var(--radius); padding: 12px; }
+.track-head { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.track-day { font-size: 10px; color: var(--pink); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+.track-list { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+.track-list li { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+.program-tag {
+  display: inline-block; background: var(--gray-100); color: var(--text-muted);
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; margin: 2px;
+}
+
+/* ── CURRICULUM INTRO ── */
+.curriculum-intro { background: var(--pink); padding: 60px 40px; text-align: center; }
+.curriculum-intro h2 {
+  font-size: clamp(24px, 3.5vw, 40px); font-weight: 900; color: var(--white);
+  letter-spacing: -0.04em; margin-bottom: 14px;
+}
+.curriculum-intro h2 em { font-style: normal; color: rgba(255,255,255,0.80); text-decoration: underline; text-underline-offset: 4px; }
+.curriculum-note { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 600px; margin: 0 auto 28px; }
+.curriculum-brochure { margin-top: 10px; }
+.curriculum-brochure a {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--white); color: var(--pink);
+  font-size: 14px; font-weight: 800; padding: 13px 30px;
+  border-radius: 24px; transition: opacity var(--transition), transform var(--transition); text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.curriculum-brochure a:hover { opacity: 0.92; transform: translateY(-2px); }
+
+/* ── CURRICULUM FLOW ── */
+.curriculum { background: var(--white); padding: 100px 40px; }
+.curriculum-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.curriculum-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.curriculum-header h2 em { font-style: normal; color: var(--pink); }
+.curriculum-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+
+.curr-flow { display: flex; flex-direction: column; }
+.curr-step {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 32px;
+  align-items: center;
+  padding: 28px 20px;
+  border-bottom: 1px solid var(--gray-100);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+.curr-step:hover { background: var(--pink-light); }
+.curr-step:last-child { border-bottom: none; }
+.curr-num {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: var(--pink-dim);
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--pink);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.curr-num::before {
+  content: 'STEP';
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--pink);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.curr-step h5 {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dark);
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  margin: 0;
+}
+.curr-step p {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 4px 0 0;
+}
+.curr-more {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pink);
+  white-space: nowrap;
+  padding: 8px 18px;
+  border: 1.5px solid var(--pink);
+  border-radius: 20px;
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+.curr-step:hover .curr-more { background: var(--pink); color: var(--white); }
+
+/* ── CURRICULUM TRACKS ── */
+.curriculum-tracks { background: var(--off-white); padding: 80px 40px; }
+.curriculum-tracks-header { max-width: 1200px; margin: 0 auto 48px; text-align: center; }
+.curriculum-tracks-header h2 {
+  font-size: clamp(24px, 3.5vw, 44px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.2;
+}
+.tracks-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.track-card {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 28px 22px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.track-card:hover { border-color: var(--pink); box-shadow: 0 8px 24px rgba(255,77,141,0.08); }
+.track-title { font-size: 16px; font-weight: 900; color: var(--dark); margin-bottom: 10px; letter-spacing: -0.02em; }
+.track-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* ── HEIDI ── */
+.heidi { background: var(--white); padding: 100px 40px; }
+.heidi-intro {
+  max-width: 1200px; margin: 0 auto 56px;
+  display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center;
+}
+.heidi-intro h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.heidi-intro h2 em { font-style: normal; color: var(--pink); }
+.heidi-intro p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+.heidi-badge {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 120px; height: 120px; background: var(--pink); color: var(--white);
+  border-radius: 50%; font-size: 11px; font-weight: 900; text-align: center; line-height: 1.3; flex-shrink: 0;
+}
+.heidi-badge strong { font-size: 28px; display: block; letter-spacing: -0.04em; }
+.heidi-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--pink-dim); color: var(--pink);
+  font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; margin-bottom: 12px;
+}
+.heidi-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.heidi-card {
+  background: var(--off-white); border-radius: var(--radius-lg); padding: 28px 22px;
+  border: 1px solid var(--gray-200);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.heidi-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255,77,141,0.08); border-color: var(--pink); }
+.heidi-step { font-size: 10px; font-weight: 700; color: var(--pink); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+.heidi-icon { font-size: 28px; margin-bottom: 14px; line-height: 1; }
+.heidi-card h3 { font-size: 15px; font-weight: 900; color: var(--dark); margin-bottom: 8px; letter-spacing: -0.02em; line-height: 1.3; }
+.heidi-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.heidi-card-bonus {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-hover) 100%);
+  color: var(--white); border-color: transparent;
+}
+.heidi-card-bonus .heidi-step { color: rgba(255,255,255,0.70); }
+.heidi-card-bonus h3 { color: var(--white); }
+.heidi-card-bonus p { color: rgba(255,255,255,0.80); }
+
+/* ── DIAGNOSTIC ── */
+.diagnostic { background: var(--off-white); padding: 100px 40px; }
+.diagnostic-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.diagnostic-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.diagnostic-header h2 em { font-style: normal; color: var(--pink); }
+.diagnostic-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+.diag-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.diag-card {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 32px 24px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.diag-card:hover { border-color: var(--pink); box-shadow: 0 12px 32px rgba(255,77,141,0.08); }
+.diag-icon {
+  width: 52px; height: 52px; background: var(--pink-dim); border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px;
+}
+.diag-card h3 { font-size: 17px; font-weight: 900; color: var(--dark); margin-bottom: 8px; letter-spacing: -0.02em; }
+.diag-sub { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+.diag-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.diag-list li { font-size: 13px; color: var(--text-muted); line-height: 1.5; display: flex; gap: 8px; }
+.diag-list li::before { content: '→'; color: var(--pink); flex-shrink: 0; }
+.diag-stat {
+  display: flex; align-items: baseline; gap: 6px;
+  margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-100);
+}
+.diag-stat strong { font-size: 32px; font-weight: 900; color: var(--pink); letter-spacing: -0.04em; line-height: 1; }
+.diag-stat span { font-size: 12px; color: var(--gray-400); }
+.diag-cta { max-width: 1200px; margin: 48px auto 0; text-align: center; }
+
+/* ── SCHEDULE ── */
+.schedule { background: var(--white); padding: 100px 40px; }
+.schedule-header { max-width: 1200px; margin: 0 auto 48px; text-align: center; }
+.schedule-header h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.2;
+}
+.schedule-header h2 em { font-style: normal; color: var(--pink); }
+.schedule-wrap { max-width: 1200px; margin: 0 auto; overflow-x: auto; }
+.schedule-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.schedule-table th {
+  background: var(--dark); color: var(--white);
+  font-weight: 700; padding: 14px 18px; text-align: center; font-size: 12px; letter-spacing: 0.04em;
+}
+.schedule-table th:first-child { background: var(--pink); color: var(--white); }
+.schedule-table td {
+  border: 1px solid var(--gray-100); padding: 12px 18px;
+  text-align: center; color: var(--text-muted); vertical-align: middle; line-height: 1.5;
+}
+.schedule-table tr:hover td { background: var(--off-white); }
+.time-highlight { background: var(--pink-dim) !important; color: var(--dark) !important; font-weight: 700; }
+
+/* ── ACHIEVEMENTS ── */
+.achievements { background: var(--off-white); padding: 100px 40px; }
+.achievements-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.achievements-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.achievements-header h2 em { font-style: normal; color: var(--pink); }
+.achievements-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+
+.ach-grid {
+  max-width: 1200px; margin: 0 auto 64px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 2px; background: var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;
+}
+.ach-item {
+  background: var(--white); padding: 36px 24px; text-align: center;
+  transition: background var(--transition);
+}
+.ach-item:hover { background: var(--pink-light); }
+.ach-value {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 900; color: var(--pink);
+  letter-spacing: -0.05em; line-height: 1; margin-bottom: 8px;
+}
+.ach-label { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+
+.proof-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.proof-card {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.proof-card:hover { border-color: var(--pink); box-shadow: 0 12px 32px rgba(255,77,141,0.08); }
+.proof-head {
+  background: var(--off-white); padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.proof-head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.proof-head strong { font-size: 14px; font-weight: 700; color: var(--dark); }
+.proof-head span { font-size: 11px; color: var(--pink); font-weight: 600; }
+.proof-body { padding: 16px 20px; font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.proof-row {
+  display: flex; gap: 8px; align-items: center; padding: 8px 20px;
+  border-top: 1px solid var(--gray-100); font-size: 12px; color: var(--gray-400);
+}
+
+/* ── HALL ── */
+.hall { background: var(--white); padding: 100px 40px; }
+.hall-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.hall-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.hall-header h2 em { font-style: normal; color: var(--pink); }
+.hall-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); }
+.hall-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.hall-card {
+  background: var(--off-white); border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--gray-200);
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.hall-card:hover { transform: translateY(-4px); border-color: var(--pink); box-shadow: 0 16px 40px rgba(255,77,141,0.08); }
+.hall-img { width: 100%; height: auto; display: block; }
+.hall-body { padding: 18px; }
+.hall-body h3 { font-size: 15px; font-weight: 900; color: var(--dark); margin-bottom: 6px; letter-spacing: -0.02em; }
+.hall-body p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.hall-tag {
+  display: inline-block; margin-top: 8px; background: var(--pink-dim); color: var(--pink);
+  font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 2px; letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* ── AR CASES ── */
+.ar-cases { background: var(--off-white); padding: 100px 40px; }
+.ar-cases-header { max-width: 1200px; margin: 0 auto 48px; text-align: center; }
+.ar-cases-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.ar-cases-header h2 em { font-style: normal; color: var(--pink); }
+.ar-cases-sub { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+
+.ar-result-grid {
+  max-width: 1200px; margin: 0 auto 48px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.ar-result {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: 24px 20px; text-align: center;
+  transition: border-color var(--transition);
+}
+.ar-result:hover { border-color: var(--pink); }
+.ar-result strong { display: block; font-size: 36px; font-weight: 900; color: var(--pink); letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+.ar-result span { font-size: 12px; color: var(--text-muted); }
+
+.ar-case-grid {
+  max-width: 1200px; margin: 0 auto 48px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.ar-case {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: 24px 22px; display: flex; align-items: center; gap: 20px;
+  transition: border-color var(--transition);
+}
+.ar-case:hover { border-color: var(--pink); }
+.ar-case-name { flex: 1; font-size: 14px; font-weight: 700; color: var(--dark); line-height: 1.4; }
+.ar-case-name span { display: block; font-size: 11px; font-weight: 400; color: var(--gray-400); margin-top: 3px; }
+.ar-case-arrow { font-size: 20px; color: var(--gray-200); }
+.ar-case-up { text-align: right; font-size: 22px; font-weight: 900; color: var(--pink); letter-spacing: -0.03em; line-height: 1; }
+.ar-case-up span { display: block; font-size: 10px; font-weight: 500; color: var(--gray-400); letter-spacing: 0; }
+
+.ar-stats-bar {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.ar-stat-item {
+  text-align: center; padding: 28px;
+  background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--gray-200);
+  transition: border-color var(--transition);
+}
+.ar-stat-item:hover { border-color: var(--pink); }
+.ar-stat-item strong { display: block; font-size: 40px; font-weight: 900; color: var(--pink); letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+.ar-stat-item span { font-size: 13px; color: var(--text-muted); }
+.ar-stat-tip { margin-top: 8px; font-size: 11px; color: var(--gray-400); }
+
+/* ── GALLERY ── */
+.gallery { background: var(--white); padding: 100px 40px; }
+.gallery-header { max-width: 1200px; margin: 0 auto 48px; text-align: center; }
+.gallery-header h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--dark); letter-spacing: -0.04em; line-height: 1.2;
+}
+.gallery-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.gallery-item { position: relative; overflow: hidden; border-radius: var(--radius); aspect-ratio: 1; cursor: pointer; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.gallery-item:hover img { transform: scale(1.06); }
+.gallery-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(12,14,56,0.85), transparent);
+  color: var(--white); font-size: 12px; font-weight: 600; padding: 24px 12px 10px;
+  transform: translateY(100%); transition: transform var(--transition);
+}
+.gallery-item:hover .gallery-caption { transform: translateY(0); }
+
+/* ── EVENTS ── */
+.events { background: var(--off-white); padding: 100px 40px; }
+.events-header { max-width: 1200px; margin: 0 auto 48px; text-align: center; }
+.events-header h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--dark); letter-spacing: -0.04em; line-height: 1.2;
+}
+.events-header h2 em { font-style: normal; color: var(--pink); }
+.event-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.event-card {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.event-card:hover { transform: translateY(-4px); border-color: var(--pink); box-shadow: 0 16px 40px rgba(255,77,141,0.08); }
+.event-thumb { width: 100%; height: 180px; object-fit: cover; display: block; }
+.event-body { padding: 20px; }
+.event-date { font-size: 10px; font-weight: 700; color: var(--pink); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+.event-body h3 { font-size: 16px; font-weight: 900; color: var(--dark); margin-bottom: 8px; letter-spacing: -0.02em; line-height: 1.3; }
+.event-body p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* ── TESTIMONIALS ── */
+.testimonials { background: var(--white); padding: 100px 40px; }
+.testimonials-header { max-width: 1200px; margin: 0 auto 56px; text-align: center; }
+.testimonials-header h2 {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15;
+}
+.testimonials-header h2 em { font-style: normal; color: var(--pink); }
+.testimonials-header p { margin-top: 14px; font-size: 15px; color: var(--text-muted); line-height: 1.7; }
+.test-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.test-card {
+  background: var(--off-white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 28px 24px;
+  position: relative; transition: border-color var(--transition), box-shadow var(--transition);
+}
+.test-card:hover { border-color: var(--pink); box-shadow: 0 12px 32px rgba(255,77,141,0.08); }
+.test-card::before {
+  content: '"'; position: absolute; top: 16px; right: 20px;
+  font-size: 64px; color: var(--pink); opacity: 0.12; font-family: serif; line-height: 1;
+}
+.test-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; margin-bottom: 14px; border: 2px solid var(--pink); }
+.test-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+.test-author { font-size: 13px; font-weight: 700; color: var(--dark); }
+.test-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+/* ── FAQ ── */
+.faq { background: var(--off-white); padding: 100px 40px; }
+.faq-header { max-width: 800px; margin: 0 auto 48px; text-align: center; }
+.faq-header h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--dark); letter-spacing: -0.04em; line-height: 1.2;
+}
+.faq-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 2px; }
+.faq-item { border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; transition: border-color var(--transition); background: var(--white); }
+.faq-item:hover { border-color: var(--pink); }
+.faq-q {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 20px 24px; font-size: 15px; font-weight: 700; color: var(--dark); text-align: left;
+  transition: color var(--transition);
+}
+.faq-q:hover { color: var(--pink); }
+.faq-q::after { content: '+'; font-size: 20px; font-weight: 300; flex-shrink: 0; color: var(--pink); transition: transform var(--transition); }
+.faq-item.open .faq-q::after { transform: rotate(45deg); }
+.faq-a { display: none; padding: 0 24px 20px; font-size: 14px; color: var(--text-muted); line-height: 1.7; border-top: 1px solid var(--gray-100); }
+.faq-item.open .faq-a { display: block; }
+
+/* ── ROADMAP PANEL ── */
+.roadmap-panel-section { background: var(--white); padding: 100px 40px; }
+.roadmap-panel-wrap {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.roadmap-panel-kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--pink); margin-bottom: 14px; }
+.roadmap-panel-title {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--dark);
+  letter-spacing: -0.04em; line-height: 1.15; margin-bottom: 16px;
+}
+.roadmap-panel-title em { font-style: normal; color: var(--pink); }
+.roadmap-panel-desc { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 32px; }
+.roadmap-panel-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+.roadmap-panel-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 14px; color: var(--text-muted); line-height: 1.6;
+}
+.rp-num {
+  flex-shrink: 0; width: 26px; height: 26px; background: var(--pink); color: var(--white);
+  font-size: 11px; font-weight: 900; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.roadmap-panel-btns { display: flex; flex-wrap: wrap; gap: 14px; }
+.roadmap-panel-img { width: 100%; border-radius: var(--radius-lg); display: block; box-shadow: 0 24px 60px rgba(0,0,0,0.10); }
+
+/* ── CTA SECTION ── */
+.cta-section {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 50%, var(--pink-hover) 100%);
+  padding: 60px 40px; text-align: center;
+}
+.cta-section h2 {
+  font-size: clamp(32px, 5vw, 64px); font-weight: 900; color: var(--white);
+  letter-spacing: -0.05em; line-height: 1.1; margin-bottom: 20px;
+}
+.cta-section h2 em { font-style: normal; color: rgba(255,255,255,0.75); }
+.cta-section p { font-size: 16px; color: rgba(255,255,255,0.80); line-height: 1.7; max-width: 560px; margin: 0 auto 40px; }
+.cta-buttons { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 900; padding: 16px 36px;
+  border-radius: var(--radius); border: none; cursor: pointer;
+  transition: all var(--transition); text-decoration: none;
+}
+.cta-kakao { background: #FFB6C1; color: #7D1E46; }
+.cta-kakao:hover { background: #ff9ab0; transform: translateY(-2px); }
+.cta-phone { background: var(--white); color: var(--pink); }
+.cta-phone:hover { background: var(--off-white); transform: translateY(-2px); }
+.cta-insta { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.50); }
+.cta-insta:hover { border-color: var(--white); background: rgba(255,255,255,0.10); }
+
+/* ── LOCATION ── */
+.location { background: var(--off-white); padding: 100px 40px; }
+.location-header { max-width: 1200px; margin: 0 auto 48px; text-align: center; }
+.location-header h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--dark); letter-spacing: -0.04em; line-height: 1.2;
+}
+.location-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 420px; gap: 40px; align-items: start; }
+.location-map { border-radius: var(--radius-lg); overflow: hidden; width: 100%; min-height: 360px; background: var(--gray-200); }
+.location-map iframe { width: 100%; height: 360px; border: none; display: block; }
+.location-info { display: flex; flex-direction: column; gap: 16px; }
+.loc-item {
+  display: flex; align-items: flex-start; gap: 16px; padding: 20px;
+  background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--gray-200);
+}
+.loc-icon {
+  width: 40px; height: 40px; background: var(--pink-dim); border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.loc-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.loc-text span { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* ── FOOTER ── */
+.footer { background: var(--dark); border-top: 1px solid rgba(255,255,255,0.07); padding: 60px 40px 32px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; }
+.footer-brand-area { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 40px; }
+.footer-brand-area img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.footer-brand-area div,
+.footer-brand-area p { font-size: 13px; color: var(--white); line-height: 1.7; }
+.footer-brand-area strong { display: block; font-size: 15px; font-weight: 900; color: var(--white); margin-bottom: 6px; letter-spacing: -0.02em; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 32px; list-style: none; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.75); transition: color var(--transition); }
+.footer-links a:hover { color: var(--pink); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.07); padding-top: 24px;
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;
+  font-size: 12px; color: var(--white);
+}
+
+/* ── CHATBOT ── */
+.chatbot { position: fixed; bottom: 24px; right: 24px; z-index: 900; }
+.chatbot-toggle {
+  width: 56px; height: 56px; background: var(--pink); border: none; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px;
+  box-shadow: 0 8px 24px rgba(255,77,141,0.35);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.chatbot-toggle:hover { transform: scale(1.08); box-shadow: 0 12px 32px rgba(255,77,141,0.45); }
+.chatbot-notice {
+  position: absolute; bottom: 64px; right: 0;
+  background: var(--dark); color: var(--white);
+  font-size: 12px; font-weight: 600; padding: 10px 16px; border-radius: var(--radius);
+  white-space: nowrap; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.chatbot-notice::after {
+  content: ''; position: absolute; bottom: -6px; right: 20px;
+  width: 10px; height: 10px; background: var(--dark); transform: rotate(45deg); border-radius: 2px;
+}
+.chatbot-panel {
+  display: none; position: absolute; bottom: 68px; right: 0;
+  width: 320px; background: var(--white);
+  border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12); overflow: hidden;
+}
+.chatbot.open .chatbot-panel { display: flex; flex-direction: column; }
+.chatbot-header {
+  background: var(--pink); padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.chatbot-title { font-size: 14px; font-weight: 900; color: var(--white); letter-spacing: -0.02em; }
+.chatbot-close { background: none; border: none; font-size: 18px; cursor: pointer; color: rgba(255,255,255,0.80); line-height: 1; padding: 2px; }
+.chatbot-close:hover { color: var(--white); }
+.chatbot-messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 10px; max-height: 280px; background: var(--gray-50);
+}
+.chat-message { display: flex; gap: 8px; align-items: flex-start; }
+.chat-message.user { flex-direction: row-reverse; }
+.chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+.chat-message.bot .chat-bubble { background: var(--white); color: var(--dark); border: 1px solid var(--gray-200); }
+.chat-message.user .chat-bubble { background: var(--pink); color: var(--white); font-weight: 600; }
+.chat-quick { padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid var(--gray-100); }
+.chat-chip {
+  background: var(--white); color: var(--text-muted); font-size: 11px; font-weight: 600;
+  padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gray-200);
+  cursor: pointer; transition: border-color var(--transition), color var(--transition);
+}
+.chat-chip:hover { border-color: var(--pink); color: var(--pink); }
+.chatbot-form { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--gray-100); }
+.chatbot-form input {
+  flex: 1; background: var(--off-white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 8px 12px; font-size: 13px; color: var(--dark); outline: none;
+}
+.chatbot-form input::placeholder { color: var(--gray-400); }
+.chatbot-form input:focus { border-color: var(--pink); }
+.chatbot-form button {
+  background: var(--pink); border: none; border-radius: var(--radius);
+  padding: 8px 14px; font-size: 14px; cursor: pointer; color: var(--white);
+  font-weight: 900; transition: background var(--transition);
+}
+.chatbot-form button:hover { background: var(--pink-hover); }
+.chatbot-actions { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+.chatbot-kakao, .chatbot-phone {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 700; cursor: pointer; border: none; width: 100%; text-align: left;
+  transition: opacity var(--transition);
+}
+.chatbot-kakao { background: #FEE500; color: #3C1E1E; }
+.chatbot-phone { background: var(--pink); color: var(--white); }
+.chatbot-kakao:hover, .chatbot-phone:hover { opacity: 0.90; }
+
+/* ── EXIT POPUP ── */
+.exit-popup {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(23,23,42,0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.exit-popup.show {
+  display: flex;
+  animation: epFadeIn 0.3s ease both;
+}
+@keyframes epFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.exit-popup-box {
+  max-width: 520px; width: 100%;
+  border-radius: 18px; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.35);
+  animation: epSlideIn 0.42s cubic-bezier(0.34,1.56,0.64,1) both;
+  position: relative;
+}
+@keyframes epSlideIn {
+  from { transform: translateY(32px) scale(0.94); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ─ Top dark band ─ */
+.ep-top {
+  background: linear-gradient(140deg, #0C0E38 0%, #171B6A 100%);
+  padding: 38px 36px 30px;
+  color: var(--white);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ep-top::before {
+  content: '';
+  position: absolute; top: -70px; right: -50px;
+  width: 220px; height: 220px;
+  background: var(--pink); opacity: 0.13; border-radius: 50%;
+  pointer-events: none;
+}
+.ep-top::after {
+  content: '';
+  position: absolute; bottom: -50px; left: -40px;
+  width: 160px; height: 160px;
+  background: var(--pink); opacity: 0.07; border-radius: 50%;
+  pointer-events: none;
+}
+.ep-badge {
+  display: inline-block;
+  background: var(--pink);
+  color: var(--white);
+  font-size: 10px; font-weight: 800; letter-spacing: 0.2em;
+  text-transform: uppercase; padding: 5px 16px; border-radius: 20px;
+  margin-bottom: 18px; position: relative; z-index: 1;
+}
+.ep-top h3 {
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 900; line-height: 1.15; letter-spacing: -0.04em;
+  margin-bottom: 12px; position: relative; z-index: 1;
+}
+.ep-top h3 em { font-style: normal; color: var(--pink); }
+.ep-top p {
+  font-size: 13px; color: rgba(255,255,255,0.68);
+  line-height: 1.65; position: relative; z-index: 1;
+}
+
+/* ─ Stats bar ─ */
+.ep-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: #0f0f1e;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.ep-stat-item {
+  padding: 15px 12px; text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.ep-stat-item:last-child { border-right: none; }
+.ep-stat-item strong {
+  display: block; font-size: 22px; font-weight: 900;
+  color: var(--pink); letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px;
+}
+.ep-stat-item span { font-size: 10px; color: rgba(255,255,255,0.38); letter-spacing: 0.04em; }
+
+/* ─ White body ─ */
+.ep-body { background: var(--white); padding: 28px 36px 32px; }
+.ep-body > p {
+  font-size: 13.5px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px;
+}
+.ep-list {
+  list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 26px;
+}
+.ep-list li {
+  display: flex; align-items: flex-start; gap: 11px;
+  font-size: 14px; color: var(--text); line-height: 1.5;
+}
+.ep-list li::before {
+  content: '';
+  flex-shrink: 0; width: 22px; height: 22px;
+  background: var(--pink) url("data:image/svg+xml,%3Csvg viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 11l4 4 6-7' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat;
+  border-radius: 50%; margin-top: 1px;
+}
+.ep-list li strong { color: var(--dark); }
+
+.ep-cta-main {
+  display: block; width: 100%;
+  background: var(--pink); color: var(--white);
+  font-size: 15.5px; font-weight: 900; letter-spacing: -0.02em;
+  padding: 17px; border-radius: 10px; border: none;
+  text-align: center; text-decoration: none; cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  margin-bottom: 10px;
+}
+.ep-cta-main:hover { background: var(--pink-hover); transform: translateY(-2px); }
+
+.ep-cta-phone {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; background: none;
+  border: 1.5px solid var(--gray-200); color: var(--text-muted);
+  font-size: 13px; font-weight: 700;
+  padding: 13px; border-radius: 10px; cursor: pointer;
+  text-align: center; text-decoration: none;
+  transition: border-color var(--transition), color var(--transition);
+  margin-bottom: 6px;
+}
+.ep-cta-phone:hover { border-color: var(--pink); color: var(--pink); }
+
+.ep-skip {
+  display: block; width: 100%; text-align: center;
+  font-size: 11px; color: var(--gray-400); cursor: pointer;
+  background: none; border: none; padding: 8px;
+  transition: color var(--transition);
+}
+.ep-skip:hover { color: var(--text-muted); }
+
+/* ─ Close button (sits on top of ep-top) ─ */
+.exit-popup-close {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(255,255,255,0.15); border: none; color: var(--white);
+  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  font-size: 18px; line-height: 30px; text-align: center; z-index: 10;
+  transition: background var(--transition);
+}
+.exit-popup-close:hover { background: rgba(255,255,255,0.32); }
+
+
+/* ── ANIMATIONS ── */
+@keyframes heroFade {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-content > * { animation: heroFade 0.7s ease both; }
+.hero-offer      { animation-delay: 0.10s; }
+.hero-title      { animation-delay: 0.20s; }
+.hero-subtitle   { animation-delay: 0.30s; }
+.hero-tagline    { animation-delay: 0.35s; }
+.hero-credentials{ animation-delay: 0.40s; }
+.hero-buttons    { animation-delay: 0.45s; }
+.hero-proof      { animation-delay: 0.50s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.fade-up:nth-child(1) { transition-delay: 0s; }
+.fade-up:nth-child(2) { transition-delay: 0.1s; }
+.fade-up:nth-child(3) { transition-delay: 0.2s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .nav { padding: 0 24px; gap: 24px; }
+  .nav-links { display: none; }
+  .nav-mobile { display: flex; }
+  .hero-content { padding: 100px 24px 60px; }
+  .hero-proof { gap: 24px; }
+  .quick-grid { grid-template-columns: repeat(3, 1fr); }
+  .conversion-grid { grid-template-columns: 1fr; gap: 32px; }
+  .story-grid { grid-template-columns: 1fr; gap: 24px; }
+  .story-mark { max-width: none; }
+  .curious-grid { grid-template-columns: 1fr 1fr; }
+  .why-grid { grid-template-columns: 1fr 1fr; }
+  .director-grid { grid-template-columns: 1fr; }
+  .director-photo { max-width: 320px; }
+  .phil-grid { grid-template-columns: 1fr 1fr; }
+  .program-grid { grid-template-columns: 1fr 1fr; }
+  .heidi-grid { grid-template-columns: 1fr 1fr; }
+  .heidi-intro { grid-template-columns: 1fr; }
+  .diag-grid { grid-template-columns: 1fr 1fr; }
+  .ach-grid { grid-template-columns: repeat(2, 1fr); }
+  .proof-grid { grid-template-columns: 1fr 1fr; }
+  .hall-grid { grid-template-columns: repeat(2, 1fr); }
+  .ar-result-grid { grid-template-columns: repeat(2, 1fr); }
+  .ar-case-grid { grid-template-columns: 1fr 1fr; }
+  .ar-stats-bar { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+  .event-grid { grid-template-columns: 1fr 1fr; }
+  .test-grid { grid-template-columns: 1fr 1fr; }
+  .roadmap-panel-wrap { grid-template-columns: 1fr; }
+  .roadmap-panel-img { max-width: 480px; }
+  .location-grid { grid-template-columns: 1fr; }
+  .tracks-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .hero-video { object-position: 52% center; }
+  .hero-overlay {
+    background: linear-gradient(
+      100deg,
+      rgba(13,18,34,0.96) 0%,
+      rgba(13,18,34,0.78) 68%,
+      rgba(13,18,34,0.50) 100%
+    );
+  }
+  .nav { padding: 0 20px; }
+  .academy-story, .curious, .why-rb, .director, .philosophy, .programs,
+  .curriculum-intro, .curriculum, .curriculum-tracks, .heidi, .diagnostic,
+  .schedule, .achievements, .hall, .ar-cases, .gallery, .events,
+  .testimonials, .faq, .roadmap-panel-section, .cta-section, .location,
+  .footer, .conversion { padding-left: 20px; padding-right: 20px; }
+  .hero-content { padding-left: 20px; padding-right: 20px; }
+  .quick-grid { grid-template-columns: repeat(2, 1fr); }
+  .curious-grid, .why-grid, .phil-grid, .program-grid,
+  .heidi-grid, .diag-grid, .proof-grid, .event-grid, .test-grid { grid-template-columns: 1fr; }
+  .track-grid { grid-template-columns: 1fr; }
+  .ach-grid { grid-template-columns: 1fr 1fr; }
+  .hall-grid { grid-template-columns: 1fr 1fr; }
+  .ar-result-grid { grid-template-columns: 1fr 1fr; }
+  .ar-case-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .tracks-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .hero-buttons { flex-direction: column; align-items: flex-start; }
+  .hero-proof { gap: 20px; }
+  .hero-proof-item strong { font-size: 28px; }
+  .ach-grid { grid-template-columns: 1fr; }
+  .hall-grid { grid-template-columns: 1fr; }
+  .ar-result-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .tracks-grid { grid-template-columns: 1fr; }
+  .cta-buttons { flex-direction: column; align-items: center; }
+  .roadmap-panel-btns { flex-direction: column; }
+  .chatbot { bottom: 16px; right: 16px; }
+  .chatbot-panel { width: calc(100vw - 32px); right: -8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-video { display: none; }
+  .hero-video-poster { z-index: 0; }
+}
+
+/* ── Mobile Nav Dropdown ── */
+@media (max-width: 1024px) {
+  .nav { position: fixed; min-height: 68px; height: auto; align-items: flex-start; padding-top: 0; }
+  .nav > * { margin-top: 0; }
+  .nav-logo, .nav-cta, .nav-mobile {
+    height: 68px;
+    display: flex;
+    align-items: center;
+  }
+  .nav-links {
+    flex-direction: column !important;
+    position: absolute;
+    top: 68px; left: 0; right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.09);
+    padding: 8px 28px 20px;
+    gap: 0 !important;
+    z-index: 1001;
+    overflow: visible;
+    align-items: flex-start !important;
+  }
+  .nav-links a {
+    display: block;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    white-space: normal;
+  }
+  .nav-links a:last-child { border-bottom: none; }
+}
+
+/* ── curr-step mobile ── */
+@media (max-width: 768px) {
+  .curr-step {
+    grid-template-columns: 56px 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .curr-num { grid-row: 1 / 4; }
+  .curr-step h5 { grid-column: 2; grid-row: 1; }
+  .curr-step p  { grid-column: 2; grid-row: 2; }
+  .curr-more {
+    grid-column: 2; grid-row: 3;
+    margin-top: 10px;
+    justify-self: start;
+  }
+}
+
+
+/* ── Spacing normalization ── */
+/* Standardize all major content sections to --sp-xl */
+.conversion,
+.academy-story,
+.curious,
+.why-rb,
+.director,
+.philosophy,
+.programs,
+.curriculum,
+.heidi,
+.diagnostic,
+.schedule,
+.achievements,
+.hall,
+.ar-cases,
+.gallery,
+.events,
+.testimonials,
+.faq,
+.roadmap-panel-section,
+.location {
+  padding-top: var(--sp-xl);
+  padding-bottom: var(--sp-xl);
+}
+
+/* Accent bands: tighter */
+.curriculum-intro { padding-top: var(--sp-lg); padding-bottom: var(--sp-lg); }
+.curriculum-tracks { padding-top: var(--sp-lg); padding-bottom: var(--sp-lg); }
+
+/* Consistent section header → content gap */
+.text-center { margin-bottom: var(--sp-header); }
+
+/* Section header spacing within custom sections */
+.conversion-grid,
+.story-grid,
+.curious-grid,
+.why-grid,
+.director-grid,
+.phil-grid,
+.program-grid,
+.heidi-grid,
+.diag-grid,
+.ach-grid,
+.proof-grid,
+.hall-grid,
+.ar-result-grid,
+.ar-case-grid,
+.gallery-grid,
+.event-grid,
+.test-grid,
+.location-grid { margin-top: 0; }
+
+/* Harmonize inner section header mb */
+.curious .section-header,
+.why-rb-header,
+.curriculum-header,
+.heidi-intro,
+.diag-header,
+.ach-header,
+.hall-header,
+.gallery-header,
+.events-header,
+.faq-header,
+.roadmap-header,
+.location-header { margin-bottom: var(--sp-header) !important; }
+
+/* Body text inter-element gap normalization */
+.story-line { margin-bottom: 8px; }
+.director-content p { margin-bottom: 10px; }
+
+/* Card radius harmonize */
+.conversion-panel,
+.curious-card,
+.why-card,
+.track-card,
+.heidi-card,
+.diag-card,
+.ach-card,
+.event-card,
+.test-card,
+.program-card { border-radius: var(--radius-lg); }
+
+.director-quote { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+
+/* ══════════════════════════════════════════
+   PROGRAM CARD — 자세히보기 / 간략히보기
+   ══════════════════════════════════════════ */
+
+/* Summary paragraph: horizontal padding */
+.program-card > p {
+  padding: 18px 24px 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Expand / collapse toggle button */
+.program-card-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 13px 24px;
+  margin-top: 16px;
+  background: var(--off-white);
+  border: none;
+  border-top: 1px solid var(--gray-100);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: background var(--transition), color var(--transition);
+}
+.program-card-toggle::after {
+  content: '▾';
+  font-size: 16px;
+  line-height: 1;
+  transition: transform var(--transition);
+}
+.program-card-toggle:hover {
+  background: var(--pink-light);
+  color: var(--pink);
+}
+.program-card.open .program-card-toggle {
+  background: var(--pink-light);
+  color: var(--pink);
+}
+.program-card.open .program-card-toggle::after {
+  transform: rotate(180deg);
+}
+
+/* Hidden content wrapper */
+.program-card-content {
+  display: none;
+  padding: 0 24px 24px;
+}
+.program-card.open .program-card-content { display: block; }
+
+/* Image bleeds to card edges inside padding wrapper */
+.program-card-content .program-img {
+  margin-left: -24px;
+  margin-right: -24px;
+  width: calc(100% + 48px);
+  margin-bottom: 20px;
+}
+/* Details container already has own padding */
+.program-card-content .program-details { padding-left: 0; padding-right: 0; }
+
+/* ══════════════════════════════════════════
+   READABILITY — text-to-box inner spacing
+   ══════════════════════════════════════════ */
+
+/* FAQ: breathing room after divider when open */
+.faq-item.open .faq-a { padding-top: 16px; }
+
+/* Heidi cards use <h4> in HTML, not <h3> */
+.heidi-card h4 {
+  font-size: 15px; font-weight: 900; color: var(--dark);
+  margin-bottom: 10px; letter-spacing: -0.02em; line-height: 1.3;
+}
+.heidi-card-bonus h4 { color: var(--white); }
+.heidi-card p { line-height: 1.65; }
+
+/* Card heading → body gap: consistent 12px */
+.why-card .why-num  { margin-bottom: 16px; }
+.why-card h3        { margin-bottom: 12px; }
+.curious-card h3    { margin-bottom: 12px; }
+.phil-card h3       { margin-bottom: 12px; }
+.phil-icon          { margin-bottom: 22px; }
+.diag-card h3       { margin-bottom: 12px; }
+.diag-sub           { margin-bottom: 14px; }
+
+/* Hall card body */
+.hall-body  { padding: 20px 22px; }
+.hall-body p { line-height: 1.65; }
+
+/* Track mini-card inside program card */
+.track { padding: 14px 16px; }
+
+/* Proof card (achievements section) */
+.proof-head { padding: 18px 22px; }
+.proof-body { padding: 18px 22px; }
+
+/* Location info item */
+.loc-item { padding: 22px 24px; }
+
+/* Curriculum step description */
+.curr-step p { line-height: 1.65; }
+
+/* Section label → title gap */
+.section-label { margin-bottom: 14px; }
+
+/* Authentic academy media and verified parent reviews */
+.content-media-card {
+  display: block;
+  width: 100%;
+  margin-bottom: 18px;
+  color: inherit;
+  text-decoration: none;
+}
+.phil-icon {
+  display: block;
+  width: 100%;
+  height: 150px;
+  margin: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--brand-ivory);
+  transition: transform var(--transition);
+}
+.content-media-card:hover .phil-icon { transform: scale(1.02); }
+.program-badge,
+.heidi-icon,
+.diag-icon {
+  display: block;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  margin: 0 0 14px;
+  padding: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--brand-ivory);
+}
+.program-header .program-badge { margin: 0; }
+.program-media-link {
+  display: block;
+  position: relative;
+  color: var(--white);
+  text-decoration: none;
+  overflow: hidden;
+}
+.program-media-link span {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: rgba(12,53,77,0.88);
+  font-size: 11px;
+  font-weight: 800;
+}
+.program-media-link:hover .program-img { transform: scale(1.02); }
+.program-media-link .program-img { transition: transform var(--transition); }
+.parent-review-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.parent-review-card {
+  padding: 0;
+  overflow: hidden;
+  border-color: rgba(12,53,77,0.14);
+  background: var(--white);
+}
+.parent-review-card::before { display: none; }
+.review-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.parent-review-card blockquote {
+  padding: 24px 24px 18px;
+  color: var(--brand-ink);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.parent-review-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px 24px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.parent-review-meta a {
+  color: var(--brand-burgundy);
+  font-weight: 800;
+  text-decoration: none;
+}
+.loc-icon {
+  color: var(--brand-navy);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+@media (max-width: 720px) {
+  .parent-review-grid { grid-template-columns: 1fr; }
+  .hero-description br { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">
+    <img src="logo.jpg" alt="리딩브레인">
+    <div class="nav-logo-text">READING BRAIN<small>Reading Is The Only Way!</small></div>
+  </div>
+  <div class="nav-links">
+    <a href="#director">원장 인사</a>
+    <a href="#academy-story">비전</a>
+    <a href="#philosophy">교육철학</a>
+    <a href="#programs">프로그램</a>
+    <a href="#heidi">HEIDI</a>
+    <a href="#diagnostic">진단</a>
+    <a href="#schedule">시간표</a>
+    <a href="#hall">실적</a>
+    <a href="#gallery">갤러리</a>
+    <a href="#location">오시는 길</a>
+  </div>
+  <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" class="nav-cta">네이버 예약</a>
+  <button class="nav-mobile" onclick="document.querySelector('.nav-links').style.display=document.querySelector('.nav-links').style.display==='flex'?'none':'flex'" aria-label="메뉴">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-video-wrap" aria-hidden="true">
+    <video
+      class="hero-video"
+      autoplay muted loop playsinline
+      preload="metadata"
+      poster="images/hero/hero-books-poster.jpg">
+      <source src="images/hero/hero-books-crossfade.mp4" type="video/mp4">
+    </video>
+    <div class="hero-video-poster"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-offer">Reading Is The Only Way</div>
+    <h1 class="hero-title" aria-label="입시를 넘어, 평생 쓰는 영어.">입시를 넘어,<br><em>평생 쓰는 영어.</em></h1>
+    <p class="hero-subtitle">AI 시대의 글로벌 문해력과 생각하는 힘은 영어원서에서 시작됩니다.</p>
+    <p class="hero-description">
+      영어는 외우는 과목이 아니라 충분히 노출되어 체득하는 언어입니다.<br>
+      해외에 가지 않아도 리딩브레인에서 영어로 읽고 생각하는 환경을 만듭니다.
+    </p>
+    <p class="hero-tagline">"Reading Is The Only Way!"</p>
+    <div class="hero-credentials">
+      <span class="hero-cred">✓ AI 시대 사고력 · 문해력 · 집중력</span>
+      <span class="hero-cred">✓ 사립초 · 국제학교 · 특목자사고</span>
+      <span class="hero-cred">✓ 유학 · 리터니 · 주재원 자녀</span>
+      <span class="hero-cred">✓ 1:1 원서정독 밀착코칭</span>
+      <span class="hero-cred">✓ 중등에 가장 빠른 수능 1등급 완성</span>
+    </div>
+    <div class="hero-buttons">
+      <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" class="btn-gold">1:1 학습 로드맵 예약</a>
+      <a href="#philosophy" class="btn-outline">교육철학 보기</a>
+    </div>
+    <div class="hero-proof">
+      <div class="hero-proof-item">
+        <strong>원서정독 프로그램</strong>
+        <span>문장 해석을 넘어 작가의 의도, 구조, 사고 흐름까지 읽습니다.</span>
+      </div>
+      <div class="hero-proof-item">
+        <strong>AI 시대 핵심 역량</strong>
+        <span>빠른 답보다 깊이 읽고 오래 집중하며 스스로 생각하는 힘을 기릅니다.</span>
+      </div>
+      <div class="hero-proof-item">
+        <strong>20세 이후에도 유효</strong>
+        <span>시험이 끝나도 사라지지 않는 바이링구얼 영어두뇌를 목표합니다.</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>SCROLL DOWN</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5"/></svg>
+  </div>
+</section>
+
+<!-- QUICK MENU -->
+<section class="quick-menu">
+  <div class="container">
+    <div class="quick-grid">
+      <a href="#academy-story" class="quick-item"><div class="quick-icon">01</div><span>교육철학</span></a>
+      <a href="#programs" class="quick-item"><div class="quick-icon">02</div><span>원서정독</span></a>
+      <a href="#diagnostic" class="quick-item"><div class="quick-icon">03</div><span>레벨진단</span></a>
+      <a href="#hall" class="quick-item"><div class="quick-icon">04</div><span>성과</span></a>
+      <a href="#testimonials" class="quick-item"><div class="quick-icon">05</div><span>후기</span></a>
+      <a href="#location" class="quick-item"><div class="quick-icon">06</div><span>오시는 길</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- CONVERSION STRATEGY -->
+<section class="conversion" id="conversion">
+  <div class="container">
+    <div class="conversion-grid">
+      <div class="conversion-panel fade-up">
+        <div class="section-label">Start Here</div>
+        <h2>원서로 영어두뇌를 만들고,<br>입시영어는 가장 빠르게 가져갑니다.</h2>
+        <p>
+          리딩브레인의 목표는 단기 시험 기술만 가르치는 것이 아닙니다.
+          AI 시대에 모든 아이에게 필요한 사고력, 문해력, 집중력을 영어원서로 키우고 그 힘을 입시영어까지 연결합니다.
+        </p>
+        <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" class="btn-gold">1:1 로드맵 상담 예약</a>
+      </div>
+      <div class="conversion-steps fade-up">
+        <div class="conversion-step">
+          <b>01</b>
+          <div>
+            <strong>원서를 읽어야 하는 이유 확인</strong>
+            <span>아이의 현재 읽기 습관, 집중력, 문해력, 영어 노출 경험을 먼저 봅니다. 그 위에 학교 유형과 입시 목표를 연결합니다.</span>
+          </div>
+        </div>
+        <div class="conversion-step">
+          <b>02</b>
+          <div>
+            <strong>원서정독으로 사고력·문해력·집중력 설계</strong>
+            <span>어휘 암기와 문제풀이 전에, 긴 글을 견디는 집중력과 문장 구조를 파악하는 문해력, 생각을 확장하는 사고력을 원서로 쌓습니다.</span>
+          </div>
+        </div>
+        <div class="conversion-step">
+          <b>03</b>
+          <div>
+            <strong>중3에 고3 영어 1등급을 바라보는 로드맵</strong>
+            <span>입시영어를 따로 억지로 붙이는 방식이 아니라, 바이링구얼 영어두뇌 위에 수능영어가 자연스럽게 따라오게 합니다.</span>
+          </div>
+        </div>
+        <div class="conversion-note">
+          상담 신청은 네이버 예약으로 연결됩니다. 예약 후 학생의 현재 영어 수준과 목표를 확인해 1:1 학습 로드맵 상담을 안내드립니다.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACADEMY STORY -->
+<section class="academy-story" id="academy-story">
+  <div class="container">
+    <div class="story-grid">
+      <div class="story-mark fade-up">
+        <div class="section-label" style="color:var(--gold)">Vision & Mission</div>
+        <h2>영어원서로<br><em>생각하는 아이</em>를 만듭니다</h2>
+        <p>
+          리딩브레인은 AI 시대에 아이들이 잃지 말아야 할 사고력, 문해력, 집중력을 영어원서 정독으로 키웁니다.
+          입시영어는 따로 붙이는 기술이 아니라, 깊이 읽는 힘 위에 자연스럽게 따라오는 결과입니다.
+        </p>
+      </div>
+      <div class="story-copy fade-up">
+        <div class="story-line">
+          <strong>1. 모든 아이가 영어원서를 읽을 수 있게 하자.</strong>
+          <span>상위권만이 아니라, 읽기 습관과 집중력을 키우고 싶은 모든 아이에게 현재 수준에 맞는 원서 출발선을 설계합니다.</span>
+        </div>
+        <div class="story-line">
+          <strong>2. 원서정독으로 바이링구얼 영어두뇌를 만들자.</strong>
+          <span>해석이 아니라 의미를 읽고, 토론하고, 쓰는 과정을 통해 20세 이후에도 유효한 영어 능력을 만듭니다.</span>
+        </div>
+        <div class="story-line">
+          <strong>3. 입시영어는 가장 빠르게 연결하자.</strong>
+          <span>사립초·국제학교·특목자사고·유학·주재원 트랙과 수능영어 1등급 목표를 원서정독 기반 위에 연결합니다.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CURIOUS -->
+<section class="curious" id="curious">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">What Parents Ask</div>
+      <h2 class="section-title fade-up">무엇이 궁금하세요?</h2>
+    </div>
+    <div class="curious-grid">
+      <div class="curious-card fade-up">
+        <h3>원서정독이 궁금해요</h3>
+        <p>리딩브레인의 원서정독 프로그램입니다. 원서를 읽고, 듣고, 말하고, 쓰며 아이의 사고력·문해력·집중력을 키웁니다.</p>
+        <a href="#programs">프로그램 보기</a>
+      </div>
+      <div class="curious-card fade-up">
+        <h3>입시영어가 궁금해요</h3>
+        <p>수능영어는 긴 글을 빠르게 이해하는 독해력 싸움입니다. 원서정독으로 고등영어 기반을 만들고 중3에 고3 영어 1등급을 목표합니다.</p>
+        <a href="#hall">성과 보기</a>
+      </div>
+      <div class="curious-card fade-up">
+        <h3>국제학교·유학이 궁금해요</h3>
+        <p>사립초, 국제학교, 리터니, 유학, 주재원 자녀에게 필요한 바이링구얼 독해·토론·쓰기 트랙을 안내합니다.</p>
+        <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank">로드맵 상담 예약</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY READING BRAIN -->
+<section class="why-rb" id="why-rb">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Why Reading Brain</div>
+      <h2 class="section-title fade-up">왜 리딩브레인인가요?</h2>
+      <p class="why-copy fade-up">학원은 많습니다. 하지만 우리 아이에게 딱 맞는 읽기 레벨, 영어 목표, 입시 방향을 한 번에 설계하는 곳은 많지 않습니다.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card fade-up">
+        <h3>학생별 원서 로드맵</h3>
+        <p>현재 AR/RTP 레벨, 읽기 습관, 집중력, 목표 트랙을 확인해 학생 한 명에게 맞는 원서정독 경로를 설계합니다.</p>
+      </div>
+      <div class="why-card fade-up">
+        <h3>관리되는 1:1 정독</h3>
+        <p>원어민·교포·조교 선생님의 밀착 코칭과 Daily Report, Book List 관리로 읽기 경험이 실제 성장으로 쌓이게 합니다.</p>
+      </div>
+      <div class="why-card fade-up">
+        <h3>결과로 이어지는 영어</h3>
+        <p>사고력·문해력·집중력은 입시 독해의 기반입니다. 원서정독 위에 특목자사고, 국제학교, 수능영어 목표를 연결합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIRECTOR -->
+<section class="director" id="director">
+  <div class="container">
+    <div class="director-grid">
+      <div class="director-photo fade-up">
+        <img src="director.png" alt="김기숙 원장" class="director-photo-img">
+      </div>
+      <div class="director-content fade-up">
+        <div class="section-label">Director's Message</div>
+        <h3>김기숙 원장</h3>
+        <div class="director-role">상위 1% 영어몰입교육 리딩브레인 대표</div>
+        <p>
+          안녕하세요. 리딩브레인 영어학원 대표 김기숙입니다.
+          서울 동작구, 관악구, 금천구, 경기도 소하동, 부천, 목감, 석수, 안양 지역 학생들이 찾아오는
+          사립초, 국제학교, 리터니, 유학준비생, 주재원 자녀, 특목·자사고 대비까지 — 상위 1% 영어 몰입 교육기관입니다.
+        </p>
+        <p>
+          20년 동안 2,000명이 넘는 학생의 입시 영어 지도 및 진로적성·학습코칭 경험을 바탕으로,
+          한국의 주입식 영어 교육에서 벗어나 영어를 언어로 자연스럽게 체득하는 환경을 만들었습니다.
+        </p>
+        <p style="font-size:13px; color:var(--gray-500); line-height:1.8; margin-top:12px;">
+          현) 리딩브레인 영어학원 대표원장 (2018.5 개원, 2022.2 2관 개원)<br>
+          전) 제이드영수학원 대표원장<br>
+          전) 금천구 학원연합회 회장<br>
+          '10인의 교육전문가들이 전해주는 학습노하우' 저자 (상위1% 영어두뇌 만들기 편)<br>
+          10·11기 블루타이 학원장 교육 수료 / 지문적성상담사 수료<br>
+          20년간 2,000명+ 입시영어 지도 및 학습코칭
+        </p>
+        <div class="director-quote">
+          <p>"소중하고 잠재력이 무한한 아이들에게 영어로 사고할 수 있는 글로벌 리더 역량 교육을 통해, 한국을 넘어 세계 속에서 세상을 빛내는 리더를 양성합니다."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="philosophy" id="philosophy">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Education Philosophy</div>
+      <h2 class="section-title fade-up" aria-label="해외에 가지 않아도, 영어로 생각하는 아이가 됩니다.">해외에 가지 않아도,<br>영어로 생각하는 아이가 됩니다.</h2>
+      <p class="section-desc fade-up">리딩브레인은 영어원서 노출과 정독으로 글로벌 문해력·사고력·집중력·끈기를 키우고, 그 힘을 입시와 평생 사용하는 영어로 연결합니다.</p>
+    </div>
+    <div class="phil-grid">
+      <div class="phil-card fade-up">
+        <a class="content-media-card" href="https://pf.kakao.com/_KnBMb/112800577" target="_blank" rel="noopener noreferrer" aria-label="새로 입고된 영어원서 소식 보기"><img class="phil-icon" src="images/academy-interior-1.jpg" alt="리딩브레인 영어원서 서가"></a>
+        <h4>모든 아이에게 원서가 필요합니다</h4>
+        <p>AI가 답을 대신 찾는 시대일수록, 아이에게 필요한 것은 긴 글을 읽고 이해하고 스스로 판단하는 힘입니다. 영어원서는 사고력·문해력·집중력을 동시에 키우는 가장 좋은 훈련입니다.</p>
+      </div>
+      <div class="phil-card fade-up">
+        <a class="content-media-card" href="https://blog.naver.com/jadeacademy/224160237798" target="_blank" rel="noopener noreferrer" aria-label="AI 시대 영어원서 교육철학 보기"><img class="phil-icon" src="images/signature-advanced-class.jpg" alt="리딩브레인 사고력 중심 원서 수업"></a>
+        <h4>원서로 키운 영어는 입시에서 증명되고, 세계에서 사용됩니다.</h4>
+        <p>수능영어는 결국 긴 글을 빠르게 이해하고 판단하는 독해력 싸움입니다. 원서로 사고력과 문해력을 쌓은 아이는 입시영어를 억지로 외우지 않고 더 자연스럽게 가져갑니다.</p>
+      </div>
+      <div class="phil-card fade-up">
+        <a class="content-media-card" href="https://blog.naver.com/jadeacademy/224165534214" target="_blank" rel="noopener noreferrer" aria-label="정기 모의고사 결과 보기"><img class="phil-icon" src="images/students-test-environment.jpg" alt="리딩브레인 정기 시험 현장"></a>
+        <h4>초등에 고등영어를 가능하게</h4>
+        <p>초등 시기에 원서 읽기의 양과 깊이를 충분히 쌓으면 고등영어 지문을 낯설어하지 않는 기반이 생깁니다. 리딩브레인은 중3에 고3 영어 1등급을 목표로 역산합니다.</p>
+      </div>
+      <div class="phil-card fade-up">
+        <a class="content-media-card" href="https://pf.kakao.com/_KnBMb/113236703" target="_blank" rel="noopener noreferrer" aria-label="원서와 입시 영어의 연결 보기"><img class="phil-icon" src="images/individual-consultation.jpg" alt="리딩브레인 일대일 맞춤 지도"></a>
+        <h4>1:1 맞춤 밀착 지도</h4>
+        <p>100명의 아이들에게는 100개의 서로 다른 로드맵이 필요합니다. 현재 원서 레벨, 읽기 습관, 집중력, 사고력, 입시 목표를 함께 보고 학생 한 명에게 맞는 성장 경로를 설계합니다.</p>
+      </div>
+      <div class="phil-card fade-up">
+        <a class="content-media-card" href="https://blog.naver.com/jadeacademy/224152133212" target="_blank" rel="noopener noreferrer" aria-label="미국 리터러시 과제 보기"><img class="phil-icon" src="images/usa-curriculum-class.jpg" alt="리딩브레인 미국교과 수업"></a>
+        <h4>바이링구얼 영어두뇌</h4>
+        <p>Comprehensive Reading → Critical Thinking & Questioning → Express Skills → Essay Writing. 읽고, 생각하고, 말하고, 쓰는 과정을 통해 영어로 사고하는 아이를 만듭니다.</p>
+      </div>
+      <div class="phil-card fade-up">
+        <a class="content-media-card" href="https://pf.kakao.com/_KnBMb/113382476" target="_blank" rel="noopener noreferrer" aria-label="AI 시대 리딩브레인 교육 소식 보기"><img class="phil-icon" src="images/speaking-contest.jpg" alt="리딩브레인 영어 발표 활동"></a>
+        <h4>시험이 끝난 뒤에도 살아 있는 영어를 만듭니다.</h4>
+        <p>시험이 끝나면 사라지는 영어가 아니라 대학, 유학, 커리어, 글로벌 커뮤니케이션에서 계속 작동하는 영어를 목표합니다. 입시는 과정이고, 진짜 목표는 오래가는 영어 능력입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section class="programs" id="programs">
+  <div class="container">
+    <div class="section-label fade-up">Programs</div>
+    <h2 class="section-title fade-up">원서정독 프로그램 안내</h2>
+    <p class="section-desc fade-up">AI 시대에 사고력·문해력·집중력을 키우고 싶은 모든 아이들을 위한 원서정독 중심 커리큘럼. 사립초·국제학교·특목자사고·유학·주재원 트랙은 그 위에 정밀하게 연결됩니다.</p>
+
+    <div class="program-grid">
+      <!-- 1. 기초 원서 파닉스 -->
+      <div class="program-card pc-1 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/phonics-class-actual.jpg" alt="">
+          <div><h3>기초 원서 파닉스</h3><span class="program-target">영어 첫 시작 · ABC부터 원서까지 6개월</span></div>
+        </div>
+        <p>ABC도 모르는 아이도 가능합니다! 알파벳부터 시작해 6개월 만에 AR 1.0~1.9 레벨(미국 초등 1학년 이상)의 원서를 읽을 수 있게 됩니다. 온라인 파닉스 레슨 120과 + 기초 원서 200~300권 완독으로 영어 읽기의 기반을 완성합니다.</p>
+        <a class="program-media-link" href="https://pf.kakao.com/_KnBMb/112800577" target="_blank" rel="noopener noreferrer"><img src="images/phonics-class-actual.jpg" alt="리딩브레인 파닉스 기초원서리딩 수업" class="program-img" loading="lazy"><span>영어원서 노출 환경 자세히 보기</span></a>
+        <ul class="program-detail-list">
+          <li><strong>기간/횟수:</strong> 6~7개월 집중 과정, 주 3회 수업</li>
+          <li><strong>목표:</strong> AR 1.0~1.9 (미국 초등 1학년 이상) 읽기 레벨 달성</li>
+          <li><strong>파닉스 학습 사이클 4단계:</strong></li>
+          <li>① 파닉스 레슨 — 온라인 120과 구성, 오늘의 레슨 진행</li>
+          <li>② 워크시트 — 온라인 레슨과 동일 회차, 선생님과 1:1 복습 + 심화학습 (단어→문장 순서 구성)</li>
+          <li>③ 기초 원서 — 각 레슨당 4권씩, 레슨 10과 완료 시점부터 읽기 시작</li>
+          <li>④ 과제 할당 — 사이트워드 중심 복습, 코인 지급으로 학습 동기부여</li>
+          <li><strong>읽기량:</strong> 기초 원서 200~300권 완독</li>
+          <li><strong>수업 방식:</strong> 1:1 Listening 기반 음가학습 + Sight Words + 영어 북퀴즈</li>
+          <li><strong>진행 과정:</strong> 1~2개월(음가학습) → 3~4개월(기초원서 시작) → 5~6개월(원서 다독) → 원서정독반 연계</li>
+          <li><strong>특징:</strong> 완벽하게 읽는 것보다 영어에 자연스럽게 노출되는 것에 초점, 원서정독반 수업 전 필수 코스</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">6개월 완성</span>
+          <span class="program-tag">주 3회</span>
+          <span class="program-tag">120과 레슨</span>
+          <span class="program-tag">200~300권 완독</span>
+          <span class="program-tag">1:1 코칭</span>
+        </div>
+      </div>
+
+      <!-- 2. 원서 정독반 -->
+      <div class="program-card pc-2 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/signature-one-on-one-class.jpg" alt="">
+          <div><h3>원서정독 프로그램</h3><span class="program-target">AI 시대 사고력·문해력·집중력 · 상위권/글로벌 트랙 핵심 프로그램</span></div>
+        </div>
+        <p>리딩브레인의 핵심 프로그램입니다. 원어민·교포·조교 선생님의 1:1 밀착 코칭으로 원서를 정독하며, AI 시대에 필요한 사고력·문해력·집중력을 키웁니다. 사립초·국제학교·유학·주재원 자녀에게 필요한 바이링구얼 영어두뇌와 특목자사고·수능영어는 이 원서정독 실력 위에 연결됩니다.</p>
+        <a class="program-media-link" href="https://blog.naver.com/jadeacademy/224152133212" target="_blank" rel="noopener noreferrer"><img src="images/signature-one-on-one-class.jpg" alt="리딩브레인 1:1 원서정독 수업" class="program-img" loading="lazy"><span>원서정독 과제 자세히 보기</span></a>
+        <ul class="program-detail-list">
+          <li><strong>원서 학습 사이클 5단계:</strong></li>
+          <li>① Vocabulary — 원서 읽기에 앞서 단어 학습 진행</li>
+          <li>② Audio — 쉐도잉과 핑거리딩을 통해 영어 원서 읽기</li>
+          <li>③ Worksheet — 책 내용 기반 7종 워크시트 풀기</li>
+          <li>④ Book Talk — 원어민 선생님과 책 내용에 대해 토론</li>
+          <li>⑤ Book Quiz — 퀴즈 학습으로 원서 한 권 읽기 마무리</li>
+          <li><strong>Reading Flow:</strong> 자발적 추론읽기(본인 레벨·관심사에 맞는 책 선택) → 단어 학습 → 들으며 읽기(쉐도잉+핑거리딩) → 워크시트 → 북토킹 → 북퀴즈</li>
+          <li><strong>워크시트 7종:</strong> Compare&Contrast(공통점/차이점) / Sequence of Event(시간순 나열) / Problem&Solution(문제/해결) / Cause&Effect(인과관계) / Fact&Opinion(사실/의견) / Story Structure(기승전결) / Drawing Conclusion(결론 도출)</li>
+          <li><strong>AR TEST:</strong> AR 지수 진단 → 자신의 수준에 맞는 책 선택 지원</li>
+          <li><strong>Time Manager:</strong> 매 수업 시작 시 플래너 작성 → 자기주도학습 능력 형성, 선생님 1:1 밀착 코칭</li>
+          <li><strong>Daily Report:</strong> 학생이 읽은 책과 학습 현황을 당일 학부모님께 리포트 제공</li>
+          <li><strong>Book List:</strong> 완독 날짜, 책 제목, 선생님 확인 도장으로 읽기 이력 관리</li>
+          <li><strong>숙제 시스템 5종:</strong></li>
+          <li>• Raz Kids — 온라인 e-Book 원서, 미국 공립학교/국제학교 채택, 하루 2~5권, 체계적 어휘·리스닝·영영 북퀴즈</li>
+          <li>• Speaking Touch — 듣기·말하기 최적화 쉐도잉 프로그램, 팝송/애니메이션/TED 강연 등 흥미 주제 학습</li>
+          <li>• Pattern English — 일상 회화 빈출 문장 암기, 영어 표현과 패턴 이해·적용</li>
+          <li>• Monthly Speech — 매월 사회문화 이슈 논설문 발표, 스피치 영상 촬영으로 실력 상승 체감</li>
+          <li>• Literacy — 읽기/어휘/문법 등 다양한 영역 문해력 향상 프로그램</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">1:1 밀착코칭</span>
+          <span class="program-tag">핵심 프로그램</span>
+          <span class="program-tag">사고력/문해력/집중력</span>
+          <span class="program-tag">사립초/국제학교</span>
+          <span class="program-tag">유학/주재원</span>
+          <span class="program-tag">학습사이클 5단계</span>
+          <span class="program-tag">워크시트 7종</span>
+          <span class="program-tag">Daily Report</span>
+          <span class="program-tag">숙제 5종</span>
+          <span class="program-tag">AR TEST</span>
+        </div>
+      </div>
+
+      <!-- 3. 미국 공교육 교과 -->
+      <div class="program-card pc-3 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/signature-usa-curriculum-class.jpg" alt="">
+          <div><h3>미국 공교육 교과 (ChildU)</h3><span class="program-target">리스닝 특화 · 17,000+ 콘텐츠 · 국제학교 사용 프로그램</span></div>
+        </div>
+        <p>미국 학력인증기관 Cognia 공식 인증 프로그램으로, <strong>17,000개 이상의 미국 교육 콘텐츠</strong>를 활용합니다. 페이스튼·세인트폴 국제학교 등에서도 사용하는 동일한 커리큘럼으로, 1:1 맞춤 수업을 통해 유학과 같은 환경을 제공합니다. 리스닝 집중 훈련에 특화되어 있습니다.</p>
+        <a class="program-media-link" href="https://blog.naver.com/jadeacademy/224152133212" target="_blank" rel="noopener noreferrer"><img src="images/usa-curriculum-class.jpg" alt="미국교과 과학 수업" class="program-img" loading="lazy"><span>미국 리터러시 수업 자세히 보기</span></a>
+        <ul class="program-detail-list">
+          <li><strong>대상:</strong> 초5~고등 (AR 3.0 이상)</li>
+          <li><strong>교과 구성:</strong> Language Arts(문학/비문학/영작) + Math + Science + Social Studies</li>
+          <li><strong>콘텐츠:</strong> 17,000+ 미국 교육 콘텐츠 (영상·교과서·평가)</li>
+          <li><strong>사용 학교:</strong> 페이스튼 국제학교, 세인트폴 국제학교 등 동일 프로그램 채택</li>
+          <li><strong>인증:</strong> Cognia(미국 학력인증기관) 공식 인증 프로그램</li>
+          <li><strong>특화:</strong> 리스닝 집중 훈련 · 미국 원어민 강사 영상 수업</li>
+          <li><strong>수업 방식:</strong> 1:1 맞춤 수업으로 유학과 동일한 학습 환경</li>
+          <li><strong>대상층:</strong> 유학 준비 / 국제학교 재학 / 영어몰입 환경 희망 학생</li>
+          <li><strong>특징:</strong> 50분 수업 전체가 학생 참여형, 한국식 강의 방식 배제</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">Cognia 인증</span>
+          <span class="program-tag">17,000+ 콘텐츠</span>
+          <span class="program-tag">국제학교 사용</span>
+          <span class="program-tag">리스닝 특화</span>
+          <span class="program-tag">4과목 교과</span>
+          <span class="program-tag">1:1 맞춤수업</span>
+          <span class="program-tag">유학 환경</span>
+        </div>
+      </div>
+
+      <!-- 4. 중고등 특목 2관 -->
+      <div class="program-card pc-4 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/signature-advanced-class.jpg" alt="">
+          <div><h3>중고등 특목 2관</h3><span class="program-target">자기주도 1:1 학습 · 중3에 고3 완성!</span></div>
+        </div>
+        <p>자기주도형 1:1 학습으로 중3에 고3 과정을 끝내는 것이 목표입니다. 리딩브레인 예습 시스템, 3way 학습법, 하브루타를 통해 공부 습관을 형성하고 입시 경쟁력을 극대화합니다.</p>
+        <a class="program-media-link" href="https://pf.kakao.com/_KnBMb/113236703" target="_blank" rel="noopener noreferrer"><img src="images/signature-advanced-class.jpg" alt="중·고등 특목 2관 수업" class="program-img" loading="lazy"><span>원서와 입시의 연결 자세히 보기</span></a>
+        <ul class="program-detail-list">
+          <li><strong>리딩브레인 3way 학습 시스템:</strong></li>
+          <li>① [예습] 강의 동영상 시청 후 등원 — 개별 커리큘럼 구축 후 수업 진행</li>
+          <li>② [수업] 1:1 밀착 코칭 — 개별 숙제 체크, 채점, 오답정리 + 하브루타를 통한 내용 완벽 이해</li>
+          <li>③ [복습] 수업 내용 완벽 이해할 때까지 재학습 — 부족한 부분 토요일 추가학습, 숙제관리</li>
+          <li><strong>오답 3차 정리 시스템:</strong></li>
+          <li>• 1차: 선생님과 함께 오답정리</li>
+          <li>• 2차: 스스로 배운 내용, 틀린 이유, 개념을 복기하며 포스트잇 정리</li>
+          <li>• 3차: 인덱스 붙여가며 총정리</li>
+          <li><strong>하브루타 대회/일타강사 프로젝트:</strong> "스스로 설명할 수 있어야 진짜 아는 것" — 학생이 직접 강의하는 프로젝트</li>
+          <li><strong>요약노트 영상촬영:</strong> 배운 내용을 영상으로 요약 설명 → 진짜 이해 확인, 선생님 확인 도장</li>
+          <li><strong>교재 라인:</strong> 체계적 독해 교재 라인 + 문법 교재 라인 단계별 구성</li>
+          <li><strong>학습 관리:</strong> 학습 관리 라벨 시스템 + 꼼꼼한 관리 체계</li>
+          <li><strong>테스트:</strong> 초3 이상 테스트 가능, 고1 모의고사 연 4회 TEST</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">중3에 고3 완성</span>
+          <span class="program-tag">3way 학습법</span>
+          <span class="program-tag">하브루타</span>
+          <span class="program-tag">오답 3차 정리</span>
+          <span class="program-tag">영상 요약노트</span>
+          <span class="program-tag">모의고사 연4회</span>
+        </div>
+      </div>
+
+      <!-- 5. 영자신문 & 논픽션반 -->
+      <div class="program-card pc-5 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/newspaper-nonfiction-class.jpg" alt="">
+          <div><h3>영자신문 &amp; 논픽션반</h3><span class="program-target">100% 영어 몰입 · 소수정예 6명 · 주 2회 (화·목) 90분</span></div>
+        </div>
+        <p>NE Times와 엄선된 논픽션 교재로 진행하는 통합 클래스입니다. 단순 암기식 영어를 탈피해 글로벌 시사상식과 영어를 동시에 습득하며, 모든 수업은 100% 영어로 완전 몰입 진행됩니다. 각 클래스 <strong>선착순 6명 소수정예</strong>로 운영합니다.</p>
+        <a class="program-media-link" href="https://pf.kakao.com/_KnBMb/113382476" target="_blank" rel="noopener noreferrer"><img src="images/newspaper-nonfiction-class.jpg" alt="영자신문 & 논픽션리딩 수업" class="program-img" loading="lazy"><span>AI 시대 글로벌 교육 소식 보기</span></a>
+
+        <div class="track-grid">
+          <div class="track">
+            <div class="track-head">
+              <h4>Basic 반</h4>
+              <span class="track-day">화 · 목 14:30 (AR 2.0~)</span>
+            </div>
+            <ul class="track-list">
+              <li><strong>대상:</strong> AR 2.0 이상 / 영자신문·논픽션 입문</li>
+              <li><strong>주교재:</strong> NE Times Junior + 입문 논픽션</li>
+              <li><strong>흐름:</strong> 어휘 빌드업 → 정독 → 짧은 Discussion → 요약 Writing</li>
+              <li><strong>핵심:</strong> 다양한 분야 어휘 정복 (사회·경제·문화·과학)</li>
+            </ul>
+          </div>
+          <div class="track">
+            <div class="track-head">
+              <h4>Inter 반</h4>
+              <span class="track-day">화 · 목 16:00 (AR 4.0~)</span>
+            </div>
+            <ul class="track-list">
+              <li><strong>대상:</strong> AR 4.0 이상 / 특목·자사고 대비</li>
+              <li><strong>주교재:</strong> NE Times + 학술 논픽션 큐레이션</li>
+              <li><strong>흐름:</strong> 정독 → 구조 분석 → Critical Discussion → Opinion/Essay</li>
+              <li><strong>핵심:</strong> 비판적 사고력·분석능력·전문 어휘 확장</li>
+            </ul>
+          </div>
+        </div>
+
+        <ul class="program-detail-list">
+          <li><strong>수업 빈도:</strong> 주 2회 (화·목) · 회당 90분 · 100% 영어 완전 몰입</li>
+          <li><strong>정원:</strong> 각 클래스 <strong>선착순 6명</strong> 소수정예</li>
+          <li><strong>대상:</strong> 중등 이상, 특목·자사고 면접 / 영어 에세이 기반 구축에 최적</li>
+          <li><strong>기대 효과:</strong> 시사상식 + 영어 실력 동시 향상, 글로벌 감각·국제적 안목 배양</li>
+          <li><strong>장소:</strong> 리딩브레인 2관</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">NE Times</span>
+          <span class="program-tag">논픽션 큐레이션</span>
+          <span class="program-tag">100% 영어몰입</span>
+          <span class="program-tag">소수정예 6명</span>
+          <span class="program-tag">Discussion</span>
+          <span class="program-tag">Opinion Writing</span>
+          <span class="program-tag">특목고 대비</span>
+        </div>
+      </div>
+
+      <!-- 6. 스터디포스 -->
+      <div class="program-card pc-6 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/studyforce-flow.jpg" alt="">
+          <div><h3>스터디포스 (국어 언어훈련)</h3><span class="program-target">"결국은 독해력 싸움입니다" · 수능 국어 대비</span></div>
+        </div>
+        <p>"아무도 읽는 법을 알려주지 않습니다." TLP 학습심리검사와 TQ 국어언어 독해력검사로 정밀 진단한 후, 과학적 읽기 훈련으로 독해 정확도와 속도를 동시에 향상시킵니다. 수능 국어 영역의 긴 지문도 익숙하지 않으면 풀어낼 수 없습니다.</p>
+        <a class="program-media-link" href="https://blog.naver.com/jadeacademy/224165534214" target="_blank" rel="noopener noreferrer"><img src="images/studyforce-flow.jpg" alt="StudyForce 90분 3단계 수업 플로우" class="program-img" loading="lazy"><span>정기 모의고사 결과 보기</span></a>
+        <ul class="program-detail-list">
+          <li><strong>진단 검사 2종:</strong></li>
+          <li>• TLP 학습심리검사 — 학습 태도/동기/스트레스/전략 분석 → 컨설팅 제공</li>
+          <li>• TQ 국어 독해력검사 — 독해 정확도/독해 속도/독해 습관 종합 분석</li>
+          <li><strong>90분 수업 구성 (3단계):</strong></li>
+          <li>① 독해 훈련 40분(온라인) — 미숙한 읽기 패턴 교정, 의미단위 읽기 훈련, 언어 워킹메모리 확장 등 5개 영역</li>
+          <li>② 어휘 훈련 20분(오프라인) — 중고등 수준 독해 글자처리에 필수적인 한자어 및 빈출 어휘 학습</li>
+          <li>③ 요약 훈련 30분(오프라인) — 독해한 내용을 바탕으로 글의 목적과 요지를 빠르고 정확하게 짚어내는 훈련</li>
+          <li><strong>5대 핵심 훈련:</strong> 긴글독해훈련 / 긴글요약훈련 / 독해속도향상훈련 / 한자어어휘훈련 / 의미단위청킹</li>
+          <li><strong>인지 훈련 영역:</strong> 의미단위 청킹 / 언어 워킹메모리 / 언어 사고기능 / 의미인지·의미연결 / 명제분석 트레이닝</li>
+          <li><strong>레벨별 과정 (총 360회):</strong></li>
+          <li>• 예비 과정: 중급 60회 + 상급 60회</li>
+          <li>• 기본 과정: 중급 60회 + 상급 60회</li>
+          <li>• 심화 과정: 중급 60회 + 상급 60회</li>
+          <li><strong>수능 연계:</strong> 2026학년도 대학수학능력시험 국어영역 지문 수준의 독해력 목표</li>
+          <li><strong>온라인 시스템:</strong> jade.sfcenter.co.kr</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">TLP 심리검사</span>
+          <span class="program-tag">TQ 독해력검사</span>
+          <span class="program-tag">90분 3단계</span>
+          <span class="program-tag">총 360회 과정</span>
+          <span class="program-tag">수능 국어 대비</span>
+          <span class="program-tag">5개 영역 훈련</span>
+        </div>
+      </div>
+
+      <!-- 7. 비교과 수업 -->
+      <div class="program-card pc-7 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/personalized-learning-report.jpg" alt="">
+          <div><h3>비교과 수업 (미래입시전략연구소)</h3><span class="program-target">생기부 전략 · 진로 연계 · 독서감상문</span></div>
+        </div>
+        <p>입시의 차별화 전략인 비교과 영역을 체계적으로 관리합니다. 생기부 전략 A to Z, 독서감상문 & 탐구보고서 작성, 진로 연계 활동을 통해 입시 경쟁력을 높입니다.</p>
+        <a class="program-media-link" href="https://pf.kakao.com/_KnBMb/113236703" target="_blank" rel="noopener noreferrer"><img src="images/extracurricular-class-session.jpg" alt="비교과 생기부 수업" class="program-img" loading="lazy"><span>글로벌·입시 로드맵 자세히 보기</span></a>
+        <ul class="program-detail-list">
+          <li><strong>생기부 전략:</strong> A to Z 전 과정 설계 및 관리</li>
+          <li><strong>독서 활동:</strong> 독서 감상문 & 탐구보고서 작성 지도</li>
+          <li><strong>진로 연계:</strong> 개별 진로 탐색 및 연계 활동 설계</li>
+          <li><strong>입시 정보:</strong> 최신 입시 트렌드 분석 및 전략 수립</li>
+          <li><strong>소통:</strong> 네이버 밴드를 통한 온·오프라인 교육 + 정기 설명회</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">생기부 관리</span>
+          <span class="program-tag">탐구보고서</span>
+          <span class="program-tag">진로 설계</span>
+          <span class="program-tag">정기 설명회</span>
+        </div>
+      </div>
+
+      <!-- 8. 대회/캠프 -->
+      <div class="program-card pc-8 fade-up">
+        <div class="program-header">
+          <img class="program-badge" src="images/speaking-contest.jpg" alt="">
+          <div><h3>대회 · 캠프 · 동기부여 시스템</h3><span class="program-target">매년 전원 수상 · 주니어토플 공식 인증센터 · 동기부여 극대화</span></div>
+        </div>
+        <p>영어 말하기 대회 매년 전원 수상(대상·최고상 다수), 주니어토플 공식 인증센터(광명시 최다 응시 학원), 각종 캠프와 동기부여 시스템으로 학생의 성취감과 자신감을 극대화합니다.</p>
+        <ul class="program-detail-list">
+          <li><strong>영어 말하기 대회:</strong> 매년 전원 수상, 대상·최고상 다수 배출, 전원 합격 50명 배출</li>
+          <li><strong>주니어 토플:</strong> 공식 인증센터, 광명시 내 최다 응시 학원 선정</li>
+          <li>• Primary Step 1: 80% 최고등급 달성</li>
+          <li>• Primary Step 2: 50% 최고등급 달성</li>
+          <li><strong>각종 캠프:</strong> 시즌별 영어 캠프 + 학습 몰입 캠프 (여름/겨울 집중)</li>
+          <li><strong>정기 설명회:</strong> 학부모 대상 입시 설명회 및 학습 방향 공유</li>
+          <li><strong>동기부여 시스템:</strong></li>
+          <li>• 코인마켓 — 학습 성과에 따른 코인 적립 → 원하는 보상 교환</li>
+          <li>• 리브 장학카드 — 수업 태도/출결/과제/성적 우수자 장학금 충전, 친구 추천 시 쌍방 3만원 지급</li>
+          <li>• 시즌별 파티 — 크리스마스, 할로윈 등 시즌 이벤트</li>
+          <li><strong>합격 실적:</strong> 특목자사고 합격 + 꾸준한 AR 지수 상승 데이터 관리</li>
+        </ul>
+        <div class="program-details">
+          <span class="program-tag">말하기대회 전원수상</span>
+          <span class="program-tag">주니어토플 인증센터</span>
+          <span class="program-tag">코인마켓</span>
+          <span class="program-tag">장학카드</span>
+          <span class="program-tag">시즌 캠프</span>
+          <span class="program-tag">특목자사고 합격</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Intro before curriculum -->
+<section class="curriculum-intro">
+  <div class="container">
+    <p class="curriculum-note">우리아이에게 맞는 1:1 학습로드맵을 커스터마이징하는 유일한 영어학원입니다.</p>
+    <p class="curriculum-brochure" style="text-align:center; margin-top:8px;"><a href="https://heyzine.com/flip-book/9012fee45f.html#page/15" target="_blank" rel="noopener">소책자 보기 (브로셔)</a></p>
+  </div>
+</section>
+
+<!-- CURRICULUM FLOW -->
+<section class="curriculum" id="curriculum">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Curriculum Flow</div>
+      <h2 class="section-title fade-up">리딩브레인 학습 과정</h2>
+      <p class="section-desc fade-up">단계별로 설계된 커리큘럼으로 확실한 실력 향상을 만들어냅니다</p>
+    </div>
+    <div class="curr-flow fade-up">
+      <a class="curr-step"
+         href="curriculum-detail.html?step=1"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-step="STEP 01"
+         data-title="레벨 테스트 — 정확한 출발점"
+         data-img="images/phonics-class-actual.jpg"
+         data-desc="모든 학습은 정확한 진단에서 시작됩니다. AR TEST를 통해 학생의 현재 AR(Accelerated Reader) 지수와 4대 영역(Reading·Listening·Speaking·Writing) 균형을 정밀 분석합니다."
+         data-points='["AR TEST 기반 AR 지수 측정","어휘·구문·청해 종합 진단","학습 성향 및 강·약점 리포트 제공","학부모 1:1 상담 결과 안내"]'>
+        <div class="curr-num">1</div><h5>레벨 테스트</h5><p>AR 점수 기반<br>현재 수준 진단</p><span class="curr-more">자세히 보기 →</span>
+      </a>
+      <a class="curr-step"
+         href="curriculum-detail.html?step=2"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-step="STEP 02"
+         data-title="맞춤 설계 — 100명 100개의 커리큘럼"
+         data-img="images/signature-one-on-one-class.jpg"
+         data-desc="100명의 아이들에게는 100개의 서로 다른 커리큘럼이 필요합니다. 진단 결과를 토대로 학생 한 명을 위한 단계별 학습 로드맵과 도서 큐레이션을 설계합니다."
+         data-points='["개인별 AR 목표 및 단계별 마일스톤 설정","수준에 맞는 원서 도서 큐레이션","주·월간 학습 분량과 과제 정밀 배정","학부모 정기 피드백 리포트 발행"]'>
+        <div class="curr-num">2</div><h5>맞춤 설계</h5><p>개별 커리큘럼<br>목표 설정</p><span class="curr-more">자세히 보기 →</span>
+      </a>
+      <a class="curr-step"
+         href="curriculum-detail.html?step=3"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-step="STEP 03"
+         data-title="원서 정독 — 1:1 밀착 코칭"
+         data-img="images/usa-curriculum-workbook.jpg"
+         data-desc="원어민·교포·조교 선생님이 1:1로 밀착 코칭합니다. 단순 해석이 아닌 작가의 의도를 읽어내는 깊이 있는 정독으로 4대 영역을 통합 학습합니다."
+         data-points='["원어민·교포·조교 3중 코칭 시스템","Reading·Listening·Speaking·Writing 통합 수업","문장 단위 해석이 아닌 의미 단위 정독","Bilingual 사고 훈련"]'>
+        <div class="curr-num">3</div><h5>원서 정독</h5><p>1:1 밀착 지도<br>4대 영역 통합</p><span class="curr-more">자세히 보기 →</span>
+      </a>
+      <a class="curr-step"
+         href="curriculum-detail.html?step=4"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-step="STEP 04"
+         data-title="아웃풋 — 표현하는 영어"
+         data-img="images/newspaper-nonfiction-class.jpg"
+         data-desc="읽은 만큼 말하고 쓸 수 있어야 진짜 실력입니다. Book Talking과 Report Writing을 통해 학습한 내용을 자신의 언어로 재구성하고 발표하는 능동적 학습을 진행합니다."
+         data-points='["Book Talking — 도서별 발표 및 토론","Report Writing — 비평·요약·에세이","원어민 첨삭과 1:1 피드백","발표력·논리력·표현력 동시 향상"]'>
+        <div class="curr-num">4</div><h5>아웃풋</h5><p>Book Talking<br>Report Writing</p><span class="curr-more">자세히 보기 →</span>
+      </a>
+      <a class="curr-step"
+         href="curriculum-detail.html?step=5"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-step="STEP 05"
+         data-title="성장 확인 — 데이터로 증명하는 결과"
+         data-img="images/personalized-learning-report.jpg"
+         data-desc="감(感)이 아닌 데이터로 성장을 증명합니다. 연 10회 정기고사와 AR 레벨 추적 시스템으로 학생의 변화를 정량적으로 확인하고 다음 단계 전략을 세웁니다."
+         data-points='["연 10회 정기 평가 및 누적 그래프","AR 레벨업 추적 및 도서 이력 관리","월간 학부모 리포트 자동 발송","고1까지 고교 내신 1등급 로드맵"]'>
+        <div class="curr-num">5</div><h5>성장 확인</h5><p>정기고사 10회<br>AR 레벨업 추적</p><span class="curr-more">자세히 보기 →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Additional Curriculum Tracks -->
+<section class="curriculum-tracks">
+  <div class="container">
+    <div class="tracks-grid">
+      <a class="track-card" href="curriculum-detail.html?track=미교" target="_blank" rel="noopener noreferrer">
+        <div class="track-title">원서 + 미교</div>
+        <div class="track-desc">원서 정독 기반으로 미국교과(미교) 과정을 연결해 교과 성취도를 동시에 챙깁니다.</div>
+      </a>
+      <a class="track-card" href="curriculum-detail.html?track=영자신문" target="_blank" rel="noopener noreferrer">
+        <div class="track-title">원서 + 영자신문</div>
+        <div class="track-desc">논픽션·시사용어·비판적 읽기를 강화하는 영자신문 트랙을 병행합니다.</div>
+      </a>
+      <a class="track-card" href="curriculum-detail.html?track=중고등특목" target="_blank" rel="noopener noreferrer">
+        <div class="track-title">원서 + 중고등 특목</div>
+        <div class="track-desc">특목·자사고 대비 고난도 독해와 논리적 글쓰기 능력을 함께 육성합니다.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HEIDI 7-STEP SIGNATURE -->
+<section class="heidi" id="heidi">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Signature Process</div>
+      <h2 class="section-title fade-up">HEIDI 커리큘럼 — 원서 정독 7단계</h2>
+      <p class="section-desc fade-up">리딩브레인의 시그니처 학습 프로세스. Stephen Krashen의 <em>Comprehensible Input</em> 이론을 기반으로, 원서 한 권을 7단계로 흡수합니다.</p>
+      <div class="heidi-intro fade-up">
+        <span class="heidi-badge">HEIDI METHOD</span>
+        <span class="heidi-tag">읽기 · 듣기 · 쓰기 · 말하기 4대 영역 통합</span>
+      </div>
+    </div>
+    <div class="heidi-grid fade-up">
+      <div class="heidi-card">
+        <div class="heidi-step">1</div>
+        <img class="heidi-icon" src="images/students-test-environment.jpg" alt="">
+        <h4>AR 레벨 테스트</h4>
+        <p>학생의 현재 독서 지수(AR)와 4대 영역 균형을 정밀 측정해 시작점을 확정합니다.</p>
+      </div>
+      <div class="heidi-card">
+        <div class="heidi-step">2</div>
+        <img class="heidi-icon" src="images/academy-interior-1.jpg" alt="">
+        <h4>맞춤 책 선택</h4>
+        <p>레벨·관심사·목표에 맞는 원서를 1:1 큐레이션. 책 한 권이 곧 커리큘럼이 됩니다.</p>
+      </div>
+      <div class="heidi-card">
+        <div class="heidi-step">3</div>
+        <img class="heidi-icon" src="images/signature-one-on-one-class.jpg" alt="">
+        <h4>원서 정독</h4>
+        <p>모르는 단어가 있어도 문맥에서 의미를 유추하며 끝까지 읽는 능동적 정독을 훈련합니다.</p>
+      </div>
+      <div class="heidi-card">
+        <div class="heidi-step">4</div>
+        <img class="heidi-icon" src="images/usa-curriculum-workbook.jpg" alt="">
+        <h4>단어 학습</h4>
+        <p>유추한 의미를 사전적 의미와 매칭하며, 살아있는 어휘로 장기 기억에 저장합니다.</p>
+      </div>
+      <div class="heidi-card">
+        <div class="heidi-step">5</div>
+        <img class="heidi-icon" src="images/usa-curriculum-class.jpg" alt="">
+        <h4>쉐도잉</h4>
+        <p>집중 듣기 + 따라 말하기로 발음·억양·리듬을 체화. 듣기와 말하기를 동시에 키웁니다.</p>
+      </div>
+      <div class="heidi-card">
+        <div class="heidi-step">6</div>
+        <img class="heidi-icon" src="images/newspaper-nonfiction-class.jpg" alt="">
+        <h4>워크시트</h4>
+        <p>핵심 문법·내용 요약·인물/사건 정리까지, 책의 구조를 자기 언어로 재구성합니다.</p>
+      </div>
+      <div class="heidi-card">
+        <div class="heidi-step">7</div>
+        <img class="heidi-icon" src="images/speaking-contest.jpg" alt="">
+        <h4>1:1 북토킹</h4>
+        <p>원어민·교포 선생님과 영어로 자유 토론. 하브루타 방식으로 사고력·표현력을 동시 성장.</p>
+      </div>
+      <div class="heidi-card heidi-card-bonus">
+        <div class="heidi-step">+</div>
+        <img class="heidi-icon" src="images/hall-of-fame.jpg" alt="">
+        <h4>북퀴즈 &amp; 기록</h4>
+        <p>이해도 점검과 코인 보상으로 동기부여. 읽은 책은 모두 누적 도서 이력으로 관리됩니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIAGNOSTIC (레벨 테스트 진단 시스템) -->
+<section class="diagnostic" id="diagnostic">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Diagnostic System</div>
+      <h2 class="section-title fade-up">레벨 테스트 진단 시스템</h2>
+      <p class="section-desc fade-up">감(感)이 아닌 <strong>객관적 데이터</strong>로 시작합니다. 6가지 정밀 진단 검사로 학생의 현재 위치와 다음 한 걸음을 정확히 설계합니다.</p>
+    </div>
+    <div class="diag-grid fade-up">
+      <div class="diag-card">
+        <img class="diag-icon" src="images/students-test-environment.jpg" alt="">
+        <h4>AR TEST</h4>
+        <div class="diag-sub">Accelerated Reader · 진단 1</div>
+        <p>객관적 영어 읽기 능력 측정 검사. 어휘·구문·문맥 추론을 정밀 분석해 개별 맞춤 커리큘럼 설계의 출발점이 됩니다.</p>
+        <ul class="diag-list">
+          <li>월별 AR 레벨업 추적 (재원생 90% 매월 0.1↑ 상승)</li>
+          <li>레벨 기반 원서 큐레이션 자동 매칭</li>
+        </ul>
+        <div class="diag-stat">진단 결과 → 1:1 학부모 상담 연결</div>
+      </div>
+
+      <div class="diag-card">
+        <img class="diag-icon" src="images/personalized-learning-report.jpg" alt="">
+        <h4>TQ 문해력 검사</h4>
+        <div class="diag-sub">Text Quotient · 진단 3 (스터디포스)</div>
+        <p>뇌과학 기반 한국어 문해력 진단. 1분간의 정보 처리 속도와 글의 구조 파악 능력을 측정해 수능 국어 대비 출발점을 잡습니다.</p>
+        <ul class="diag-list">
+          <li>1분간 정보 처리 속도</li>
+          <li>글의 구조 파악 능력</li>
+          <li>저자 의도 추론 능력</li>
+        </ul>
+        <div class="diag-stat">일반 300자/분 → 수능 요구 1,000자/분</div>
+      </div>
+
+      <div class="diag-card">
+        <img class="diag-icon" src="images/individual-consultation.jpg" alt="">
+        <h4>학습심리검사</h4>
+        <div class="diag-sub">TLP · 진단 4</div>
+        <p>학습자의 심리적 특성과 학습 동기, 집중력 패턴을 분석합니다. 아이마다 다른 학습 스타일을 파악해 맞춤형 코칭 방향을 설계합니다.</p>
+        <ul class="diag-list">
+          <li>학습 동기 · 집중력 · 자기조절력 측정</li>
+          <li>스트레스 반응 및 학습 회피 유형 파악</li>
+          <li>맞춤 학습 환경 설계에 활용</li>
+        </ul>
+        <div class="diag-stat">심리 기반 1:1 코칭 설계</div>
+      </div>
+
+      <div class="diag-card">
+        <img class="diag-icon" src="images/signature-advanced-class.jpg" alt="">
+        <h4>진로적성검사</h4>
+        <div class="diag-sub">Career Aptitude · 진단 5</div>
+        <p>학생의 흥미, 강점, 적성을 과학적으로 측정합니다. 영어 학습 목표를 진로와 연결해 장기 로드맵의 방향성을 구체화합니다.</p>
+        <ul class="diag-list">
+          <li>Holland 직업흥미 유형 분석</li>
+          <li>강점 지능 기반 학습 경로 매칭</li>
+          <li>특목·자사고·유학 방향 연결 상담</li>
+        </ul>
+        <div class="diag-stat">진로 연계 영어 로드맵 설계</div>
+      </div>
+
+      <div class="diag-card">
+        <img class="diag-icon" src="images/usa-curriculum-class.jpg" alt="">
+        <h4>주니어토플시험</h4>
+        <div class="diag-sub">Junior TOEFL · 진단 6</div>
+        <p>ETS 공식 주니어토플로 국제 기준 영어 실력을 객관적으로 검증합니다. 국제학교 입학, 유학 준비, 특목고 대비에 실질적인 기준점이 됩니다.</p>
+        <ul class="diag-list">
+          <li>Reading · Listening · Speaking 통합 평가</li>
+          <li>국제 기준 점수로 현재 수준 객관화</li>
+          <li>국제학교·유학·특목고 입시 대비 활용</li>
+        </ul>
+        <div class="diag-stat">ETS 공식 인증 성적표 발급</div>
+      </div>
+    </div>
+
+    <div class="diag-cta fade-up">
+      <h4>6가지 진단을 바탕으로 1:1 학습 로드맵을 설계해드립니다</h4>
+      <p>25년 교육 노하우로 원서 레벨, 입시 목표, 가정 학습 루틴까지 함께 안내합니다.</p>
+      <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" class="btn-gold">1:1 학습 로드맵 예약</a>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="schedule" id="schedule">
+  <div class="container">
+    <div class="section-label fade-up">Class Schedule</div>
+    <h2 class="section-title fade-up">수업 시간 안내</h2>
+    <p class="section-desc fade-up">학생의 일정과 수준에 맞춰 유연하게 수업을 배치합니다.</p>
+
+    <div class="schedule-wrap fade-up">
+    <table class="schedule-table">
+      <thead><tr><th>프로그램</th><th>요일</th><th>시간</th><th>대상</th><th>관</th></tr></thead>
+      <tbody>
+        <tr><td data-label="프로그램"><strong>기초 원서반</strong></td><td data-label="요일">평일</td><td data-label="시간" class="time-highlight">12:30 ~ 18:00</td><td data-label="대상">초등 영어 입문</td><td data-label="관">1관</td></tr>
+        <tr><td data-label="프로그램"><strong>원서 정독반</strong></td><td data-label="요일">평일</td><td data-label="시간" class="time-highlight">12:30 ~ 19:00</td><td data-label="대상">초·중등</td><td data-label="관">1관</td></tr>
+        <tr><td data-label="프로그램"><strong>원서 정독반 (토)</strong></td><td data-label="요일">토요일</td><td data-label="시간" class="time-highlight">10:00 ~ 15:00</td><td data-label="대상">초·중등</td><td data-label="관">1관</td></tr>
+        <tr><td data-label="프로그램"><strong>미국교과반</strong></td><td data-label="요일">월 · 수 · 금</td><td data-label="시간" class="time-highlight">13:30 ~ 17:30</td><td data-label="대상">국제학교·유학 준비</td><td data-label="관">2관</td></tr>
+        <tr><td data-label="프로그램"><strong>영자신문&amp;논픽션 Basic</strong></td><td data-label="요일">화·목</td><td data-label="시간" class="time-highlight">14:30 ~ 16:00</td><td data-label="대상">AR 2.0~ · 6명</td><td data-label="관">2관</td></tr>
+        <tr><td data-label="프로그램"><strong>영자신문&amp;논픽션 Inter</strong></td><td data-label="요일">화·목</td><td data-label="시간" class="time-highlight">16:00 ~ 17:30</td><td data-label="대상">AR 4.0~ · 6명</td><td data-label="관">2관</td></tr>
+        <tr><td data-label="프로그램"><strong>스터디포스반</strong></td><td data-label="요일">월 ~ 목</td><td data-label="시간" class="time-highlight">15:00 ~ 19:00</td><td data-label="대상">내신 대비</td><td data-label="관">2관</td></tr>
+        <tr><td data-label="프로그램"><strong>중·고등 특목반</strong></td><td data-label="요일">평일</td><td data-label="시간" class="time-highlight">15:00 ~ 22:00</td><td data-label="대상">특목고·자사고 입시</td><td data-label="관">2관</td></tr>
+        <tr><td data-label="프로그램"><strong>중·고등 특목반 (토)</strong></td><td data-label="요일">토요일</td><td data-label="시간" class="time-highlight">12:00 ~ 16:00</td><td data-label="대상">개별보강·추가학습</td><td data-label="관">2관</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section class="achievements">
+  <div class="container">
+    <div class="section-label fade-up">Achievements</div>
+    <h2 class="section-title fade-up">숫자로 증명하는 리딩브레인</h2>
+    <p class="section-desc fade-up" style="color:rgba(255,255,255,0.65); margin: 0 auto 16px;">25년의 교육 노하우와 3,000명 이상의 졸업생이 만든 신뢰의 기록</p>
+    <div class="ach-grid fade-up">
+      <div class="ach-item"><div class="ach-value">25년</div><div class="ach-label">검증된 교육 경력</div></div>
+      <div class="ach-item"><div class="ach-value">3,000+</div><div class="ach-label">졸업생 누적</div></div>
+      <div class="ach-item"><div class="ach-value">720+</div><div class="ach-label">AR 우수자 누적</div></div>
+      <div class="ach-item"><div class="ach-value">+1.8</div><div class="ach-label">평균 AR 레벨 향상</div></div>
+      <div class="ach-item"><div class="ach-value">90%</div><div class="ach-label">월간 AR 0.1↑ 향상률</div></div>
+      <div class="ach-item"><div class="ach-value">98%</div><div class="ach-label">학생 만족도</div></div>
+      <div class="ach-item"><div class="ach-value">95%</div><div class="ach-label">학부모 추천율</div></div>
+      <div class="ach-item"><div class="ach-value">92%</div><div class="ach-label">재등록률</div></div>
+    </div>
+
+    <div class="proof-grid fade-up">
+      <div class="proof-card">
+        <div class="proof-head">영어말하기대회 (누적)</div>
+        <div class="proof-body">
+          <div class="proof-row"><span>누적 수상</span><strong>83명</strong></div>
+          <div class="proof-row"><span>대상 수상</span><strong>29명</strong></div>
+          <div class="proof-row"><span>최고상 수상</span><strong>37명</strong></div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-head">AR TEST 공식 인증</div>
+        <div class="proof-body">
+          <div class="proof-row"><span>AR 우수자 누적</span><strong>720명+</strong></div>
+          <div class="proof-row"><span>평균 레벨 향상</span><strong>1.8 ↑</strong></div>
+          <div class="proof-row"><span>월간 향상률</span><strong>90%</strong></div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-head">내신 / 입시 실적</div>
+        <div class="proof-body">
+          <div class="proof-row"><span>내신 영어 100점</span><strong>15명+</strong></div>
+          <div class="proof-row"><span>내신 영어 95점+</span><strong>20명+</strong></div>
+          <div class="proof-row"><span>특목고·자사고</span><strong>다수 합격</strong></div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-head">연구 기반 학습 효과</div>
+        <div class="proof-body">
+          <div class="proof-row"><span>독해력 향상</span><strong>+42%</strong></div>
+          <div class="proof-row"><span>어휘력 증가</span><strong>+38%</strong></div>
+          <div class="proof-row"><span>학습 동기 향상</span><strong>+61%</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HALL OF FAME (실적 갤러리) -->
+<section class="hall" id="hall">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Hall of Fame</div>
+      <h2 class="section-title fade-up">2024 · 2025 · 2026 명예의 전당</h2>
+      <p class="section-desc fade-up">학생들이 직접 만들어낸 진짜 성장 기록 — AR 레벨업, 영어말하기 대회 수상, 내신 100점까지.</p>
+    </div>
+
+    <div class="hall-grid fade-up">
+      <div class="hall-card">
+        <img src="images/ar-improvement.jpg" alt="AR 성과 - 재원생 90% 매월 0.1 이상 상승" class="hall-img" loading="lazy">
+        <div class="hall-body">
+          <span class="hall-tag">AR TEST</span>
+          <h4>월간 AR 0.1↑ 향상률 90%</h4>
+          <p>재원생 720명+ AR 우수자 누적, 평균 1.8 레벨 이상 상승. 광명 최다 인원 응시 공식 인증기관.</p>
+        </div>
+      </div>
+      <div class="hall-card">
+        <img src="images/hall-of-fame.jpg" alt="2024 중·고등 특목 2관 명예의 전당" class="hall-img" loading="lazy">
+        <div class="hall-body">
+          <span class="hall-tag">중·고등 특목 2관</span>
+          <h4>내신 영어 100점 15명+ / 95점+ 20명+</h4>
+          <p>2024 명예의 전당 — 안산동산고 등 특목·자사고 다수 합격, 내신 최상위권 학생들의 누적 기록.</p>
+        </div>
+      </div>
+      <div class="hall-card">
+        <img src="images/speaking-contest.jpg" alt="2025 세계예능교류협회 영어말하기대회" class="hall-img" loading="lazy">
+        <div class="hall-body">
+          <span class="hall-tag">영어말하기대회</span>
+          <h4>83명 수상 · 대상 29명 · 최고상 37명</h4>
+          <p>세계예능교류협회 주최 전국 영어말하기대회 누적 성과. 발음·제스처·표현력까지 완벽 준비한 리딩브레인 학생들의 도전.</p>
+        </div>
+      </div>
+      <div class="hall-card">
+        <img src="images/67337063_1773900869051.png" alt="2026년도 상반기 토플 주니어 명예의 전당" class="hall-img" loading="lazy">
+        <div class="hall-body">
+          <span class="hall-tag">TOEFL Junior</span>
+          <h4>2026 상반기 토플 주니어 명예의 전당</h4>
+          <p>주니어토플 공식 지정기관 — TOEFL Junior · Primary 인증서 다수 배출. ETS 공식 성적표로 입증된 실력.</p>
+        </div>
+      </div>
+      <div class="hall-card">
+        <img src="images/64640822_1771921937293.png" alt="리딩브레인 영어독서 히어로즈 AR 성과" class="hall-img" loading="lazy">
+        <div class="hall-body">
+          <span class="hall-tag">영어독서 히어로즈</span>
+          <h4>리딩브레인 영어독서 히어로즈</h4>
+          <p>읽은 만큼 실력으로 — AR 레벨 상승 우수자 전원 기록. 최고 6.4 레벨 도달, 꾸준한 독서로 만들어낸 진짜 성장.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ar-cases fade-up">
+      <h3>AR TEST 성적 우수자 갤러리</h3>
+      <p class="ar-cases-sub">실제 성적표 캡처 일부 — 1년 이내 평균 +2 레벨 이상 향상한 학생들의 기록</p>
+      <div class="ar-result-grid">
+        <a href="images/achievements/ar-result-01.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-01.jpg" loading="lazy" alt="AR 2.3 레벨 향상"><span>AR ↑ 2.3</span></a>
+        <a href="images/achievements/ar-result-02.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-02.jpg" loading="lazy" alt="AR 2.9 레벨 향상"><span>AR ↑ 2.9</span></a>
+        <a href="images/achievements/ar-result-03.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-03.jpg" loading="lazy" alt="AR 3.2 레벨 향상"><span>AR ↑ 3.2</span></a>
+        <a href="images/achievements/ar-result-04.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-04.jpg" loading="lazy" alt="AR 2.5 레벨 향상"><span>AR ↑ 2.5</span></a>
+        <a href="images/achievements/ar-result-05.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-05.jpg" loading="lazy" alt="AR 3.0 레벨 향상"><span>AR ↑ 3.0</span></a>
+        <a href="images/achievements/ar-result-06.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-06.jpg" loading="lazy" alt="AR 5.4 레벨 향상"><span>AR ↑ 5.4</span></a>
+        <a href="images/achievements/ar-result-07.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-07.jpg" loading="lazy" alt="AR 5.5 레벨 향상"><span>AR ↑ 5.5</span></a>
+        <a href="images/achievements/ar-result-08.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-08.jpg" loading="lazy" alt="AR 3.7 레벨 향상"><span>AR ↑ 3.7</span></a>
+        <a href="images/achievements/ar-result-09.jpg" class="ar-result" target="_blank"><img src="images/achievements/ar-result-09.jpg" loading="lazy" alt="AR 1.9에서 2.3"><span>AR 1.9 → 2.3</span></a>
+      </div>
+      <div class="ar-case-grid" style="margin-top:18px;">
+        <div class="ar-case"><div class="ar-case-name">홍*현<small>충현초 6학년</small></div><div class="ar-case-arrow">1.9 → <strong>4.7</strong></div><div class="ar-case-up">↑ 2.8</div></div>
+        <div class="ar-case"><div class="ar-case-name">천*민<small>박달초 6학년</small></div><div class="ar-case-arrow">3.3 → <strong>4.7</strong></div><div class="ar-case-up">↑ 1.4</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*린<small>빛가온초 6학년</small></div><div class="ar-case-arrow">0.5 → <strong>4.0</strong></div><div class="ar-case-up">↑ 3.5</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*원<small>빛가온초 6학년</small></div><div class="ar-case-arrow">4.1 → <strong>6.4</strong></div><div class="ar-case-up">↑ 2.3</div></div>
+        <div class="ar-case"><div class="ar-case-name">주*온<small>빛가온초 5학년</small></div><div class="ar-case-arrow">1.6 → <strong>3.2</strong></div><div class="ar-case-up">↑ 1.6</div></div>
+        <div class="ar-case"><div class="ar-case-name">한*하<small>빛가온초 5학년</small></div><div class="ar-case-arrow">0.7 → <strong>1.8</strong></div><div class="ar-case-up">↑ 1.1</div></div>
+        <div class="ar-case"><div class="ar-case-name">이*원<small>빛가온초 5학년</small></div><div class="ar-case-arrow">1.2 → <strong>3.2</strong></div><div class="ar-case-up">↑ 2.0</div></div>
+        <div class="ar-case"><div class="ar-case-name">허*하<small>빛가온초 5학년</small></div><div class="ar-case-arrow">1.2 → <strong>2.3</strong></div><div class="ar-case-up">↑ 1.1</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*하<small>빛가온초 5학년</small></div><div class="ar-case-arrow">1.2 → <strong>4.0</strong></div><div class="ar-case-up">↑ 2.8</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*율<small>동광초 5학년</small></div><div class="ar-case-arrow">2.6 → <strong>4.0</strong></div><div class="ar-case-up">↑ 1.4</div></div>
+        <div class="ar-case"><div class="ar-case-name">강*빈<small>빛가온초 5학년</small></div><div class="ar-case-arrow">1.2 → <strong>2.5</strong></div><div class="ar-case-up">↑ 1.3</div></div>
+        <div class="ar-case"><div class="ar-case-name">장*린<small>빛가온초 5학년</small></div><div class="ar-case-arrow">0.5 → <strong>2.5</strong></div><div class="ar-case-up">↑ 2.0</div></div>
+        <div class="ar-case"><div class="ar-case-name">조*후<small>빛가온초 5학년</small></div><div class="ar-case-arrow">0.5 → <strong>1.8</strong></div><div class="ar-case-up">↑ 1.3</div></div>
+        <div class="ar-case"><div class="ar-case-name">윤*찬<small>빛가온초 4학년</small></div><div class="ar-case-arrow">3.3 → <strong>5.4</strong></div><div class="ar-case-up">↑ 2.1</div></div>
+        <div class="ar-case"><div class="ar-case-name">이*윤<small>동광초 4학년</small></div><div class="ar-case-arrow">2.3 → <strong>4.0</strong></div><div class="ar-case-up">↑ 1.7</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*린<small>빛가온초 4학년</small></div><div class="ar-case-arrow">1.2 → <strong>2.9</strong></div><div class="ar-case-up">↑ 1.7</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*윤<small>빛가온초 4학년</small></div><div class="ar-case-arrow">2.6 → <strong>4.4</strong></div><div class="ar-case-up">↑ 1.8</div></div>
+        <div class="ar-case"><div class="ar-case-name">최*아<small>빛가온초 4학년</small></div><div class="ar-case-arrow">1.2 → <strong>2.3</strong></div><div class="ar-case-up">↑ 1.1</div></div>
+        <div class="ar-case"><div class="ar-case-name">최*아<small>빛가온초 3학년</small></div><div class="ar-case-arrow">0.8 → <strong>2.3</strong></div><div class="ar-case-up">↑ 1.5</div></div>
+        <div class="ar-case"><div class="ar-case-name">박*희<small>빛가온초 3학년</small></div><div class="ar-case-arrow">1.6 → <strong>2.5</strong></div><div class="ar-case-up">↑ 0.9</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*성<small>빛가온초 3학년</small></div><div class="ar-case-arrow">0.8 → <strong>2.5</strong></div><div class="ar-case-up">↑ 1.7</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*희<small>빛가온초 3학년</small></div><div class="ar-case-arrow">2.4 → <strong>4.0</strong></div><div class="ar-case-up">↑ 1.6</div></div>
+        <div class="ar-case"><div class="ar-case-name">이*우<small>빛가온초 3학년</small></div><div class="ar-case-arrow">0.5 → <strong>1.8</strong></div><div class="ar-case-up">↑ 1.3</div></div>
+        <div class="ar-case"><div class="ar-case-name">이*율<small>빛가온초 2학년</small></div><div class="ar-case-arrow">1.6 → <strong>2.3</strong></div><div class="ar-case-up">↑ 0.7</div></div>
+        <div class="ar-case"><div class="ar-case-name">김*현<small>빛가온초 1학년</small></div><div class="ar-case-arrow">2.4 → <strong>3.2</strong></div><div class="ar-case-up">↑ 0.8</div></div>
+        <div class="ar-case"><div class="ar-case-name">황*이<small>빛가온초 1학년</small></div><div class="ar-case-arrow">0.5 → <strong>2.3</strong></div><div class="ar-case-up">↑ 1.8</div></div>
+        <div class="ar-case"><div class="ar-case-name">안*성<small>빛가온초 1학년</small></div><div class="ar-case-arrow">0.5 → <strong>2.3</strong></div><div class="ar-case-up">↑ 1.8</div></div>
+      </div>
+
+      <div class="ar-stats-bar fade-up">
+        <div class="ar-stat-item"><strong>720명+</strong><span>전체 우수자</span></div>
+        <div class="ar-stat-item"><strong>평균 1.8</strong><span>레벨 향상</span></div>
+        <div class="ar-stat-item"><strong>최고 3.9</strong><span>개인 향상폭</span></div>
+        <div class="ar-stat-item"><strong>90%</strong><span>월간 향상률</span></div>
+      </div>
+      <p class="ar-stat-tip">리딩브레인만의 특별함 — 정기적 AR 테스트를 통한 객관적 성과 측정 및 투명한 공개</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Reviews</div>
+      <h2 class="section-title fade-up">학부모님들의 생생한 후기</h2>
+      <p class="section-desc fade-up" style="color:var(--gray-500);margin:0 auto 16px;">실제로 리딩브레인에서 학습 중이거나 졸업한 학부모님들의 진솔한 이야기입니다.</p>
+    </div>
+    <div class="test-grid parent-review-grid">
+      <article class="test-card parent-review-card fade-up">
+        <img src="images/reviews/naver-review-consultation.jpg" alt="네이버 방문자 리뷰에 첨부된 리딩브레인 학원 외관 사진" class="review-photo" loading="lazy">
+        <blockquote>“상담 분위기가 편안했고 커리큘럼을 체계적으로 설명해 주셨어요. 아이도 첫 수업이 재미있었다고 했습니다.”</blockquote>
+        <div class="parent-review-meta"><span>네이버 방문자 리뷰</span><a href="https://pcmap.place.naver.com/place/1447511520/review/visitor" target="_blank" rel="noopener noreferrer">원문 리뷰 보기</a></div>
+      </article>
+      <article class="test-card parent-review-card fade-up">
+        <img src="images/reviews/naver-review-four-skills.jpg" alt="네이버 방문자 리뷰에 첨부된 리딩브레인 정문 사진" class="review-photo" loading="lazy">
+        <blockquote>“원서 읽기뿐 아니라 라이팅과 스피치까지 영어의 네 영역을 고르게 지도해 주세요.”</blockquote>
+        <div class="parent-review-meta"><span>네이버 방문자 리뷰</span><a href="https://pcmap.place.naver.com/place/1447511520/review/visitor" target="_blank" rel="noopener noreferrer">원문 리뷰 보기</a></div>
+      </article>
+      <article class="test-card parent-review-card fade-up">
+        <img src="images/reviews/naver-review-personalized.jpg" alt="네이버 방문자 리뷰에 첨부된 리딩브레인 외관 사진" class="review-photo" loading="lazy">
+        <blockquote>“아이의 학습 속도에 맞춰 지도하고, 행사와 이벤트도 준비해 주어 즐겁게 다니고 있어요.”</blockquote>
+        <div class="parent-review-meta"><span>네이버 방문자 리뷰</span><a href="https://pcmap.place.naver.com/place/1447511520/review/visitor" target="_blank" rel="noopener noreferrer">원문 리뷰 보기</a></div>
+      </article>
+      <article class="test-card parent-review-card fade-up">
+        <img src="images/reviews/naver-review-longterm.jpg" alt="네이버 방문자 리뷰에 첨부된 리딩브레인 영어원서 공간 사진" class="review-photo" loading="lazy">
+        <blockquote>“저학년부터 꾸준히 다니며 자연스럽게 영어를 배우고 익히고 있습니다.”</blockquote>
+        <div class="parent-review-meta"><span>네이버 방문자 리뷰</span><a href="https://pcmap.place.naver.com/place/1447511520/review/visitor" target="_blank" rel="noopener noreferrer">원문 리뷰 보기</a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY (학원 시설 & 수업 사진) -->
+<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">Academy Gallery</div>
+      <h2 class="section-title fade-up">학원 시설 &amp; 수업 현장</h2>
+      <p class="section-desc fade-up">100% 영어몰입 학습 공간, 1:1 밀착 코칭, 정기 학부모 설명회 — 리딩브레인의 진짜 모습을 직접 확인하세요.</p>
+    </div>
+    <div class="gallery-grid fade-up">
+      <a href="images/academy-interior-1.jpg" target="_blank" class="gallery-item">
+        <img src="images/academy-interior-1.jpg" loading="lazy" alt="리딩브레인 1관 내부 전경">
+        <div class="gallery-caption">리딩브레인 1관 전경<small>100% 영어몰입 학습 공간</small></div>
+      </a>
+      <a href="images/academy-interior-2.jpg" target="_blank" class="gallery-item">
+        <img src="images/academy-interior-2.jpg" loading="lazy" alt="1:1 수업 모습">
+        <div class="gallery-caption">1:1 밀착 수업<small>학생 한 명을 위한 맞춤 코칭</small></div>
+      </a>
+      <a href="images/classroom-interactive-board.jpg" target="_blank" class="gallery-item">
+        <img src="images/classroom-interactive-board.jpg" loading="lazy" alt="스마트보드 활용 수업">
+        <div class="gallery-caption">스마트보드 활용 수업<small>인터랙티브 디지털 학습</small></div>
+      </a>
+      <a href="images/students-test-environment.jpg" target="_blank" class="gallery-item">
+        <img src="images/students-test-environment.jpg" loading="lazy" alt="학생들 시험 환경">
+        <div class="gallery-caption">정기고사 응시 환경<small>연 10회 객관적 평가 시스템</small></div>
+      </a>
+      <a href="images/individual-consultation.jpg" target="_blank" class="gallery-item">
+        <img src="images/individual-consultation.jpg" loading="lazy" alt="1:1 학습로드맵 상담">
+        <div class="gallery-caption">1:1 학습로드맵 상담<small>학생·학부모 정밀 컨설팅</small></div>
+      </a>
+      <a href="images/parent-briefing-session.jpg" target="_blank" class="gallery-item">
+        <img src="images/parent-briefing-session.jpg" loading="lazy" alt="리딩브레인 정기 설명회">
+        <div class="gallery-caption">정기 학부모 설명회<small>입시 정보 &amp; 학습 방향 공유</small></div>
+      </a>
+      <a href="images/usa-curriculum-workbook.jpg" target="_blank" class="gallery-item">
+        <img src="images/usa-curriculum-workbook.jpg" loading="lazy" alt="미국교과 실제 워크북">
+        <div class="gallery-caption">미국교과 실제 워크북<small>ChildU 프로그램 학습 자료</small></div>
+      </a>
+      <a href="images/personalized-learning-report.jpg" target="_blank" class="gallery-item">
+        <img src="images/personalized-learning-report.jpg" loading="lazy" alt="개별 맞춤 학습 리포트">
+        <div class="gallery-caption">개별 맞춤 학습 리포트<small>월간 성장 데이터 자동 발송</small></div>
+      </a>
+      <a href="images/signature-usa-curriculum-class.jpg" target="_blank" class="gallery-item">
+        <img src="images/signature-usa-curriculum-class.jpg" loading="lazy" alt="1:1 원서정독 + 미국교과 수업">
+        <div class="gallery-caption">시그니처 통합 수업<small>원서정독 + 미국교과 결합</small></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-label fade-up">FAQ</div>
+      <h2 class="section-title fade-up">자주 묻는 질문</h2>
+    </div>
+    <div class="faq-list fade-up">
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">리딩브레인은 원서만 읽는 학원인가요?</div>
+        <div class="faq-a">아닙니다. 원서 정독을 기반으로 Reading, Writing, Speaking, Listening 4대 영역을 통합 학습합니다. 또한 연 10회 정기고사, Book Talking, Report Writing 등 다양한 아웃풋 활동을 병행합니다.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">영어를 처음 시작하는 아이도 가능한가요?</div>
+        <div class="faq-a">네, 가능합니다. 리딩브레인은 상위권 학생만을 위한 곳이 아니라, AI 시대에 사고력·문해력·집중력을 키우고 싶은 모든 아이들이 영어원서를 읽을 수 있도록 출발점을 설계합니다. 레벨 진단 후 현재 수준에 맞는 기초 원서부터 시작합니다.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">수업 시간은 어떻게 되나요?</div>
+        <div class="faq-a">AR 점수에 따라 60분, 90분, 120분 중 선택 가능합니다. 수업 스케줄은 월 1회 변경 가능하며, 결석 시 3일 전 사전 연락을 주시면 보강(월 최대 2회)으로 대체됩니다.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">사립초·국제학교·유학·주재원 자녀도 수업 가능한가요?</div>
+        <div class="faq-a">네. 리딩브레인의 핵심 상담 타깃입니다. 원서정독반을 중심으로 국제학교 재학생, 해외 귀국 학생, 유학 준비생, 주재원 자녀에게 필요한 Bilingual 독해·토론·쓰기 수업을 진행합니다.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">주차가 가능한가요?</div>
+        <div class="faq-a">네, 학원 건물 바로 옆에 주차 공간이 있습니다. 광명역에서 도보 5분, 빛가온초등학교 정문 바로 앞에 위치해 있어 접근성이 좋습니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP PANEL (하단 이동) -->
+<section class="roadmap-panel-section" id="roadmap-consult">
+  <div class="container">
+    <div class="roadmap-panel-wrap fade-up">
+      <div class="roadmap-panel-left">
+        <div class="roadmap-panel-kicker">1:1 Roadmap Consultation</div>
+        <h2 class="roadmap-panel-title">우리 아이 원서정독<br><em>로드맵 상담</em></h2>
+        <p class="roadmap-panel-desc">원서 레벨, 읽기 습관, 입시 목표까지 함께 보고<br>아이 한 명을 위한 맞춤 영어 성장 경로를 설계합니다.</p>
+        <div class="roadmap-panel-list">
+          <div class="roadmap-panel-item"><span class="rp-num">01</span><span>현재 원서 레벨과 읽기 습관 확인</span></div>
+          <div class="roadmap-panel-item"><span class="rp-num">02</span><span>AI 시대 사고력·문해력·집중력 성장 방향 설계</span></div>
+          <div class="roadmap-panel-item"><span class="rp-num">03</span><span>국제학교·입시·유학 목표별 트랙 안내</span></div>
+          <div class="roadmap-panel-item"><span class="rp-num">04</span><span>20세 이후에도 유효한 바이링구얼 영어 로드맵</span></div>
+        </div>
+        <div class="roadmap-panel-btns">
+          <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" class="btn-gold">네이버 예약하기</a>
+          <a href="tel:02-2135-8311" class="btn-outline-dark">전화 02-2135-8311</a>
+        </div>
+      </div>
+      <div class="roadmap-panel-right">
+        <div class="roadmap-panel-img" style="background-image:url('images/signature-advanced-class.jpg')"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>우리 아이 영어, 1:1 학습 로드맵부터 시작하세요</h2>
+  <p>원서 레벨과 입시 목표를 함께 보고 아이에게 맞는 영어 성장 경로를 안내드립니다.</p>
+  <div class="cta-buttons">
+    <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" class="cta-btn cta-kakao">상담예약</a>
+    <a href="tel:02-2135-8311" class="cta-btn cta-phone">전화 02-2135-8311</a>
+    <a href="https://instagram.com/readingbrain_gm" target="_blank" class="cta-btn cta-insta">인스타그램</a>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="location" id="location">
+  <div class="container">
+    <div class="section-label fade-up">Location</div>
+    <h2 class="section-title fade-up">오시는 길</h2>
+
+    <div class="location-grid fade-up">
+      <div class="location-map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.8!2d126.886!3d37.42!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b62a0c1e28b6f%3A0x0!2z66as65Sp67iM66CI7J24IOyYgeyWtO2VmeybbA!5e0!3m2!1sko!2skr!4v1" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="location-info">
+        <h4>리딩브레인 영어학원</h4>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">TEL</div>
+          <div class="loc-text"><strong>전화</strong><span><a href="tel:02-2135-8311" style="color:var(--maroon);font-weight:700">02-2135-8311</a></span></div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">MAP</div>
+          <div class="loc-text"><strong>주소</strong><span>경기 광명시 양달로10번길 7, 1층 (광명 일직동)</span></div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">SUB</div>
+          <div class="loc-text"><strong>교통</strong><span>광명역 도보 5분 · 빛가온초등학교 정문 앞</span></div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">P</div>
+          <div class="loc-text"><strong>주차</strong><span>학원 건물 바로 옆 주차 가능</span></div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">N</div>
+          <div class="loc-text"><strong>네이버 예약</strong><span><a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank" style="color:var(--maroon);font-weight:600">1:1 학습 로드맵 상담 예약</a></span></div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">IG</div>
+          <div class="loc-text"><strong>인스타그램</strong><span><a href="https://instagram.com/readingbrain_gm" target="_blank" style="color:var(--maroon);font-weight:600">@readingbrain_gm</a></span></div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-icon" aria-hidden="true">YT</div>
+          <div class="loc-text"><strong>유튜브</strong><span><a href="https://www.youtube.com/@리딩브레인영어학원" target="_blank" style="color:var(--maroon);font-weight:600">리딩브레인영어학원</a></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand-area">
+      <img src="logo.jpg" alt="리딩브레인">
+      <p>리딩브레인 영어학원 · 대표 김기숙<br>경기 광명시 양달로10번길 7, 1층 (광명 일직동)<br>전화 02-2135-8311<br>상위 1% 영어몰입교육 · 초/중/고 1:1 원서 교육 전문</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank">네이버 예약</a>
+      <a href="https://instagram.com/readingbrain_gm" target="_blank">Instagram</a>
+      <a href="https://www.youtube.com/@리딩브레인영어학원" target="_blank">YouTube</a>
+      <a href="https://blog.naver.com/jadeacademy" target="_blank">Blog</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2024 Reading Brain English Academy. All rights reserved.</div>
+</footer>
+
+
+<!-- Exit Intent Popup -->
+<div class="exit-popup" id="exitPopup" role="dialog" aria-modal="true" aria-labelledby="exitPopupTitle">
+  <div class="exit-popup-box">
+    <button class="exit-popup-close" type="button" aria-label="팝업 닫기">×</button>
+    <!-- 상단 다크 밴드 -->
+    <div class="ep-top">
+      <div class="ep-badge">지금 떠나기 전에</div>
+      <h3 id="exitPopupTitle">AI 시대,<br><em>읽는 아이가 이깁니다</em></h3>
+      <p>검색보다 빠른 AI 세상에서 살아남는 힘—<br>긴 글을 깊이 읽고 스스로 판단하는 능력</p>
+    </div>
+    <!-- 통계 바 -->
+    <div class="ep-stats">
+      <div class="ep-stat-item"><strong>AR+2.3</strong><span>평균 점수 향상</span></div>
+      <div class="ep-stat-item"><strong>93%</strong><span>수강생 AR 상승</span></div>
+      <div class="ep-stat-item"><strong>10년+</strong><span>원서교육 노하우</span></div>
+    </div>
+    <!-- 화이트 바디 -->
+    <div class="ep-body">
+      <p>등록 결정은 나중에 해도 됩니다. <strong>1:1 학습 로드맵 상담</strong>에서 아이에게 맞는 출발점을 먼저 확인해 보세요.</p>
+      <ul class="ep-list">
+        <li>현재 원서 레벨과 읽기 습관 <strong>무료 진단</strong></li>
+        <li>사고력·문해력·집중력 키우는 <strong>맞춤 로드맵</strong> 설계</li>
+        <li>사립초·국제학교·유학·입시 <strong>트랙별 1:1 안내</strong></li>
+      </ul>
+      <a class="ep-cta-main" href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank">무료 로드맵 상담 예약하기 →</a>
+      <a class="ep-cta-phone" href="tel:02-2135-8311">02-2135-8311 전화 문의</a>
+      <button class="ep-skip" type="button">이미 충분히 알고 있어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chatbot -->
+<div class="chatbot" id="chatbot">
+  <section class="chatbot-panel" aria-label="리딩브레인 상담 챗봇">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <strong>리딩브레인 상담봇</strong>
+        <span>프로그램, 시간표, 위치를 빠르게 안내해드려요.</span>
+      </div>
+      <button class="chatbot-close" type="button" aria-label="챗봇 닫기">×</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages" aria-live="polite"></div>
+    <div class="chat-quick" aria-label="빠른 질문">
+      <button class="chat-chip" type="button" data-question="1:1 학습 로드맵 상담">로드맵 상담</button>
+      <button class="chat-chip" type="button" data-question="원서정독 프로그램">원서정독</button>
+      <button class="chat-chip" type="button" data-question="수업 시간">수업 시간</button>
+      <button class="chat-chip" type="button" data-question="수강료 문의">수강료</button>
+      <button class="chat-chip" type="button" data-question="사립초 국제학교 유학 주재원 자녀 수업">상위권/글로벌</button>
+      <button class="chat-chip" type="button" data-question="위치와 주차">위치/주차</button>
+      <button class="chat-chip" type="button" data-question="상담 예약 신청">상담 예약</button>
+    </div>
+    <form class="chatbot-form" id="chatForm">
+      <input id="chatInput" type="text" autocomplete="off" placeholder="궁금한 점을 입력해 주세요" aria-label="챗봇 질문 입력">
+      <button type="submit" aria-label="질문 보내기">↵</button>
+    </form>
+    <div class="chatbot-actions">
+      <a class="chatbot-kakao" href="https://map.naver.com/p/search/%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90/place/1447511520?placePath=/ticket?bk_query=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;entry=pll&amp;from=nx&amp;fromNxList=true&amp;fromPanelNum=2&amp;timestamp=202606071652&amp;locale=ko&amp;svcName=map_pcv5&amp;searchText=%EB%A6%AC%EB%94%A9%EB%B8%8C%EB%A0%88%EC%9D%B8%EC%98%81%EC%96%B4%ED%95%99%EC%9B%90&amp;searchType=place&amp;c=15.00,0,0,0,dh" target="_blank">네이버 예약</a>
+      <a class="chatbot-phone" href="tel:02-2135-8311">전화 상담</a>
+    </div>
+  </section>
+  <button class="chatbot-toggle" type="button" aria-label="상담 챗봇 열기" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+      <path d="M8 9h8M8 13h5"/>
+    </svg>
+    <span class="chatbot-notice">궁금한 점을 바로 물어보세요</span>
+  </button>
+</div>
+<script>
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Fade-up
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+// Smooth scroll + mobile nav close
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks && window.innerWidth <= 1024) navLinks.style.display = 'none';
+  });
+});
+
+// Active nav link highlight on scroll
+(function () {
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
+  function activateLink() {
+    const scrollY = window.scrollY + 80;
+    let current = '';
+    sections.forEach(s => { if (s.offsetTop <= scrollY) current = s.id; });
+    navAnchors.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', activateLink, { passive: true });
+  activateLink();
+})();
+
+// Curriculum modal
+(function () {
+  const modal = document.getElementById('currModal');
+  if (!modal) return;
+  const imgEl = modal.querySelector('.curr-modal-img');
+  const badgeEl = modal.querySelector('.curr-modal-badge');
+  const stepEl = modal.querySelector('.step-num');
+  const titleEl = modal.querySelector('h4');
+  const descEl = modal.querySelector('.curr-modal-desc');
+  const listEl = modal.querySelector('.curr-modal-list');
+  const closeBtn = modal.querySelector('.curr-modal-close');
+
+  function openModal(step) {
+    const img = step.dataset.img;
+    const stepLabel = step.dataset.step || '';
+    const title = step.dataset.title || '';
+    const desc = step.dataset.desc || '';
+    let points = [];
+    try { points = JSON.parse(step.dataset.points || '[]'); } catch (_) {}
+
+    imgEl.style.backgroundImage = `url('${img}')`;
+    badgeEl.textContent = stepLabel;
+    stepEl.textContent = stepLabel;
+    titleEl.textContent = title;
+    descEl.textContent = desc;
+    listEl.innerHTML = points.map(p => `<li>${p}</li>`).join('');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.curr-step').forEach(step => {
+    step.addEventListener('click', () => openModal(step));
+  });
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+})();
+
+// Exit intent popup
+(function () {
+  const popup = document.getElementById('exitPopup');
+  if (!popup) return;
+  const closeBtn = popup.querySelector('.exit-popup-close');
+  const storageKey = 'readingBrainExitPopupSeen';
+  let shown = sessionStorage.getItem(storageKey) === '1';
+
+  function showPopup() {
+    if (shown) return;
+    shown = true;
+    sessionStorage.setItem(storageKey, '1');
+    popup.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    if (window.readingBrainTrack) {
+      window.readingBrainTrack('exit_popup_view', { event_category: 'engagement' });
+    }
+  }
+
+  function closePopup() {
+    popup.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('mouseout', e => {
+    if (e.clientY <= 8 && !e.relatedTarget) showPopup();
+  });
+  window.setTimeout(showPopup, 18000);
+  closeBtn.addEventListener('click', closePopup);
+  const skipBtn = popup.querySelector('.ep-skip');
+  if (skipBtn) skipBtn.addEventListener('click', closePopup);
+  popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+})();
+
+// Chatbot
+(function () {
+  const chatbot = document.getElementById('chatbot');
+  if (!chatbot) return;
+
+  const toggleBtn = chatbot.querySelector('.chatbot-toggle');
+  const closeBtn = chatbot.querySelector('.chatbot-close');
+  const form = document.getElementById('chatForm');
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('chatMessages');
+
+  const answers = [
+    {
+      keywords: ['레벨', '테스트', '진단', '처음', '초보', '입문', 'ar', 'tq', '토플', 'junior', '주니어'],
+      text: '1:1 학습 로드맵 상담에서 현재 영어 독서 수준, AR 지표, 읽기 습관을 함께 확인합니다. TQ 테스트와 주니어 토플 점수가 있으시면 상담 시 참고 자료로 활용할 수 있습니다. 진단은 등록을 강요하는 과정이 아니라 아이에게 맞는 원서 레벨과 입시영어 로드맵을 설계하기 위한 출발점입니다. 영어를 처음 시작하는 아이도 현재 수준에 맞는 기초 원서부터 시작할 수 있습니다. 예약은 네이버 예약 또는 전화 02-2135-8311로 가능합니다.'
+    },
+    {
+      keywords: ['원서만', '원서만읽', '원서만가르', '원서만하'],
+      text: '아닙니다. 원서 정독을 기반으로 Reading, Writing, Speaking, Listening 4대 영역을 통합 학습합니다. 또한 연 10회 정기고사, Book Talking, Report Writing 등 다양한 아웃풋 활동을 병행합니다.'
+    },
+    {
+      keywords: ['프로그램', '반', '커리큘럼', '원서', '정독', '미국', '교과', '파닉스', '특목', '자사고', '신문', '논픽션'],
+      text: '리딩브레인의 핵심 프로그램은 원서정독반입니다. 원서 정독을 기반으로 Reading, Writing, Speaking, Listening 4대 영역을 통합 학습하며, 연 10회 정기고사·Book Talking·Report Writing 등 다양한 아웃풋 활동을 병행합니다. 미국교과, 영자신문·논픽션, 중고등 특목반, 기초 원서 파닉스가 연결되며 사립초·국제학교·특목자사고·유학·주재원 트랙까지 학생 목표에 맞춰 설계합니다.'
+    },
+    {
+      keywords: ['시간', '스케줄', '몇시', '수업시간', '보강', '결석', '요일', '토요일'],
+      text: 'AR 점수에 따라 60분, 90분, 120분 중 선택 가능합니다. 수업 스케줄은 월 1회 변경 가능하며, 결석 시 3일 전 사전 연락을 주시면 보강(월 최대 2회)으로 대체됩니다. 자세한 시간표는 상담에서 맞춰드립니다.'
+    },
+    {
+      keywords: ['위치', '주소', '오시는길', '광명', '빛가온', '일직동'],
+      text: '주소는 경기 광명시 양달로10번길 7, 1층 (광명 일직동)입니다. 광명역 도보 5분, 빛가온초등학교 정문 바로 앞에 위치해 있습니다.'
+    },
+    {
+      keywords: ['주차'],
+      text: '네, 주차 가능합니다. 학원 건물 바로 옆에 주차 공간이 있습니다. 광명역 도보 5분, 빛가온초등학교 정문 바로 앞에 위치해 있어 접근성이 좋습니다.'
+    },
+    {
+      keywords: ['비용', '수강료', '가격', '얼마', '등록'],
+      text: '수강료는 학년, 레벨, 수업 시간, 선택 프로그램에 따라 달라집니다. 1:1 학습 로드맵 상담에서 아이에게 맞는 반과 시간을 먼저 정한 뒤 정확한 비용을 안내드립니다.'
+    },
+    {
+      keywords: ['사립초', '국제', '외국', '영어민', '교포', '영어로', '유학', '리터니', '주재원', 'bilingual', '바이링구얼'],
+      text: '네, 리딩브레인의 핵심 상담 타깃입니다. 원서정독반을 중심으로 국제학교 재학생, 해외 귀국 학생, 유학 준비생, 주재원 자녀에게 필요한 Bilingual 독해·토론·쓰기 수업을 진행합니다. 미국교과와 입시영어까지 목표에 맞게 설계합니다.'
+    },
+    {
+      keywords: ['상담', '예약', '신청', '문의', '전화', '카카오', '네이버'],
+      text: '상담 예약은 네이버 예약 또는 전화로 가능합니다. 네이버 예약: 1:1 학습 로드맵 상담, 전화: 02-2135-8311. 예약 시 학생 이름, 학년, 현재 영어 수준, 목표를 알려주시면 더 빠르게 안내해드릴 수 있습니다.'
+    },
+    {
+      keywords: ['수능', '입시', '고등', '중등', '1등급'],
+      text: '리딩브레인은 원서로 영어를 언어처럼 체득하고, 그 힘을 입시영어로 연결하는 방향을 갖고 있습니다. 초등 시기부터 독해력과 사고력을 쌓아 중등 이후 고등영어 1등급 기반을 만드는 것이 목표입니다.'
+    },
+    {
+      keywords: ['ai', '사고력', '문해력', '집중력', '모든', '아이', '원서읽기'],
+      text: 'AI 시대에는 빠르게 답을 찾는 능력보다 긴 글을 읽고 이해하며 스스로 판단하는 힘이 더 중요합니다. 리딩브레인은 영어원서 정독으로 사고력·문해력·집중력을 키우고, Reading·Writing·Speaking·Listening 4대 영역 통합학습과 연 10회 정기고사 등을 통해 실력을 완성합니다.'
+    }
+  ];
+
+  function addMessage(text, sender) {
+    const row = document.createElement('div');
+    row.className = `chat-message ${sender}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    messages.appendChild(row);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function getAnswer(question) {
+    const normalized = question.replace(/\s/g, '').toLowerCase();
+    const found = answers.find(item => item.keywords.some(keyword => normalized.includes(keyword)));
+    if (found) return found.text;
+    return '문의 주신 내용은 상담 선생님이 확인하면 더 정확하게 안내드릴 수 있어요.\n\n네이버 예약을 누르시면 1:1 학습 로드맵 상담으로 연결됩니다. 급하신 경우 02-2135-8311로 전화 주세요.';
+  }
+
+  function ask(question) {
+    const clean = question.trim();
+    if (!clean) return;
+    addMessage(clean, 'user');
+    window.setTimeout(() => addMessage(getAnswer(clean), 'bot'), 250);
+  }
+
+  function openChatbot() {
+    chatbot.classList.add('open');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    if (window.readingBrainTrack) {
+      window.readingBrainTrack('chatbot_open', { event_category: 'engagement' });
+    }
+    window.setTimeout(() => input.focus(), 80);
+  }
+
+  function closeChatbot() {
+    chatbot.classList.remove('open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    chatbot.classList.contains('open') ? closeChatbot() : openChatbot();
+  });
+  closeBtn.addEventListener('click', closeChatbot);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChatbot(); });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (window.readingBrainTrack && input.value.trim()) {
+      window.readingBrainTrack('chatbot_question', { event_category: 'engagement' });
+    }
+    ask(input.value);
+    input.value = '';
+  });
+  chatbot.querySelectorAll('.chat-chip').forEach(chip => {
+    chip.addEventListener('click', () => ask(chip.dataset.question || chip.textContent));
+  });
+
+  function initProgramToggles() {
+    document.querySelectorAll('.program-card').forEach(card => {
+      const summary = card.querySelector(':scope > p');
+      if (!summary) return;
+      const details = [];
+      let node = summary.nextElementSibling;
+      while (node) {
+        const next = node.nextElementSibling;
+        details.push(node);
+        node = next;
+      }
+      if (!details.length) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'program-card-content';
+      details.forEach(el => wrapper.appendChild(el));
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'program-card-toggle';
+      btn.textContent = '자세히 보기';
+      summary.insertAdjacentElement('afterend', btn);
+      card.appendChild(wrapper);
+      btn.addEventListener('click', () => {
+        card.classList.toggle('open');
+        btn.textContent = card.classList.contains('open') ? '간략히 보기' : '자세히 보기';
+      });
+    });
+  }
+
+  initProgramToggles();
+
+  addMessage('안녕하세요. 리딩브레인 상담봇입니다.\n1:1 학습 로드맵 상담, 프로그램, 수강료, 위치를 빠르게 안내해드려요.', 'bot');
+})();
+</script>
+
+</body>
+</html>
