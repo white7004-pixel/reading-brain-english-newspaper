@@ -1,4 +1,5 @@
 import {
+  acknowledgePreview,
   applyArticleEdit,
   approveArticle,
   completeStage,
@@ -8,6 +9,7 @@ import {
   withdrawArticle,
 } from "@/lib/studio-workflow";
 import { makeStudioArticle } from "@/tests/studio-fixtures";
+import type { ArticleEditPatch, ReviewStage, StudioArticle } from "@/lib/studio-types";
 
 describe("content review workflow", () => {
   it("requires a source before facts review can complete", () => {
@@ -19,6 +21,62 @@ describe("content review workflow", () => {
     expect(() => completeStage(article, "facts", "editor-1", "2026-08-17T01:00:00.000Z")).toThrow(
       "사실·출처 검수를 완료할 수 없습니다.",
     );
+  });
+
+  it.each([
+    ["title", { title: "" }, "title_required"],
+    ["titleKo", { titleKo: "" }, "title_ko_required"],
+    ["summaryEn", { summaryEn: "" }, "summary_en_required"],
+    ["summaryKo", { summaryKo: "" }, "summary_ko_required"],
+    ["subtopic", { subtopic: "" }, "subtopic_required"],
+    ["sources.0.title", { sources: [{ ...makeStudioArticle().sources[0], title: "" }] }, "source_title_required"],
+    ["sources.0.publisher", { sources: [{ ...makeStudioArticle().sources[0], publisher: "" }] }, "source_publisher_required"],
+    ["sources.0.url", { sources: [{ ...makeStudioArticle().sources[0], url: "not-a-url" }] }, "source_url_invalid"],
+    ["sources.0.publishedAt", { sources: [{ ...makeStudioArticle().sources[0], publishedAt: "" }] }, "source_date_required"],
+    ["sources.0.publishedAt", { sources: [{ ...makeStudioArticle().sources[0], publishedAt: "not-a-date" }] }, "source_date_invalid"],
+    ["sources.0.supportedFact", { sources: [{ ...makeStudioArticle().sources[0], supportedFact: "" }] }, "source_fact_required"],
+    ["sources.0.materialType", { sources: [{ ...makeStudioArticle().sources[0], materialType: "" as never }] }, "source_material_type_invalid"],
+    ["sourceNotes", { sourceNotes: "" }, "source_notes_required"],
+    ["reconstructionConfirmed", { reconstructionConfirmed: false }, "reconstruction_confirmation_required"],
+    ["rightsNotes", { rightsNotes: "" }, "rights_notes_required"],
+    ["media.0.embedUrl", { media: [{ provider: "youtube", embedUrl: "https://example.com/video", alt: "Forest", usageConfirmed: true }] }, "unsupported_embed_url"],
+    ["media.0.alt", { media: [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "", usageConfirmed: true }] }, "media_alt_required"],
+    ["media.0.usageConfirmed", { media: [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Forest", usageConfirmed: false }] }, "media_usage_confirmation_required"],
+  ] as Array<[string, Partial<StudioArticle>, string]>)('reports the exact facts-review issue for %s', (field, overrides, code) => {
+    expect(validateStage(makeStudioArticle(overrides), "facts")).toContainEqual({ field, code });
+  });
+
+  it.each([
+    ["pages", { pages: [] }, "body_required"],
+    ["pages.0", { pages: ["   "] }, "body_page_required"],
+    ["vocabulary", { vocabulary: [] }, "vocabulary_required"],
+    ["vocabulary.0.word", { vocabulary: [{ ...makeStudioArticle().vocabulary[0], word: "" }] }, "vocabulary_word_required"],
+    ["vocabulary.0.definitionEn", { vocabulary: [{ ...makeStudioArticle().vocabulary[0], definitionEn: "" }] }, "vocabulary_definition_required"],
+    ["vocabulary.0.exampleSentence", { vocabulary: [{ ...makeStudioArticle().vocabulary[0], exampleSentence: "" }] }, "vocabulary_example_required"],
+    ["quiz", { quiz: [] }, "quiz_required"],
+    ["quiz.0.prompt", { quiz: [{ ...makeStudioArticle().quiz[0], prompt: "" }] }, "quiz_prompt_required"],
+    ["quiz.0.type", { quiz: [{ ...makeStudioArticle().quiz[0], type: "" as never }] }, "quiz_type_invalid"],
+    ["quiz.0.options", { quiz: [{ ...makeStudioArticle().quiz[0], options: ["only one"] }] }, "quiz_options_required"],
+    ["quiz.0.correctIndex", { quiz: [{ ...makeStudioArticle().quiz[0], correctIndex: 8 }] }, "quiz_answer_invalid"],
+    ["quiz.0.explanation", { quiz: [{ ...makeStudioArticle().quiz[0], explanation: "" }] }, "quiz_explanation_required"],
+    ["quiz.0.evidence", { quiz: [{ ...makeStudioArticle().quiz[0], evidence: "" }] }, "quiz_evidence_required"],
+    ["difficulty.value", { difficulty: { ...makeStudioArticle().difficulty, value: 0 } }, "ar_required"],
+    ["difficulty.label", { difficulty: { ...makeStudioArticle().difficulty, label: "" } }, "ar_note_required"],
+    ["wordCount", { wordCount: 0 }, "word_count_required"],
+    ["estimatedReadingSeconds", { estimatedReadingSeconds: 181 }, "reading_time_invalid"],
+    ["keySentence", { keySentence: "" }, "key_sentence_required"],
+  ] as Array<[string, Partial<StudioArticle>, string]>)('reports the exact language-review issue for %s', (field, overrides, code) => {
+    expect(validateStage(makeStudioArticle(overrides), "language")).toContainEqual({ field, code });
+  });
+
+  it.each([
+    ["minAge", { minAge: 0 }, "minimum_age_invalid"],
+    ["maxAge", { minAge: 13, maxAge: 8 }, "age_range_invalid"],
+    ["learningGoal", { learningGoal: "" }, "learning_goal_required"],
+    ["safetyReviewed", { safetyReviewed: false }, "safety_review_required"],
+    ["keyConcept", { keyConcept: "" }, "key_concept_required"],
+  ] as Array<[string, Partial<StudioArticle>, string]>)('reports the exact age-review issue for %s', (field, overrides, code) => {
+    expect(validateStage(makeStudioArticle(overrides), "age")).toContainEqual({ field, code });
   });
 
   it("requires the prior review stage before language review", () => {
@@ -69,7 +127,7 @@ describe("content review workflow", () => {
 
     const republished = publishArticle(
       approveArticle(
-        completeStage(
+        acknowledgePreview(completeStage(
           completeStage(
             completeStage(edited, "facts", "fact-checker", "2026-08-17T07:00:00.000Z"),
             "language",
@@ -79,7 +137,7 @@ describe("content review workflow", () => {
           "age",
           "age-reviewer",
           "2026-08-17T09:00:00.000Z",
-        ),
+        ), "previewer", "2026-08-17T09:30:00.000Z"),
         "approver",
         "2026-08-17T10:00:00.000Z",
       ),
@@ -136,6 +194,51 @@ describe("content review workflow", () => {
     expect(() => publishArticle(languageReviewed, "2026-08-17T05:00:00.000Z")).toThrow();
   });
 
+  it("revalidates every stage at approval and publication boundaries", () => {
+    const ageReviewed = reviewThroughAge();
+    const staleFacts = { ...ageReviewed, sources: [{ ...ageReviewed.sources[0], supportedFact: "" }] };
+    expect(() => approveArticle(staleFacts, "approver", "2026-08-17T05:00:00.000Z")).toThrow("모든 검수 단계를 다시 확인해 주세요.");
+
+    const approved = approveArticle(ageReviewed, "approver", "2026-08-17T05:00:00.000Z");
+    const staleLanguage = { ...approved, pages: [] };
+    expect(() => publishArticle(staleLanguage, "2026-08-17T06:00:00.000Z")).toThrow("모든 검수 단계를 다시 확인해 주세요.");
+  });
+
+  it("requires a durable current-version preview acknowledgement for approval and publication", () => {
+    const ageReviewed = { ...reviewThroughAge(), previewReview: null };
+    expect(() => approveArticle(ageReviewed, "approver", "2026-08-17T05:00:00.000Z")).toThrow("모바일 미리보기를 확인해 주세요.");
+
+    const acknowledged = acknowledgePreview(ageReviewed, "previewer", "2026-08-17T05:00:00.000Z");
+    expect(acknowledged.previewReview).toEqual({ actor: "previewer", reviewedAt: "2026-08-17T05:00:00.000Z", workingVersion: 1 });
+    const approved = approveArticle(acknowledged, "approver", "2026-08-17T06:00:00.000Z");
+    expect(() => publishArticle({ ...approved, previewReview: null }, "2026-08-17T07:00:00.000Z")).toThrow("모바일 미리보기를 확인해 주세요.");
+  });
+
+  it("invalidates preview acknowledgement only for learner-facing edits", () => {
+    const article = makeStudioArticle();
+    expect(applyArticleEdit(article, { title: "Visible edit" }, "2026-08-17T01:00:00.000Z").previewReview).toBeNull();
+    expect(applyArticleEdit(article, { sourceNotes: "Internal editorial note" }, "2026-08-17T01:00:00.000Z").previewReview).toEqual(article.previewReview);
+  });
+
+  it.each([
+    ["title", "facts"], ["titleKo", "facts"], ["summaryEn", "facts"], ["summaryKo", "facts"], ["domain", "facts"], ["subtopic", "facts"],
+    ["sources", "facts"], ["sourceNotes", "facts"], ["reconstructionConfirmed", "facts"], ["rightsNotes", "facts"], ["media", "facts"], ["connectedArticleId", "facts"], ["visualTheme", "facts"],
+    ["difficulty", "language"], ["estimatedReadingSeconds", "language"], ["wordCount", "language"], ["pages", "language"], ["vocabulary", "language"], ["quiz", "language"], ["keySentence", "language"], ["audioUrl", "language"],
+    ["interestBand", "age"], ["minAge", "age"], ["maxAge", "age"], ["ageRange", "age"], ["safetyFlags", "age"], ["safetyReviewed", "age"], ["learningGoal", "age"], ["keyConcept", "age"],
+  ] as Array<[keyof ArticleEditPatch, ReviewStage]>)('invalidates %s from the %s stage', (field, stage) => {
+    const reviewed = reviewThroughAge();
+    const edited = applyArticleEdit(reviewed, { [field]: reviewed[field] } as ArticleEditPatch, "2026-08-17T04:00:00.000Z");
+    const expectedStages = stage === "facts" ? [] : stage === "language" ? ["facts"] : ["facts", "language"];
+    expect(Object.keys(edited.reviewRecords)).toEqual(expectedStages);
+  });
+
+  it("starts a new working version when withdrawn content is edited", () => {
+    const withdrawn = withdrawArticle(publishReviewedArticle(), "2026-08-17T06:00:00.000Z");
+    const edited = applyArticleEdit(withdrawn, { title: "Reissued title" }, "2026-08-17T07:00:00.000Z");
+    expect(edited.workingVersion).toBe(2);
+    expect(edited.publishedSnapshot?.version).toBe(1);
+  });
+
   it("accepts an official YouTube embed URL", () => {
     const media = [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Rainforest footage" }];
 
@@ -143,13 +246,11 @@ describe("content review workflow", () => {
     expect(applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z").media).toEqual(media);
   });
 
-  it("rejects an arbitrary media URL before it is persisted", () => {
-    const media = [{ provider: "youtube", embedUrl: "https://example.com/embed/not-official", alt: "Untrusted media" }];
+  it("persists partial media drafts and defers strict URL checks to facts review", () => {
+    const media = [{ provider: "youtube", embedUrl: "https://example.com/embed/not-official", alt: "", usageConfirmed: false }];
 
-    expect(validateMediaEmbeds(media)).toEqual([{ field: "media", code: "unsupported_embed_url" }]);
-    expect(() => applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z")).toThrow(
-      "허용된 공식 임베드 URL만 저장할 수 있습니다.",
-    );
+    expect(validateMediaEmbeds(media)).toEqual([{ field: "media.0.embedUrl", code: "unsupported_embed_url" }]);
+    expect(applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z").media).toEqual(media);
   });
 });
 

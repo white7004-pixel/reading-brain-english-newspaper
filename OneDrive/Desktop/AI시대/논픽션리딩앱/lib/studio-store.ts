@@ -6,7 +6,7 @@ export const STUDIO_STORAGE_KEY = "nonfiction-lab:studio:v1";
 export const CORRUPT_STUDIO_BACKUP_KEY = "nonfiction-lab:studio:corrupt-backup";
 
 export type StudioState = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   articles: StudioArticle[];
 };
 
@@ -17,6 +17,8 @@ const CONTENT_STATUSES = new Set(["draft", "review", "published", "withdrawn"]);
 const DOMAINS = new Set(["science", "history", "arts", "philosophy", "self-development", "world-culture"]);
 const INTEREST_BANDS = new Set(["lower-elementary", "upper-elementary", "teen", "adult", "all-ages"]);
 const MEDIA_PROVIDERS = new Set(["youtube", "ted", "cnn"]);
+const QUIZ_TYPES = new Set(["comprehension", "inference", "vocabulary"]);
+const SOURCE_MATERIAL_TYPES = new Set(["article", "paper", "news", "magazine", "exam", "video"]);
 
 export function loadStudioState(storage: StudioStorage): StudioState {
   let raw: string | null;
@@ -30,8 +32,9 @@ export function loadStudioState(storage: StudioStorage): StudioState {
 
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (!isStudioState(parsed)) throw new Error("Invalid studio state");
-    return hydrateStudioState(parsed);
+    const migrated = migrateStudioState(parsed);
+    if (!isStudioState(migrated)) throw new Error("Invalid studio state");
+    return hydrateStudioState(migrated);
   } catch {
     backupCorruptStudioState(storage, raw);
     return createSeedStudioState();
@@ -61,6 +64,48 @@ export function backupCorruptStudioState(storage: Pick<Storage, "setItem">, raw:
   storage.setItem(CORRUPT_STUDIO_BACKUP_KEY, raw);
 }
 
+function migrateStudioState(value: unknown): unknown {
+  if (!isRecord(value) || value.schemaVersion !== 1 || !Array.isArray(value.articles)) return value;
+  return { schemaVersion: 2, articles: value.articles.map(migrateLegacyArticle) };
+}
+
+function migrateLegacyArticle(value: unknown): unknown {
+  if (!isRecord(value)) return value;
+  const workingVersion = isPositiveInteger(value.workingVersion) ? value.workingVersion : 1;
+  const ageBounds = parseAgeRange(isString(value.ageRange) ? value.ageRange : "");
+  const approval = isRecord(value.approval)
+    ? { ...value.approval, workingVersion: isPositiveInteger(value.approval.workingVersion) ? value.approval.workingVersion : workingVersion }
+    : value.approval;
+  const previewReview = value.previewReview ?? (isRecord(approval) && isString(approval.actor) && isString(approval.approvedAt)
+    ? { actor: approval.actor, reviewedAt: approval.approvedAt, workingVersion }
+    : null);
+
+  return {
+    ...value,
+    summaryEn: isString(value.summaryEn) ? value.summaryEn : "",
+    subtopic: isString(value.subtopic) ? value.subtopic : "",
+    minAge: isNonNegativeInteger(value.minAge) ? value.minAge : ageBounds[0],
+    maxAge: isNonNegativeInteger(value.maxAge) ? value.maxAge : ageBounds[1],
+    estimatedReadingSeconds: isNonNegativeInteger(value.estimatedReadingSeconds) ? value.estimatedReadingSeconds : 180,
+    safetyFlags: isStringArray(value.safetyFlags) ? value.safetyFlags : [],
+    safetyReviewed: typeof value.safetyReviewed === "boolean" ? value.safetyReviewed : false,
+    vocabulary: Array.isArray(value.vocabulary) ? value.vocabulary.map((item) => isRecord(item) ? { ...item, exampleSentence: isString(item.exampleSentence) ? item.exampleSentence : "" } : item) : value.vocabulary,
+    quiz: Array.isArray(value.quiz) ? value.quiz.map((item) => isRecord(item) ? { ...item, type: QUIZ_TYPES.has(item.type as string) ? item.type : "comprehension", evidence: isString(item.evidence) ? item.evidence : "" } : item) : value.quiz,
+    sources: Array.isArray(value.sources) ? value.sources.map((item) => isRecord(item) ? { ...item, materialType: SOURCE_MATERIAL_TYPES.has(item.materialType as string) ? item.materialType : "article", supportedFact: isString(item.supportedFact) ? item.supportedFact : "" } : item) : value.sources,
+    media: Array.isArray(value.media) ? value.media.map((item) => isRecord(item) ? { ...item, usageConfirmed: typeof item.usageConfirmed === "boolean" ? item.usageConfirmed : false } : item) : value.media,
+    reconstructionConfirmed: typeof value.reconstructionConfirmed === "boolean" ? value.reconstructionConfirmed : false,
+    rightsNotes: isString(value.rightsNotes) ? value.rightsNotes : "",
+    approval,
+    previewReview,
+    changeLog: Array.isArray(value.changeLog) ? value.changeLog.map((entry) => isRecord(entry) ? { ...entry, reason: isString(entry.reason) ? entry.reason : "" } : entry) : value.changeLog,
+  };
+}
+
+function parseAgeRange(value: string): [number, number] {
+  const match = /^(\d+)\s*-\s*(\d+)$/.exec(value);
+  return match ? [Number(match[1]), Number(match[2])] : [0, 0];
+}
+
 function hydrateStudioState(state: StudioState): StudioState {
   return {
     ...state,
@@ -73,7 +118,7 @@ function hydrateStudioState(state: StudioState): StudioState {
 
 function isStudioState(value: unknown): value is StudioState {
   return isRecord(value)
-    && value.schemaVersion === 1
+    && value.schemaVersion === 2
     && Array.isArray(value.articles)
     && value.articles.every(isStudioArticle);
 }
@@ -81,28 +126,36 @@ function isStudioState(value: unknown): value is StudioState {
 function isStudioArticle(value: unknown): value is StudioArticle {
   if (!isRecord(value)
     || !isNonEmptyString(value.id)
-    || !isNonEmptyString(value.title)
+    || !isString(value.title)
     || !isString(value.titleKo)
+    || !isString(value.summaryEn)
     || !isString(value.summaryKo)
     || !DOMAINS.has(value.domain as string)
+    || !isString(value.subtopic)
     || !INTEREST_BANDS.has(value.interestBand as string)
     || !isDifficulty(value.difficulty)
+    || !isNonNegativeInteger(value.minAge)
+    || !isNonNegativeInteger(value.maxAge)
+    || !isNonNegativeInteger(value.estimatedReadingSeconds)
+    || !isStringArray(value.safetyFlags)
+    || typeof value.safetyReviewed !== "boolean"
     || value.estimatedMinutes !== 3
     || !isNonNegativeNumber(value.wordCount)
     || !CONTENT_STATUSES.has(value.status as string)
     || !isPositiveInteger(value.version)
     || !isStringArray(value.pages)
-    || !isVocabulary(value.vocabulary)
-    || !isQuiz(value.quiz)
-    || !isSources(value.sources)
-    || !isNonEmptyString(value.connectedArticleId)
-    || !isNonEmptyString(value.visualTheme)
+    || !isStudioVocabulary(value.vocabulary)
+    || !isStudioQuiz(value.quiz)
+    || !isStudioSources(value.sources)
+    || !isString(value.connectedArticleId)
+    || !isString(value.visualTheme)
     || (value.audioUrl !== undefined && !isString(value.audioUrl))
     || !isPositiveInteger(value.workingVersion)
     || (value.publishedSnapshot !== null && !isLearnerArticle(value.publishedSnapshot))
     || !WORKFLOW_STATUSES.has(value.workflowStatus as string)
     || !isReviewRecords(value.reviewRecords)
     || (value.approval !== null && !isApproval(value.approval))
+    || (value.previewReview !== null && !isPreviewReview(value.previewReview))
     || (value.withdrawnAt !== null && !isString(value.withdrawnAt))
     || !isNonEmptyString(value.editor)
     || !isString(value.updatedAt)
@@ -112,6 +165,8 @@ function isStudioArticle(value: unknown): value is StudioArticle {
     || !isString(value.keySentence)
     || !isString(value.keyConcept)
     || !isString(value.sourceNotes)
+    || typeof value.reconstructionConfirmed !== "boolean"
+    || !isString(value.rightsNotes)
     || !isMedia(value.media)) {
     return false;
   }
@@ -163,6 +218,7 @@ function hasPublicationEvidence(article: StudioArticle): article is StudioArticl
     && snapshot.status === "published"
     && snapshot.version === article.workingVersion
     && isApproval(article.approval)
+    && article.approval.workingVersion === article.workingVersion
     && isReviewRecord(article.reviewRecords.facts)
     && isReviewRecord(article.reviewRecords.language)
     && isReviewRecord(article.reviewRecords.age)
@@ -199,9 +255,9 @@ function isLearnerArticle(value: unknown): value is Article {
     && CONTENT_STATUSES.has(value.status as string)
     && isPositiveInteger(value.version)
     && isStringArray(value.pages)
-    && isVocabulary(value.vocabulary)
-    && isQuiz(value.quiz)
-    && isSources(value.sources)
+    && isLearnerVocabulary(value.vocabulary)
+    && isLearnerQuiz(value.quiz)
+    && isLearnerSources(value.sources)
     && isReview(value.review)
     && isNonEmptyString(value.connectedArticleId)
     && isNonEmptyString(value.visualTheme)
@@ -212,10 +268,46 @@ function isDifficulty(value: unknown): boolean {
   return isRecord(value)
     && isNonNegativeNumber(value.value)
     && (value.method === "external-user-entry" || value.method === "nonfiction-lab-estimate")
-    && isNonEmptyString(value.label);
+    && isString(value.label);
 }
 
-function isVocabulary(value: unknown): boolean {
+function isStudioVocabulary(value: unknown): boolean {
+  return Array.isArray(value) && value.every((item) => (
+    isRecord(item)
+    && isString(item.word)
+    && isString(item.pronunciation)
+    && isString(item.meaningKo)
+    && isString(item.definitionEn)
+    && isString(item.exampleSentence)
+  ));
+}
+
+function isStudioQuiz(value: unknown): boolean {
+  return Array.isArray(value) && value.every((question) => (
+    isRecord(question)
+    && isString(question.id)
+    && QUIZ_TYPES.has(question.type as string)
+    && isString(question.prompt)
+    && isStringArray(question.options)
+    && isInteger(question.correctIndex)
+    && isString(question.explanation)
+    && isString(question.evidence)
+  ));
+}
+
+function isStudioSources(value: unknown): boolean {
+  return Array.isArray(value) && value.every((source) => (
+    isRecord(source)
+    && isString(source.title)
+    && isString(source.publisher)
+    && isString(source.url)
+    && (source.publishedAt === undefined || isString(source.publishedAt))
+    && SOURCE_MATERIAL_TYPES.has(source.materialType as string)
+    && isString(source.supportedFact)
+  ));
+}
+
+function isLearnerVocabulary(value: unknown): boolean {
   return Array.isArray(value) && value.every((item) => (
     isRecord(item)
     && isNonEmptyString(item.word)
@@ -225,7 +317,7 @@ function isVocabulary(value: unknown): boolean {
   ));
 }
 
-function isQuiz(value: unknown): boolean {
+function isLearnerQuiz(value: unknown): boolean {
   return Array.isArray(value) && value.every((question) => (
     isRecord(question)
     && isNonEmptyString(question.id)
@@ -237,7 +329,7 @@ function isQuiz(value: unknown): boolean {
   ));
 }
 
-function isSources(value: unknown): boolean {
+function isLearnerSources(value: unknown): boolean {
   return Array.isArray(value) && value.every((source) => (
     isRecord(source)
     && isNonEmptyString(source.title)
@@ -267,13 +359,20 @@ function isReviewRecord(value: unknown): boolean {
   return isRecord(value) && isNonEmptyString(value.actor) && isNonEmptyString(value.completedAt);
 }
 
-function isApproval(value: unknown): value is { actor: string; approvedAt: string } {
-  return isRecord(value) && isNonEmptyString(value.actor) && isNonEmptyString(value.approvedAt);
+function isApproval(value: unknown): value is { actor: string; approvedAt: string; workingVersion: number } {
+  return isRecord(value) && isNonEmptyString(value.actor) && isNonEmptyString(value.approvedAt) && isPositiveInteger(value.workingVersion);
+}
+
+function isPreviewReview(value: unknown): boolean {
+  return isRecord(value)
+    && isNonEmptyString(value.actor)
+    && isNonEmptyString(value.reviewedAt)
+    && isPositiveInteger(value.workingVersion);
 }
 
 function isChangeLog(value: unknown): boolean {
   return Array.isArray(value) && value.every((entry) => (
-    isRecord(entry) && isString(entry.changedAt) && isStringArray(entry.fields)
+    isRecord(entry) && isString(entry.changedAt) && isStringArray(entry.fields) && isString(entry.reason)
   ));
 }
 
@@ -281,8 +380,9 @@ function isMedia(value: unknown): boolean {
   return Array.isArray(value) && value.every((item) => (
     isRecord(item)
     && MEDIA_PROVIDERS.has(item.provider as string)
-    && isNonEmptyString(item.embedUrl)
-    && isNonEmptyString(item.alt)
+    && isString(item.embedUrl)
+    && isString(item.alt)
+    && typeof item.usageConfirmed === "boolean"
   ));
 }
 
@@ -308,6 +408,10 @@ function isNonNegativeNumber(value: unknown): value is number {
 
 function isNonNegativeInteger(value: unknown): value is number {
   return isNonNegativeNumber(value) && Number.isInteger(value);
+}
+
+function isInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value);
 }
 
 function isPositiveInteger(value: unknown): value is number {

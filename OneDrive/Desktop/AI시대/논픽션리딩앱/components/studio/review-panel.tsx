@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 import { approveArticle, completeStage, publishArticle, validateStage, withdrawArticle } from "@/lib/studio-workflow";
-import type { ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
+import { issueFieldLabel, issueMessage, studioControlId, studioIssueId } from "@/lib/studio-validation-ui";
+import type { ArticlePersistenceResult, ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
 
 type ReviewPanelProps = {
   article: StudioArticle;
-  onArticleChange: (article: StudioArticle) => void;
+  onArticleChange: (article: StudioArticle) => ArticlePersistenceResult | Promise<ArticlePersistenceResult> | void;
   actor?: string;
   now?: () => string;
 };
 
-const STAGES: Array<{ stage: ReviewStage; title: string; button: string; condition: string; target: string; link: string }> = [
-  { stage: "facts", title: "사실·출처", button: "사실·출처 검수 완료", condition: "기본 정보와 출처를 확인합니다.", target: "#sources-media", link: "출처·미디어로 이동" },
-  { stage: "language", title: "영어·AR", button: "영어·AR 검수 완료", condition: "본문, 어휘, 퀴즈와 난이도를 확인합니다.", target: "#learning-content", link: "학습 내용으로 이동" },
-  { stage: "age", title: "연령 적합성", button: "연령 적합성 검수 완료", condition: "권장 연령과 학습 목표를 확인합니다.", target: "#difficulty-age", link: "난이도·연령으로 이동" },
+const STAGES: Array<{ stage: ReviewStage; title: string; button: string; condition: string }> = [
+  { stage: "facts", title: "사실·출처", button: "사실·출처 검수 완료", condition: "기본 정보와 출처를 확인합니다." },
+  { stage: "language", title: "영어·AR", button: "영어·AR 검수 완료", condition: "본문, 어휘, 퀴즈와 난이도를 확인합니다." },
+  { stage: "age", title: "연령 적합성", button: "연령 적합성 검수 완료", condition: "권장 연령과 학습 목표를 확인합니다." },
 ];
 
 const REQUIRED_STATUS: Record<ReviewStage, StudioArticle["workflowStatus"]> = {
@@ -28,9 +29,14 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
   const [actionError, setActionError] = useState("");
   const [confirmWithdraw, setConfirmWithdraw] = useState(false);
 
-  const update = (next: StudioArticle) => {
-    onArticleChange(next);
-    setActionError("");
+  const update = async (next: StudioArticle) => {
+    try {
+      const result = await onArticleChange(next);
+      if (result && !result.ok) { setActionError(result.error); return; }
+      setActionError("");
+    } catch (error) {
+      setActionError(errorMessage(error));
+    }
   };
 
   const finishStage = (stage: ReviewStage) => {
@@ -39,14 +45,14 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
     if (validationIssues.length > 0) return;
 
     try {
-      update(completeStage(article, stage, actor, now()));
+      void update(completeStage(article, stage, actor, now()));
     } catch (error) {
       setActionError(errorMessage(error));
     }
   };
 
   const runAction = (action: () => StudioArticle) => {
-    try { update(action()); } catch (error) { setActionError(errorMessage(error)); }
+    try { void update(action()); } catch (error) { setActionError(errorMessage(error)); }
   };
 
   const published = article.workflowStatus === "published";
@@ -67,7 +73,7 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
               ) : (
                 <button type="button" className="button button--secondary" disabled={article.workflowStatus !== REQUIRED_STATUS[item.stage]} onClick={() => finishStage(item.stage)}>{item.button}</button>
               )}
-              {stageIssues.map((issue) => <div className="studio-review-issue" key={issue.code}><p>{issueMessage(issue)}</p><a href={item.target}>{item.link}</a></div>)}
+              {stageIssues.map((issue) => { const label = issueFieldLabel(issue.field); return <div className="studio-review-issue" key={`${issue.field}-${issue.code}`}><p id={studioIssueId(issue)}>{issueMessage(issue)}</p><a href={`#${studioControlId(issue.field)}`}>{label}{directionParticle(label)} 이동</a></div>; })}
             </section>
           );
         })}
@@ -76,7 +82,8 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
       {actionError && <p className="studio-field-error" role="alert">{actionError}</p>}
       {!published && article.workflowStatus !== "withdrawn" && (
         <div className="studio-review__actions">
-          <button type="button" className="button button--secondary" disabled={article.workflowStatus !== "age_reviewed"} onClick={() => runAction(() => approveArticle(article, actor, now()))}>최종 승인</button>
+          {article.workflowStatus === "age_reviewed" && (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) && <p className="studio-review-issue"><a href="#studio-preview-acknowledge">미리보기를 확인해 주세요.</a></p>}
+          <button type="button" className="button button--secondary" disabled={article.workflowStatus !== "age_reviewed" || !article.previewReview || article.previewReview.workingVersion !== article.workingVersion} onClick={() => runAction(() => approveArticle(article, actor, now()))}>최종 승인</button>
           <button type="button" className="button button--primary" disabled={article.workflowStatus !== "approved" || !article.approval} onClick={() => runAction(() => publishArticle(article, now()))}>발행</button>
         </div>
       )}
@@ -91,12 +98,11 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
   );
 }
 
-function issueMessage(issue: ValidationIssue): string {
-  if (issue.code === "source_required") return "출처를 한 개 이상 추가해 주세요.";
-  return `${issue.field} 항목을 확인해 주세요.`;
-}
-
 function errorMessage(error: unknown): string { return error instanceof Error ? error.message : "작업을 완료하지 못했습니다."; }
+function directionParticle(label: string): "로" | "으로" {
+  const code = label.charCodeAt(label.length - 1) - 0xac00;
+  return code >= 0 && code <= 11171 && code % 28 !== 0 && code % 28 !== 8 ? "으로" : "로";
+}
 
 function formatTimestamp(value: string): string {
   const date = new Date(value);

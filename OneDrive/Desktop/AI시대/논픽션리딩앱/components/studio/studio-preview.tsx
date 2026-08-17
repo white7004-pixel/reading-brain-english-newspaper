@@ -1,16 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ReaderScreen } from "@/components/reader-screen";
-import type { StudioArticle } from "@/lib/studio-types";
+import { acknowledgePreview } from "@/lib/studio-workflow";
+import type { ArticlePersistenceResult, StudioArticle } from "@/lib/studio-types";
 import type { Article } from "@/lib/types";
 
-export function StudioPreview({ article }: { article: StudioArticle }) {
+type Props = {
+  article: StudioArticle;
+  onArticleChange?: (article: StudioArticle) => ArticlePersistenceResult | Promise<ArticlePersistenceResult> | void;
+  actor?: string;
+  now?: () => string;
+};
+
+export function StudioPreview({ article, onArticleChange, actor = article.editor, now = () => new Date().toISOString() }: Props) {
+  const acknowledged = article.previewReview?.workingVersion === article.workingVersion;
+  const [saveError, setSaveError] = useState("");
+  const [retryArticle, setRetryArticle] = useState<StudioArticle | null>(null);
+  useEffect(() => { setSaveError(""); setRetryArticle(null); }, [article.id, article.workingVersion]);
+  const persistAcknowledgement = async (next: StudioArticle) => {
+    if (!onArticleChange) return;
+    setRetryArticle(next);
+    try {
+      const result = await onArticleChange(next);
+      if (result && !result.ok) { setSaveError(result.error); return; }
+      setSaveError(""); setRetryArticle(null);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "미리보기 확인을 저장하지 못했습니다.");
+    }
+  };
   return (
     <section className="studio-preview" aria-labelledby="studio-preview-heading">
       <div className="studio-preview__heading"><div><p className="eyebrow">PREVIEW</p><h2 id="studio-preview-heading">모바일 미리보기</h2></div><span>읽기 전용</span></div>
       <div className="studio-preview__phone">
         <ReaderScreen article={projectWorkingArticle(article)} onBack={() => {}} onFinish={() => {}} onEvent={() => {}} />
       </div>
+      {onArticleChange && (acknowledged
+        ? <p className="studio-preview__acknowledged">{article.previewReview?.actor} · 작업 버전 {article.workingVersion} 확인</p>
+        : <button id="studio-preview-acknowledge" type="button" className="button button--secondary" onClick={() => void persistAcknowledgement(acknowledgePreview(article, actor, now()))}>미리보기 확인 완료</button>)}
+      {saveError && <div className="studio-field-error" role="alert"><span>{saveError}</span>{retryArticle && <button type="button" onClick={() => void persistAcknowledgement(retryArticle)}>미리보기 확인 저장 재시도</button>}</div>}
     </section>
   );
 }

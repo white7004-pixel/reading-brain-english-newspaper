@@ -3,10 +3,8 @@ import type {
   Difficulty,
   InterestBand,
   KnowledgeDomain,
-  QuizQuestion,
-  SourceRef,
-  VocabularyItem,
 } from "@/lib/types";
+import type { QuizQuestion, SourceRef, VocabularyItem } from "@/lib/types";
 
 export type ReviewStage = "facts" | "language" | "age";
 
@@ -32,11 +30,19 @@ export type StageReviewRecord = {
 export type ApprovalRecord = {
   actor: string;
   approvedAt: string;
+  workingVersion: number;
+};
+
+export type PreviewReviewRecord = {
+  actor: string;
+  reviewedAt: string;
+  workingVersion: number;
 };
 
 export type ChangeLogEntry = {
   changedAt: string;
   fields: string[];
+  reason: string;
 };
 
 export type MediaProvider = "youtube" | "ted" | "cnn";
@@ -45,17 +51,31 @@ export type MediaEmbed = {
   provider: MediaProvider;
   embedUrl: string;
   alt: string;
+  usageConfirmed: boolean;
 };
+
+export type StudioVocabularyItem = VocabularyItem & { exampleSentence: string };
+export type QuizType = "comprehension" | "inference" | "vocabulary";
+export type StudioQuizQuestion = QuizQuestion & { type: QuizType; evidence: string };
+export type SourceMaterialType = "article" | "paper" | "news" | "magazine" | "exam" | "video";
+export type StudioSourceRef = SourceRef & { materialType: SourceMaterialType; supportedFact: string };
 
 export type ArticleEditPatch = Partial<
   Pick<
     StudioArticle,
     | "title"
     | "titleKo"
+    | "summaryEn"
     | "summaryKo"
     | "domain"
+    | "subtopic"
     | "interestBand"
     | "difficulty"
+    | "minAge"
+    | "maxAge"
+    | "estimatedReadingSeconds"
+    | "safetyFlags"
+    | "safetyReviewed"
     | "wordCount"
     | "pages"
     | "vocabulary"
@@ -69,26 +89,37 @@ export type ArticleEditPatch = Partial<
     | "keySentence"
     | "keyConcept"
     | "sourceNotes"
+    | "reconstructionConfirmed"
+    | "rightsNotes"
     | "media"
   >
 >;
+
+export type ArticlePersistenceResult = { ok: true } | { ok: false; error: string };
 
 export type StudioArticle = {
   id: string;
   title: string;
   titleKo: string;
+  summaryEn: string;
   summaryKo: string;
   domain: KnowledgeDomain;
+  subtopic: string;
   interestBand: InterestBand;
   difficulty: Difficulty;
+  minAge: number;
+  maxAge: number;
+  estimatedReadingSeconds: number;
+  safetyFlags: string[];
+  safetyReviewed: boolean;
   estimatedMinutes: 3;
   wordCount: number;
   status: "draft" | "review" | "published" | "withdrawn";
   version: number;
   pages: string[];
-  vocabulary: VocabularyItem[];
-  quiz: QuizQuestion[];
-  sources: SourceRef[];
+  vocabulary: StudioVocabularyItem[];
+  quiz: StudioQuizQuestion[];
+  sources: StudioSourceRef[];
   connectedArticleId: string;
   visualTheme: string;
   audioUrl?: string;
@@ -97,6 +128,7 @@ export type StudioArticle = {
   workflowStatus: WorkflowStatus;
   reviewRecords: Partial<Record<ReviewStage, StageReviewRecord>>;
   approval: ApprovalRecord | null;
+  previewReview: PreviewReviewRecord | null;
   withdrawnAt: string | null;
   editor: string;
   updatedAt: string;
@@ -106,5 +138,7 @@ export type StudioArticle = {
   keySentence: string;
   keyConcept: string;
   sourceNotes: string;
+  reconstructionConfirmed: boolean;
+  rightsNotes: string;
   media: MediaEmbed[];
 };

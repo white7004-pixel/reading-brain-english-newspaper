@@ -89,4 +89,62 @@ describe("versioned studio content store", () => {
     expect(Object.isFrozen(loaded.articles[0].publishedSnapshot?.pages)).toBe(true);
   });
 
+  it("round-trips structurally valid partial draft rows without replacing unrelated articles", () => {
+    const partial = makeStudioArticle({
+      id: "partial",
+      vocabulary: [{ word: "", pronunciation: "", meaningKo: "", definitionEn: "", exampleSentence: "" }],
+      quiz: [{ id: "q-draft", type: "comprehension", prompt: "", options: [""], correctIndex: 4, explanation: "", evidence: "" }],
+      sources: [{ title: "", publisher: "", url: "", publishedAt: "", materialType: "news", supportedFact: "" }],
+      media: [{ provider: "youtube", embedUrl: "", alt: "", usageConfirmed: false }],
+    });
+    const unrelated = makeStudioArticle({ id: "unrelated", title: "Keep me" });
+    const storage = createMemoryStorage();
+
+    saveStudioState(storage, { schemaVersion: 2, articles: [partial, unrelated] });
+    const loaded = loadStudioState(storage);
+
+    expect(loaded.articles.map((article) => article.id)).toEqual(["partial", "unrelated"]);
+    expect(loaded.articles[0]).toMatchObject({
+      vocabulary: [{ word: "", exampleSentence: "" }],
+      quiz: [{ prompt: "", correctIndex: 4, evidence: "" }],
+      sources: [{ title: "", supportedFact: "" }],
+      media: [{ embedUrl: "", alt: "", usageConfirmed: false }],
+    });
+    expect(storage.getItem("nonfiction-lab:studio:corrupt-backup")).toBeNull();
+  });
+
+  it("migrates schema-one articles to the complete editable schema", () => {
+    const legacy = structuredClone(makeStudioArticle()) as unknown as Record<string, unknown>;
+    for (const field of ["summaryEn", "subtopic", "minAge", "maxAge", "estimatedReadingSeconds", "safetyFlags", "safetyReviewed", "reconstructionConfirmed", "rightsNotes", "previewReview"]) {
+      delete legacy[field];
+    }
+    delete (legacy.vocabulary as Array<Record<string, unknown>>)[0].exampleSentence;
+    delete (legacy.quiz as Array<Record<string, unknown>>)[0].type;
+    delete (legacy.quiz as Array<Record<string, unknown>>)[0].evidence;
+    delete (legacy.sources as Array<Record<string, unknown>>)[0].materialType;
+    delete (legacy.sources as Array<Record<string, unknown>>)[0].supportedFact;
+    const raw = JSON.stringify({ schemaVersion: 1, articles: [legacy] });
+    const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": raw });
+
+    const loaded = loadStudioState(storage);
+
+    expect(loaded.schemaVersion).toBe(2);
+    expect(loaded.articles[0]).toMatchObject({
+      summaryEn: "",
+      subtopic: "",
+      minAge: 10,
+      maxAge: 12,
+      estimatedReadingSeconds: 180,
+      safetyFlags: [],
+      safetyReviewed: false,
+      reconstructionConfirmed: false,
+      rightsNotes: "",
+      previewReview: null,
+    });
+    expect(loaded.articles[0].vocabulary[0]).toMatchObject({ exampleSentence: "" });
+    expect(loaded.articles[0].quiz[0]).toMatchObject({ type: "comprehension", evidence: "" });
+    expect(loaded.articles[0].sources[0]).toMatchObject({ materialType: "article", supportedFact: "" });
+    expect(storage.getItem("nonfiction-lab:studio:corrupt-backup")).toBeNull();
+  });
+
 });
