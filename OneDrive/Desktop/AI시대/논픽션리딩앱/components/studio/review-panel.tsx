@@ -8,6 +8,9 @@ import type { ArticlePersistenceResult, ReviewStage, StudioArticle, ValidationIs
 type ReviewPanelProps = {
   article: StudioArticle;
   onArticleChange: (article: StudioArticle) => ArticlePersistenceResult | Promise<ArticlePersistenceResult> | void;
+  onIssuesChange?: (issues: ValidationIssue[]) => void;
+  onNavigateToField?: (field: string) => void;
+  onNavigateToPreview?: () => void;
   actor?: string;
   now?: () => string;
 };
@@ -24,7 +27,7 @@ const REQUIRED_STATUS: Record<ReviewStage, StudioArticle["workflowStatus"]> = {
   age: "language_reviewed",
 };
 
-export function ReviewPanel({ article, onArticleChange, actor = article.editor, now = () => new Date().toISOString() }: ReviewPanelProps) {
+export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNavigateToField, onNavigateToPreview, actor = article.editor, now = () => new Date().toISOString() }: ReviewPanelProps) {
   const [issues, setIssues] = useState<Partial<Record<ReviewStage, ValidationIssue[]>>>({});
   const [actionError, setActionError] = useState("");
   const [confirmWithdraw, setConfirmWithdraw] = useState(false);
@@ -41,7 +44,9 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
 
   const finishStage = (stage: ReviewStage) => {
     const validationIssues = validateStage(article, stage);
-    setIssues((current) => ({ ...current, [stage]: validationIssues }));
+    const nextIssues = { ...issues, [stage]: validationIssues };
+    setIssues(nextIssues);
+    onIssuesChange?.(Object.values(nextIssues).flatMap((stageIssues) => stageIssues ?? []));
     if (validationIssues.length > 0) return;
 
     try {
@@ -73,7 +78,7 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
               ) : (
                 <button type="button" className="button button--secondary" disabled={article.workflowStatus !== REQUIRED_STATUS[item.stage]} onClick={() => finishStage(item.stage)}>{item.button}</button>
               )}
-              {stageIssues.map((issue) => { const label = issueFieldLabel(issue.field); return <div className="studio-review-issue" key={`${issue.field}-${issue.code}`}><p id={studioIssueId(issue)}>{issueMessage(issue)}</p><a href={`#${studioControlId(issue.field)}`}>{label}{directionParticle(label)} 이동</a></div>; })}
+              {stageIssues.map((issue) => { const label = issueFieldLabel(issue.field); return <div className="studio-review-issue" key={`${issue.field}-${issue.code}`}><p id={studioIssueId(issue)}>{issueMessage(issue)}</p><a href={`#${studioControlId(issue.field)}`} onClick={onNavigateToField ? (event) => { event.preventDefault(); onNavigateToField(issue.field); } : undefined}>{label}{directionParticle(label)} 이동</a></div>; })}
             </section>
           );
         })}
@@ -82,7 +87,7 @@ export function ReviewPanel({ article, onArticleChange, actor = article.editor, 
       {actionError && <p className="studio-field-error" role="alert">{actionError}</p>}
       {!published && article.workflowStatus !== "withdrawn" && (
         <div className="studio-review__actions">
-          {article.workflowStatus === "age_reviewed" && (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) && <p className="studio-review-issue"><a href="#studio-preview-acknowledge">미리보기를 확인해 주세요.</a></p>}
+          {article.workflowStatus === "age_reviewed" && (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) && <p className="studio-review-issue"><a href="#studio-preview-acknowledge" onClick={onNavigateToPreview ? (event) => { event.preventDefault(); onNavigateToPreview(); } : undefined}>미리보기를 확인해 주세요.</a></p>}
           <button type="button" className="button button--secondary" disabled={article.workflowStatus !== "age_reviewed" || !article.previewReview || article.previewReview.workingVersion !== article.workingVersion} onClick={() => runAction(() => approveArticle(article, actor, now()))}>최종 승인</button>
           <button type="button" className="button button--primary" disabled={article.workflowStatus !== "approved" || !article.approval} onClick={() => runAction(() => publishArticle(article, now()))}>발행</button>
         </div>

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ArticleEditor } from "@/components/studio/article-editor";
 import { ReviewPanel } from "@/components/studio/review-panel";
 import { StudioApp } from "@/components/studio/studio-app";
 import { StudioPreview } from "@/components/studio/studio-preview";
-import { completeStage } from "@/lib/studio-workflow";
-import type { StudioArticle } from "@/lib/studio-types";
+import { approveArticle, completeStage } from "@/lib/studio-workflow";
+import type { StudioArticle, ValidationIssue } from "@/lib/studio-types";
 import { createMemoryStorage, makePublishedArticle, makeStudioArticle } from "./studio-fixtures";
 
 const NOW = "2026-08-18T09:00:00.000Z";
@@ -17,23 +17,29 @@ function makeFullyReviewedArticle(): StudioArticle {
   return completeStage(language, "age", "age-reviewer", "2026-08-18T08:00:00.000Z");
 }
 
+function makeApprovedArticle(): StudioArticle {
+  return approveArticle(makeFullyReviewedArticle(), "approver", "2026-08-18T08:30:00.000Z");
+}
+
 function StudioEditorHarness({ initialArticle }: { initialArticle: StudioArticle }) {
   const [article, setArticle] = useState(initialArticle);
+  const [displayedIssues, setDisplayedIssues] = useState<ValidationIssue[]>([]);
 
   return (
     <>
-      <ArticleEditor article={article} onArticleChange={setArticle} now={() => NOW} />
-      <ReviewPanel article={article} onArticleChange={setArticle} actor="reviewer-1" now={() => NOW} />
+      <ArticleEditor article={article} onArticleChange={setArticle} displayedIssues={displayedIssues} now={() => NOW} />
+      <ReviewPanel article={article} onArticleChange={setArticle} onIssuesChange={setDisplayedIssues} actor="reviewer-1" now={() => NOW} />
     </>
   );
 }
 
 function LivePreviewHarness({ initialArticle }: { initialArticle: StudioArticle }) {
   const [article, setArticle] = useState(initialArticle);
+  const [displayedIssues, setDisplayedIssues] = useState<ValidationIssue[]>([]);
   return <>
-    <ArticleEditor article={article} onArticleChange={setArticle} now={() => NOW} />
+    <ArticleEditor article={article} onArticleChange={setArticle} displayedIssues={displayedIssues} now={() => NOW} />
     <StudioPreview article={article} onArticleChange={setArticle} actor="previewer" now={() => NOW} />
-    <ReviewPanel article={article} onArticleChange={setArticle} actor="reviewer-1" now={() => NOW} />
+    <ReviewPanel article={article} onArticleChange={setArticle} onIssuesChange={setDisplayedIssues} actor="reviewer-1" now={() => NOW} />
   </>;
 }
 
@@ -334,28 +340,203 @@ test("미리보기 확인 저장 실패를 알리고 같은 확인 기록을 재
   controlled.failWrites();
   await user.click(screen.getByRole("button", { name: "미리보기 확인 완료" }));
 
-  expect(await screen.findByRole("alert")).toHaveTextContent("브라우저 저장소에 저장하지 못했습니다.");
+  expect(await screen.findByRole("alert", { name: "보류된 저장" })).toHaveTextContent("브라우저 저장소에 저장하지 못했습니다.");
   expect(readStoredArticle(controlled.storage).previewReview).toBeNull();
   controlled.allowWrites();
   await user.click(screen.getByRole("button", { name: "미리보기 확인 저장 재시도" }));
   expect(readStoredArticle(controlled.storage).previewReview).toMatchObject({ workingVersion: 1 });
 });
 
+test("새 콘텐츠 저장 실패를 보류 상태로 유지하고 같은 초안을 한 번만 재시도한다", async () => {
+  const user = userEvent.setup();
+  const initial = makeStudioArticle();
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [initial] }) });
+  render(<StudioApp storage={controlled.storage} />);
+  await screen.findByRole("heading", { name: "콘텐츠 스튜디오" });
+  controlled.failWrites();
+  const writesBeforeFailure = controlled.successfulWrites();
+  await user.click(screen.getByRole("button", { name: "새 콘텐츠" }));
+
+  expect(await screen.findByRole("alert", { name: "보류된 저장" })).toHaveTextContent("브라우저 저장소에 저장하지 못했습니다.");
+  expect(screen.getByRole("heading", { name: "새 콘텐츠 편집" })).toBeInTheDocument();
+  expect(readStoredArticles(controlled.storage)).toHaveLength(1);
+  expect(controlled.successfulWrites()).toBe(writesBeforeFailure);
+
+  controlled.allowWrites();
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
+  expect(readStoredArticles(controlled.storage)).toHaveLength(2);
+  expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+  expect(screen.queryByRole("alert", { name: "보류된 저장" })).not.toBeInTheDocument();
+});
+
+test("검수 단계 저장 실패 후 정확한 다음 상태를 보류하고 한 번만 재시도한다", async () => {
+  const user = userEvent.setup();
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeStudioArticle()] }) });
+  render(<StudioApp storage={controlled.storage} />);
+  await openArticle(user, "Rainforests");
+  controlled.failWrites();
+  const writesBeforeFailure = controlled.successfulWrites();
+  await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
+
+  expect(await screen.findByRole("alert", { name: "보류된 저장" })).toBeInTheDocument();
+  expect(screen.getByText("사실·출처 검수 완료됨")).toBeInTheDocument();
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("draft");
+  controlled.allowWrites();
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("facts_reviewed");
+  expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+});
+
+test("최종 승인 저장 실패 후 승인 상태를 보류하고 한 번만 재시도한다", async () => {
+  const user = userEvent.setup();
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeFullyReviewedArticle()] }) });
+  render(<StudioApp storage={controlled.storage} />);
+  await openArticle(user, "Rainforests");
+  controlled.failWrites();
+  const writesBeforeFailure = controlled.successfulWrites();
+  await user.click(screen.getByRole("button", { name: "최종 승인" }));
+
+  expect(await screen.findByRole("alert", { name: "보류된 저장" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "발행" })).toBeEnabled();
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("age_reviewed");
+  controlled.allowWrites();
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("approved");
+  expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+});
+
+test("발행 저장 실패 후 발행 상태를 보류하고 한 번만 재시도한다", async () => {
+  const user = userEvent.setup();
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeApprovedArticle()] }) });
+  render(<StudioApp storage={controlled.storage} />);
+  await openArticle(user, "Rainforests");
+  controlled.failWrites();
+  const writesBeforeFailure = controlled.successfulWrites();
+  await user.click(screen.getByRole("button", { name: "발행" }));
+
+  expect(await screen.findByRole("alert", { name: "보류된 저장" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "발행 취소" })).toBeInTheDocument();
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("approved");
+  controlled.allowWrites();
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("published");
+  expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+});
+
+test("발행 취소 저장 실패 후 취소 상태를 보류하고 한 번만 재시도한다", async () => {
+  const user = userEvent.setup();
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makePublishedArticle()] }) });
+  render(<StudioApp storage={controlled.storage} />);
+  await openArticle(user, "Rainforests");
+  controlled.failWrites();
+  const writesBeforeFailure = controlled.successfulWrites();
+  await user.click(screen.getByRole("button", { name: "발행 취소" }));
+  await user.click(within(screen.getByRole("group", { name: "발행 취소 확인" })).getByRole("button", { name: "발행 취소 확정" }));
+
+  expect(await screen.findByRole("alert", { name: "보류된 저장" })).toBeInTheDocument();
+  expect(screen.getByText("발행 취소", { selector: ".studio-status" })).toBeInTheDocument();
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("published");
+  controlled.allowWrites();
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
+  expect(readStoredArticle(controlled.storage).workflowStatus).toBe("withdrawn");
+  expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+});
+
+test("검수를 제출하기 전에는 존재하지 않는 오류 메시지를 aria-describedby로 참조하지 않는다", async () => {
+  const user = userEvent.setup();
+  const source = { ...makeStudioArticle().sources[0], title: "" };
+  render(<StudioEditorHarness initialArticle={makeStudioArticle({ sources: [source] })} />);
+  const input = screen.getByRole("textbox", { name: "출처 1 제목" });
+
+  expect(input).not.toHaveAttribute("aria-describedby");
+  await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
+  const issue = screen.getByText("출처 제목을 입력해 주세요.");
+  expect(input).toHaveAttribute("aria-describedby", issue.id);
+});
+
+test("모바일 검수 오류 링크가 편집 탭을 열고 정확한 필드에 초점을 이동한다", async () => {
+  const restoreMatchMedia = mockMobileViewport();
+  const user = userEvent.setup();
+  const source = { ...makeStudioArticle().sources[0], title: "" };
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeStudioArticle({ sources: [source] })] }) });
+  try {
+    render(<StudioApp storage={storage} />);
+    await openArticle(user, "Rainforests");
+    await user.click(screen.getByRole("tab", { name: "검수" }));
+    await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
+    await user.click(screen.getByRole("link", { name: "출처 1 제목으로 이동" }));
+
+    const editTab = screen.getByRole("tab", { name: "편집" });
+    const field = screen.getByRole("textbox", { name: "출처 1 제목" });
+    await waitFor(() => expect(editTab).toHaveAttribute("aria-selected", "true"));
+    await waitFor(() => expect(field).toHaveFocus());
+  } finally {
+    restoreMatchMedia();
+  }
+});
+
+test("모바일 미리보기 확인 링크가 미리보기 탭을 열고 확인 버튼에 초점을 이동한다", async () => {
+  const restoreMatchMedia = mockMobileViewport();
+  const user = userEvent.setup();
+  const article = { ...makeFullyReviewedArticle(), previewReview: null };
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [article] }) });
+  try {
+    render(<StudioApp storage={storage} />);
+    await openArticle(user, "Rainforests");
+    await user.click(screen.getByRole("tab", { name: "검수" }));
+    await user.click(screen.getByRole("link", { name: "미리보기를 확인해 주세요." }));
+
+    const previewTab = screen.getByRole("tab", { name: "미리보기" });
+    const acknowledge = screen.getByRole("button", { name: "미리보기 확인 완료" });
+    await waitFor(() => expect(previewTab).toHaveAttribute("aria-selected", "true"));
+    await waitFor(() => expect(acknowledge).toHaveFocus());
+  } finally {
+    restoreMatchMedia();
+  }
+});
+
 function createControlledStorage(initial: Record<string, string> = {}) {
   const storage = createMemoryStorage(initial);
   const setItem = storage.setItem.bind(storage);
   let failing = false;
+  let successfulWrites = 0;
   storage.setItem = (key, value) => {
     if (failing) throw new DOMException("Quota exceeded", "QuotaExceededError");
     setItem(key, value);
+    successfulWrites += 1;
   };
   return {
     storage,
     failWrites: () => { failing = true; },
     allowWrites: () => { failing = false; },
+    successfulWrites: () => successfulWrites,
   };
 }
 
 function readStoredArticle(storage: Storage): StudioArticle {
-  return (JSON.parse(storage.getItem("nonfiction-lab:studio:v1") ?? "null") as { articles: StudioArticle[] }).articles[0];
+  return readStoredArticles(storage)[0];
+}
+
+function readStoredArticles(storage: Storage): StudioArticle[] {
+  return (JSON.parse(storage.getItem("nonfiction-lab:studio:v1") ?? "null") as { articles: StudioArticle[] }).articles;
+}
+
+async function openArticle(user: ReturnType<typeof userEvent.setup>, title: string): Promise<void> {
+  const list = await screen.findByRole("list", { name: "콘텐츠 목록" });
+  await user.click(within(list).getByRole("button", { name: `${title} 열기` }));
+}
+
+function mockMobileViewport(): () => void {
+  const originalMatchMedia = window.matchMedia;
+  window.matchMedia = (() => ({
+    matches: true,
+    media: "(max-width: 760px)",
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => true,
+  })) as typeof window.matchMedia;
+  return () => { window.matchMedia = originalMatchMedia; };
 }

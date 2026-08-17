@@ -6,13 +6,16 @@ import { ReviewPanel } from "@/components/studio/review-panel";
 import { StudioDashboard } from "@/components/studio/studio-dashboard";
 import { StudioPreview } from "@/components/studio/studio-preview";
 import { loadStudioState, saveStudioState, upsertStudioArticle, type StudioState } from "@/lib/studio-store";
-import type { ArticlePersistenceResult, StudioArticle } from "@/lib/studio-types";
+import { studioControlId } from "@/lib/studio-validation-ui";
+import type { ArticlePersistenceResult, StudioArticle, ValidationIssue } from "@/lib/studio-types";
 
 export function StudioApp({ storage }: { storage?: Storage }) {
   const [state, setState] = useState<StudioState | null>(null);
   const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
   const [workspaceDraft, setWorkspaceDraft] = useState<StudioArticle | null>(null);
   const [initialSaveError, setInitialSaveError] = useState("");
+  const [pendingPersistence, setPendingPersistence] = useState<{ article: StudioArticle; error: string } | null>(null);
+  const [displayedIssues, setDisplayedIssues] = useState<ValidationIssue[]>([]);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("edit");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const mobile = useMobileWorkspace();
@@ -37,9 +40,12 @@ export function StudioApp({ storage }: { storage?: Storage }) {
     try {
       saveStudioState(storage ?? window.localStorage, next);
       setState(next);
+      setPendingPersistence(null);
       return { ok: true };
     } catch (error) {
-      return { ok: false, error: persistenceError(error) };
+      const message = persistenceError(error);
+      setPendingPersistence({ article, error: message });
+      return { ok: false, error: message };
     }
   };
 
@@ -52,11 +58,12 @@ export function StudioApp({ storage }: { storage?: Storage }) {
     }
   };
 
-  const createArticle = () => {
+  const createArticle = async () => {
     const article = createBlankArticle(state.articles);
     setWorkspaceDraft(article);
     setActiveArticleId(article.id);
-    void persistArticle(article);
+    const result = await persistArticle(article);
+    if (!result.ok) return;
   };
 
   const activeArticle = activeArticleId
@@ -67,6 +74,10 @@ export function StudioApp({ storage }: { storage?: Storage }) {
     const selectTab = (tab: WorkspaceTab, focus = false) => {
       setActiveTab(tab);
       if (focus) tabRefs.current[tabs.findIndex((item) => item.id === tab)]?.focus();
+    };
+    const navigateToControl = (tab: WorkspaceTab, controlId: string) => {
+      setActiveTab(tab);
+      requestAnimationFrame(() => document.getElementById(controlId)?.focus());
     };
     const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
       let next = index;
@@ -81,19 +92,20 @@ export function StudioApp({ storage }: { storage?: Storage }) {
     return (
       <main className="studio-workspace">
         <header className="studio-workspace__header">
-          <button type="button" className="button button--ghost" aria-label="목록으로" onClick={() => { setActiveArticleId(null); setWorkspaceDraft(null); }}>← 목록으로</button>
+          <button type="button" className="button button--ghost" aria-label="목록으로" disabled={Boolean(pendingPersistence)} onClick={() => { setActiveArticleId(null); setWorkspaceDraft(null); setDisplayedIssues([]); }}>← 목록으로</button>
           <div><p className="eyebrow">CONTENT STUDIO</p><h1>{activeArticle.title || "제목 없는 콘텐츠"} 편집</h1></div>
         </header>
+        {pendingPersistence && <div className="studio-persistence-alert" role="alert" aria-label="보류된 저장"><span>{pendingPersistence.error}</span><button type="button" onClick={() => void persistArticle(pendingPersistence.article)}>보류된 저장 재시도</button></div>}
         {mobile && <div className="studio-workspace__tabs" role="tablist" aria-label="스튜디오 작업 보기">
           {tabs.map((tab, index) => <button key={tab.id} id={`studio-tab-${tab.id}`} ref={(node) => { tabRefs.current[index] = node; }} type="button" role="tab" aria-selected={activeTab === tab.id} aria-controls={`studio-panel-${tab.id}`} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => selectTab(tab.id)} onKeyDown={(event) => handleTabKey(event, index)}>{tab.label}</button>)}
         </div>}
         <div className="studio-workspace__grid">
           <div role={mobile ? "tabpanel" : undefined} id="studio-panel-edit" aria-label={mobile ? "편집" : undefined} aria-labelledby={mobile ? "studio-tab-edit" : undefined} hidden={mobile && activeTab !== "edit"}>
-            <ArticleEditor article={activeArticle} onArticleChange={persistArticle} />
+            <ArticleEditor article={activeArticle} onArticleChange={persistArticle} displayedIssues={displayedIssues} />
           </div>
           <div className="studio-workspace__rail">
             <div role={mobile ? "tabpanel" : undefined} id="studio-panel-review" aria-label={mobile ? "검수" : undefined} aria-labelledby={mobile ? "studio-tab-review" : undefined} hidden={mobile && activeTab !== "review"}>
-              <ReviewPanel article={activeArticle} onArticleChange={persistArticle} />
+              <ReviewPanel article={activeArticle} onArticleChange={persistArticle} onIssuesChange={setDisplayedIssues} onNavigateToField={(field) => navigateToControl("edit", studioControlId(field))} onNavigateToPreview={() => navigateToControl("preview", "studio-preview-acknowledge")} />
             </div>
             <div role={mobile ? "tabpanel" : undefined} id="studio-panel-preview" aria-label={mobile ? "미리보기" : undefined} aria-labelledby={mobile ? "studio-tab-preview" : undefined} hidden={mobile && activeTab !== "preview"}>
               <StudioPreview article={activeArticle} onArticleChange={persistArticle} />
@@ -108,8 +120,8 @@ export function StudioApp({ storage }: { storage?: Storage }) {
     {initialSaveError && <div className="studio-persistence-alert" role="alert"><span>{initialSaveError}</span><button type="button" onClick={retryInitialSave}>초기 저장 재시도</button></div>}
     <StudioDashboard
       articles={state.articles}
-      onCreate={createArticle}
-      onOpen={(article) => { setActiveTab("edit"); setWorkspaceDraft(article); setActiveArticleId(article.id); }}
+      onCreate={() => void createArticle()}
+      onOpen={(article) => { setActiveTab("edit"); setDisplayedIssues([]); setWorkspaceDraft(article); setActiveArticleId(article.id); }}
     />
   </>;
 }

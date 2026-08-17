@@ -1,26 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { applyArticleEdit, validateStage } from "@/lib/studio-workflow";
+import { applyArticleEdit } from "@/lib/studio-workflow";
 import { studioControlId, studioIssueId } from "@/lib/studio-validation-ui";
-import type { ArticleEditPatch, ArticlePersistenceResult, MediaEmbed, StudioArticle, StudioQuizQuestion, StudioSourceRef, StudioVocabularyItem } from "@/lib/studio-types";
+import type { ArticleEditPatch, ArticlePersistenceResult, MediaEmbed, StudioArticle, StudioQuizQuestion, StudioSourceRef, StudioVocabularyItem, ValidationIssue } from "@/lib/studio-types";
 
 type Props = {
   article: StudioArticle;
   onArticleChange: (article: StudioArticle) => ArticlePersistenceResult | Promise<ArticlePersistenceResult> | void;
+  displayedIssues?: ValidationIssue[];
   now?: () => string;
 };
 type Attrs = (field: string) => { id: string; "aria-invalid": true | undefined; "aria-describedby": string | undefined };
 
-export function ArticleEditor({ article: incoming, onArticleChange, now = () => new Date().toISOString() }: Props) {
+export function ArticleEditor({ article: incoming, onArticleChange, displayedIssues = [], now = () => new Date().toISOString() }: Props) {
   const [article, setArticle] = useState(incoming);
   const [reason, setReason] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [saveError, setSaveError] = useState("");
   const [retryArticle, setRetryArticle] = useState<StudioArticle | null>(null);
-  const issues = (["facts", "language", "age"] as const).flatMap((stage) => validateStage(article, stage));
   const attrs: Attrs = (field) => {
-    const matching = issues.filter((issue) => issue.field === field);
+    const matching = displayedIssues.filter((issue) => issue.field === field);
     return { id: studioControlId(field), "aria-invalid": matching.length ? true : undefined, "aria-describedby": matching.length ? matching.map(studioIssueId).join(" ") : undefined };
   };
 
