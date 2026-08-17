@@ -104,3 +104,48 @@ Resolved review findings C1, C2, I1-I7 and the touched M1/M2 boundaries.
 - Applied the React best-practices checklist after the TSX changes: state ownership remains local to the workspace, no server/client boundary was expanded, preview reuses the existing reader, controlled inputs remain controlled, and effects are limited to external synchronization or media-query subscription.
 - The public learner `Article` contract remains backward compatible; new studio-only editorial fields stay out of published snapshots unless an existing learner field already represents them.
 - No merge, push, worktree cleanup, network call, or learner-event persistence was performed.
+
+---
+
+## Fix Round 2
+
+### Outcome
+
+Resolved the remaining Important I1 and Minor M1 findings from the Fix Round 1 re-review.
+
+- `StudioApp` now owns the exact failed article as a pending persistence payload. Failed create, review completion, approval, publication, and withdrawal writes leave the durable store unchanged while preserving the attempted next state in the visible workspace.
+- The pending payload has a named global failure alert and one retry action. It is cleared only after `saveStudioState` succeeds; returning to the list is disabled while the unsaved payload remains, preventing accidental loss of the in-memory action context.
+- New-content creation now awaits and inspects the persistence result instead of discarding it.
+- Added throwing-storage boundary tests for creation and each transition family. Each test proves the failed write does not change durable state, the exact attempted next state remains visible, retry applies it, and the successful storage write occurs exactly once.
+- Validation associations now derive only from issues actually rendered by `ReviewPanel`; controls no longer reference absent error-message IDs before a stage is submitted.
+- Review issue and preview-required links now delegate to the workspace, activate the appropriate mobile tab, and then focus the exact editor control or preview acknowledgement button.
+
+### TDD red/green evidence
+
+1. Added eight regressions before production changes: five throwing-storage create/transition tests, one rendered-only `aria-describedby` test, and two mobile cross-tab focus tests.
+2. `npm test -- tests/studio-editor.test.tsx` initially failed 8 of 26 tests: no retained global retry existed, fields referenced unrendered issue IDs, and anchor navigation left targets hidden in inactive tabs.
+3. Central pending persistence, shared displayed issues, and workspace navigation callbacks made the focused suite green: 26 of 26 tests passing.
+4. The first focused green attempt exposed one older ambiguous `findByRole("alert")` assertion because persistence is now intentionally reported both globally and at the preview action boundary. The assertion was scoped to the named global pending-save alert; the final focused run remained 26 of 26 green.
+
+### Verification
+
+- `npm test -- tests/studio-editor.test.tsx` — 1 file, 26 tests passing.
+- `npm test` — 14 files, 149 tests passing.
+- `npm run lint` — TypeScript exited 0.
+- `npm run build` — Next.js 16.3.1 production build compiled, type-checked, and statically generated `/`, `/_not-found`, `/manifest.webmanifest`, and `/studio`.
+- `git diff --check` — no whitespace errors.
+
+### Files and commits
+
+- Persistence and navigation: `components/studio/studio-app.tsx`.
+- Rendered-issue sharing and mobile link routing: `components/studio/review-panel.tsx`, `components/studio/article-editor.tsx`.
+- Regression coverage: `tests/studio-editor.test.tsx`.
+- Implementation commit: `9c513125effb9527bccb6be5f1376f9ff1241db7` (`fix: retain failed studio transitions`).
+- Generated Next.js type-reference refresh: `ae81f952c3805f878f94eeff99024f774b229e3e` (`chore: refresh next generated types`).
+
+### Self-review
+
+- Rechecked the Fix Round 1 re-review's exact I1 and M1 acceptance language against the final paths and tests.
+- Applied the React best-practices checklist after the multi-component change: the durable/pending distinction has one workspace owner, issue state is passed explicitly, navigation remains event-driven, no new effect-derived state or data waterfall was introduced, and versioned local storage remains the only persistence boundary.
+- Confirmed the pending payload retains the attempted article object and durable state is updated only inside the successful storage branch.
+- No learner event, remote write, merge, push, or worktree cleanup was performed.
