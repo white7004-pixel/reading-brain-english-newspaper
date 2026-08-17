@@ -33,3 +33,33 @@
 ## Concerns
 
 None.
+
+## Fix Round 1
+
+### Red/green evidence
+
+- Red: `npm test -- tests/studio-workflow.test.ts` failed with 4 expected regressions: an upstream facts repeat did not throw, a stale age review survived a language completion, and media validation was not exported or enforced.
+- Green: `npm test -- tests/studio-workflow.test.ts` passed with 10 tests after state-based review transitions, stale-record normalization, and media URL validation were added.
+- Full verification: `npm test` passed (11 files, 30 tests).
+- Type check: `npm run lint` passed (`tsc --noEmit`).
+
+### Files changed
+
+- `lib/studio-types.ts`
+- `lib/studio-workflow.ts`
+- `tests/studio-workflow.test.ts`
+- `.superpowers/sdd/2026-08-17-content-review-studio/task-1-report.md`
+
+### Commit
+
+- `10bc529e49e586634126b25907e156826a846bba` (`fix: enforce review states and media embeds`)
+
+### Self-review
+
+- Review completion now accepts only `draft → facts`, `facts_reviewed → language`, and `language_reviewed → age`; it also retains only the valid prerequisite records when completing a stage.
+- Approval requires the valid `age_reviewed` state and all review records; publication additionally requires those records.
+- Media embeds are limited to typed YouTube, TED, and CNN providers with official HTTPS embed URL patterns. Invalid edits return a validation issue and throw before persistence.
+
+### Concerns
+
+None.
