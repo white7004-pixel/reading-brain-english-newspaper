@@ -17,13 +17,42 @@ describe("versioned studio content store", () => {
       .toEqual(["live"]);
   });
 
-  it("backs up corrupt storage and recovers with seeded reviewed content", () => {
-    const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": "{" });
+  it.each([
+    ["invalid JSON", "{"],
+    ["an empty stored value", ""],
+    ["a valid JSON object with malformed articles", JSON.stringify({ schemaVersion: 1, articles: [{}] })],
+    ["an unsupported schema version", JSON.stringify({ schemaVersion: 99, articles: [] })],
+  ])("backs up %s and recovers with seeded reviewed content", (_description, raw) => {
+    const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": raw });
 
     const state = loadStudioState(storage);
 
-    expect(state.articles.length).toBeGreaterThan(0);
-    expect(storage.getItem("nonfiction-lab:studio:corrupt-backup")).toBe("{");
+    expect(storage.getItem("nonfiction-lab:studio:corrupt-backup")).toBe(raw);
+    expect(getPublicArticles(state)).toHaveLength(6);
+  });
+
+  it("hides published-looking snapshots without completed reviews and approval", () => {
+    const forged = {
+      ...makePublishedArticle({ id: "forged" }),
+      approval: null,
+      reviewRecords: {},
+    };
+
+    expect(getPublicArticles({ schemaVersion: 1, articles: [forged] })).toEqual([]);
+  });
+
+  it("backs up and rejects stored published-looking snapshots without approval evidence", () => {
+    const forged = {
+      ...makePublishedArticle({ id: "forged" }),
+      approval: null,
+      reviewRecords: {},
+    };
+    const raw = JSON.stringify({ schemaVersion: 1, articles: [forged] });
+    const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": raw });
+
+    const state = loadStudioState(storage);
+
+    expect(storage.getItem("nonfiction-lab:studio:corrupt-backup")).toBe(raw);
     expect(getPublicArticles(state)).toHaveLength(6);
   });
 
@@ -37,6 +66,27 @@ describe("versioned studio content store", () => {
 
     expect(loadStudioState(storage).articles).toEqual([replacement]);
     expect(original.title).toBe("Original");
+  });
+
+  it("isolates stored published snapshots from public result mutations", () => {
+    const storage = createMemoryStorage();
+    const seeded = loadStudioState(storage);
+    const originalTitle = seeded.articles[0].publishedSnapshot?.title;
+    const originalPage = seeded.articles[0].publishedSnapshot?.pages[0];
+
+    const publicArticle = getPublicArticles(seeded)[0];
+    publicArticle.title = "Tampered title";
+    publicArticle.pages[0] = "Tampered page";
+
+    saveStudioState(storage, seeded);
+    const loaded = loadStudioState(storage);
+
+    expect(seeded.articles[0].publishedSnapshot?.title).toBe(originalTitle);
+    expect(seeded.articles[0].publishedSnapshot?.pages[0]).toBe(originalPage);
+    expect(getPublicArticles(seeded)[0].title).toBe(originalTitle);
+    expect(getPublicArticles(seeded)[0].pages[0]).toBe(originalPage);
+    expect(Object.isFrozen(seeded.articles[0].publishedSnapshot)).toBe(true);
+    expect(Object.isFrozen(loaded.articles[0].publishedSnapshot?.pages)).toBe(true);
   });
 
 });

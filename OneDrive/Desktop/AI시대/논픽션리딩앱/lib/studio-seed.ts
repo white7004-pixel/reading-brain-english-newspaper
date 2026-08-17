@@ -17,7 +17,7 @@ function createSeedStudioArticle(article: Article): StudioArticle {
     ...articleFields,
     status: "published",
     workingVersion: article.version,
-    publishedSnapshot: clonePublishedSnapshot(article),
+    publishedSnapshot: cloneAndFreezePublishedSnapshot(article),
     workflowStatus: "published",
     reviewRecords: {
       facts: { actor: review.approvedBy, completedAt: review.approvedAt },
@@ -38,8 +38,8 @@ function createSeedStudioArticle(article: Article): StudioArticle {
   };
 }
 
-function clonePublishedSnapshot(article: Article): Readonly<Article> {
-  return {
+export function cloneAndFreezePublishedSnapshot(article: Article): Readonly<Article> {
+  return deepFreeze({
     ...article,
     difficulty: { ...article.difficulty },
     pages: [...article.pages],
@@ -47,5 +47,16 @@ function clonePublishedSnapshot(article: Article): Readonly<Article> {
     quiz: article.quiz.map((question) => ({ ...question, options: [...question.options] })),
     sources: article.sources.map((source) => ({ ...source })),
     review: { ...article.review },
-  };
+  });
+}
+
+function deepFreeze<T>(value: T): T {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    for (const nestedValue of Object.values(value)) {
+      deepFreeze(nestedValue);
+    }
+    Object.freeze(value);
+  }
+
+  return value;
 }
