@@ -149,3 +149,54 @@ Resolved the remaining Important I1 and Minor M1 findings from the Fix Round 1 r
 - Applied the React best-practices checklist after the multi-component change: the durable/pending distinction has one workspace owner, issue state is passed explicitly, navigation remains event-driven, no new effect-derived state or data waterfall was introduced, and versioned local storage remains the only persistence boundary.
 - Confirmed the pending payload retains the attempted article object and durable state is updated only inside the successful storage branch.
 - No learner event, remote write, merge, push, or worktree cleanup was performed.
+
+---
+
+## Fix Round 3
+
+### Outcome
+
+Resolved both Important findings from the Fix Round 2 re-review.
+
+- Added a workspace-owned persistence-success token that advances only after the global pending-payload retry durably succeeds.
+- `ArticleEditor`, `ReviewPanel`, and `StudioPreview` consume that acknowledgement to clear stale local errors and retry payloads. A globally retried editor save now reports `저장됨`; workflow action errors disappear; preview acknowledgement errors and redundant local retry controls disappear.
+- Extended throwing-storage integration coverage across create, editor edits, facts review, final approval, publication, withdrawal, and preview acknowledgement. Each global retry is checked at the durable store and relevant child UI boundary.
+- Followed the installed Next.js 16.3.1 TypeScript and CLI guidance: removed `next-env.d.ts` from version control, ignored it, and changed `npm run lint` to run `next typegen` before `tsc --noEmit`.
+- Verified lint starting with no local `next-env.d.ts`; `next typegen` regenerated it successfully. Both the declaration and `.next/` remain ignored and untracked after lint and production build.
+
+### TDD red/green evidence
+
+1. Added and extended global-retry regressions before production changes.
+2. `npm test -- tests/studio-editor.test.tsx` failed 6 of 27 tests: editor status stayed `저장 실패`, preview retained its local retry/error, and review/approval/publication/withdrawal retained their action errors after durable global retry.
+3. Added the retry-success acknowledgement and child cleanup effects. The focused run reached 27 of 27 passing tests.
+4. A full-suite run exposed one immediate post-retry assertion racing the acknowledgement effect while durable approval was already correct. Converted remaining disappearance assertions to condition-based `waitFor` checks; the final focused and full runs were green.
+
+### Configuration verification
+
+- Deleted the local generated declaration before verification and confirmed it was absent.
+- `npm run lint` ran `next typegen && tsc --noEmit`, regenerated `next-env.d.ts`, and exited 0.
+- `git check-ignore -v next-env.d.ts` resolved to the project `.gitignore` rule.
+- `git ls-files '.next/**' next-env.d.ts` returned no tracked generated artifacts.
+- `npm run build` completed without producing tracked or modified generated files.
+
+### Verification
+
+- `npm test -- tests/studio-editor.test.tsx` — 1 file, 27 tests passing.
+- `npm test` — 14 files, 150 tests passing.
+- `npm run lint` — Next route type generation and TypeScript both exited 0.
+- `npm run build` — Next.js 16.3.1 production build compiled, type-checked, and statically generated `/`, `/_not-found`, `/manifest.webmanifest`, and `/studio`.
+- `git diff --check` — no whitespace errors.
+
+### Files and commit
+
+- Retry acknowledgement: `components/studio/studio-app.tsx`, `article-editor.tsx`, `review-panel.tsx`, and `studio-preview.tsx`.
+- Boundary regressions: `tests/studio-editor.test.tsx`.
+- Generated-type cleanup: `.gitignore`, `package.json`, and removal of tracked `next-env.d.ts`.
+- Implementation commit: `f4928fcb3a27331e7dfb41cc75e74e66604ad84a` (`fix: synchronize studio retry success`).
+
+### Self-review
+
+- Rechecked the latest I1 and generated-declaration findings against the final diff and integration tests.
+- Applied the React best-practices checklist: the token has one owner, increments functionally, represents only successful global retries, and effects depend on the primitive token rather than broad article objects.
+- Confirmed direct child retries retain their existing success handlers; the acknowledgement only repairs the global-retry path and does not add a second storage write.
+- No `.next` artifact, generated declaration, learner event, remote write, merge, push, or worktree cleanup was committed.
