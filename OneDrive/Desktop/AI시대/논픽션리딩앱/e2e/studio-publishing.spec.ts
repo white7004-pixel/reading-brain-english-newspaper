@@ -9,6 +9,14 @@ test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async (
   await page.getByRole("button", { name: "새 콘텐츠", exact: true }).click();
   await fillValidThreeMinuteArticle(page, { title: ARTICLE_TITLE });
 
+  await page.goto("/");
+  await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "탐험" }).click();
+  await page.getByRole("textbox", { name: "지식 검색" }).fill(ARTICLE_TITLE);
+  await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toHaveCount(0);
+
+  await page.goto("/studio");
+  await page.getByRole("list", { name: "콘텐츠 목록" }).getByRole("button", { name: `${ARTICLE_TITLE} 열기` }).click();
   await page.getByRole("tab", { name: "검수" }).click();
   await page.getByRole("button", { name: "사실·출처 검수 완료" }).click();
   await page.getByRole("button", { name: "영어·AR 검수 완료" }).click();
