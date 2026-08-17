@@ -1,4 +1,6 @@
 import { getArticleById, getPublishedArticles } from "@/lib/content";
+import { saveStudioState } from "@/lib/studio-store";
+import { createMemoryStorage, makePublishedArticle, makeStudioArticle } from "@/tests/studio-fixtures";
 
 describe("learner-safe content repository", () => {
   it("returns only reviewed and published articles", () => {
@@ -26,5 +28,16 @@ describe("learner-safe content repository", () => {
         expect(question.explanation.length).toBeGreaterThan(10);
       }
     }
+  });
+
+  it("uses supplied studio storage for published article lookups", () => {
+    const storage = createMemoryStorage();
+    const draft = makeStudioArticle({ id: "draft" });
+    const published = makePublishedArticle({ id: "live", title: "Visible review" });
+    saveStudioState(storage, { schemaVersion: 1, articles: [draft, published] });
+
+    expect(getPublishedArticles(storage).map((article) => article.id)).toEqual(["live"]);
+    expect(getArticleById("live", storage)?.title).toBe("Visible review");
+    expect(getArticleById("draft", storage)).toBeUndefined();
   });
 });

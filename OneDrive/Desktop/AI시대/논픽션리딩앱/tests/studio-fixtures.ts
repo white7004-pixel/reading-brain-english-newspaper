@@ -1,4 +1,5 @@
 import type { StudioArticle } from "@/lib/studio-types";
+import { approveArticle, completeStage, publishArticle } from "@/lib/studio-workflow";
 
 export function makeStudioArticle(overrides: Partial<StudioArticle> = {}): StudioArticle {
   return {
@@ -35,5 +36,39 @@ export function makeStudioArticle(overrides: Partial<StudioArticle> = {}): Studi
     sourceNotes: "Sources are included for facts and follow-up reading.",
     media: [],
     ...overrides,
+  };
+}
+
+export function makePublishedArticle(overrides: Partial<StudioArticle> = {}): StudioArticle {
+  const factsReviewed = completeStage(makeStudioArticle(overrides), "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
+  const languageReviewed = completeStage(factsReviewed, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
+  const ageReviewed = completeStage(languageReviewed, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
+  const approved = approveArticle(ageReviewed, "approver", "2026-08-17T04:00:00.000Z");
+
+  return publishArticle(approved, "2026-08-17T05:00:00.000Z");
+}
+
+export function createMemoryStorage(initial: Record<string, string> = {}): Storage {
+  const entries = new Map(Object.entries(initial));
+
+  return {
+    get length() {
+      return entries.size;
+    },
+    clear() {
+      entries.clear();
+    },
+    getItem(key) {
+      return entries.get(key) ?? null;
+    },
+    key(index) {
+      return [...entries.keys()][index] ?? null;
+    },
+    removeItem(key) {
+      entries.delete(key);
+    },
+    setItem(key, value) {
+      entries.set(key, value);
+    },
   };
 }
