@@ -9,11 +9,12 @@ type Props = {
   article: StudioArticle;
   onArticleChange: (article: StudioArticle) => ArticlePersistenceResult | Promise<ArticlePersistenceResult> | void;
   displayedIssues?: ValidationIssue[];
+  persistenceSuccessToken?: number;
   now?: () => string;
 };
 type Attrs = (field: string) => { id: string; "aria-invalid": true | undefined; "aria-describedby": string | undefined };
 
-export function ArticleEditor({ article: incoming, onArticleChange, displayedIssues = [], now = () => new Date().toISOString() }: Props) {
+export function ArticleEditor({ article: incoming, onArticleChange, displayedIssues = [], persistenceSuccessToken = 0, now = () => new Date().toISOString() }: Props) {
   const [article, setArticle] = useState(incoming);
   const [reason, setReason] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -25,6 +26,12 @@ export function ArticleEditor({ article: incoming, onArticleChange, displayedIss
   };
 
   useEffect(() => setArticle(incoming), [incoming]);
+  useEffect(() => {
+    if (persistenceSuccessToken === 0) return;
+    setSaveState((current) => current === "error" ? "saved" : current);
+    setSaveError("");
+    setRetryArticle(null);
+  }, [persistenceSuccessToken]);
 
   const persist = async (next: StudioArticle) => {
     setSaveState("saving");

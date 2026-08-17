@@ -15,6 +15,7 @@ export function StudioApp({ storage }: { storage?: Storage }) {
   const [workspaceDraft, setWorkspaceDraft] = useState<StudioArticle | null>(null);
   const [initialSaveError, setInitialSaveError] = useState("");
   const [pendingPersistence, setPendingPersistence] = useState<{ article: StudioArticle; error: string } | null>(null);
+  const [persistenceSuccessToken, setPersistenceSuccessToken] = useState(0);
   const [displayedIssues, setDisplayedIssues] = useState<ValidationIssue[]>([]);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("edit");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -58,6 +59,12 @@ export function StudioApp({ storage }: { storage?: Storage }) {
     }
   };
 
+  const retryPendingPersistence = async () => {
+    if (!pendingPersistence) return;
+    const result = await persistArticle(pendingPersistence.article);
+    if (result.ok) setPersistenceSuccessToken((token) => token + 1);
+  };
+
   const createArticle = async () => {
     const article = createBlankArticle(state.articles);
     setWorkspaceDraft(article);
@@ -95,20 +102,20 @@ export function StudioApp({ storage }: { storage?: Storage }) {
           <button type="button" className="button button--ghost" aria-label="목록으로" disabled={Boolean(pendingPersistence)} onClick={() => { setActiveArticleId(null); setWorkspaceDraft(null); setDisplayedIssues([]); }}>← 목록으로</button>
           <div><p className="eyebrow">CONTENT STUDIO</p><h1>{activeArticle.title || "제목 없는 콘텐츠"} 편집</h1></div>
         </header>
-        {pendingPersistence && <div className="studio-persistence-alert" role="alert" aria-label="보류된 저장"><span>{pendingPersistence.error}</span><button type="button" onClick={() => void persistArticle(pendingPersistence.article)}>보류된 저장 재시도</button></div>}
+        {pendingPersistence && <div className="studio-persistence-alert" role="alert" aria-label="보류된 저장"><span>{pendingPersistence.error}</span><button type="button" onClick={() => void retryPendingPersistence()}>보류된 저장 재시도</button></div>}
         {mobile && <div className="studio-workspace__tabs" role="tablist" aria-label="스튜디오 작업 보기">
           {tabs.map((tab, index) => <button key={tab.id} id={`studio-tab-${tab.id}`} ref={(node) => { tabRefs.current[index] = node; }} type="button" role="tab" aria-selected={activeTab === tab.id} aria-controls={`studio-panel-${tab.id}`} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => selectTab(tab.id)} onKeyDown={(event) => handleTabKey(event, index)}>{tab.label}</button>)}
         </div>}
         <div className="studio-workspace__grid">
           <div role={mobile ? "tabpanel" : undefined} id="studio-panel-edit" aria-label={mobile ? "편집" : undefined} aria-labelledby={mobile ? "studio-tab-edit" : undefined} hidden={mobile && activeTab !== "edit"}>
-            <ArticleEditor article={activeArticle} onArticleChange={persistArticle} displayedIssues={displayedIssues} />
+            <ArticleEditor article={activeArticle} onArticleChange={persistArticle} displayedIssues={displayedIssues} persistenceSuccessToken={persistenceSuccessToken} />
           </div>
           <div className="studio-workspace__rail">
             <div role={mobile ? "tabpanel" : undefined} id="studio-panel-review" aria-label={mobile ? "검수" : undefined} aria-labelledby={mobile ? "studio-tab-review" : undefined} hidden={mobile && activeTab !== "review"}>
-              <ReviewPanel article={activeArticle} onArticleChange={persistArticle} onIssuesChange={setDisplayedIssues} onNavigateToField={(field) => navigateToControl("edit", studioControlId(field))} onNavigateToPreview={() => navigateToControl("preview", "studio-preview-acknowledge")} />
+              <ReviewPanel article={activeArticle} onArticleChange={persistArticle} onIssuesChange={setDisplayedIssues} onNavigateToField={(field) => navigateToControl("edit", studioControlId(field))} onNavigateToPreview={() => navigateToControl("preview", "studio-preview-acknowledge")} persistenceSuccessToken={persistenceSuccessToken} />
             </div>
             <div role={mobile ? "tabpanel" : undefined} id="studio-panel-preview" aria-label={mobile ? "미리보기" : undefined} aria-labelledby={mobile ? "studio-tab-preview" : undefined} hidden={mobile && activeTab !== "preview"}>
-              <StudioPreview article={activeArticle} onArticleChange={persistArticle} />
+              <StudioPreview article={activeArticle} onArticleChange={persistArticle} persistenceSuccessToken={persistenceSuccessToken} />
             </div>
           </div>
         </div>

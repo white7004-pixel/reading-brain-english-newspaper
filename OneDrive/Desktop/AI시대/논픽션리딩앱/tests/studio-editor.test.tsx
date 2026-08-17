@@ -158,6 +158,32 @@ test("저장 실패에도 입력 중인 초안을 유지하고 명시적으로 �
   expect(readStoredArticle(controlled.storage).title).toBe("Unsaved draft");
 });
 
+test("편집 저장 실패를 전역 재시도하면 편집기의 실패 상태와 로컬 재시도가 사라진다", async () => {
+  const user = userEvent.setup();
+  const initialArticle = makeStudioArticle({ title: "Original" });
+  const controlled = createControlledStorage({
+    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [initialArticle] }),
+  });
+  render(<StudioApp storage={controlled.storage} />);
+  await openArticle(user, "Original");
+  controlled.failWrites();
+
+  const title = screen.getByRole("textbox", { name: "영문 제목" });
+  await user.clear(title);
+  await user.type(title, "Globally retried draft");
+  expect(await screen.findByText("저장 실패")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "저장 재시도" })).toBeInTheDocument();
+
+  controlled.allowWrites();
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
+
+  expect(readStoredArticle(controlled.storage).title).toBe("Globally retried draft");
+  expect(await screen.findByText("저장됨")).toBeInTheDocument();
+  expect(screen.queryByText("저장 실패")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "저장 재시도" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("alert", { name: "보류된 저장" })).not.toBeInTheDocument();
+});
+
 test("초기 시드 저장 실패를 표시하고 로딩 화면에 갇히지 않는다", async () => {
   const user = userEvent.setup();
   const controlled = createControlledStorage();
@@ -330,7 +356,7 @@ test("발행 취소를 앱 저장 경계까지 영속화한다", async () => {
   expect(readStoredArticle(storage).withdrawnAt).toBeTruthy();
 });
 
-test("미리보기 확인 저장 실패를 알리고 같은 확인 기록을 재시도한다", async () => {
+test("미리보기 확인 저장 실패를 전역 재시도하면 로컬 오류와 재시도가 사라진다", async () => {
   const user = userEvent.setup();
   const article = { ...makeFullyReviewedArticle(), previewReview: null };
   const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [article] }) });
@@ -342,9 +368,13 @@ test("미리보기 확인 저장 실패를 알리고 같은 확인 기록을 재
 
   expect(await screen.findByRole("alert", { name: "보류된 저장" })).toHaveTextContent("브라우저 저장소에 저장하지 못했습니다.");
   expect(readStoredArticle(controlled.storage).previewReview).toBeNull();
+  expect(screen.getByRole("button", { name: "미리보기 확인 저장 재시도" })).toBeInTheDocument();
   controlled.allowWrites();
-  await user.click(screen.getByRole("button", { name: "미리보기 확인 저장 재시도" }));
+  await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
   expect(readStoredArticle(controlled.storage).previewReview).toMatchObject({ workingVersion: 1 });
+  expect(screen.getByText(/작업 버전 1 확인/)).toBeInTheDocument();
+  await waitFor(() => expect(screen.queryByRole("button", { name: "미리보기 확인 저장 재시도" })).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.queryByText("브라우저 저장소에 저장하지 못했습니다.")).not.toBeInTheDocument());
 });
 
 test("새 콘텐츠 저장 실패를 보류 상태로 유지하고 같은 초안을 한 번만 재시도한다", async () => {
@@ -367,6 +397,8 @@ test("새 콘텐츠 저장 실패를 보류 상태로 유지하고 같은 초안
   expect(readStoredArticles(controlled.storage)).toHaveLength(2);
   expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
   expect(screen.queryByRole("alert", { name: "보류된 저장" })).not.toBeInTheDocument();
+  expect(screen.queryByText("저장 실패")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /저장 재시도/ })).not.toBeInTheDocument();
 });
 
 test("검수 단계 저장 실패 후 정확한 다음 상태를 보류하고 한 번만 재시도한다", async () => {
@@ -385,6 +417,7 @@ test("검수 단계 저장 실패 후 정확한 다음 상태를 보류하고 �
   await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
   expect(readStoredArticle(controlled.storage).workflowStatus).toBe("facts_reviewed");
   expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+  await waitFor(() => expect(screen.queryByText("브라우저 저장소에 저장하지 못했습니다.")).not.toBeInTheDocument());
 });
 
 test("최종 승인 저장 실패 후 승인 상태를 보류하고 한 번만 재시도한다", async () => {
@@ -403,6 +436,7 @@ test("최종 승인 저장 실패 후 승인 상태를 보류하고 한 번만 �
   await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
   expect(readStoredArticle(controlled.storage).workflowStatus).toBe("approved");
   expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+  await waitFor(() => expect(screen.queryByText("브라우저 저장소에 저장하지 못했습니다.")).not.toBeInTheDocument());
 });
 
 test("발행 저장 실패 후 발행 상태를 보류하고 한 번만 재시도한다", async () => {
@@ -421,6 +455,7 @@ test("발행 저장 실패 후 발행 상태를 보류하고 한 번만 재시�
   await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
   expect(readStoredArticle(controlled.storage).workflowStatus).toBe("published");
   expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+  await waitFor(() => expect(screen.queryByText("브라우저 저장소에 저장하지 못했습니다.")).not.toBeInTheDocument());
 });
 
 test("발행 취소 저장 실패 후 취소 상태를 보류하고 한 번만 재시도한다", async () => {
@@ -440,6 +475,7 @@ test("발행 취소 저장 실패 후 취소 상태를 보류하고 한 번만 �
   await user.click(screen.getByRole("button", { name: "보류된 저장 재시도" }));
   expect(readStoredArticle(controlled.storage).workflowStatus).toBe("withdrawn");
   expect(controlled.successfulWrites()).toBe(writesBeforeFailure + 1);
+  await waitFor(() => expect(screen.queryByText("브라우저 저장소에 저장하지 못했습니다.")).not.toBeInTheDocument());
 });
 
 test("검수를 제출하기 전에는 존재하지 않는 오류 메시지를 aria-describedby로 참조하지 않는다", async () => {

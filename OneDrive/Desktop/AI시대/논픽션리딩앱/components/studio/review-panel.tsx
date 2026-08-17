@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { approveArticle, completeStage, publishArticle, validateStage, withdrawArticle } from "@/lib/studio-workflow";
 import { issueFieldLabel, issueMessage, studioControlId, studioIssueId } from "@/lib/studio-validation-ui";
 import type { ArticlePersistenceResult, ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
@@ -11,6 +11,7 @@ type ReviewPanelProps = {
   onIssuesChange?: (issues: ValidationIssue[]) => void;
   onNavigateToField?: (field: string) => void;
   onNavigateToPreview?: () => void;
+  persistenceSuccessToken?: number;
   actor?: string;
   now?: () => string;
 };
@@ -27,10 +28,13 @@ const REQUIRED_STATUS: Record<ReviewStage, StudioArticle["workflowStatus"]> = {
   age: "language_reviewed",
 };
 
-export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNavigateToField, onNavigateToPreview, actor = article.editor, now = () => new Date().toISOString() }: ReviewPanelProps) {
+export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNavigateToField, onNavigateToPreview, persistenceSuccessToken = 0, actor = article.editor, now = () => new Date().toISOString() }: ReviewPanelProps) {
   const [issues, setIssues] = useState<Partial<Record<ReviewStage, ValidationIssue[]>>>({});
   const [actionError, setActionError] = useState("");
   const [confirmWithdraw, setConfirmWithdraw] = useState(false);
+  useEffect(() => {
+    if (persistenceSuccessToken > 0) setActionError("");
+  }, [persistenceSuccessToken]);
 
   const update = async (next: StudioArticle) => {
     try {

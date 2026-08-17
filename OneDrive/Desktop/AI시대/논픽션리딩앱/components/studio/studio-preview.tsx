@@ -9,15 +9,16 @@ import type { Article } from "@/lib/types";
 type Props = {
   article: StudioArticle;
   onArticleChange?: (article: StudioArticle) => ArticlePersistenceResult | Promise<ArticlePersistenceResult> | void;
+  persistenceSuccessToken?: number;
   actor?: string;
   now?: () => string;
 };
 
-export function StudioPreview({ article, onArticleChange, actor = article.editor, now = () => new Date().toISOString() }: Props) {
+export function StudioPreview({ article, onArticleChange, persistenceSuccessToken = 0, actor = article.editor, now = () => new Date().toISOString() }: Props) {
   const acknowledged = article.previewReview?.workingVersion === article.workingVersion;
   const [saveError, setSaveError] = useState("");
   const [retryArticle, setRetryArticle] = useState<StudioArticle | null>(null);
-  useEffect(() => { setSaveError(""); setRetryArticle(null); }, [article.id, article.workingVersion]);
+  useEffect(() => { setSaveError(""); setRetryArticle(null); }, [article.id, article.workingVersion, persistenceSuccessToken]);
   const persistAcknowledgement = async (next: StudioArticle) => {
     if (!onArticleChange) return;
     setRetryArticle(next);
