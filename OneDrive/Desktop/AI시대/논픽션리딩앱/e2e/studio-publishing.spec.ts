@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const ARTICLE_TITLE = "How Ants Work Together";
+const REPLACEMENT_TITLE = "How Ant Colonies Coordinate";
 
 test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async ({ page }) => {
   await completeLearnerOnboarding(page);
@@ -18,6 +19,9 @@ test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async (
   await page.goto("/studio");
   await page.getByRole("list", { name: "콘텐츠 목록" }).getByRole("button", { name: `${ARTICLE_TITLE} 열기` }).click();
   await page.getByRole("tab", { name: "검수" }).click();
+  const attestations = page.getByRole("complementary", { name: "단계별 검수" }).getByRole("checkbox");
+  await expect(attestations).toHaveCount(15);
+  for (let index = 0; index < 15; index += 1) await attestations.nth(index).check();
   await page.getByRole("button", { name: "사실·출처 검수 완료" }).click();
   await page.getByRole("button", { name: "영어·AR 검수 완료" }).click();
   await page.getByRole("button", { name: "연령 적합성 검수 완료" }).click();
@@ -30,18 +34,44 @@ test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async (
 
   await page.goto("/");
   await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "탐험" }).click();
   await page.getByRole("textbox", { name: "지식 검색" }).fill(ARTICLE_TITLE);
   await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toBeVisible();
+  await page.getByTestId("article-card").filter({ hasText: ARTICLE_TITLE }).click();
+  await page.getByRole("button", { name: "이해 퀴즈 시작" }).click();
+  await page.locator(".quiz-options button").first().click();
+  await page.getByRole("button", { name: "결과 보기" }).click();
+  await expect(page.getByText("새로운 지식 발견!")).toBeVisible();
+  await expect(page.getByRole("button", { name: "다음 지식 탐험하기" })).toHaveCount(0);
 
   await page.goto("/studio");
   await page.getByRole("button", { name: `${ARTICLE_TITLE} 열기` }).click();
+  const replacementTitle = page.getByRole("textbox", { name: "영문 제목" });
+  await replacementTitle.fill(REPLACEMENT_TITLE);
+  await expect(page.getByText("변경 대기", { exact: true })).toBeVisible();
+  await expect(page.getByText("저장됨", { exact: true })).toBeVisible();
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "탐험" }).click();
+  await page.getByRole("textbox", { name: "지식 검색" }).fill(ARTICLE_TITLE);
+  await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toBeVisible();
+  await page.getByRole("textbox", { name: "지식 검색" }).fill(REPLACEMENT_TITLE);
+  await expect(page.getByText(REPLACEMENT_TITLE, { exact: true })).toHaveCount(0);
+
+  await page.goto("/studio");
+  await page
+    .getByRole("list", { name: "콘텐츠 목록" })
+    .getByRole("button", { name: `${REPLACEMENT_TITLE} 열기` })
+    .click();
   await page.getByRole("tab", { name: "검수" }).click();
   await page.getByRole("button", { name: "발행 취소", exact: true }).click();
   await page.getByRole("group", { name: "발행 취소 확인" }).getByRole("button", { name: "발행 취소 확정" }).click();
 
   await page.goto("/");
   await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toHaveCount(0);
+  await expect(page.getByText(REPLACEMENT_TITLE, { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "탐험" }).click();
   await page.getByRole("textbox", { name: "지식 검색" }).fill(ARTICLE_TITLE);
   await expect(page.getByText(ARTICLE_TITLE, { exact: true })).toHaveCount(0);

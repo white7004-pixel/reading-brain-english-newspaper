@@ -15,6 +15,8 @@ test("is installable and retains a completed lesson after reload", async ({ page
   await page.locator(".quiz-options button").nth(0).click();
   await page.getByRole("button", { name: "결과 보기" }).click();
   await expect(page.getByText("새로운 지식 발견!")).toBeVisible();
+  await page.getByRole("button", { name: "다음 지식 탐험하기" }).click();
+  await expect(page.getByRole("heading", { name: "How Did the Great Wave Travel?" })).toBeVisible();
   await page.reload();
   await page.getByRole("button", { name: "나" }).click();
   await expect(page.getByText("1개")).toBeVisible();
