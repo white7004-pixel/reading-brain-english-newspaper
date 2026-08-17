@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { LearnerApp } from "@/components/learner-app";
-import { createDefaultLearnerState, loadLearnerState, saveLearnerState } from "@/lib/learner-store";
+import { createDefaultLearnerState, loadLearnerState, saveLearnerState, STORAGE_KEY } from "@/lib/learner-store";
+import { STUDIO_STORAGE_KEY } from "@/lib/studio-store";
 import { saveStudioState } from "@/lib/studio-store";
 import { withdrawArticle } from "@/lib/studio-workflow";
 import { createMemoryStorage, makePublishedArticle, makeStudioArticle } from "@/tests/studio-fixtures";
@@ -13,6 +14,21 @@ function createOnboardedState() {
 
 function saveArticles(storage: Storage, articles: Parameters<typeof saveStudioState>[1]["articles"]) {
   saveStudioState(storage, { schemaVersion: 2, articles });
+}
+
+function createCorruptReadOnlyStorage(state: ReturnType<typeof createDefaultLearnerState>): Storage {
+  return {
+    get length() { return 2; },
+    clear() {},
+    getItem(key) {
+      if (key === STUDIO_STORAGE_KEY) return "{corrupt studio state";
+      if (key === STORAGE_KEY) return JSON.stringify(state);
+      return null;
+    },
+    key() { return null; },
+    removeItem() {},
+    setItem() { throw new Error("Quota exceeded"); },
+  };
 }
 
 test("shows only published studio content to learners", () => {
@@ -58,4 +74,25 @@ test("removes withdrawn content on a new render without changing saved attempts"
   expect(screen.queryByText("Withdrawn article")).not.toBeInTheDocument();
   expect(loadLearnerState(storage).attempts).toEqual(state.attempts);
   expect(loadLearnerState(storage).profile.xp).toBe(35);
+});
+
+test("renders seeded learner content when corrupt studio storage cannot be backed up", () => {
+  const state = createOnboardedState();
+  state.attempts = [{
+    id: "existing-attempt",
+    articleId: "old-article",
+    completedAt: "2026-08-18T12:00:00.000Z",
+    localDate: "2026-08-18",
+    correct: 2,
+    total: 3,
+    hintsUsed: 1,
+    durationSeconds: 120,
+    xpAwarded: 25,
+  }];
+  const storage = createCorruptReadOnlyStorage(state);
+
+  render(<LearnerApp initialState={state} storage={storage} />);
+
+  expect(screen.getByText("Why Do Stars Shine?")).toBeInTheDocument();
+  expect(loadLearnerState(storage).attempts).toEqual(state.attempts);
 });

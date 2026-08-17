@@ -40,4 +40,16 @@ describe("learner-safe content repository", () => {
     expect(getArticleById("live", storage)?.title).toBe("Visible review");
     expect(getArticleById("draft", storage)).toBeUndefined();
   });
+
+  it("falls back to seeded public articles when corrupt storage cannot be backed up", () => {
+    const storage = {
+      getItem: () => "{corrupt studio state",
+      setItem: () => { throw new Error("Quota exceeded"); },
+    };
+
+    const articles = getPublishedArticles(storage);
+
+    expect(articles).toHaveLength(6);
+    expect(articles[0]?.title).toBe("Why Do Stars Shine?");
+  });
 });

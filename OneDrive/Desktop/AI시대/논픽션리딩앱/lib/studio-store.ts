@@ -36,7 +36,11 @@ export function loadStudioState(storage: StudioStorage): StudioState {
     if (!isStudioState(migrated)) throw new Error("Invalid studio state");
     return hydrateStudioState(migrated);
   } catch {
-    backupCorruptStudioState(storage, raw);
+    try {
+      backupCorruptStudioState(storage, raw);
+    } catch {
+      // Recovery must still make reviewed seed content available when storage is read-only.
+    }
     return createSeedStudioState();
   }
 }
