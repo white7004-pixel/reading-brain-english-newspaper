@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { ProgressBar } from "./ui/progress-bar";
 import type { Article, VocabularyItem } from "@/lib/types";
+import { isSafePublicMedia } from "@/lib/public-article-schema";
 
 export type ReaderEvent = { type: "page_view" | "word_open" | "audio_play" | "reader_complete"; articleId: string; at: string; detail?: string };
 
@@ -15,6 +16,7 @@ export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: 
   const safePageIndex = Math.min(pageIndex, Math.max(article.pages.length - 1, 0));
   const page = article.pages[safePageIndex] ?? "";
   const lastPage = safePageIndex === article.pages.length - 1;
+  const safeMedia = (article.media ?? []).filter(isSafePublicMedia);
 
   useEffect(() => {
     setPageIndex((current) => Math.min(current, Math.max(article.pages.length - 1, 0)));
@@ -31,9 +33,14 @@ export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: 
   };
 
   const renderText = () => {
-    const pattern = new RegExp(`(${article.vocabulary.map((item) => item.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+    const vocabulary = article.vocabulary
+      .map((item) => ({ ...item, word: item.word.trim() }))
+      .filter((item) => item.word.length > 0);
+    if (vocabulary.length === 0) return page;
+
+    const pattern = new RegExp(`(${vocabulary.map((item) => item.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
     return page.split(pattern).map((part, index) => {
-      const item = article.vocabulary.find((entry) => entry.word.toLowerCase() === part.toLowerCase());
+      const item = vocabulary.find((entry) => entry.word.toLowerCase() === part.toLowerCase());
       return item ? <button key={`${part}-${index}`} type="button" className="word-button" aria-label={`${item.word} 뜻 보기`} onClick={(event) => openWord(item, event.currentTarget)}>{part}</button> : <Fragment key={`${part}-${index}`}>{part}</Fragment>;
     });
   };
@@ -43,6 +50,11 @@ export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: 
       <header className="reader-top"><button type="button" className="icon-button" aria-label="읽기 종료" onClick={onBack}>←</button><span>{safePageIndex + 1} / {article.pages.length}</span><button type="button" className="icon-button" aria-label="글 저장">♡</button></header>
       <ProgressBar value={safePageIndex + 1} max={article.pages.length} label="읽기 진행률" />
       <div className={`article-visual article-visual--${article.visualTheme}`}><span>{article.domain.toUpperCase()} · 오늘의 질문</span></div>
+      {safeMedia.length > 0 && <div className="reader-media">
+        {safeMedia.map((item) => item.kind === "image"
+          ? <img key={`image-${item.url}`} className="reader-media__asset" src={item.url} alt={item.alt} loading="lazy" referrerPolicy="no-referrer" />
+          : <iframe key={`video-${item.embedUrl}`} className="reader-media__asset" src={item.embedUrl} title={item.alt} loading="lazy" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />)}
+      </div>}
       <p className="eyebrow">{article.titleKo}</p><h1>{article.title}</h1>
       <button type="button" className="audio-button" onClick={playAudio}><span aria-hidden="true">▶</span><strong>원어민 오디오로 듣기</strong></button>
       {audioError && <p className="inline-notice">오디오는 지금 사용할 수 없어요</p>}

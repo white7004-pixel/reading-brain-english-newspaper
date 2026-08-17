@@ -38,6 +38,21 @@ export type QuizQuestion = {
   explanation: string;
 };
 
+export type ArticleImageMedia = {
+  kind: "image";
+  url: string;
+  alt: string;
+};
+
+export type ArticleVideoMedia = {
+  kind: "video";
+  provider: "youtube" | "ted" | "cnn";
+  embedUrl: string;
+  alt: string;
+};
+
+export type ArticleMedia = ArticleImageMedia | ArticleVideoMedia;
+
 export type Article = {
   id: string;
   title: string;
@@ -55,7 +70,8 @@ export type Article = {
   quiz: QuizQuestion[];
   sources: SourceRef[];
   review: ReviewRecord;
-  connectedArticleId: string;
+  connectedArticleId?: string;
   visualTheme: string;
+  media: ArticleMedia[];
   audioUrl?: string;
 };

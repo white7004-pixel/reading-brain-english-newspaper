@@ -30,5 +30,14 @@ it("records one attempt and shows score, XP, streak, and next topic", async () =
   expect(screen.getByText("획득 XP")).toBeVisible();
   expect(screen.getByText("1일")).toBeVisible();
   expect(loadLearnerState(localStorage).attempts).toHaveLength(1);
+  expect(loadLearnerState(localStorage).attempts[0]).toMatchObject({
+    articleTitle: article.title,
+    articleVersion: article.version,
+  });
   expect(loadLearnerState(localStorage).profile.xp).toBe(35);
+
+  const continuation = getPublishedArticles().find((candidate) => candidate.id === article.connectedArticleId);
+  expect(continuation).toBeDefined();
+  await user.click(screen.getByRole("button", { name: "다음 지식 탐험하기" }));
+  expect(screen.getByRole("heading", { name: continuation?.title })).toBeVisible();
 });

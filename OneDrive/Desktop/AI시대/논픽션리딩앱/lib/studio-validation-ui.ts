@@ -6,6 +6,7 @@ const FIELD_LABELS: Record<string, string> = {
   pages: "본문 페이지", vocabulary: "어휘", quiz: "퀴즈", "difficulty.value": "논픽션랩 추정 AR", "difficulty.label": "난이도 설명",
   wordCount: "단어 수", estimatedReadingSeconds: "예상 읽기 시간", keySentence: "핵심 문장", minAge: "권장 최소 연령",
   maxAge: "권장 최대 연령", learningGoal: "학습 목표", safetyReviewed: "아동 주의 요소 검토", keyConcept: "핵심 개념",
+  visualTheme: "비주얼 테마", connectedArticleId: "연결 콘텐츠 ID",
 };
 
 const ISSUE_MESSAGES: Record<string, string> = {
@@ -16,6 +17,9 @@ const ISSUE_MESSAGES: Record<string, string> = {
   source_date_required: "출처 발행일을 입력해 주세요.",
   source_fact_required: "출처가 뒷받침하는 사실을 입력해 주세요.",
   unsupported_embed_url: "제공자의 공식 임베드 URL을 입력해 주세요.",
+  image_url_invalid: "HTTPS 이미지 URL을 입력해 주세요.",
+  visual_theme_required: "비주얼 테마를 입력해 주세요.",
+  connected_article_invalid: "연결 콘텐츠를 비우거나 유효한 ID를 입력해 주세요.",
   media_alt_required: "미디어 대체 텍스트를 입력해 주세요.",
   media_usage_confirmation_required: "미디어 사용 조건을 확인해 주세요.",
   reconstruction_confirmation_required: "독립적 재구성을 확인해 주세요.",
@@ -65,5 +69,5 @@ function quizPartLabel(part: string): string {
   return ({ type: "문제 유형", prompt: "질문", options: "선택지", correctIndex: "정답 번호", explanation: "해설", evidence: "본문 근거" } as Record<string, string>)[part] ?? part;
 }
 function mediaPartLabel(part: string): string {
-  return ({ provider: "제공처", embedUrl: "공식 임베드 URL", alt: "대체 텍스트", usageConfirmed: "사용 조건 확인" } as Record<string, string>)[part] ?? part;
+  return ({ provider: "제공처", embedUrl: "공식 임베드 URL", url: "이미지 URL", alt: "대체 텍스트", usageConfirmed: "사용 조건 확인" } as Record<string, string>)[part] ?? part;
 }

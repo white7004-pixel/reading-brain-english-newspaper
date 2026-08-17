@@ -22,7 +22,7 @@ describe("learner-safe content repository", () => {
     const articles = getPublishedArticles();
     expect(new Set(articles.map((article) => article.id)).size).toBe(articles.length);
     for (const article of articles) {
-      expect(getArticleById(article.connectedArticleId)).toBeDefined();
+      if (article.connectedArticleId) expect(getArticleById(article.connectedArticleId)).toBeDefined();
       for (const question of article.quiz) {
         expect(question.options[question.correctIndex]).toBeTruthy();
         expect(question.explanation.length).toBeGreaterThan(10);
@@ -34,7 +34,7 @@ describe("learner-safe content repository", () => {
     const storage = createMemoryStorage();
     const draft = makeStudioArticle({ id: "draft" });
     const published = makePublishedArticle({ id: "live", title: "Visible review" });
-    saveStudioState(storage, { schemaVersion: 1, articles: [draft, published] });
+    saveStudioState(storage, { schemaVersion: 3, articles: [draft, published] });
 
     expect(getPublishedArticles(storage).map((article) => article.id)).toEqual(["live"]);
     expect(getArticleById("live", storage)?.title).toBe("Visible review");

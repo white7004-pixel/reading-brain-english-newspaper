@@ -1,20 +1,20 @@
 import { useState } from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ArticleEditor } from "@/components/studio/article-editor";
 import { ReviewPanel } from "@/components/studio/review-panel";
 import { StudioApp } from "@/components/studio/studio-app";
 import { StudioPreview } from "@/components/studio/studio-preview";
-import { approveArticle, completeStage } from "@/lib/studio-workflow";
+import { approveArticle } from "@/lib/studio-workflow";
 import type { StudioArticle, ValidationIssue } from "@/lib/studio-types";
-import { createMemoryStorage, makePublishedArticle, makeStudioArticle } from "./studio-fixtures";
+import { completeAttestedStage, createMemoryStorage, makePublishedArticle, makeStudioArticle } from "./studio-fixtures";
 
 const NOW = "2026-08-18T09:00:00.000Z";
 
 function makeFullyReviewedArticle(): StudioArticle {
-  const facts = completeStage(makeStudioArticle(), "facts", "fact-checker", "2026-08-18T06:00:00.000Z");
-  const language = completeStage(facts, "language", "language-reviewer", "2026-08-18T07:00:00.000Z");
-  return completeStage(language, "age", "age-reviewer", "2026-08-18T08:00:00.000Z");
+  const facts = completeAttestedStage(makeStudioArticle(), "facts", "fact-checker", "2026-08-18T06:00:00.000Z");
+  const language = completeAttestedStage(facts, "language", "language-reviewer", "2026-08-18T07:00:00.000Z");
+  return completeAttestedStage(language, "age", "age-reviewer", "2026-08-18T08:00:00.000Z");
 }
 
 function makeApprovedArticle(): StudioArticle {
@@ -27,7 +27,7 @@ function StudioEditorHarness({ initialArticle }: { initialArticle: StudioArticle
 
   return (
     <>
-      <ArticleEditor article={article} onArticleChange={setArticle} displayedIssues={displayedIssues} now={() => NOW} />
+      <ArticleEditor article={article} onArticleChange={setArticle} onDraftChange={setArticle} displayedIssues={displayedIssues} now={() => NOW} />
       <ReviewPanel article={article} onArticleChange={setArticle} onIssuesChange={setDisplayedIssues} actor="reviewer-1" now={() => NOW} />
     </>
   );
@@ -37,7 +37,7 @@ function LivePreviewHarness({ initialArticle }: { initialArticle: StudioArticle 
   const [article, setArticle] = useState(initialArticle);
   const [displayedIssues, setDisplayedIssues] = useState<ValidationIssue[]>([]);
   return <>
-    <ArticleEditor article={article} onArticleChange={setArticle} displayedIssues={displayedIssues} now={() => NOW} />
+    <ArticleEditor article={article} onArticleChange={setArticle} onDraftChange={setArticle} displayedIssues={displayedIssues} now={() => NOW} />
     <StudioPreview article={article} onArticleChange={setArticle} actor="previewer" now={() => NOW} />
     <ReviewPanel article={article} onArticleChange={setArticle} onIssuesChange={setDisplayedIssues} actor="reviewer-1" now={() => NOW} />
   </>;
@@ -47,7 +47,8 @@ test("누락된 출처를 표시하고 사실 검수 완료를 막는다", async
   const user = userEvent.setup();
   render(<StudioEditorHarness initialArticle={makeStudioArticle({ sources: [] })} />);
 
-  await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
+  await attestFactsInUi(user);
+  expect(screen.getByRole("button", { name: "사실·출처 검수 완료" })).toBeDisabled();
 
   expect(screen.getByText("출처를 한 개 이상 추가해 주세요.")).toBeInTheDocument();
   expect(screen.queryByText("사실·출처 검수 완료됨")).not.toBeInTheDocument();
@@ -77,9 +78,152 @@ test("필드와 배열 항목을 수정할 때 작업 버전을 갱신하고 저
   await user.click(screen.getByRole("button", { name: "본문 페이지 추가" }));
 
   expect(title).toHaveValue("A New Rainforest");
-  expect(screen.getByText("저장됨")).toBeInTheDocument();
+  expect(await screen.findByText("저장됨", {}, { timeout: 1500 })).toBeInTheDocument();
   expect(screen.getByText("작업 버전 2")).toBeInTheDocument();
   expect(screen.getAllByRole("textbox", { name: /본문 페이지 \d+/ })).toHaveLength(4);
+});
+
+test("여러 키 입력을 하나의 자동 저장과 의미 있는 변경 기록으로 병합한다", async () => {
+  vi.useFakeTimers();
+  const onArticleChange = vi.fn((_article: StudioArticle) => ({ ok: true as const }));
+  try {
+    render(<ArticleEditor article={makeStudioArticle({ title: "R" })} onArticleChange={onArticleChange} now={() => NOW} />);
+    const title = screen.getByRole("textbox", { name: "영문 제목" });
+
+    act(() => {
+      fireEvent.change(title, { target: { value: "Ra" } });
+      fireEvent.change(title, { target: { value: "Rain" } });
+      fireEvent.change(title, { target: { value: "Rainforest" } });
+    });
+
+    expect(onArticleChange).not.toHaveBeenCalled();
+    await act(async () => { vi.advanceTimersByTime(599); });
+    expect(onArticleChange).not.toHaveBeenCalled();
+    await act(async () => { vi.advanceTimersByTime(1); });
+
+    expect(onArticleChange).toHaveBeenCalledTimes(1);
+    expect(onArticleChange.mock.calls[0][0]).toMatchObject({
+      title: "Rainforest",
+      changeLog: [{ fields: ["title"], reason: "" }],
+    });
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test("대기 중인 편집을 목록 이동 전에 한 번만 안전하게 저장한다", async () => {
+  const user = userEvent.setup();
+  const controlled = createControlledStorage({
+    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeStudioArticle({ title: "Before" })] }),
+  });
+  render(<StudioApp storage={controlled.storage} />);
+  await openArticle(user, "Before");
+  const writesBeforeEdit = controlled.successfulWrites();
+
+  fireEvent.change(screen.getByRole("textbox", { name: "영문 제목" }), { target: { value: "Flushed before navigation" } });
+  await user.click(screen.getByRole("button", { name: "목록으로" }));
+
+  expect(await screen.findByRole("heading", { name: "콘텐츠 스튜디오" })).toBeInTheDocument();
+  expect(readStoredArticle(controlled.storage).title).toBe("Flushed before navigation");
+  expect(controlled.successfulWrites()).toBe(writesBeforeEdit + 1);
+});
+
+test("승인된 의미 검수 항목을 명시적으로 확인해야 단계를 완료한다", async () => {
+  const user = userEvent.setup();
+  render(<StudioEditorHarness initialArticle={makeStudioArticle()} />);
+
+  const semanticChecks = [
+    "출처가 한 개 이상 존재한다.",
+    "핵심 사실이 신뢰할 수 있는 출처와 일치한다.",
+    "원문 복제가 아닌 독립적 재구성이다.",
+  ];
+  const finish = screen.getByRole("button", { name: "사실·출처 검수 완료" });
+  expect(finish).toBeDisabled();
+  for (const label of semanticChecks) expect(screen.getByRole("checkbox", { name: label })).not.toBeChecked();
+
+  for (const checkbox of screen.getAllByRole("checkbox", { name: /./ }).filter((item) => item.closest(".studio-review-stage"))) {
+    await user.click(checkbox);
+  }
+  expect(finish).toBeEnabled();
+});
+
+test("미디어를 이미지와 공식 영상 임베드 형태로 작성한다", async () => {
+  const user = userEvent.setup();
+  render(<StudioEditorHarness initialArticle={makeStudioArticle({ media: [] })} />);
+
+  await user.click(screen.getByRole("button", { name: "미디어 추가" }));
+  const kind = screen.getByRole("combobox", { name: "미디어 1 유형" });
+  await user.selectOptions(kind, "image");
+
+  expect(screen.getByRole("textbox", { name: "미디어 1 이미지 URL" })).toBeInTheDocument();
+  expect(screen.queryByRole("combobox", { name: "미디어 1 제공처" })).not.toBeInTheDocument();
+});
+
+test("손상 백업 실패 시 원본을 덮어쓰지 않고 재시도와 내보내기를 제공한다", async () => {
+  const primaryKey = "nonfiction-lab:studio:v1";
+  const backupKey = "nonfiction-lab:studio:corrupt-backup";
+  let primary = "{only-original";
+  let primaryWrites = 0;
+  const storage = {
+    get length() { return 1; },
+    clear() {},
+    getItem(key: string) { return key === primaryKey ? primary : null; },
+    key() { return primaryKey; },
+    removeItem() {},
+    setItem(key: string, value: string) {
+      if (key === backupKey) throw new Error("backup failed");
+      if (key === primaryKey) { primary = value; primaryWrites += 1; }
+    },
+  } as Storage;
+
+  render(<StudioApp storage={storage} />);
+
+  expect(await screen.findByRole("alert", { name: "저장 데이터 복구 필요" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "백업 및 복구 재시도" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "원본 JSON 내보내기" })).toHaveAttribute("download");
+  expect(screen.queryByRole("heading", { name: "콘텐츠 스튜디오" })).not.toBeInTheDocument();
+  expect(primary).toBe("{only-original");
+  expect(primaryWrites).toBe(0);
+});
+
+test("손상 원본을 백업한 뒤에도 자동 시드 저장으로 기본 키를 덮어쓰지 않는다", async () => {
+  const raw = "{recoverable-original";
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": raw });
+
+  render(<StudioApp storage={storage} />);
+
+  expect(await screen.findByRole("heading", { name: "콘텐츠 스튜디오" })).toBeInTheDocument();
+  expect(storage.getItem("nonfiction-lab:studio:corrupt-backup")).toBe(raw);
+  expect(storage.getItem("nonfiction-lab:studio:v1")).toBe(raw);
+});
+
+test("일시적 읽기 실패를 명시적으로 재시도해 저장된 상태를 복구한다", async () => {
+  const user = userEvent.setup();
+  const stored = JSON.stringify({ schemaVersion: 3, articles: [makeStudioArticle({ title: "Recovered draft" })] });
+  let reads = 0;
+  let writes = 0;
+  const storage = {
+    get length() { return 1; },
+    clear() {},
+    getItem(key: string) {
+      if (key !== "nonfiction-lab:studio:v1") return null;
+      reads += 1;
+      if (reads === 1) throw new Error("temporary read failure");
+      return stored;
+    },
+    key() { return "nonfiction-lab:studio:v1"; },
+    removeItem() {},
+    setItem() { writes += 1; },
+  } as Storage;
+
+  render(<StudioApp storage={storage} />);
+  expect(await screen.findByRole("alert", { name: "저장 데이터 복구 필요" })).toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "백업 및 복구 재시도" }));
+
+  const articleList = await screen.findByRole("list", { name: "콘텐츠 목록" });
+  expect(within(articleList).getByRole("button", { name: "Recovered draft 열기" })).toBeInTheDocument();
+  expect(writes).toBe(0);
 });
 
 test("발행 취소 전에 확인을 요구한다", async () => {
@@ -92,6 +236,23 @@ test("발행 취소 전에 확인을 요구한다", async () => {
   expect(within(confirmation).getByText("학습자 목록에서 이 콘텐츠를 내릴까요?")).toBeInTheDocument();
   await user.click(within(confirmation).getByRole("button", { name: "취소 유지" }));
   expect(screen.queryByRole("group", { name: "발행 취소 확인" })).not.toBeInTheDocument();
+});
+
+test("대체 버전을 편집하는 동안에도 기존 공개본을 명시적으로 내린다", async () => {
+  const user = userEvent.setup();
+  render(<StudioEditorHarness initialArticle={makePublishedArticle({ title: "Approved title" })} />);
+
+  const title = screen.getByRole("textbox", { name: "영문 제목" });
+  await user.clear(title);
+  await user.type(title, "Replacement draft");
+
+  expect(screen.getByText("작업 버전 2")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "발행 취소" }));
+  await user.click(within(screen.getByRole("group", { name: "발행 취소 확인" })).getByRole("button", { name: "발행 취소 확정" }));
+
+  expect(title).toHaveValue("Replacement draft");
+  expect(screen.getByText("초안", { selector: ".studio-status" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "발행 취소" })).not.toBeInTheDocument();
 });
 
 test("작업 버전을 실제 리더로 미리 보고 리더 동작을 편집 상태와 분리한다", async () => {
@@ -116,7 +277,7 @@ test("대시보드의 열기와 새 콘텐츠 콜백을 편집기로 연결하�
   const user = userEvent.setup();
   const initialArticle = makeStudioArticle({ title: "Open me" });
   const storage = createMemoryStorage({
-    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 1, articles: [initialArticle] }),
+    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [initialArticle] }),
   });
 
   render(<StudioApp storage={storage} />);
@@ -136,7 +297,7 @@ test("저장 실패에도 입력 중인 초안을 유지하고 명시적으로 �
   const user = userEvent.setup();
   const initialArticle = makeStudioArticle({ title: "Original" });
   const controlled = createControlledStorage({
-    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [initialArticle] }),
+    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [initialArticle] }),
   });
   render(<StudioApp storage={controlled.storage} />);
 
@@ -162,7 +323,7 @@ test("편집 저장 실패를 전역 재시도하면 편집기의 실패 상태�
   const user = userEvent.setup();
   const initialArticle = makeStudioArticle({ title: "Original" });
   const controlled = createControlledStorage({
-    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [initialArticle] }),
+    "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [initialArticle] }),
   });
   render(<StudioApp storage={controlled.storage} />);
   await openArticle(user, "Original");
@@ -196,7 +357,7 @@ test("초기 시드 저장 실패를 표시하고 로딩 화면에 갇히지 않
   controlled.allowWrites();
   await user.click(screen.getByRole("button", { name: "초기 저장 재시도" }));
   expect(screen.queryByText("초기 저장에 실패했습니다.")).not.toBeInTheDocument();
-  expect(JSON.parse(controlled.storage.getItem("nonfiction-lab:studio:v1") ?? "null").schemaVersion).toBe(2);
+  expect(JSON.parse(controlled.storage.getItem("nonfiction-lab:studio:v1") ?? "null").schemaVersion).toBe(3);
 });
 
 test("승인된 편집 필드를 접근 가능한 컨트롤로 제공하고 수정 사유를 이력에 남긴다", async () => {
@@ -226,7 +387,7 @@ test("승인된 편집 필드를 접근 가능한 컨트롤로 제공하고 수�
 
 test("미디어 제공자와 URL을 완전 제어 상태로 자유롭게 편집한다", async () => {
   const user = userEvent.setup();
-  render(<StudioEditorHarness initialArticle={makeStudioArticle({ media: [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Forest", usageConfirmed: true }] })} />);
+  render(<StudioEditorHarness initialArticle={makeStudioArticle({ media: [{ kind: "video", provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Forest", usageConfirmed: true }] })} />);
 
   await user.selectOptions(screen.getByRole("combobox", { name: "미디어 1 제공처" }), "ted");
   const url = screen.getByRole("textbox", { name: "미디어 1 공식 임베드 URL" });
@@ -243,6 +404,7 @@ test("검수 오류를 정확한 필드 컨트롤과 프로그램적으로 연�
   const source = { ...makeStudioArticle().sources[0], title: "" };
   render(<StudioEditorHarness initialArticle={makeStudioArticle({ sources: [source] })} />);
 
+  await attestFactsInUi(user);
   await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
 
   const input = screen.getByRole("textbox", { name: "출처 1 제목" });
@@ -289,7 +451,7 @@ test("모바일에서 편집·검수·미리보기 탭을 키보드로 전환한
     removeListener: () => {},
     dispatchEvent: () => true,
   })) as typeof window.matchMedia;
-  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeStudioArticle()] }) });
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeStudioArticle()] }) });
 
   try {
     render(<StudioApp storage={storage} />);
@@ -317,12 +479,13 @@ test("모바일에서 편집·검수·미리보기 탭을 키보드로 전환한
 test("UI에서 만든 미완성 배열 행을 저장하고 다시 열어 그대로 복원한다", async () => {
   const user = userEvent.setup();
   const article = makeStudioArticle({ vocabulary: [] });
-  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [article] }) });
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [article] }) });
   const first = render(<StudioApp storage={storage} />);
   let list = await screen.findByRole("list", { name: "콘텐츠 목록" });
   await user.click(within(list).getByRole("button", { name: "Rainforests 열기" }));
   await user.click(screen.getByRole("button", { name: "어휘 추가" }));
   expect(screen.getByRole("textbox", { name: "어휘 1 단어" })).toHaveValue("");
+  await screen.findByText("저장됨", {}, { timeout: 1500 });
   first.unmount();
 
   render(<StudioApp storage={storage} />);
@@ -334,7 +497,7 @@ test("UI에서 만든 미완성 배열 행을 저장하고 다시 열어 그대�
 
 test("읽기 전용 미리보기 탐색은 스튜디오 저장 상태를 변경하지 않는다", async () => {
   const user = userEvent.setup();
-  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeStudioArticle()] }) });
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeStudioArticle()] }) });
   render(<StudioApp storage={storage} />);
   const list = await screen.findByRole("list", { name: "콘텐츠 목록" });
   await user.click(within(list).getByRole("button", { name: "Rainforests 열기" }));
@@ -346,20 +509,20 @@ test("읽기 전용 미리보기 탐색은 스튜디오 저장 상태를 변경�
 
 test("발행 취소를 앱 저장 경계까지 영속화한다", async () => {
   const user = userEvent.setup();
-  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makePublishedArticle()] }) });
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makePublishedArticle()] }) });
   render(<StudioApp storage={storage} />);
   const list = await screen.findByRole("list", { name: "콘텐츠 목록" });
   await user.click(within(list).getByRole("button", { name: "Rainforests 열기" }));
   await user.click(screen.getByRole("button", { name: "발행 취소" }));
   await user.click(within(screen.getByRole("group", { name: "발행 취소 확인" })).getByRole("button", { name: "발행 취소 확정" }));
   expect(readStoredArticle(storage).workflowStatus).toBe("withdrawn");
-  expect(readStoredArticle(storage).withdrawnAt).toBeTruthy();
+  expect(readStoredArticle(storage).versionHistory[0].withdrawnAt).toBeTruthy();
 });
 
 test("미리보기 확인 저장 실패를 전역 재시도하면 로컬 오류와 재시도가 사라진다", async () => {
   const user = userEvent.setup();
   const article = { ...makeFullyReviewedArticle(), previewReview: null };
-  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [article] }) });
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [article] }) });
   render(<StudioApp storage={controlled.storage} />);
   const list = await screen.findByRole("list", { name: "콘텐츠 목록" });
   await user.click(within(list).getByRole("button", { name: "Rainforests 열기" }));
@@ -380,7 +543,7 @@ test("미리보기 확인 저장 실패를 전역 재시도하면 로컬 오류�
 test("새 콘텐츠 저장 실패를 보류 상태로 유지하고 같은 초안을 한 번만 재시도한다", async () => {
   const user = userEvent.setup();
   const initial = makeStudioArticle();
-  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [initial] }) });
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [initial] }) });
   render(<StudioApp storage={controlled.storage} />);
   await screen.findByRole("heading", { name: "콘텐츠 스튜디오" });
   controlled.failWrites();
@@ -403,9 +566,10 @@ test("새 콘텐츠 저장 실패를 보류 상태로 유지하고 같은 초안
 
 test("검수 단계 저장 실패 후 정확한 다음 상태를 보류하고 한 번만 재시도한다", async () => {
   const user = userEvent.setup();
-  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeStudioArticle()] }) });
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeStudioArticle()] }) });
   render(<StudioApp storage={controlled.storage} />);
   await openArticle(user, "Rainforests");
+  await attestFactsInUi(user);
   controlled.failWrites();
   const writesBeforeFailure = controlled.successfulWrites();
   await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
@@ -422,7 +586,7 @@ test("검수 단계 저장 실패 후 정확한 다음 상태를 보류하고 �
 
 test("최종 승인 저장 실패 후 승인 상태를 보류하고 한 번만 재시도한다", async () => {
   const user = userEvent.setup();
-  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeFullyReviewedArticle()] }) });
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeFullyReviewedArticle()] }) });
   render(<StudioApp storage={controlled.storage} />);
   await openArticle(user, "Rainforests");
   controlled.failWrites();
@@ -441,7 +605,7 @@ test("최종 승인 저장 실패 후 승인 상태를 보류하고 한 번만 �
 
 test("발행 저장 실패 후 발행 상태를 보류하고 한 번만 재시도한다", async () => {
   const user = userEvent.setup();
-  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeApprovedArticle()] }) });
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeApprovedArticle()] }) });
   render(<StudioApp storage={controlled.storage} />);
   await openArticle(user, "Rainforests");
   controlled.failWrites();
@@ -460,7 +624,7 @@ test("발행 저장 실패 후 발행 상태를 보류하고 한 번만 재시�
 
 test("발행 취소 저장 실패 후 취소 상태를 보류하고 한 번만 재시도한다", async () => {
   const user = userEvent.setup();
-  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makePublishedArticle()] }) });
+  const controlled = createControlledStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makePublishedArticle()] }) });
   render(<StudioApp storage={controlled.storage} />);
   await openArticle(user, "Rainforests");
   controlled.failWrites();
@@ -485,6 +649,7 @@ test("검수를 제출하기 전에는 존재하지 않는 오류 메시지를 a
   const input = screen.getByRole("textbox", { name: "출처 1 제목" });
 
   expect(input).not.toHaveAttribute("aria-describedby");
+  await attestFactsInUi(user);
   await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
   const issue = screen.getByText("출처 제목을 입력해 주세요.");
   expect(input).toHaveAttribute("aria-describedby", issue.id);
@@ -494,11 +659,12 @@ test("모바일 검수 오류 링크가 편집 탭을 열고 정확한 필드에
   const restoreMatchMedia = mockMobileViewport();
   const user = userEvent.setup();
   const source = { ...makeStudioArticle().sources[0], title: "" };
-  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [makeStudioArticle({ sources: [source] })] }) });
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [makeStudioArticle({ sources: [source] })] }) });
   try {
     render(<StudioApp storage={storage} />);
     await openArticle(user, "Rainforests");
     await user.click(screen.getByRole("tab", { name: "검수" }));
+    await attestFactsInUi(user);
     await user.click(screen.getByRole("button", { name: "사실·출처 검수 완료" }));
     await user.click(screen.getByRole("link", { name: "출처 1 제목으로 이동" }));
 
@@ -515,7 +681,7 @@ test("모바일 미리보기 확인 링크가 미리보기 탭을 열고 확인 
   const restoreMatchMedia = mockMobileViewport();
   const user = userEvent.setup();
   const article = { ...makeFullyReviewedArticle(), previewReview: null };
-  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 2, articles: [article] }) });
+  const storage = createMemoryStorage({ "nonfiction-lab:studio:v1": JSON.stringify({ schemaVersion: 3, articles: [article] }) });
   try {
     render(<StudioApp storage={storage} />);
     await openArticle(user, "Rainforests");
@@ -560,6 +726,15 @@ function readStoredArticles(storage: Storage): StudioArticle[] {
 async function openArticle(user: ReturnType<typeof userEvent.setup>, title: string): Promise<void> {
   const list = await screen.findByRole("list", { name: "콘텐츠 목록" });
   await user.click(within(list).getByRole("button", { name: `${title} 열기` }));
+}
+
+async function attestFactsInUi(user: ReturnType<typeof userEvent.setup>): Promise<void> {
+  const heading = screen.getByRole("heading", { name: "사실·출처" });
+  const stage = heading.closest(".studio-review-stage");
+  if (!stage) throw new Error("Facts review stage is missing");
+  for (const checkbox of within(stage as HTMLElement).getAllByRole("checkbox")) {
+    if (!(checkbox as HTMLInputElement).checked) await user.click(checkbox);
+  }
 }
 
 function mockMobileViewport(): () => void {

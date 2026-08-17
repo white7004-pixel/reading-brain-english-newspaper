@@ -2,13 +2,15 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { StudioDashboard, summarizeStudioArticles } from "@/components/studio/studio-dashboard";
+import { createSeedStudioState } from "@/lib/studio-seed";
+import { applyArticleEdit } from "@/lib/studio-workflow";
 import { makePublishedArticle, makeStudioArticle } from "./studio-fixtures";
 
 function makeReviewArticle(
   title: string,
   workflowStatus: "facts_reviewed" | "language_reviewed" | "age_reviewed" | "approved",
 ) {
-  return makeStudioArticle({ id: title, title, status: "review", workflowStatus });
+  return makeStudioArticle({ id: title, title, workflowStatus });
 }
 
 function contentList() {
@@ -29,7 +31,7 @@ it("shows workflow totals and filters the content list by title or topic", async
   );
 
   expect(screen.getByText("초안 1")).toBeInTheDocument();
-  expect(screen.getByText("발행 완료 1")).toBeInTheDocument();
+  expect(screen.getByText("공개 중 1")).toBeInTheDocument();
 
   await user.type(screen.getByRole("searchbox", { name: "콘텐츠 검색" }), "Tea");
 
@@ -41,6 +43,25 @@ it("shows workflow totals and filters the content list by title or topic", async
 
   expect(contentList().getByText("Stars")).toBeInTheDocument();
   expect(contentList().queryByText("Tea")).not.toBeInTheDocument();
+});
+
+it("searches the canonical subtopic field", async () => {
+  const user = userEvent.setup();
+  render(
+    <StudioDashboard
+      articles={[
+        makeStudioArticle({ id: "fungi", title: "Forest systems", subtopic: "mycelium-network" }),
+        makeStudioArticle({ id: "ocean", title: "Ocean systems", subtopic: "currents" }),
+      ]}
+      onCreate={vi.fn()}
+      onOpen={vi.fn()}
+    />,
+  );
+
+  await user.type(screen.getByRole("searchbox", { name: "콘텐츠 검색" }), "mycelium-network");
+
+  expect(contentList().getByText("Forest systems")).toBeInTheDocument();
+  expect(contentList().queryByText("Ocean systems")).not.toBeInTheDocument();
 });
 
 it("keeps incomplete reviews, approval pending, and publication-ready items in their correct boundaries", () => {
@@ -63,7 +84,7 @@ it("keeps incomplete reviews, approval pending, and publication-ready items in t
   expect(screen.getByText("초안 1")).toBeInTheDocument();
   expect(screen.getByText("검수 중 2")).toBeInTheDocument();
   expect(screen.getByText("승인 대기 2")).toBeInTheDocument();
-  expect(screen.getByText("발행 완료 1")).toBeInTheDocument();
+  expect(screen.getByText("공개 중 1")).toBeInTheDocument();
 });
 
 it("shows each non-terminal item with its next required action and opens it from the queue", async () => {
@@ -124,13 +145,13 @@ it("filters by status, domain, estimated AR, and recommended age", async () => {
   render(
     <StudioDashboard
       articles={[
-        makeStudioArticle({ title: "Science", domain: "science", difficulty: { value: 420, method: "nonfiction-lab-estimate", label: "NF Lab estimate" }, ageRange: "7-9" }),
+        makeStudioArticle({ title: "Science", domain: "science", difficulty: { value: 1.8, method: "nonfiction-lab-estimate", label: "NF Lab estimate" }, minAge: 7, maxAge: 9 }),
         makeReviewArticle("History", "facts_reviewed"),
         makeReviewArticle("Arts", "language_reviewed"),
       ].map((article) => article.title === "History"
-        ? { ...article, domain: "history" as const, difficulty: { ...article.difficulty, value: 620 }, ageRange: "10-12" }
+        ? { ...article, domain: "history" as const, difficulty: { ...article.difficulty, value: 3.2 }, minAge: 10, maxAge: 12 }
         : article.title === "Arts"
-          ? { ...article, domain: "arts" as const, difficulty: { ...article.difficulty, value: 750 }, ageRange: "13-15" }
+          ? { ...article, domain: "arts" as const, difficulty: { ...article.difficulty, value: 6.2 }, minAge: 13, maxAge: 15 }
           : article)}
       onCreate={vi.fn()}
       onOpen={vi.fn()}
@@ -147,7 +168,7 @@ it("filters by status, domain, estimated AR, and recommended age", async () => {
   expect(contentList().queryByText("History")).not.toBeInTheDocument();
 
   await user.selectOptions(screen.getByLabelText("분야"), "all");
-  await user.selectOptions(screen.getByLabelText("논픽션랩 추정 AR"), "700-and-over");
+  await user.selectOptions(screen.getByLabelText("논픽션랩 추정 AR"), "6-and-over");
   expect(contentList().getByText("Arts")).toBeInTheDocument();
   expect(contentList().queryByText("Science")).not.toBeInTheDocument();
 
@@ -155,6 +176,33 @@ it("filters by status, domain, estimated AR, and recommended age", async () => {
   await user.selectOptions(screen.getByLabelText("권장 연령"), "7-9");
   expect(contentList().getByText("Science")).toBeInTheDocument();
   expect(contentList().queryByText("Arts")).not.toBeInTheDocument();
+});
+
+it("uses canonical decimal difficulty buckets and derives age labels from numeric bounds", async () => {
+  const user = userEvent.setup();
+  const articles = [
+    makeStudioArticle({ id: "easy", title: "Easy", difficulty: { value: 1.8, method: "nonfiction-lab-estimate", label: "1.8" }, minAge: 7, maxAge: 9 }),
+    makeStudioArticle({ id: "middle", title: "Middle", difficulty: { value: 3.2, method: "nonfiction-lab-estimate", label: "3.2" }, minAge: 10, maxAge: 12 }),
+    makeStudioArticle({ id: "advanced", title: "Advanced", difficulty: { value: 5.1, method: "nonfiction-lab-estimate", label: "5.1" }, minAge: 13, maxAge: 17 }),
+    makeStudioArticle({ id: "expert", title: "Expert", difficulty: { value: 6.2, method: "nonfiction-lab-estimate", label: "6.2" }, minAge: 18, maxAge: 99 }),
+  ];
+  render(<StudioDashboard articles={articles} onCreate={vi.fn()} onOpen={vi.fn()} />);
+
+  await user.selectOptions(screen.getByLabelText("논픽션랩 추정 AR"), "6-and-over");
+  expect(contentList().getByText("Expert")).toBeInTheDocument();
+  expect(contentList().queryByText("Advanced")).not.toBeInTheDocument();
+
+  await user.selectOptions(screen.getByLabelText("논픽션랩 추정 AR"), "all");
+  await user.selectOptions(screen.getByLabelText("권장 연령"), "10-12");
+  expect(contentList().getByText("Middle")).toBeInTheDocument();
+  expect(contentList().queryByText("Easy")).not.toBeInTheDocument();
+});
+
+it("renders fresh seed ages from canonical numeric bounds", () => {
+  render(<StudioDashboard articles={createSeedStudioState().articles} onCreate={vi.fn()} onOpen={vi.fn()} />);
+
+  expect(screen.getAllByText("7-99세").length).toBeGreaterThan(0);
+  expect(screen.queryByText("all-ages세")).not.toBeInTheDocument();
 });
 
 it("sorts the content list by newest update and invokes creation and open callbacks", async () => {
@@ -188,5 +236,23 @@ it("summarizes every workflow status for dashboard cards", () => {
     makePublishedArticle({ id: "tea" }),
   ]);
 
-  expect(summary).toMatchObject({ draft: 1, published: 1, withdrawn: 0 });
+  expect(summary).toMatchObject({ draft: 1, published: 1, withdrawn: 0, activePublications: 1 });
+});
+
+it("shows and filters an active publication independently from replacement draft work", async () => {
+  const user = userEvent.setup();
+  const liveDraft = applyArticleEdit(
+    makePublishedArticle({ id: "live", title: "Approved title" }),
+    { title: "Replacement draft" },
+    "2026-08-18T00:00:00.000Z",
+  );
+
+  expect(summarizeStudioArticles([liveDraft])).toMatchObject({ draft: 1, published: 0, activePublications: 1 });
+  const { container } = render(<StudioDashboard articles={[liveDraft]} onCreate={vi.fn()} onOpen={vi.fn()} />);
+
+  expect(container.querySelector('[data-publication-status="live"]')).toHaveTextContent("1");
+  expect(container.querySelector('[data-summary="active-publications"]')).toHaveTextContent("1");
+
+  await user.selectOptions(screen.getAllByRole("combobox")[0], "published");
+  expect(contentList().getByText("Replacement draft")).toBeInTheDocument();
 });

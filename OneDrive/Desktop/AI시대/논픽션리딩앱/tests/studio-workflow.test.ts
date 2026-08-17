@@ -8,7 +8,7 @@ import {
   validateStage,
   withdrawArticle,
 } from "@/lib/studio-workflow";
-import { makeStudioArticle } from "@/tests/studio-fixtures";
+import { completeAttestedStage, makeStudioArticle } from "@/tests/studio-fixtures";
 import type { ArticleEditPatch, ReviewStage, StudioArticle } from "@/lib/studio-types";
 
 describe("content review workflow", () => {
@@ -39,9 +39,9 @@ describe("content review workflow", () => {
     ["sourceNotes", { sourceNotes: "" }, "source_notes_required"],
     ["reconstructionConfirmed", { reconstructionConfirmed: false }, "reconstruction_confirmation_required"],
     ["rightsNotes", { rightsNotes: "" }, "rights_notes_required"],
-    ["media.0.embedUrl", { media: [{ provider: "youtube", embedUrl: "https://example.com/video", alt: "Forest", usageConfirmed: true }] }, "unsupported_embed_url"],
-    ["media.0.alt", { media: [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "", usageConfirmed: true }] }, "media_alt_required"],
-    ["media.0.usageConfirmed", { media: [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Forest", usageConfirmed: false }] }, "media_usage_confirmation_required"],
+    ["media.0.embedUrl", { media: [{ kind: "video", provider: "youtube", embedUrl: "https://example.com/video", alt: "Forest", usageConfirmed: true }] }, "unsupported_embed_url"],
+    ["media.0.alt", { media: [{ kind: "video", provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "", usageConfirmed: true }] }, "media_alt_required"],
+    ["media.0.usageConfirmed", { media: [{ kind: "video", provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Forest", usageConfirmed: false }] }, "media_usage_confirmation_required"],
   ] as Array<[string, Partial<StudioArticle>, string]>)('reports the exact facts-review issue for %s', (field, overrides, code) => {
     expect(validateStage(makeStudioArticle(overrides), "facts")).toContainEqual({ field, code });
   });
@@ -87,27 +87,27 @@ describe("content review workflow", () => {
 
   it("records each review only after its validation and prerequisites pass", () => {
     const source = makeStudioArticle();
-    const facts = completeStage(source, "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
-    const language = completeStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
-    const age = completeStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
+    const facts = completeAttestedStage(source, "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
+    const language = completeAttestedStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
+    const age = completeAttestedStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
 
     expect(age.workflowStatus).toBe("age_reviewed");
     expect(age.reviewRecords).toEqual({
-      facts: { actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z" },
-      language: { actor: "language-reviewer", completedAt: "2026-08-17T02:00:00.000Z" },
-      age: { actor: "age-reviewer", completedAt: "2026-08-17T03:00:00.000Z" },
+      facts: expect.objectContaining({ actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z", workingVersion: 1, provenance: "explicit" }),
+      language: expect.objectContaining({ actor: "language-reviewer", completedAt: "2026-08-17T02:00:00.000Z", workingVersion: 1, provenance: "explicit" }),
+      age: expect.objectContaining({ actor: "age-reviewer", completedAt: "2026-08-17T03:00:00.000Z", workingVersion: 1, provenance: "explicit" }),
     });
     expect(source.reviewRecords).toEqual({});
   });
 
   it("invalidates language, age, and approval when pages change while preserving facts review", () => {
-    const facts = completeStage(makeStudioArticle(), "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
-    const language = completeStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
-    const age = completeStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
+    const facts = completeAttestedStage(makeStudioArticle(), "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
+    const language = completeAttestedStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
+    const age = completeAttestedStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
     const approved = approveArticle(age, "approver", "2026-08-17T04:00:00.000Z");
     const edited = applyArticleEdit(approved, { pages: ["New first page", "New second page", "New third page"] }, "2026-08-17T05:00:00.000Z");
 
-    expect(edited.reviewRecords).toEqual({ facts: { actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z" } });
+    expect(edited.reviewRecords).toEqual({ facts: expect.objectContaining({ actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z" }) });
     expect(edited.workflowStatus).toBe("facts_reviewed");
     expect(edited.approval).toBeNull();
     expect(approved.reviewRecords.age).toBeDefined();
@@ -116,20 +116,20 @@ describe("content review workflow", () => {
 
   it("preserves a published snapshot while creating one new working version for edits", () => {
     const published = publishReviewedArticle();
-    const firstSnapshot = published.publishedSnapshot;
+    const firstSnapshot = published.versionHistory[0].snapshot;
     const edited = applyArticleEdit(published, { title: "Rainforests revised" }, "2026-08-17T05:00:00.000Z");
     const editedAgain = applyArticleEdit(edited, { summaryKo: "새로운 요약" }, "2026-08-17T06:00:00.000Z");
 
     expect(edited.workingVersion).toBe(2);
     expect(editedAgain.workingVersion).toBe(2);
-    expect(edited.publishedSnapshot).toBe(firstSnapshot);
-    expect(edited.publishedSnapshot?.title).toBe("Rainforests");
+    expect(edited.versionHistory[0].snapshot).toBe(firstSnapshot);
+    expect(edited.versionHistory[0].snapshot.title).toBe("Rainforests");
 
     const republished = publishArticle(
       approveArticle(
-        acknowledgePreview(completeStage(
-          completeStage(
-            completeStage(edited, "facts", "fact-checker", "2026-08-17T07:00:00.000Z"),
+        acknowledgePreview(completeAttestedStage(
+          completeAttestedStage(
+            completeAttestedStage(edited, "facts", "fact-checker", "2026-08-17T07:00:00.000Z"),
             "language",
             "language-reviewer",
             "2026-08-17T08:00:00.000Z",
@@ -144,30 +144,112 @@ describe("content review workflow", () => {
       "2026-08-17T11:00:00.000Z",
     );
 
-    expect(republished.publishedSnapshot).not.toBe(firstSnapshot);
-    expect(republished.publishedSnapshot?.title).toBe("Rainforests revised");
-    expect(republished.publishedSnapshot?.version).toBe(2);
+    expect(republished.versionHistory[1].snapshot).not.toBe(firstSnapshot);
+    expect(republished.versionHistory[1].snapshot.title).toBe("Rainforests revised");
+    expect(republished.versionHistory[1].snapshot.version).toBe(2);
+  });
+
+  it("withdraws the active publication while leaving an edited replacement intact", () => {
+    const published = publishReviewedArticle();
+    const replacement = applyArticleEdit(
+      published,
+      { title: "Replacement draft" },
+      "2026-08-17T06:00:00.000Z",
+    );
+
+    const withdrawn = withdrawArticle(replacement, "2026-08-17T07:00:00.000Z");
+    const lifecycle = withdrawn as StudioArticle & {
+      activePublicationVersion?: number | null;
+      versionHistory?: Array<{ version: number; withdrawnAt: string | null }>;
+    };
+
+    expect(withdrawn.title).toBe("Replacement draft");
+    expect(withdrawn.workingVersion).toBe(2);
+    expect(withdrawn.workflowStatus).toBe("draft");
+    expect(lifecycle.activePublicationVersion).toBeNull();
+    expect(lifecycle.versionHistory).toEqual([
+      expect.objectContaining({ version: 1, withdrawnAt: "2026-08-17T07:00:00.000Z" }),
+    ]);
+  });
+
+  it("records an immutable publication audit for each version and atomically replaces the active one", () => {
+    const first = publishReviewedArticle();
+    const edited = applyArticleEdit(first, { title: "Rainforests revised" }, "2026-08-17T06:00:00.000Z");
+    const facts = completeAttestedStage(edited, "facts", "fact-checker-2", "2026-08-17T07:00:00.000Z");
+    const language = completeAttestedStage(facts, "language", "language-reviewer-2", "2026-08-17T08:00:00.000Z");
+    const age = completeAttestedStage(language, "age", "age-reviewer-2", "2026-08-17T09:00:00.000Z");
+    const previewed = acknowledgePreview(age, "previewer-2", "2026-08-17T09:30:00.000Z");
+    const approved = approveArticle(previewed, "approver-2", "2026-08-17T10:00:00.000Z");
+    const replacement = publishArticle(approved, "2026-08-17T11:00:00.000Z");
+    const lifecycle = replacement as StudioArticle & {
+      activePublicationVersion?: number | null;
+      versionHistory?: Array<{
+        version: number;
+        snapshot: { title: string };
+        reviewRecords: Partial<Record<ReviewStage, { actor: string }>>;
+        publishedAt: string;
+        withdrawnAt: string | null;
+      }>;
+    };
+
+    expect(lifecycle.activePublicationVersion).toBe(2);
+    expect(lifecycle.versionHistory).toHaveLength(2);
+    expect(lifecycle.versionHistory?.[0]).toMatchObject({
+      version: 1,
+      snapshot: { title: "Rainforests" },
+      publishedAt: "2026-08-17T05:00:00.000Z",
+      withdrawnAt: "2026-08-17T11:00:00.000Z",
+    });
+    expect(lifecycle.versionHistory?.[1]).toMatchObject({
+      version: 2,
+      snapshot: { title: "Rainforests revised" },
+      reviewRecords: { age: { actor: "age-reviewer-2" } },
+      publishedAt: "2026-08-17T11:00:00.000Z",
+      withdrawnAt: null,
+    });
+    expect(replacement.auditHistory.filter((entry) => entry.kind === "published" || entry.kind === "withdrawn")).toEqual([
+      { kind: "published", version: 1, at: "2026-08-17T05:00:00.000Z" },
+      { kind: "withdrawn", version: 1, at: "2026-08-17T11:00:00.000Z" },
+      { kind: "published", version: 2, at: "2026-08-17T11:00:00.000Z" },
+    ]);
+  });
+
+  it("rejects learner snapshots that cannot round-trip through the public schema", () => {
+    const reviewed = reviewThroughAge();
+    const approved = approveArticle(reviewed, "approver", "2026-08-17T04:00:00.000Z");
+
+    expect(() => publishArticle({ ...approved, id: "" }, "2026-08-17T05:00:00.000Z")).toThrow(
+      "학습자 공개 데이터가 올바르지 않습니다.",
+    );
   });
 
   it("guards approval, creates immutable learner snapshots, and records withdrawal", () => {
     expect(() => approveArticle(makeStudioArticle(), "approver", "2026-08-17T01:00:00.000Z")).toThrow();
 
     const published = publishReviewedArticle();
-    expect(published.publishedSnapshot?.status).toBe("published");
-    expect(published.publishedSnapshot?.review).toEqual({
+    expect(published.versionHistory[0].snapshot.status).toBe("published");
+    expect(published.versionHistory[0].snapshot.review).toEqual({
       approvedBy: "approver",
       approvedAt: "2026-08-17T04:00:00.000Z",
       factsChecked: true,
       languageChecked: true,
       ageChecked: true,
     });
-    expect(Object.isFrozen(published.publishedSnapshot)).toBe(true);
-    expect(Object.isFrozen(published.publishedSnapshot?.pages)).toBe(true);
+    expect(Object.isFrozen(published.versionHistory[0].snapshot)).toBe(true);
+    expect(Object.isFrozen(published.versionHistory[0].snapshot.pages)).toBe(true);
+    expect(Object.isFrozen(published.versionHistory)).toBe(true);
+    expect(Object.isFrozen(published.versionHistory[0])).toBe(true);
+    expect(Object.isFrozen(published.versionHistory[0].reviewRecords.facts)).toBe(true);
+    expect(Object.isFrozen(published.auditHistory)).toBe(true);
+    expect(Object.isFrozen(published.auditHistory[0])).toBe(true);
+    expect(() => {
+      (published.versionHistory[0].reviewRecords.facts as { actor: string }).actor = "tampered";
+    }).toThrow();
 
     const withdrawn = withdrawArticle(published, "2026-08-17T06:00:00.000Z");
     expect(withdrawn.workflowStatus).toBe("withdrawn");
-    expect(withdrawn.status).toBe("withdrawn");
-    expect(withdrawn.withdrawnAt).toBe("2026-08-17T06:00:00.000Z");
+    expect(withdrawn.activePublicationVersion).toBeNull();
+    expect(withdrawn.versionHistory[0].withdrawnAt).toBe("2026-08-17T06:00:00.000Z");
     expect(published.workflowStatus).toBe("published");
   });
 
@@ -184,11 +266,11 @@ describe("content review workflow", () => {
   it("clears stale downstream records before approval or publication can be reached", () => {
     const ageReviewed = reviewThroughAge();
     const staleFactsState = { ...ageReviewed, workflowStatus: "facts_reviewed" as const };
-    const languageReviewed = completeStage(staleFactsState, "language", "language-reviewer", "2026-08-17T04:00:00.000Z");
+    const languageReviewed = completeAttestedStage(staleFactsState, "language", "language-reviewer", "2026-08-17T04:00:00.000Z");
 
     expect(languageReviewed.reviewRecords).toEqual({
-      facts: { actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z" },
-      language: { actor: "language-reviewer", completedAt: "2026-08-17T04:00:00.000Z" },
+      facts: expect.objectContaining({ actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z" }),
+      language: expect.objectContaining({ actor: "language-reviewer", completedAt: "2026-08-17T04:00:00.000Z" }),
     });
     expect(() => approveArticle(languageReviewed, "approver", "2026-08-17T05:00:00.000Z")).toThrow();
     expect(() => publishArticle(languageReviewed, "2026-08-17T05:00:00.000Z")).toThrow();
@@ -202,6 +284,21 @@ describe("content review workflow", () => {
     const approved = approveArticle(ageReviewed, "approver", "2026-08-17T05:00:00.000Z");
     const staleLanguage = { ...approved, pages: [] };
     expect(() => publishArticle(staleLanguage, "2026-08-17T06:00:00.000Z")).toThrow("모든 검수 단계를 다시 확인해 주세요.");
+  });
+
+  it("rejects explicit current reviews with missing or wrong-stage checklist attestations", () => {
+    const reviewed = reviewThroughAge();
+    const forgedReviews = {
+      ...reviewed.reviewRecords,
+      facts: { ...reviewed.reviewRecords.facts!, checklistItemIds: ["language.grammar" as const] },
+    };
+
+    expect(() => approveArticle({ ...reviewed, reviewRecords: forgedReviews }, "approver", "2026-08-17T05:00:00.000Z"))
+      .toThrow();
+
+    const approved = approveArticle(reviewed, "approver", "2026-08-17T05:00:00.000Z");
+    expect(() => publishArticle({ ...approved, reviewRecords: forgedReviews }, "2026-08-17T06:00:00.000Z"))
+      .toThrow();
   });
 
   it("requires a durable current-version preview acknowledgement for approval and publication", () => {
@@ -224,7 +321,7 @@ describe("content review workflow", () => {
     ["title", "facts"], ["titleKo", "facts"], ["summaryEn", "facts"], ["summaryKo", "facts"], ["domain", "facts"], ["subtopic", "facts"],
     ["sources", "facts"], ["sourceNotes", "facts"], ["reconstructionConfirmed", "facts"], ["rightsNotes", "facts"], ["media", "facts"], ["connectedArticleId", "facts"], ["visualTheme", "facts"],
     ["difficulty", "language"], ["estimatedReadingSeconds", "language"], ["wordCount", "language"], ["pages", "language"], ["vocabulary", "language"], ["quiz", "language"], ["keySentence", "language"], ["audioUrl", "language"],
-    ["interestBand", "age"], ["minAge", "age"], ["maxAge", "age"], ["ageRange", "age"], ["safetyFlags", "age"], ["safetyReviewed", "age"], ["learningGoal", "age"], ["keyConcept", "age"],
+    ["interestBand", "age"], ["minAge", "age"], ["maxAge", "age"], ["safetyFlags", "age"], ["safetyReviewed", "age"], ["learningGoal", "age"], ["keyConcept", "age"],
   ] as Array<[keyof ArticleEditPatch, ReviewStage]>)('invalidates %s from the %s stage', (field, stage) => {
     const reviewed = reviewThroughAge();
     const edited = applyArticleEdit(reviewed, { [field]: reviewed[field] } as ArticleEditPatch, "2026-08-17T04:00:00.000Z");
@@ -236,18 +333,18 @@ describe("content review workflow", () => {
     const withdrawn = withdrawArticle(publishReviewedArticle(), "2026-08-17T06:00:00.000Z");
     const edited = applyArticleEdit(withdrawn, { title: "Reissued title" }, "2026-08-17T07:00:00.000Z");
     expect(edited.workingVersion).toBe(2);
-    expect(edited.publishedSnapshot?.version).toBe(1);
+    expect(edited.versionHistory[0].snapshot.version).toBe(1);
   });
 
   it("accepts an official YouTube embed URL", () => {
-    const media = [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Rainforest footage" }];
+    const media = [{ kind: "video" as const, provider: "youtube" as const, embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Rainforest footage", usageConfirmed: true }];
 
     expect(validateMediaEmbeds(media)).toEqual([]);
     expect(applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z").media).toEqual(media);
   });
 
   it("persists partial media drafts and defers strict URL checks to facts review", () => {
-    const media = [{ provider: "youtube", embedUrl: "https://example.com/embed/not-official", alt: "", usageConfirmed: false }];
+    const media = [{ kind: "video" as const, provider: "youtube" as const, embedUrl: "https://example.com/embed/not-official", alt: "", usageConfirmed: false }];
 
     expect(validateMediaEmbeds(media)).toEqual([{ field: "media.0.embedUrl", code: "unsupported_embed_url" }]);
     expect(applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z").media).toEqual(media);
@@ -259,8 +356,8 @@ function publishReviewedArticle() {
   return publishArticle(approved, "2026-08-17T05:00:00.000Z");
 }
 
-function reviewThroughAge() {
-  const facts = completeStage(makeStudioArticle(), "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
-  const language = completeStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
-  return completeStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
+function reviewThroughAge(source = makeStudioArticle()) {
+  const facts = completeAttestedStage(source, "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
+  const language = completeAttestedStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
+  return completeAttestedStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
 }

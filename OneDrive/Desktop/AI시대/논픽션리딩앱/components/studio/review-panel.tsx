@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { approveArticle, completeStage, publishArticle, validateStage, withdrawArticle } from "@/lib/studio-workflow";
+import { REVIEW_CHECKLISTS, approveArticle, completeStage, publishArticle, setChecklistItemAttestation, validateStage, withdrawArticle } from "@/lib/studio-workflow";
 import { issueFieldLabel, issueMessage, studioControlId, studioIssueId } from "@/lib/studio-validation-ui";
 import type { ArticlePersistenceResult, ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
 
@@ -35,6 +35,14 @@ export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNaviga
   useEffect(() => {
     if (persistenceSuccessToken > 0) setActionError("");
   }, [persistenceSuccessToken]);
+  useEffect(() => {
+    const currentStage = STAGES.find((item) => REQUIRED_STATUS[item.stage] === article.workflowStatus);
+    if (!currentStage) return;
+    const checklistComplete = REVIEW_CHECKLISTS[currentStage.stage].every(
+      (check) => article.checklistAttestations[check.id]?.workingVersion === article.workingVersion,
+    );
+    onIssuesChange?.(checklistComplete ? validateStage(article, currentStage.stage) : []);
+  }, [article, onIssuesChange]);
 
   const update = async (next: StudioArticle) => {
     try {
@@ -65,6 +73,7 @@ export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNaviga
   };
 
   const published = article.workflowStatus === "published";
+  const hasActivePublication = article.activePublicationVersion !== null;
 
   return (
     <aside className="studio-review" aria-labelledby="review-heading">
@@ -72,15 +81,25 @@ export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNaviga
       <div className="studio-review__stages">
         {STAGES.map((item, index) => {
           const record = article.reviewRecords[item.stage];
-          const stageIssues = issues[item.stage] ?? [];
+          const stageIssues = validateStage(article, item.stage);
+          const checklistComplete = REVIEW_CHECKLISTS[item.stage].every(
+            (check) => article.checklistAttestations[check.id]?.workingVersion === article.workingVersion,
+          );
           return (
             <section className="studio-review-stage" key={item.stage} aria-labelledby={`${item.stage}-review-heading`}>
               <div className="studio-review-stage__title"><span aria-hidden="true">{record ? "✓" : index + 1}</span><h3 id={`${item.stage}-review-heading`}>{item.title}</h3></div>
               <p>{item.condition}</p>
+              {!record && <div className="studio-review-checklist">
+                {REVIEW_CHECKLISTS[item.stage].map((check) => {
+                  const attestation = article.checklistAttestations[check.id];
+                  const checked = attestation?.workingVersion === article.workingVersion;
+                  return <label key={check.id}><input type="checkbox" checked={checked} onChange={(event) => void update(setChecklistItemAttestation(article, check.id, event.target.checked, actor, now()))} /><span>{check.label}</span></label>;
+                })}
+              </div>}
               {record ? (
                 <div className="studio-review-complete"><strong>{item.button}됨</strong><span>{record.actor} · {formatTimestamp(record.completedAt)}</span></div>
               ) : (
-                <button type="button" className="button button--secondary" disabled={article.workflowStatus !== REQUIRED_STATUS[item.stage]} onClick={() => finishStage(item.stage)}>{item.button}</button>
+                <button type="button" className="button button--secondary" disabled={article.workflowStatus !== REQUIRED_STATUS[item.stage] || !checklistComplete || stageIssues.length > 0} onClick={() => finishStage(item.stage)}>{item.button}</button>
               )}
               {stageIssues.map((issue) => { const label = issueFieldLabel(issue.field); return <div className="studio-review-issue" key={`${issue.field}-${issue.code}`}><p id={studioIssueId(issue)}>{issueMessage(issue)}</p><a href={`#${studioControlId(issue.field)}`} onClick={onNavigateToField ? (event) => { event.preventDefault(); onNavigateToField(issue.field); } : undefined}>{label}{directionParticle(label)} 이동</a></div>; })}
             </section>
@@ -96,8 +115,8 @@ export function ReviewPanel({ article, onArticleChange, onIssuesChange, onNaviga
           <button type="button" className="button button--primary" disabled={article.workflowStatus !== "approved" || !article.approval} onClick={() => runAction(() => publishArticle(article, now()))}>발행</button>
         </div>
       )}
-      {published && !confirmWithdraw && <button type="button" className="button studio-withdraw" onClick={() => setConfirmWithdraw(true)}>발행 취소</button>}
-      {published && confirmWithdraw && (
+      {hasActivePublication && !confirmWithdraw && <button type="button" className="button studio-withdraw" onClick={() => setConfirmWithdraw(true)}>발행 취소</button>}
+      {hasActivePublication && confirmWithdraw && (
         <div className="studio-withdraw-confirm" role="group" aria-label="발행 취소 확인">
           <strong>학습자 목록에서 이 콘텐츠를 내릴까요?</strong>
           <div><button type="button" className="button button--ghost" onClick={() => setConfirmWithdraw(false)}>취소 유지</button><button type="button" className="button studio-withdraw" onClick={() => runAction(() => withdrawArticle(article, now()))}>발행 취소 확정</button></div>

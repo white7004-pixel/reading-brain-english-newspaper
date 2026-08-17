@@ -3,8 +3,10 @@ import type {
   Difficulty,
   InterestBand,
   KnowledgeDomain,
+  QuizQuestion,
+  SourceRef,
+  VocabularyItem,
 } from "@/lib/types";
-import type { QuizQuestion, SourceRef, VocabularyItem } from "@/lib/types";
 
 export type ReviewStage = "facts" | "language" | "age";
 
@@ -17,26 +19,51 @@ export type WorkflowStatus =
   | "published"
   | "withdrawn";
 
-export type ValidationIssue = {
-  field: string;
-  code: string;
+export type ValidationIssue = { field: string; code: string };
+
+export type ReviewChecklistItemId =
+  | "facts.source-present"
+  | "facts.source-trust"
+  | "facts.publication-valid"
+  | "facts.supported-facts"
+  | "facts.independent-reconstruction"
+  | "facts.media-rights"
+  | "language.grammar"
+  | "language.difficulty-fit"
+  | "language.three-minute"
+  | "language.vocabulary-context"
+  | "language.quiz-evidence"
+  | "age.topic-fit"
+  | "age.young-reader-clarity"
+  | "age.safety-flags"
+  | "age.concept-integrity";
+
+export type ChecklistAttestation = {
+  actor: string;
+  attestedAt: string;
+  workingVersion: number;
 };
 
+export type ReviewProvenance = "explicit" | "legacy" | "seed";
+
 export type StageReviewRecord = {
-  actor: string;
-  completedAt: string;
+  readonly actor: string;
+  readonly completedAt: string;
+  readonly workingVersion: number;
+  readonly checklistItemIds: ReadonlyArray<ReviewChecklistItemId>;
+  readonly provenance: ReviewProvenance;
 };
 
 export type ApprovalRecord = {
-  actor: string;
-  approvedAt: string;
-  workingVersion: number;
+  readonly actor: string;
+  readonly approvedAt: string;
+  readonly workingVersion: number;
 };
 
 export type PreviewReviewRecord = {
-  actor: string;
-  reviewedAt: string;
-  workingVersion: number;
+  readonly actor: string;
+  readonly reviewedAt: string;
+  readonly workingVersion: number;
 };
 
 export type ChangeLogEntry = {
@@ -47,18 +74,47 @@ export type ChangeLogEntry = {
 
 export type MediaProvider = "youtube" | "ted" | "cnn";
 
-export type MediaEmbed = {
+export type StudioImageMedia = {
+  kind: "image";
+  url: string;
+  alt: string;
+  usageConfirmed: boolean;
+};
+
+export type StudioVideoMedia = {
+  kind: "video";
   provider: MediaProvider;
   embedUrl: string;
   alt: string;
   usageConfirmed: boolean;
 };
 
+export type StudioMedia = StudioImageMedia | StudioVideoMedia;
+export type MediaEmbed = StudioVideoMedia;
+
 export type StudioVocabularyItem = VocabularyItem & { exampleSentence: string };
 export type QuizType = "comprehension" | "inference" | "vocabulary";
 export type StudioQuizQuestion = QuizQuestion & { type: QuizType; evidence: string };
 export type SourceMaterialType = "article" | "paper" | "news" | "magazine" | "exam" | "video";
 export type StudioSourceRef = SourceRef & { materialType: SourceMaterialType; supportedFact: string };
+
+export type PublishedVersionRecord = {
+  readonly version: number;
+  readonly snapshot: Readonly<Article>;
+  readonly reviewRecords: Readonly<Record<ReviewStage, StageReviewRecord>>;
+  readonly previewReview: PreviewReviewRecord;
+  readonly approval: ApprovalRecord;
+  readonly publishedAt: string | null;
+  readonly withdrawnAt: string | null;
+  readonly provenance: ReviewProvenance;
+};
+
+export type AuditHistoryEntry =
+  | Readonly<{ kind: "stage-reviewed"; version: number; stage: ReviewStage; record: StageReviewRecord }>
+  | Readonly<{ kind: "preview-reviewed"; version: number; record: PreviewReviewRecord }>
+  | Readonly<{ kind: "approved"; version: number; record: ApprovalRecord }>
+  | Readonly<{ kind: "published"; version: number; at: string }>
+  | Readonly<{ kind: "withdrawn"; version: number; at: string }>;
 
 export type ArticleEditPatch = Partial<
   Pick<
@@ -84,7 +140,6 @@ export type ArticleEditPatch = Partial<
     | "connectedArticleId"
     | "visualTheme"
     | "audioUrl"
-    | "ageRange"
     | "learningGoal"
     | "keySentence"
     | "keyConcept"
@@ -114,31 +169,30 @@ export type StudioArticle = {
   safetyReviewed: boolean;
   estimatedMinutes: 3;
   wordCount: number;
-  status: "draft" | "review" | "published" | "withdrawn";
-  version: number;
   pages: string[];
   vocabulary: StudioVocabularyItem[];
   quiz: StudioQuizQuestion[];
   sources: StudioSourceRef[];
-  connectedArticleId: string;
+  connectedArticleId?: string;
   visualTheme: string;
   audioUrl?: string;
   workingVersion: number;
-  publishedSnapshot: Readonly<Article> | null;
   workflowStatus: WorkflowStatus;
   reviewRecords: Partial<Record<ReviewStage, StageReviewRecord>>;
+  checklistAttestations: Partial<Record<ReviewChecklistItemId, ChecklistAttestation>>;
   approval: ApprovalRecord | null;
   previewReview: PreviewReviewRecord | null;
-  withdrawnAt: string | null;
+  activePublicationVersion: number | null;
+  versionHistory: ReadonlyArray<PublishedVersionRecord>;
+  auditHistory: ReadonlyArray<AuditHistoryEntry>;
   editor: string;
   updatedAt: string;
   changeLog: ChangeLogEntry[];
-  ageRange: string;
   learningGoal: string;
   keySentence: string;
   keyConcept: string;
   sourceNotes: string;
   reconstructionConfirmed: boolean;
   rightsNotes: string;
-  media: MediaEmbed[];
+  media: StudioMedia[];
 };

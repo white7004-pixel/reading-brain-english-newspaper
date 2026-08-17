@@ -1,24 +1,65 @@
-import { SAMPLE_ARTICLES } from "./sample-content";
-import type { StudioArticle } from "./studio-types";
+import { ageBoundsForInterestBand } from "./content-taxonomy";
+import { deepFreeze, parsePublicArticle } from "./public-article-schema";
+import { REVIEW_CHECKLISTS } from "./studio-workflow";
+import type { ReviewStage, StageReviewRecord, StudioArticle } from "./studio-types";
 import type { StudioState } from "./studio-store";
+import { SAMPLE_ARTICLES } from "./sample-content";
 import type { Article } from "./types";
 
 export function createSeedStudioState(): StudioState {
-  return {
-    schemaVersion: 2,
-    articles: SAMPLE_ARTICLES.map(createSeedStudioArticle),
-  };
+  return { schemaVersion: 3, articles: SAMPLE_ARTICLES.map(createSeedStudioArticle) };
 }
 
 function createSeedStudioArticle(article: Article): StudioArticle {
-  const { review, ...articleFields } = article;
+  const { review } = article;
+  const snapshot = cloneAndFreezePublishedSnapshot(article);
+  const seedReviewRecord = (stage: ReviewStage): StageReviewRecord => ({
+    actor: review.approvedBy,
+    completedAt: review.approvedAt,
+    workingVersion: article.version,
+    checklistItemIds: REVIEW_CHECKLISTS[stage].map((item) => item.id),
+    provenance: "seed",
+  });
+  const reviewRecords: Record<ReviewStage, StageReviewRecord> = {
+    facts: seedReviewRecord("facts"),
+    language: seedReviewRecord("language"),
+    age: seedReviewRecord("age"),
+  };
+  const approval = { actor: review.approvedBy, approvedAt: review.approvedAt, workingVersion: article.version };
+  const previewReview = { actor: review.approvedBy, reviewedAt: review.approvedAt, workingVersion: article.version };
+  const [minAge, maxAge] = ageBoundsForInterestBand(article.interestBand);
+  const versionHistory = deepFreeze([{
+    version: article.version,
+    snapshot,
+    reviewRecords,
+    previewReview,
+    approval,
+    publishedAt: review.approvedAt,
+    withdrawnAt: null,
+    provenance: "seed" as const,
+  }]) as StudioArticle["versionHistory"];
+  const auditHistory = deepFreeze([
+    { kind: "published" as const, version: article.version, at: review.approvedAt },
+  ]) as StudioArticle["auditHistory"];
 
   return {
-    ...articleFields,
+    id: article.id,
+    title: article.title,
+    titleKo: article.titleKo,
+    summaryKo: article.summaryKo,
+    domain: article.domain,
+    interestBand: article.interestBand,
+    difficulty: { ...article.difficulty },
+    estimatedMinutes: article.estimatedMinutes,
+    wordCount: article.wordCount,
+    pages: [...article.pages],
+    ...(article.connectedArticleId ? { connectedArticleId: article.connectedArticleId } : {}),
+    visualTheme: article.visualTheme,
+    ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
     summaryEn: article.pages[0] ?? "",
     subtopic: article.domain,
-    minAge: ageBounds(article.interestBand)[0],
-    maxAge: ageBounds(article.interestBand)[1],
+    minAge,
+    maxAge,
     estimatedReadingSeconds: 180,
     safetyFlags: [],
     safetyReviewed: true,
@@ -28,61 +69,30 @@ function createSeedStudioArticle(article: Article): StudioArticle {
     })),
     quiz: article.quiz.map((question) => ({ ...question, type: "comprehension" as const, evidence: article.pages[0] ?? "" })),
     sources: article.sources.map((source) => ({ ...source, materialType: "article" as const, supportedFact: article.summaryKo })),
-    status: "published",
     workingVersion: article.version,
-    publishedSnapshot: cloneAndFreezePublishedSnapshot(article),
     workflowStatus: "published",
-    reviewRecords: {
-      facts: { actor: review.approvedBy, completedAt: review.approvedAt },
-      language: { actor: review.approvedBy, completedAt: review.approvedAt },
-      age: { actor: review.approvedBy, completedAt: review.approvedAt },
-    },
-    approval: { actor: review.approvedBy, approvedAt: review.approvedAt, workingVersion: article.version },
-    previewReview: { actor: review.approvedBy, reviewedAt: review.approvedAt, workingVersion: article.version },
-    withdrawnAt: null,
+    reviewRecords,
+    checklistAttestations: {},
+    approval,
+    previewReview,
+    activePublicationVersion: article.version,
+    versionHistory,
+    auditHistory,
     editor: review.approvedBy,
     updatedAt: review.approvedAt,
     changeLog: [],
-    ageRange: article.interestBand,
     learningGoal: article.summaryKo,
-    keySentence: article.pages[0],
+    keySentence: article.pages[0] ?? "",
     keyConcept: article.domain,
     sourceNotes: article.sources.map((source) => source.title).join(", "),
     reconstructionConfirmed: true,
     rightsNotes: "원문 링크와 사용 조건을 확인했습니다.",
-    media: [],
+    media: article.media.map((item) => ({ ...item, usageConfirmed: true })),
   };
 }
 
-function ageBounds(interestBand: Article["interestBand"]): [number, number] {
-  switch (interestBand) {
-    case "lower-elementary": return [7, 9];
-    case "upper-elementary": return [10, 12];
-    case "teen": return [13, 17];
-    case "adult": return [18, 99];
-    case "all-ages": return [7, 99];
-  }
-}
-
 export function cloneAndFreezePublishedSnapshot(article: Article): Readonly<Article> {
-  return deepFreeze({
-    ...article,
-    difficulty: { ...article.difficulty },
-    pages: [...article.pages],
-    vocabulary: article.vocabulary.map((item) => ({ ...item })),
-    quiz: article.quiz.map((question) => ({ ...question, options: [...question.options] })),
-    sources: article.sources.map((source) => ({ ...source })),
-    review: { ...article.review },
-  });
-}
-
-function deepFreeze<T>(value: T): T {
-  if (value && typeof value === "object" && !Object.isFrozen(value)) {
-    for (const nestedValue of Object.values(value)) {
-      deepFreeze(nestedValue);
-    }
-    Object.freeze(value);
-  }
-
-  return value;
+  const parsed = parsePublicArticle(article);
+  if (!parsed.ok) throw new Error("Invalid seed public article");
+  return parsed.value;
 }

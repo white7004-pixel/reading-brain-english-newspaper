@@ -1,12 +1,56 @@
+import { deepFreeze, parsePublicArticle } from "@/lib/public-article-schema";
 import type { Article } from "@/lib/types";
-import type { ArticleEditPatch, MediaEmbed, MediaProvider, ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
+import type {
+  ArticleEditPatch,
+  MediaProvider,
+  ReviewChecklistItemId,
+  ReviewStage,
+  StageReviewRecord,
+  StudioArticle,
+  StudioMedia,
+  ValidationIssue,
+} from "@/lib/studio-types";
 
 const STAGES: ReviewStage[] = ["facts", "language", "age"];
+
+export const REVIEW_CHECKLISTS = {
+  facts: [
+    { id: "facts.source-present", label: "출처가 한 개 이상 존재한다." },
+    { id: "facts.source-trust", label: "핵심 사실이 신뢰할 수 있는 출처와 일치한다." },
+    { id: "facts.publication-valid", label: "원문 URL과 발행 정보가 유효하다." },
+    { id: "facts.supported-facts", label: "출처별로 뒷받침하는 사실을 기록했다." },
+    { id: "facts.independent-reconstruction", label: "원문 복제가 아닌 독립적 재구성이다." },
+    { id: "facts.media-rights", label: "미디어 사용 조건을 확인했다." },
+  ],
+  language: [
+    { id: "language.grammar", label: "문법과 문장 구조가 정확하다." },
+    { id: "language.difficulty-fit", label: "난이도에 맞는 어휘와 문장 길이다." },
+    { id: "language.three-minute", label: "목표 읽기 시간이 3분 이내다." },
+    { id: "language.vocabulary-context", label: "어휘 설명이 본문 맥락과 일치한다." },
+    { id: "language.quiz-evidence", label: "모든 퀴즈에 정답, 해설, 본문 근거가 있다." },
+  ],
+  age: [
+    { id: "age.topic-fit", label: "권장 연령에 주제와 표현이 적합하다." },
+    { id: "age.young-reader-clarity", label: "어린 독자에게 구체적이고 명확하게 설명한다." },
+    { id: "age.safety-flags", label: "주의 요소를 표시하고 검토했다." },
+    { id: "age.concept-integrity", label: "핵심 개념을 왜곡하거나 지나치게 단순화하지 않았다." },
+  ],
+} as const satisfies Record<ReviewStage, ReadonlyArray<{ id: ReviewChecklistItemId; label: string }>>;
+
+const CHECKLIST_STAGE = new Map<ReviewChecklistItemId, ReviewStage>(
+  STAGES.flatMap((stage) => REVIEW_CHECKLISTS[stage].map((item) => [item.id, stage] as const)),
+);
 
 const STAGE_MESSAGES: Record<ReviewStage, string> = {
   facts: "사실·출처 검수를 완료할 수 없습니다.",
   language: "영어·AR 검수를 완료할 수 없습니다.",
   age: "연령 적합성 검수를 완료할 수 없습니다.",
+};
+
+const CHECKLIST_MESSAGES: Record<ReviewStage, string> = {
+  facts: "사실·출처 체크리스트를 모두 확인해 주세요.",
+  language: "영어·AR 체크리스트를 모두 확인해 주세요.",
+  age: "연령 적합성 체크리스트를 모두 확인해 주세요.",
 };
 
 const FIELD_STAGE = {
@@ -15,7 +59,7 @@ const FIELD_STAGE = {
   connectedArticleId: "facts", visualTheme: "facts",
   difficulty: "language", estimatedReadingSeconds: "language", wordCount: "language", pages: "language",
   vocabulary: "language", quiz: "language", keySentence: "language", audioUrl: "language",
-  interestBand: "age", minAge: "age", maxAge: "age", ageRange: "age", safetyFlags: "age", safetyReviewed: "age", learningGoal: "age", keyConcept: "age",
+  interestBand: "age", minAge: "age", maxAge: "age", safetyFlags: "age", safetyReviewed: "age", learningGoal: "age", keyConcept: "age",
 } satisfies { [Field in keyof ArticleEditPatch]-?: ReviewStage };
 
 const LEARNER_FACING_FIELDS = new Set<keyof ArticleEditPatch>([
@@ -42,10 +86,13 @@ export function validateStage(article: StudioArticle, stage: ReviewStage): Valid
   return validateAge(article);
 }
 
-export function validateMediaEmbeds(media: MediaEmbed[]): ValidationIssue[] {
-  return media.flatMap((item, index) => OFFICIAL_EMBED_URLS[item.provider].test(item.embedUrl)
-    ? []
-    : [{ field: `media.${index}.embedUrl`, code: "unsupported_embed_url" }]);
+export function validateMediaEmbeds(media: StudioMedia[]): ValidationIssue[] {
+  return media.flatMap((item, index) => {
+    if (item.kind === "image") return isHttpsUrl(item.url) ? [] : [{ field: `media.${index}.url`, code: "image_url_invalid" }];
+    return OFFICIAL_EMBED_URLS[item.provider].test(item.embedUrl)
+      ? []
+      : [{ field: `media.${index}.embedUrl`, code: "unsupported_embed_url" }];
+  });
 }
 
 function validateFacts(article: StudioArticle): ValidationIssue[] {
@@ -55,6 +102,10 @@ function validateFacts(article: StudioArticle): ValidationIssue[] {
   required(issues, article.summaryEn, "summaryEn", "summary_en_required");
   required(issues, article.summaryKo, "summaryKo", "summary_ko_required");
   required(issues, article.subtopic, "subtopic", "subtopic_required");
+  required(issues, article.visualTheme, "visualTheme", "visual_theme_required");
+  if (article.connectedArticleId !== undefined && (!article.connectedArticleId.trim() || article.connectedArticleId === "pending")) {
+    issues.push({ field: "connectedArticleId", code: "connected_article_invalid" });
+  }
   if (article.sources.length === 0) issues.push({ field: "sources", code: "source_required" });
   article.sources.forEach((source, index) => {
     if (!["article", "paper", "news", "magazine", "exam", "video"].includes(source.materialType)) issues.push({ field: `sources.${index}.materialType`, code: "source_material_type_invalid" });
@@ -116,174 +167,168 @@ function validateAge(article: StudioArticle): ValidationIssue[] {
   return issues;
 }
 
-function required(issues: ValidationIssue[], value: string, field: string, code: string): void {
-  if (!value.trim()) issues.push({ field, code });
-}
-
-function isHttpUrl(value: string): boolean {
-  try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:"; } catch { return false; }
-}
-
-function isIsoDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const parsed = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().startsWith(value);
-}
-
-export function completeStage(
+export function setChecklistItemAttestation(
   article: StudioArticle,
-  stage: ReviewStage,
+  itemId: ReviewChecklistItemId,
+  checked: boolean,
   actor: string,
   now: string,
 ): StudioArticle {
+  if (!CHECKLIST_STAGE.has(itemId)) throw new Error("알 수 없는 검수 항목입니다.");
+  const checklistAttestations = { ...article.checklistAttestations };
+  if (checked) checklistAttestations[itemId] = { actor, attestedAt: now, workingVersion: article.workingVersion };
+  else delete checklistAttestations[itemId];
+  return { ...article, checklistAttestations, updatedAt: now };
+}
+
+export function completeStage(article: StudioArticle, stage: ReviewStage, actor: string, now: string): StudioArticle {
   const stageIndex = STAGES.indexOf(stage);
   const prerequisiteStages = STAGES.slice(0, stageIndex);
-  if (
-    article.workflowStatus !== REQUIRED_STATUS[stage]
-    || prerequisiteStages.some((prerequisiteStage) => !article.reviewRecords[prerequisiteStage])
-  ) {
+  if (article.workflowStatus !== REQUIRED_STATUS[stage]
+    || prerequisiteStages.some((item) => !isCurrentExplicitReview(item, article.reviewRecords[item], article.workingVersion))) {
     throw new Error("이전 검수 단계를 먼저 완료해 주세요.");
   }
+  if (validateStage(article, stage).length > 0) throw new Error(STAGE_MESSAGES[stage]);
 
-  if (validateStage(article, stage).length > 0) {
-    throw new Error(STAGE_MESSAGES[stage]);
+  const requiredIds = REVIEW_CHECKLISTS[stage].map((item) => item.id);
+  if (!requiredIds.every((id) => article.checklistAttestations[id]?.workingVersion === article.workingVersion)) {
+    throw new Error(CHECKLIST_MESSAGES[stage]);
   }
-
+  const record: StageReviewRecord = {
+    actor,
+    completedAt: now,
+    workingVersion: article.workingVersion,
+    checklistItemIds: [...requiredIds],
+    provenance: "explicit",
+  };
   const reviewRecords = {
-    ...Object.fromEntries(prerequisiteStages.map((prerequisiteStage) => [prerequisiteStage, article.reviewRecords[prerequisiteStage]])),
-    [stage]: { actor, completedAt: now },
+    ...Object.fromEntries(prerequisiteStages.map((item) => [item, article.reviewRecords[item]])),
+    [stage]: record,
   };
   return {
     ...article,
-    status: "review",
     workflowStatus: workflowStatusFor(reviewRecords),
     reviewRecords,
     approval: null,
     updatedAt: now,
+    auditHistory: freezeHistory([...article.auditHistory, { kind: "stage-reviewed", version: article.workingVersion, stage, record }]),
   };
 }
 
-export function applyArticleEdit(
-  article: StudioArticle,
-  patch: ArticleEditPatch,
-  now: string,
-  reason = "",
-): StudioArticle {
+export function applyArticleEdit(article: StudioArticle, patch: ArticleEditPatch, now: string, reason = ""): StudioArticle {
   const fields = Object.keys(patch) as (keyof ArticleEditPatch)[];
+  if (fields.length === 0) return article;
   const invalidatedStage = invalidatedStageFor(fields);
-  const reviewRecords = clearReviewsFrom(article.reviewRecords, invalidatedStage);
-  const startsNewWorkingVersion = article.workflowStatus === "published" || article.workflowStatus === "withdrawn";
-  const workflowStatus = workflowStatusFor(reviewRecords);
+  const startsNewWorkingVersion = article.activePublicationVersion === article.workingVersion
+    || (article.workflowStatus === "withdrawn" && article.versionHistory.some((item) => item.version === article.workingVersion));
+  const workingVersion = startsNewWorkingVersion ? article.workingVersion + 1 : article.workingVersion;
+  const reviewRecords = clearReviewsFrom(article.reviewRecords, startsNewWorkingVersion ? "facts" : invalidatedStage);
+  const checklistAttestations = clearAttestationsFrom(article.checklistAttestations, startsNewWorkingVersion ? "facts" : invalidatedStage);
   const invalidatesPreview = fields.some((field) => LEARNER_FACING_FIELDS.has(field));
+  const changeLog = appendMeaningfulChange(article.changeLog, { changedAt: now, fields: fields.map(String), reason });
 
   return {
     ...article,
     ...patch,
-    status: workflowStatus === "draft" ? "draft" : "review",
-    workingVersion: startsNewWorkingVersion ? article.workingVersion + 1 : article.workingVersion,
-    workflowStatus,
+    workingVersion,
+    workflowStatus: workflowStatusFor(reviewRecords),
     reviewRecords,
-    approval: fields.length > 0 ? null : article.approval,
+    checklistAttestations,
+    approval: null,
     previewReview: invalidatesPreview ? null : article.previewReview,
-    withdrawnAt: startsNewWorkingVersion ? null : article.withdrawnAt,
     updatedAt: now,
-    changeLog: [...article.changeLog, { changedAt: now, fields, reason }],
+    changeLog,
   };
 }
 
 export function acknowledgePreview(article: StudioArticle, actor: string, now: string): StudioArticle {
+  const record = { actor, reviewedAt: now, workingVersion: article.workingVersion };
   return {
     ...article,
-    previewReview: { actor, reviewedAt: now, workingVersion: article.workingVersion },
+    previewReview: record,
     updatedAt: now,
+    auditHistory: freezeHistory([...article.auditHistory, { kind: "preview-reviewed", version: article.workingVersion, record }]),
   };
 }
 
 export function approveArticle(article: StudioArticle, actor: string, now: string): StudioArticle {
-  if (article.workflowStatus !== "age_reviewed" || !STAGES.every((stage) => article.reviewRecords[stage])) {
-    throw new Error("모든 검수 단계를 완료한 뒤 최종 승인할 수 있습니다.");
+  if (article.workflowStatus !== "age_reviewed" || !STAGES.every((stage) => isCurrentExplicitReview(stage, article.reviewRecords[stage], article.workingVersion))) {
+    throw new Error("모든 검수 단계를 완료해야 최종 승인할 수 있습니다.");
   }
-  if (STAGES.some((stage) => validateStage(article, stage).length > 0)) {
-    throw new Error("모든 검수 단계를 다시 확인해 주세요.");
-  }
-  if (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) {
-    throw new Error("모바일 미리보기를 확인해 주세요.");
-  }
-
+  if (STAGES.some((stage) => validateStage(article, stage).length > 0)) throw new Error("모든 검수 단계를 다시 확인해 주세요.");
+  if (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) throw new Error("모바일 미리보기를 확인해 주세요.");
+  const approval = { actor, approvedAt: now, workingVersion: article.workingVersion };
   return {
     ...article,
-    approval: { actor, approvedAt: now, workingVersion: article.workingVersion },
+    approval,
     workflowStatus: "approved",
     updatedAt: now,
+    auditHistory: freezeHistory([...article.auditHistory, { kind: "approved", version: article.workingVersion, record: approval }]),
   };
 }
 
 export function publishArticle(article: StudioArticle, now: string): StudioArticle {
-  if (article.workflowStatus !== "approved" || !article.approval || article.approval.workingVersion !== article.workingVersion || !STAGES.every((stage) => article.reviewRecords[stage])) {
+  if (article.workflowStatus !== "approved"
+    || !article.approval
+    || article.approval.workingVersion !== article.workingVersion
+    || !STAGES.every((stage) => isCurrentExplicitReview(stage, article.reviewRecords[stage], article.workingVersion))) {
     throw new Error("최종 승인 후 발행할 수 있습니다.");
   }
-  if (STAGES.some((stage) => validateStage(article, stage).length > 0)) {
-    throw new Error("모든 검수 단계를 다시 확인해 주세요.");
-  }
-  if (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) {
-    throw new Error("모바일 미리보기를 확인해 주세요.");
-  }
+  if (STAGES.some((stage) => validateStage(article, stage).length > 0)) throw new Error("모든 검수 단계를 다시 확인해 주세요.");
+  if (!article.previewReview || article.previewReview.workingVersion !== article.workingVersion) throw new Error("모바일 미리보기를 확인해 주세요.");
+
+  const candidate = createLearnerSnapshot(article);
+  const parsed = parsePublicArticle(candidate);
+  if (!parsed.ok) throw new Error("학습자 공개 데이터가 올바르지 않습니다.");
+  const reviewRecords = Object.fromEntries(STAGES.map((stage) => [stage, article.reviewRecords[stage]])) as Record<ReviewStage, StageReviewRecord>;
+  const versionHistory = article.versionHistory.map((entry) => entry.version === article.activePublicationVersion
+    ? { ...entry, withdrawnAt: now }
+    : entry);
+  versionHistory.push({
+    version: article.workingVersion,
+    snapshot: parsed.value,
+    reviewRecords: cloneReviewRecords(reviewRecords),
+    previewReview: { ...article.previewReview },
+    approval: { ...article.approval },
+    publishedAt: now,
+    withdrawnAt: null,
+    provenance: "explicit",
+  });
+  const replacementWithdrawal = article.activePublicationVersion === null
+    ? []
+    : [{ kind: "withdrawn" as const, version: article.activePublicationVersion, at: now }];
 
   return {
     ...article,
-    status: "published",
     workflowStatus: "published",
-    publishedSnapshot: createLearnerSnapshot(article),
-    withdrawnAt: null,
+    activePublicationVersion: article.workingVersion,
+    versionHistory: freezeHistory(versionHistory),
     updatedAt: now,
+    auditHistory: freezeHistory([...article.auditHistory, ...replacementWithdrawal, { kind: "published", version: article.workingVersion, at: now }]),
   };
 }
 
 export function withdrawArticle(article: StudioArticle, now: string): StudioArticle {
-  if (article.workflowStatus !== "published") {
-    throw new Error("발행된 콘텐츠만 발행 취소할 수 있습니다.");
-  }
-
+  const activeVersion = article.activePublicationVersion;
+  if (activeVersion === null) throw new Error("발행된 콘텐츠만 발행 취소할 수 있습니다.");
   return {
     ...article,
-    status: "withdrawn",
-    workflowStatus: "withdrawn",
-    withdrawnAt: now,
+    workflowStatus: article.workingVersion === activeVersion && article.workflowStatus === "published" ? "withdrawn" : article.workflowStatus,
+    activePublicationVersion: null,
+    versionHistory: freezeHistory(article.versionHistory.map((entry) => entry.version === activeVersion ? { ...entry, withdrawnAt: now } : entry)),
     updatedAt: now,
+    auditHistory: freezeHistory([...article.auditHistory, { kind: "withdrawn", version: activeVersion, at: now }]),
   };
 }
 
-function invalidatedStageFor(fields: (keyof ArticleEditPatch)[]): ReviewStage | null {
-  const indexes = fields.map((field) => STAGES.indexOf(FIELD_STAGE[field]));
-  return indexes.length === 0 ? null : STAGES[Math.min(...indexes)];
+export function getActivePublication(article: StudioArticle) {
+  if (article.activePublicationVersion === null) return null;
+  return article.versionHistory.find((entry) => entry.version === article.activePublicationVersion && entry.withdrawnAt === null) ?? null;
 }
 
-function clearReviewsFrom(
-  reviewRecords: StudioArticle["reviewRecords"],
-  invalidatedStage: ReviewStage | null,
-): StudioArticle["reviewRecords"] {
-  if (!invalidatedStage) return { ...reviewRecords };
-
-  const firstInvalidatedIndex = STAGES.indexOf(invalidatedStage);
-  return Object.fromEntries(
-    Object.entries(reviewRecords).filter(([stage]) => STAGES.indexOf(stage as ReviewStage) < firstInvalidatedIndex),
-  ) as StudioArticle["reviewRecords"];
-}
-
-function workflowStatusFor(reviewRecords: StudioArticle["reviewRecords"]): StudioArticle["workflowStatus"] {
-  if (reviewRecords.age) return "age_reviewed";
-  if (reviewRecords.language) return "language_reviewed";
-  if (reviewRecords.facts) return "facts_reviewed";
-  return "draft";
-}
-
-function createLearnerSnapshot(article: StudioArticle): Readonly<Article> {
-  const approval = article.approval;
-  if (!approval) {
-    throw new Error("최종 승인 후 발행할 수 있습니다.");
-  }
-
-  return deepFreeze({
+function createLearnerSnapshot(article: StudioArticle): Article {
+  if (!article.approval) throw new Error("최종 승인 후 발행할 수 있습니다.");
+  return {
     id: article.id,
     title: article.title,
     titleKo: article.titleKo,
@@ -296,28 +341,98 @@ function createLearnerSnapshot(article: StudioArticle): Readonly<Article> {
     status: "published",
     version: article.workingVersion,
     pages: [...article.pages],
-    vocabulary: article.vocabulary.map((item) => ({ ...item })),
-    quiz: article.quiz.map((question) => ({ ...question, options: [...question.options] })),
-    sources: article.sources.map((source) => ({ ...source })),
+    vocabulary: article.vocabulary.map(({ exampleSentence: _exampleSentence, ...item }) => ({ ...item })),
+    quiz: article.quiz.map(({ type: _type, evidence: _evidence, ...question }) => ({ ...question, options: [...question.options] })),
+    sources: article.sources.map(({ materialType: _materialType, supportedFact: _supportedFact, ...source }) => ({ ...source })),
     review: {
-      approvedBy: approval.actor,
-      approvedAt: approval.approvedAt,
-      factsChecked: Boolean(article.reviewRecords.facts),
-      languageChecked: Boolean(article.reviewRecords.language),
-      ageChecked: Boolean(article.reviewRecords.age),
+      approvedBy: article.approval.actor,
+      approvedAt: article.approval.approvedAt,
+      factsChecked: true,
+      languageChecked: true,
+      ageChecked: true,
     },
-    connectedArticleId: article.connectedArticleId,
+    ...(normalizedConnection(article.connectedArticleId) ? { connectedArticleId: normalizedConnection(article.connectedArticleId) } : {}),
     visualTheme: article.visualTheme,
+    media: article.media.map((item) => item.kind === "image"
+      ? { kind: "image", url: item.url, alt: item.alt }
+      : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),
     ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
-  });
+  };
 }
 
-function deepFreeze<T>(value: T): Readonly<T> {
-  if (value && typeof value === "object" && !Object.isFrozen(value)) {
-    for (const nestedValue of Object.values(value)) {
-      deepFreeze(nestedValue);
-    }
-    Object.freeze(value);
-  }
-  return value;
+function normalizedConnection(value: string | undefined): string | undefined {
+  const normalized = value?.trim();
+  return normalized && normalized !== "pending" ? normalized : undefined;
+}
+
+function isCurrentExplicitReview(stage: ReviewStage, record: StageReviewRecord | undefined, version: number): boolean {
+  if (!record || record.workingVersion !== version || record.provenance !== "explicit") return false;
+  const expected = REVIEW_CHECKLISTS[stage].map((item) => item.id);
+  return record.checklistItemIds.length === expected.length && expected.every((id) => record.checklistItemIds.includes(id));
+}
+
+function invalidatedStageFor(fields: (keyof ArticleEditPatch)[]): ReviewStage | null {
+  const indexes = fields.map((field) => STAGES.indexOf(FIELD_STAGE[field]));
+  return indexes.length === 0 ? null : STAGES[Math.min(...indexes)];
+}
+
+function clearReviewsFrom(reviewRecords: StudioArticle["reviewRecords"], invalidatedStage: ReviewStage | null): StudioArticle["reviewRecords"] {
+  if (!invalidatedStage) return { ...reviewRecords };
+  const firstInvalidatedIndex = STAGES.indexOf(invalidatedStage);
+  return Object.fromEntries(Object.entries(reviewRecords).filter(([stage]) => STAGES.indexOf(stage as ReviewStage) < firstInvalidatedIndex));
+}
+
+function clearAttestationsFrom(
+  attestations: StudioArticle["checklistAttestations"],
+  invalidatedStage: ReviewStage | null,
+): StudioArticle["checklistAttestations"] {
+  if (!invalidatedStage) return { ...attestations };
+  const firstInvalidatedIndex = STAGES.indexOf(invalidatedStage);
+  return Object.fromEntries(Object.entries(attestations).filter(([id]) => {
+    const stage = CHECKLIST_STAGE.get(id as ReviewChecklistItemId);
+    return stage !== undefined && STAGES.indexOf(stage) < firstInvalidatedIndex;
+  }));
+}
+
+function workflowStatusFor(reviewRecords: StudioArticle["reviewRecords"]): StudioArticle["workflowStatus"] {
+  if (reviewRecords.age) return "age_reviewed";
+  if (reviewRecords.language) return "language_reviewed";
+  if (reviewRecords.facts) return "facts_reviewed";
+  return "draft";
+}
+
+function cloneReviewRecords(records: Record<ReviewStage, StageReviewRecord>): Record<ReviewStage, StageReviewRecord> {
+  const clone = (stage: ReviewStage): StageReviewRecord => ({
+    ...records[stage],
+    checklistItemIds: [...records[stage].checklistItemIds],
+  });
+  return { facts: clone("facts"), language: clone("language"), age: clone("age") };
+}
+
+function freezeHistory<T>(entries: T[]): T[] {
+  return deepFreeze(entries) as T[];
+}
+
+function appendMeaningfulChange(log: StudioArticle["changeLog"], entry: StudioArticle["changeLog"][number]) {
+  const previous = log.at(-1);
+  if (!previous || previous.changedAt !== entry.changedAt || previous.reason !== entry.reason) return [...log, entry];
+  return [...log.slice(0, -1), { ...entry, fields: [...new Set([...previous.fields, ...entry.fields])] }];
+}
+
+function required(issues: ValidationIssue[], value: string, field: string, code: string): void {
+  if (!value.trim()) issues.push({ field, code });
+}
+
+function isHttpUrl(value: string): boolean {
+  try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:"; } catch { return false; }
+}
+
+function isHttpsUrl(value: string): boolean {
+  try { return new URL(value).protocol === "https:"; } catch { return false; }
+}
+
+function isIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().startsWith(value);
 }

@@ -5,7 +5,7 @@ import type { Article } from "./types";
 type ContentStorage = Pick<Storage, "getItem" | "setItem">;
 
 export function getPublishedArticles(storage?: ContentStorage): Article[] {
-  if (storage) return getPublicArticles(loadStudioState(storage));
+  if (storage) return getPublicArticles(loadStudioState(storage).state);
 
   return SAMPLE_ARTICLES.filter((article) => article.status === "published");
 }

@@ -71,6 +71,9 @@ export function projectWorkingArticle(article: StudioArticle): Article {
     },
     connectedArticleId: article.connectedArticleId,
     visualTheme: article.visualTheme,
+    media: article.media.map((item) => item.kind === "image"
+      ? { kind: "image", url: item.url, alt: item.alt }
+      : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),
     ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
   };
 }

@@ -23,6 +23,9 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
   const articles = getPublishedArticles(storage);
   const destination: Destination = session.screen === "learn" ? "learn" : session.screen;
   const article = session.articleId ? articles.find((item) => item.id === session.articleId) : undefined;
+  const connectedArticle = article?.connectedArticleId
+    ? articles.find((item) => item.id === article.connectedArticleId)
+    : undefined;
   const start = (next: Article) => setSession({ screen: "learn", articleId: next.id, phase: "reader", events: [], startedAt: Date.now() });
   const navigate = (next: Destination) => setSession({ screen: next, events: [] });
 
@@ -30,7 +33,7 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
     if (!article) return;
     const now = new Date();
     const xp = result.correct === result.total ? 35 : 25;
-    const next = recordAttempt(state, { id: `${article.id}-${now.toISOString()}`, articleId: article.id, completedAt: now.toISOString(), localDate: localDate(), correct: result.correct, total: result.total, hintsUsed: session.events.filter((event) => event.type === "word_open").length, durationSeconds: Math.max(1, Math.round((Date.now() - (session.startedAt ?? Date.now())) / 1000)), xpAwarded: xp });
+    const next = recordAttempt(state, { id: `${article.id}-${now.toISOString()}`, articleId: article.id, articleTitle: article.title, articleVersion: article.version, completedAt: now.toISOString(), localDate: localDate(), correct: result.correct, total: result.total, hintsUsed: session.events.filter((event) => event.type === "word_open").length, durationSeconds: Math.max(1, Math.round((Date.now() - (session.startedAt ?? Date.now())) / 1000)), xpAwarded: xp });
     saveLearnerState(storage, next); setState(next); setSession((current) => ({ ...current, phase: "completion", result }));
   };
 
@@ -38,7 +41,7 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
     {session.screen === "home" && <HomeScreen state={state} articles={articles} onStart={start} onExplore={() => setSession({ screen: "explore", events: [] })} />}
     {session.screen === "learn" && article && session.phase === "reader" && <ReaderScreen article={article} onBack={() => navigate("home")} onFinish={() => setSession((current) => ({ ...current, phase: "quiz" }))} onEvent={(event) => setSession((current) => ({ ...current, events: [...current.events, event] }))} />}
     {session.screen === "learn" && article && session.phase === "quiz" && <QuizScreen questions={article.quiz} onExit={() => navigate("home")} onComplete={completeQuiz} />}
-    {session.screen === "learn" && article && session.phase === "completion" && session.result && <CompletionScreen article={article} result={session.result} state={state} onHome={() => navigate("home")} onNext={() => { const next = articles.find((item) => item.id === article.connectedArticleId); if (next) start(next); }} />}
+    {session.screen === "learn" && article && session.phase === "completion" && session.result && <CompletionScreen article={article} result={session.result} state={state} onHome={() => navigate("home")} onNext={connectedArticle ? () => start(connectedArticle) : undefined} />}
     {session.screen === "explore" && <ExploreScreen articles={articles} initialDomain={null} onOpen={start} />}
     {session.screen === "profile" && <ProfileScreen state={state} onReset={() => { const reset = createDefaultLearnerState(); saveLearnerState(storage, reset); setState(reset); setSession({ screen: "home", events: [] }); }} />}
     {session.screen === "learn" && !article && <section><p className="eyebrow">Nonfiction Lab</p><h1>학습</h1><p>홈이나 탐험에서 읽을 지식을 선택해 주세요.</p></section>}

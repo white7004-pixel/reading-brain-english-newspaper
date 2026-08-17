@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { formatAgeRange, matchesDifficultyBand, type DifficultyBandId } from "@/lib/content-taxonomy";
 import type { KnowledgeDomain } from "@/lib/types";
 import type { StudioArticle, WorkflowStatus } from "@/lib/studio-types";
 
@@ -23,7 +24,7 @@ const DOMAIN_LABELS: Record<KnowledgeDomain, string> = {
   "world-culture": "세계 문화",
 };
 
-type ArFilter = "all" | "under-500" | "500-699" | "700-and-over";
+type ArFilter = "all" | DifficultyBandId;
 
 export type StudioFilter = {
   query: string;
@@ -47,9 +48,12 @@ const EMPTY_FILTER: StudioFilter = {
   ageRange: "all",
 };
 
-export function summarizeStudioArticles(articles: StudioArticle[]): Record<WorkflowStatus, number> {
-  return articles.reduce<Record<WorkflowStatus, number>>((summary, article) => {
+export type StudioArticleSummary = Record<WorkflowStatus, number> & { activePublications: number };
+
+export function summarizeStudioArticles(articles: StudioArticle[]): StudioArticleSummary {
+  return articles.reduce<StudioArticleSummary>((summary, article) => {
     summary[article.workflowStatus] += 1;
+    if (article.activePublicationVersion !== null) summary.activePublications += 1;
     return summary;
   }, {
     draft: 0,
@@ -59,13 +63,14 @@ export function summarizeStudioArticles(articles: StudioArticle[]): Record<Workf
     approved: 0,
     published: 0,
     withdrawn: 0,
+    activePublications: 0,
   });
 }
 
 export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardProps) {
   const [filter, setFilter] = useState<StudioFilter>(EMPTY_FILTER);
   const summary = useMemo(() => summarizeStudioArticles(articles), [articles]);
-  const ageRanges = useMemo(() => [...new Set(articles.map((article) => article.ageRange))].sort(), [articles]);
+  const ageRanges = useMemo(() => [...new Set(articles.map((article) => formatAgeRange(article.minAge, article.maxAge)))].sort(), [articles]);
   const filteredArticles = useMemo(
     () => articles
       .filter((article) => matchesFilter(article, filter))
@@ -80,11 +85,11 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
     [articles],
   );
 
-  const cards = [
+  const cards: Array<{ label: string; icon: string; count: number; dataSummary?: string }> = [
     { label: "초안", icon: "✎", count: summary.draft },
     { label: "검수 중", icon: "◌", count: summary.facts_reviewed + summary.language_reviewed },
     { label: "승인 대기", icon: "✓", count: summary.age_reviewed },
-    { label: "발행 완료", icon: "●", count: summary.published },
+    { label: "공개 중", icon: "●", count: summary.activePublications, dataSummary: "active-publications" },
   ];
 
   return (
@@ -107,7 +112,7 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
         </div>
         <div className="studio-summary-grid">
           {cards.map((card) => (
-            <article className="studio-summary-card" key={card.label}>
+            <article className="studio-summary-card" key={card.label} data-summary={card.dataSummary}>
               <span aria-hidden="true">{card.icon}</span>
               <strong>{card.label} {card.count}</strong>
             </article>
@@ -167,9 +172,10 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
           </FilterSelect>
           <FilterSelect label="논픽션랩 추정 AR" value={filter.ar} onChange={(value) => setFilter((current) => ({ ...current, ar: value as ArFilter }))}>
             <option value="all">전체 AR</option>
-            <option value="under-500">500 미만</option>
-            <option value="500-699">500–699</option>
-            <option value="700-and-over">700 이상</option>
+            <option value="under-2">2.0 미만</option>
+            <option value="2-4">2.0–3.9</option>
+            <option value="4-6">4.0–5.9</option>
+            <option value="6-and-over">6.0 이상</option>
           </FilterSelect>
           <FilterSelect label="권장 연령" value={filter.ageRange} onChange={(value) => setFilter((current) => ({ ...current, ageRange: value }))}>
             <option value="all">전체 연령</option>
@@ -199,13 +205,18 @@ function ArticleRow({ article, onOpen }: { article: StudioArticle; onOpen: (arti
     <article className="studio-article-row" role="listitem">
       <div className="studio-article-row__main">
         <span className="studio-status" data-status={article.workflowStatus}><span aria-hidden="true">{workflow.icon}</span> {workflow.label}</span>
+        {article.activePublicationVersion !== null ? (
+          <span className="studio-status" data-publication-status="live">
+            공개 버전 {article.activePublicationVersion} 유지 중
+          </span>
+        ) : null}
         <h3>{article.title}</h3>
         <p>{article.titleKo || article.keyConcept}</p>
       </div>
       <dl className="studio-article-row__details">
         <div><dt>분야</dt><dd>{DOMAIN_LABELS[article.domain]}</dd></div>
         <div><dt>추정 AR</dt><dd>{article.difficulty.value}</dd></div>
-        <div><dt>권장 연령</dt><dd>{article.ageRange}세</dd></div>
+        <div><dt>권장 연령</dt><dd>{formatAgeRange(article.minAge, article.maxAge)}세</dd></div>
         <div><dt>수정일</dt><dd>{formatUpdatedAt(article.updatedAt)}</dd></div>
       </dl>
       <button type="button" className="button button--ghost studio-open" onClick={() => onOpen(article)} aria-label={`${article.title} 열기`}>열기</button>
@@ -215,19 +226,21 @@ function ArticleRow({ article, onOpen }: { article: StudioArticle; onOpen: (arti
 
 function matchesFilter(article: StudioArticle, filter: StudioFilter): boolean {
   const query = filter.query.trim().toLocaleLowerCase();
-  const searchableText = [article.title, article.titleKo, article.summaryKo, article.keyConcept, article.learningGoal].join(" ").toLocaleLowerCase();
+  const searchableText = [article.title, article.titleKo, article.summaryKo, article.subtopic, article.keyConcept, article.learningGoal].join(" ").toLocaleLowerCase();
   return (!query || searchableText.includes(query))
-    && (filter.workflowStatus === "all" || article.workflowStatus === filter.workflowStatus)
+    && (
+      filter.workflowStatus === "all"
+      || (filter.workflowStatus === "published"
+        ? article.activePublicationVersion !== null
+        : article.workflowStatus === filter.workflowStatus)
+    )
     && (filter.domain === "all" || article.domain === filter.domain)
-    && (filter.ageRange === "all" || article.ageRange === filter.ageRange)
+    && (filter.ageRange === "all" || formatAgeRange(article.minAge, article.maxAge) === filter.ageRange)
     && matchesAr(article.difficulty.value, filter.ar);
 }
 
 function matchesAr(value: number, filter: ArFilter): boolean {
-  return filter === "all"
-    || (filter === "under-500" && value < 500)
-    || (filter === "500-699" && value >= 500 && value <= 699)
-    || (filter === "700-and-over" && value >= 700);
+  return filter === "all" || matchesDifficultyBand(value, filter);
 }
 
 function nextRequiredAction(workflowStatus: WorkflowStatus): string | null {
