@@ -52,3 +52,25 @@ The dashboard exposes `onCreate` and `onOpen` callbacks, but their editor behavi
 - `npm run lint` — `tsc --noEmit` exited 0.
 - `npm test` — 13 test files and 46 tests passing.
 - `npm run build` — Next.js production build compiled successfully and generated `/studio`.
+
+## Fix Round 2
+
+### Delivered
+
+- Made `다음 검수 필요` a global queue derived from the complete studio article collection.
+- Kept search and status/domain/AR/age filters scoped exclusively to the content list.
+- Added a regression UI test that applies search, status, and domain filters to hide a draft from the list while confirming it remains actionable in the global queue.
+
+### TDD evidence
+
+1. Added the global-queue regression test before changing dashboard production code.
+2. Ran `npm test -- tests/studio-dashboard.test.tsx`; 1 of 7 tests failed because the filtered queue rendered its empty state and no `다음 검수 필요 목록` was available.
+3. Changed queue derivation from `filteredArticles` to the full `articles` collection.
+4. Re-ran the focused suite successfully: 7 of 7 tests passed.
+
+### Fix Round 2 verification
+
+- `npm test -- tests/studio-dashboard.test.tsx` — 1 test file, 7 passing tests.
+- `npm run lint` — `tsc --noEmit` exited 0.
+- `npm test` — 13 test files and 47 tests passing.
+- `npm run build` — Next.js production build compiled successfully and generated `/studio`.

@@ -73,11 +73,11 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
     [articles, filter],
   );
   const nextActions = useMemo(
-    () => filteredArticles.flatMap((article) => {
+    () => articles.flatMap((article) => {
       const action = nextRequiredAction(article.workflowStatus);
       return action ? [{ article, action }] : [];
     }),
-    [filteredArticles],
+    [articles],
   );
 
   const cards = [

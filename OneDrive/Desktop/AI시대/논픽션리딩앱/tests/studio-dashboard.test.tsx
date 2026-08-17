@@ -97,6 +97,28 @@ it("shows each non-terminal item with its next required action and opens it from
   expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ title: "Needs approval" }));
 });
 
+it("keeps actionable work in the global next-review queue when content-list filters hide it", async () => {
+  const user = userEvent.setup();
+  render(
+    <StudioDashboard
+      articles={[
+        makeStudioArticle({ title: "Needs facts", domain: "science" }),
+        makePublishedArticle({ id: "published", title: "Published", domain: "history" }),
+      ]}
+      onCreate={vi.fn()}
+      onOpen={vi.fn()}
+    />,
+  );
+
+  await user.type(screen.getByRole("searchbox", { name: "콘텐츠 검색" }), "Published");
+  await user.selectOptions(screen.getByLabelText("상태"), "published");
+  await user.selectOptions(screen.getByLabelText("분야"), "history");
+
+  expect(contentList().getByText("Published")).toBeInTheDocument();
+  expect(contentList().queryByText("Needs facts")).not.toBeInTheDocument();
+  expect(within(screen.getByRole("list", { name: "다음 검수 필요 목록" })).getByText("Needs facts")).toBeInTheDocument();
+});
+
 it("filters by status, domain, estimated AR, and recommended age", async () => {
   const user = userEvent.setup();
   render(
