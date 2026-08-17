@@ -72,11 +72,18 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
       .sort((first, second) => second.updatedAt.localeCompare(first.updatedAt)),
     [articles, filter],
   );
+  const nextActions = useMemo(
+    () => filteredArticles.flatMap((article) => {
+      const action = nextRequiredAction(article.workflowStatus);
+      return action ? [{ article, action }] : [];
+    }),
+    [filteredArticles],
+  );
 
   const cards = [
     { label: "초안", icon: "✎", count: summary.draft },
-    { label: "검수 중", icon: "◌", count: summary.facts_reviewed + summary.language_reviewed + summary.age_reviewed },
-    { label: "승인 대기", icon: "✓", count: summary.approved },
+    { label: "검수 중", icon: "◌", count: summary.facts_reviewed + summary.language_reviewed },
+    { label: "승인 대기", icon: "✓", count: summary.age_reviewed },
     { label: "발행 완료", icon: "●", count: summary.published },
   ];
 
@@ -106,6 +113,28 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="studio-next-actions" aria-labelledby="studio-next-actions">
+        <div className="studio-section-heading">
+          <div>
+            <h2 id="studio-next-actions">다음 검수 필요</h2>
+            <p>다음 단계가 남은 콘텐츠예요.</p>
+          </div>
+          <span>{nextActions.length}개</span>
+        </div>
+        {nextActions.length === 0 ? (
+          <p className="studio-next-actions__empty">다음 단계가 필요한 콘텐츠가 없어요.</p>
+        ) : (
+          <div className="studio-next-actions__list" role="list" aria-label="다음 검수 필요 목록">
+            {nextActions.map(({ article, action }) => (
+              <article className="studio-next-action" role="listitem" key={article.id}>
+                <div><strong>{article.title}</strong><span>{action}</span></div>
+                <button type="button" className="button button--ghost studio-open" onClick={() => onOpen(article)} aria-label={`${article.title} 열기`}>열기</button>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="studio-content-section" aria-labelledby="studio-content-list">
@@ -151,7 +180,7 @@ export function StudioDashboard({ articles, onCreate, onOpen }: StudioDashboardP
         {filteredArticles.length === 0 ? (
           <div className="studio-empty-state"><p>조건에 맞는 콘텐츠가 없어요.</p><button type="button" onClick={() => setFilter(EMPTY_FILTER)}>필터 초기화</button></div>
         ) : (
-          <div className="studio-article-list" role="list">
+          <div className="studio-article-list" role="list" aria-label="콘텐츠 목록">
             {filteredArticles.map((article) => <ArticleRow article={article} key={article.id} onOpen={onOpen} />)}
           </div>
         )}
@@ -199,6 +228,24 @@ function matchesAr(value: number, filter: ArFilter): boolean {
     || (filter === "under-500" && value < 500)
     || (filter === "500-699" && value >= 500 && value <= 699)
     || (filter === "700-and-over" && value >= 700);
+}
+
+function nextRequiredAction(workflowStatus: WorkflowStatus): string | null {
+  switch (workflowStatus) {
+    case "draft":
+      return "사실·출처 검수 필요";
+    case "facts_reviewed":
+      return "영어·AR 검수 필요";
+    case "language_reviewed":
+      return "연령 적합성 검수 필요";
+    case "age_reviewed":
+      return "최종 승인 필요";
+    case "approved":
+      return "발행 필요";
+    case "published":
+    case "withdrawn":
+      return null;
+  }
 }
 
 function formatUpdatedAt(value: string): string {
