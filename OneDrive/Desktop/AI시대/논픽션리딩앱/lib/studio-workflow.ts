@@ -1,5 +1,5 @@
 import type { Article } from "@/lib/types";
-import type { ArticleEditPatch, ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
+import type { ArticleEditPatch, MediaEmbed, MediaProvider, ReviewStage, StudioArticle, ValidationIssue } from "@/lib/studio-types";
 
 const STAGES: ReviewStage[] = ["facts", "language", "age"];
 
@@ -13,12 +13,30 @@ const FACTS_FIELDS = new Set(["title", "titleKo", "summaryKo", "domain", "source
 const LANGUAGE_FIELDS = new Set(["pages", "vocabulary", "quiz", "difficulty", "keySentence", "keyConcept"]);
 const AGE_FIELDS = new Set(["interestBand", "ageRange", "learningGoal", "media"]);
 
+const REQUIRED_STATUS: Record<ReviewStage, StudioArticle["workflowStatus"]> = {
+  facts: "draft",
+  language: "facts_reviewed",
+  age: "language_reviewed",
+};
+
+const OFFICIAL_EMBED_URLS: Record<MediaProvider, RegExp> = {
+  youtube: /^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_-]{11}(?:\?[^\s]*)?$/,
+  ted: /^https:\/\/embed\.ted\.com\/talks\/[A-Za-z0-9_-]+(?:\?[^\s]*)?$/,
+  cnn: /^https:\/\/www\.cnn\.com\/video\/third-party-embed\/[A-Za-z0-9_/-]+(?:\?[^\s]*)?$/,
+};
+
 export function validateStage(article: StudioArticle, stage: ReviewStage): ValidationIssue[] {
   if (stage === "facts" && article.sources.length === 0) {
     return [{ field: "sources", code: "source_required" }];
   }
 
   return [];
+}
+
+export function validateMediaEmbeds(media: MediaEmbed[]): ValidationIssue[] {
+  return media.every((item) => OFFICIAL_EMBED_URLS[item.provider].test(item.embedUrl))
+    ? []
+    : [{ field: "media", code: "unsupported_embed_url" }];
 }
 
 export function completeStage(
@@ -28,8 +46,11 @@ export function completeStage(
   now: string,
 ): StudioArticle {
   const stageIndex = STAGES.indexOf(stage);
-  const previousStage = stageIndex > 0 ? STAGES[stageIndex - 1] : undefined;
-  if (previousStage && !article.reviewRecords[previousStage]) {
+  const prerequisiteStages = STAGES.slice(0, stageIndex);
+  if (
+    article.workflowStatus !== REQUIRED_STATUS[stage]
+    || prerequisiteStages.some((prerequisiteStage) => !article.reviewRecords[prerequisiteStage])
+  ) {
     throw new Error("이전 검수 단계를 먼저 완료해 주세요.");
   }
 
@@ -37,12 +58,16 @@ export function completeStage(
     throw new Error(STAGE_MESSAGES[stage]);
   }
 
-  const reviewRecords = { ...article.reviewRecords, [stage]: { actor, completedAt: now } };
+  const reviewRecords = {
+    ...Object.fromEntries(prerequisiteStages.map((prerequisiteStage) => [prerequisiteStage, article.reviewRecords[prerequisiteStage]])),
+    [stage]: { actor, completedAt: now },
+  };
   return {
     ...article,
     status: "review",
     workflowStatus: workflowStatusFor(reviewRecords),
     reviewRecords,
+    approval: null,
     updatedAt: now,
   };
 }
@@ -52,6 +77,10 @@ export function applyArticleEdit(
   patch: ArticleEditPatch,
   now: string,
 ): StudioArticle {
+  if (patch.media && validateMediaEmbeds(patch.media).length > 0) {
+    throw new Error("허용된 공식 임베드 URL만 저장할 수 있습니다.");
+  }
+
   const fields = Object.keys(patch) as (keyof StudioArticle)[];
   const invalidatedStage = invalidatedStageFor(fields);
   const reviewRecords = clearReviewsFrom(article.reviewRecords, invalidatedStage);
@@ -73,7 +102,7 @@ export function applyArticleEdit(
 }
 
 export function approveArticle(article: StudioArticle, actor: string, now: string): StudioArticle {
-  if (!STAGES.every((stage) => article.reviewRecords[stage])) {
+  if (article.workflowStatus !== "age_reviewed" || !STAGES.every((stage) => article.reviewRecords[stage])) {
     throw new Error("모든 검수 단계를 완료한 뒤 최종 승인할 수 있습니다.");
   }
 
@@ -86,7 +115,7 @@ export function approveArticle(article: StudioArticle, actor: string, now: strin
 }
 
 export function publishArticle(article: StudioArticle, now: string): StudioArticle {
-  if (article.workflowStatus !== "approved" || !article.approval) {
+  if (article.workflowStatus !== "approved" || !article.approval || !STAGES.every((stage) => article.reviewRecords[stage])) {
     throw new Error("최종 승인 후 발행할 수 있습니다.");
   }
 

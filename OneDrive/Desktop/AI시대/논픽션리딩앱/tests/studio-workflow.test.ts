@@ -3,6 +3,7 @@ import {
   approveArticle,
   completeStage,
   publishArticle,
+  validateMediaEmbeds,
   validateStage,
   withdrawArticle,
 } from "@/lib/studio-workflow";
@@ -111,12 +112,54 @@ describe("content review workflow", () => {
     expect(withdrawn.withdrawnAt).toBe("2026-08-17T06:00:00.000Z");
     expect(published.workflowStatus).toBe("published");
   });
+
+  it("rejects an upstream review repeat after the workflow has reached age review", () => {
+    const ageReviewed = reviewThroughAge();
+
+    expect(() => completeStage(ageReviewed, "facts", "fact-checker", "2026-08-17T04:00:00.000Z")).toThrow(
+      "이전 검수 단계를 먼저 완료해 주세요.",
+    );
+    expect(ageReviewed.workflowStatus).toBe("age_reviewed");
+    expect(ageReviewed.reviewRecords.age).toBeDefined();
+  });
+
+  it("clears stale downstream records before approval or publication can be reached", () => {
+    const ageReviewed = reviewThroughAge();
+    const staleFactsState = { ...ageReviewed, workflowStatus: "facts_reviewed" as const };
+    const languageReviewed = completeStage(staleFactsState, "language", "language-reviewer", "2026-08-17T04:00:00.000Z");
+
+    expect(languageReviewed.reviewRecords).toEqual({
+      facts: { actor: "fact-checker", completedAt: "2026-08-17T01:00:00.000Z" },
+      language: { actor: "language-reviewer", completedAt: "2026-08-17T04:00:00.000Z" },
+    });
+    expect(() => approveArticle(languageReviewed, "approver", "2026-08-17T05:00:00.000Z")).toThrow();
+    expect(() => publishArticle(languageReviewed, "2026-08-17T05:00:00.000Z")).toThrow();
+  });
+
+  it("accepts an official YouTube embed URL", () => {
+    const media = [{ provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "Rainforest footage" }];
+
+    expect(validateMediaEmbeds(media)).toEqual([]);
+    expect(applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z").media).toEqual(media);
+  });
+
+  it("rejects an arbitrary media URL before it is persisted", () => {
+    const media = [{ provider: "youtube", embedUrl: "https://example.com/embed/not-official", alt: "Untrusted media" }];
+
+    expect(validateMediaEmbeds(media)).toEqual([{ field: "media", code: "unsupported_embed_url" }]);
+    expect(() => applyArticleEdit(makeStudioArticle(), { media }, "2026-08-17T01:00:00.000Z")).toThrow(
+      "허용된 공식 임베드 URL만 저장할 수 있습니다.",
+    );
+  });
 });
 
 function publishReviewedArticle() {
+  const approved = approveArticle(reviewThroughAge(), "approver", "2026-08-17T04:00:00.000Z");
+  return publishArticle(approved, "2026-08-17T05:00:00.000Z");
+}
+
+function reviewThroughAge() {
   const facts = completeStage(makeStudioArticle(), "facts", "fact-checker", "2026-08-17T01:00:00.000Z");
   const language = completeStage(facts, "language", "language-reviewer", "2026-08-17T02:00:00.000Z");
-  const age = completeStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
-  const approved = approveArticle(age, "approver", "2026-08-17T04:00:00.000Z");
-  return publishArticle(approved, "2026-08-17T05:00:00.000Z");
+  return completeStage(language, "age", "age-reviewer", "2026-08-17T03:00:00.000Z");
 }

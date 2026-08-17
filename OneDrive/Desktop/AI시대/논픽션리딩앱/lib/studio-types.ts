@@ -39,8 +39,10 @@ export type ChangeLogEntry = {
   fields: string[];
 };
 
+export type MediaProvider = "youtube" | "ted" | "cnn";
+
 export type MediaEmbed = {
-  provider: string;
+  provider: MediaProvider;
   embedUrl: string;
   alt: string;
 };
