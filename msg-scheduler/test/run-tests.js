@@ -1,0 +1,258 @@
+/** 의존성 없는 단위 테스트. 실행: npm test */
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+import { parseCron, cronMatches, nextRunAfter, matchesBetween, buildCron, describeCron } from '../src/cron.js';
+import { parseLocalDateTime, formatInZone, minuteKey, partsInZone, isValidTimeZone } from '../src/time.js';
+import { chunkText, smsByteLength } from '../src/channels/http.js';
+import { renderMessage, Scheduler } from '../src/scheduler.js';
+import { Store } from '../src/store.js';
+
+const KST = 'Asia/Seoul';
+
+test('타임존: KST 벽시계 시각을 UTC로 정확히 변환한다', () => {
+  const ms = parseLocalDateTime('2026-08-20T09:30', KST);
+  assert.equal(new Date(ms).toISOString(), '2026-08-20T00:30:00.000Z');
+  assert.equal(formatInZone(ms, KST), '2026-08-20 09:30');
+  assert.equal(minuteKey(ms, KST), '2026-08-20T09:30');
+});
+
+test('타임존: 서머타임이 있는 지역도 벽시계 기준으로 계산한다', () => {
+  const summer = parseLocalDateTime('2026-07-01T12:00', 'America/New_York');
+  const winter = parseLocalDateTime('2026-01-01T12:00', 'America/New_York');
+  assert.equal(new Date(summer).toISOString(), '2026-07-01T16:00:00.000Z'); // EDT (UTC-4)
+  assert.equal(new Date(winter).toISOString(), '2026-01-01T17:00:00.000Z'); // EST (UTC-5)
+});
+
+test('타임존: 잘못된 이름을 걸러낸다', () => {
+  assert.equal(isValidTimeZone('Asia/Seoul'), true);
+  assert.equal(isValidTimeZone('Mars/Olympus'), false);
+});
+
+test('cron: 기본 필드를 파싱한다', () => {
+  const parsed = parseCron('30 9 * * 1-5');
+  assert.deepEqual([...parsed.minute], [30]);
+  assert.deepEqual([...parsed.hour], [9]);
+  assert.deepEqual([...parsed.dow], [1, 2, 3, 4, 5]);
+  assert.equal(parsed.dowRestricted, true);
+  assert.equal(parsed.domRestricted, false);
+});
+
+test('cron: 증분·목록·이름 표기를 지원한다', () => {
+  assert.deepEqual([...parseCron('*/15 * * * *').minute], [0, 15, 30, 45]);
+  assert.deepEqual([...parseCron('0 9,18 * * *').hour], [9, 18]);
+  assert.deepEqual([...parseCron('0 9 * * MON,WED').dow], [1, 3]);
+  assert.deepEqual([...parseCron('0 9 1 JAN *').month], [1]);
+  assert.deepEqual([...parseCron('0 9 * * 7').dow], [0]); // 7도 일요일
+});
+
+test('cron: 잘못된 식은 예외를 던진다', () => {
+  assert.throws(() => parseCron('0 9 * *'), /5개 필드/);
+  assert.throws(() => parseCron('99 9 * * *'), /범위/);
+  assert.throws(() => parseCron('0 9 * * 9'), /범위/);
+});
+
+test('cron: 평일 09:30 조건을 정확히 판정한다', () => {
+  const parsed = parseCron('30 9 * * 1-5');
+  const monday = parseLocalDateTime('2026-08-17T09:30', KST);
+  const sunday = parseLocalDateTime('2026-08-16T09:30', KST);
+  const wrongTime = parseLocalDateTime('2026-08-17T09:31', KST);
+  assert.equal(cronMatches(parsed, monday, KST), true);
+  assert.equal(cronMatches(parsed, sunday, KST), false);
+  assert.equal(cronMatches(parsed, wrongTime, KST), false);
+});
+
+test('cron: 일/요일이 모두 지정되면 OR로 판정한다 (cron 표준)', () => {
+  const parsed = parseCron('0 9 1 * 0');
+  const firstDay = parseLocalDateTime('2026-09-01T09:00', KST); // 화요일 1일
+  const sunday = parseLocalDateTime('2026-09-06T09:00', KST); // 일요일 6일
+  const neither = parseLocalDateTime('2026-09-02T09:00', KST);
+  assert.equal(cronMatches(parsed, firstDay, KST), true);
+  assert.equal(cronMatches(parsed, sunday, KST), true);
+  assert.equal(cronMatches(parsed, neither, KST), false);
+});
+
+test('cron: 다음 실행 시각을 찾는다', () => {
+  const parsed = parseCron('0 8 * * *');
+  const from = parseLocalDateTime('2026-08-18T09:00', KST);
+  assert.equal(formatInZone(nextRunAfter(parsed, from, KST), KST), '2026-08-19 08:00');
+});
+
+test('cron: 서버가 꺼져 있던 구간의 놓친 실행을 찾아낸다', () => {
+  const parsed = parseCron('0 * * * *');
+  const from = parseLocalDateTime('2026-08-18T08:30', KST);
+  const to = parseLocalDateTime('2026-08-18T11:10', KST);
+  const missed = matchesBetween(parsed, from, to, KST).map((ms) => formatInZone(ms, KST));
+  assert.deepEqual(missed, ['2026-08-18 09:00', '2026-08-18 10:00', '2026-08-18 11:00']);
+});
+
+test('간편 설정이 올바른 cron으로 변환된다', () => {
+  assert.equal(buildCron({ repeat: 'daily', hour: 8, minute: 0 }), '0 8 * * *');
+  assert.equal(buildCron({ repeat: 'weekday', hour: 9, minute: 30 }), '30 9 * * 1-5');
+  assert.equal(buildCron({ repeat: 'weekly', hour: 19, minute: 5, weekdays: [4, 2] }), '5 19 * * 2,4');
+  assert.equal(buildCron({ repeat: 'monthly', hour: 10, minute: 0, day: 25 }), '0 10 25 * *');
+  assert.throws(() => buildCron({ repeat: 'weekly', hour: 9, minute: 0, weekdays: [] }), /요일/);
+  assert.throws(() => buildCron({ repeat: 'daily', hour: 25, minute: 0 }), /시\(hour\)/);
+});
+
+test('cron 설명이 한국어로 나온다', () => {
+  assert.equal(describeCron('30 9 * * 1-5'), '평일(월~금) 09시 30분');
+  assert.equal(describeCron('0 8 * * *'), '매일 08시 00분');
+  assert.equal(describeCron('0 9 1 * *'), '매월 1일 09시 00분');
+});
+
+test('메시지 치환자가 채워진다', () => {
+  const ms = parseLocalDateTime('2026-08-20T09:30', KST);
+  const out = renderMessage('{{date}} ({{weekday}}) {{time}} / {{datetime}}', { tz: KST, firedAtMs: ms });
+  assert.equal(out, '2026-08-20 (목) 09:30 / 2026-08-20 09:30');
+});
+
+test('SMS 바이트 계산과 긴 글 분할', () => {
+  assert.equal(smsByteLength('abc'), 3);
+  assert.equal(smsByteLength('가나다'), 6);
+  const chunks = chunkText('가'.repeat(500), 190);
+  assert.equal(chunks.length, 3);
+  assert.equal(chunks.join('').length, 500);
+});
+
+test('저장소: 저장 후 다시 읽어도 데이터가 유지된다', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'msgsched-'));
+  const store = new Store(dir);
+  store.load();
+  const job = store.addJob({ name: '테스트', message: '안녕', targets: [], schedule: { type: 'cron', cron: '0 9 * * *' }, enabled: true });
+  store.addLog({ jobId: job.id, jobName: '테스트', channel: 'slack', status: 'sent', detail: 'ok' });
+  store.saveSync();
+
+  const reopened = new Store(dir);
+  reopened.load();
+  assert.equal(reopened.jobs.length, 1);
+  assert.equal(reopened.jobs[0].name, '테스트');
+  assert.equal(reopened.listLogs().length, 1);
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('저장소: 빈 문자열로 들어온 비밀값은 기존 값을 덮어쓰지 않는다', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'msgsched-'));
+  const store = new Store(dir);
+  store.load();
+  store.updateSettings({ channels: { slack: { webhookUrl: 'https://hooks.example/aaa', defaultChannel: '#a' } } });
+  store.updateSettings({ channels: { slack: { webhookUrl: '', defaultChannel: '#b' } } });
+  assert.equal(store.getChannelConfig('slack').webhookUrl, 'https://hooks.example/aaa');
+  assert.equal(store.getChannelConfig('slack').defaultChannel, '#b');
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('스케줄러: 1회 예약은 시간이 지나면 발송되고 자동으로 꺼진다', async () => {
+  const { dir, store, scheduler, received, server } = await withMockChannel();
+  const runAt = Date.now() - 5_000;
+  const job = store.addJob({
+    name: '1회 발송',
+    message: '한 번만 보냅니다',
+    targets: [{ channel: 'webhook', target: {} }],
+    schedule: { type: 'once', runAtMs: runAt },
+    enabled: true,
+    state: {},
+  });
+
+  await scheduler.tick();
+  assert.equal(received.length, 1);
+  assert.equal(received[0].text, '한 번만 보냅니다');
+  assert.equal(store.getJob(job.id).enabled, false);
+
+  await scheduler.tick(); // 두 번 나가면 안 된다
+  assert.equal(received.length, 1);
+  await cleanup(dir, server, store);
+});
+
+test('스케줄러: 예정 시각을 한참 지난 1회 예약은 발송하지 않고 누락으로 남긴다', async () => {
+  const { dir, store, scheduler, received, server } = await withMockChannel();
+  const job = store.addJob({
+    name: '오래된 예약',
+    message: '지각',
+    targets: [{ channel: 'webhook', target: {} }],
+    schedule: { type: 'once', runAtMs: Date.now() - 5 * 60 * 60 * 1000 },
+    enabled: true,
+    state: {},
+  });
+
+  await scheduler.tick();
+  assert.equal(received.length, 0);
+  assert.equal(store.getJob(job.id).enabled, false);
+  assert.equal(store.getJob(job.id).state.lastStatus, 'missed');
+  await cleanup(dir, server, store);
+});
+
+test('스케줄러: 반복 예약은 같은 분에 두 번 나가지 않는다', async () => {
+  const { dir, store, scheduler, received, server } = await withMockChannel();
+  const now = Date.now();
+  const p = partsInZone(now, KST);
+  store.addJob({
+    name: '매분 발송',
+    message: '{{time}} 알림',
+    targets: [{ channel: 'webhook', target: {} }],
+    schedule: { type: 'cron', cron: `${p.minute} ${p.hour} * * *` },
+    enabled: true,
+    state: { lastCheckedMs: now },
+  });
+
+  await scheduler.tick(now);
+  await scheduler.tick(now + 1000);
+  await scheduler.tick(now + 2000);
+  assert.equal(received.length, 1);
+  await cleanup(dir, server, store);
+});
+
+test('스케줄러: 전송 실패하면 재시도 큐에 쌓인다', async () => {
+  const { dir, store, scheduler, server } = await withMockChannel({ fail: true });
+  store.addJob({
+    name: '실패 예약',
+    message: '실패할 메시지',
+    targets: [{ channel: 'webhook', target: {} }],
+    schedule: { type: 'once', runAtMs: Date.now() - 1000 },
+    enabled: true,
+    state: {},
+  });
+
+  await scheduler.tick();
+  assert.equal(store.retries.length, 1);
+  assert.equal(store.listLogs()[0].status, 'retrying');
+  await cleanup(dir, server, store);
+});
+
+// ---- 테스트용 로컬 수신 서버 (웹훅 채널을 그대로 쓴다) ----
+
+async function withMockChannel({ fail = false } = {}) {
+  const http = await import('node:http');
+  const received = [];
+  const server = http.createServer((req, res) => {
+    let body = '';
+    req.on('data', (c) => (body += c));
+    req.on('end', () => {
+      if (fail) {
+        res.writeHead(500).end('boom');
+        return;
+      }
+      received.push(JSON.parse(body));
+      res.writeHead(200, { 'Content-Type': 'application/json' }).end('{"ok":true}');
+    });
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const port = server.address().port;
+
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'msgsched-'));
+  const store = new Store(dir);
+  store.load();
+  store.setChannelConfig('webhook', { url: `http://127.0.0.1:${port}/hook`, bodyTemplate: '{"text":"{{message}}"}' });
+  const scheduler = new Scheduler(store);
+  return { dir, store, scheduler, received, server };
+}
+
+async function cleanup(dir, server, store) {
+  if (server) await new Promise((resolve) => server.close(resolve));
+  await store?.writing; // 비동기 저장이 끝난 뒤 지워야 경고가 안 뜬다
+  fs.rmSync(dir, { recursive: true, force: true });
+}

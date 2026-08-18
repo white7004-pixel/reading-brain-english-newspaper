@@ -1,0 +1,17 @@
+{
+  "name": "msg-scheduler",
+  "version": "1.0.0",
+  "description": "정해진 시간에 카카오톡·문자·카카오워크·슬랙으로 메시지를 자동 발송하는 예약 발송 앱",
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test/run-tests.js"
+  },
+  "dependencies": {},
+  "license": "MIT"
+}
