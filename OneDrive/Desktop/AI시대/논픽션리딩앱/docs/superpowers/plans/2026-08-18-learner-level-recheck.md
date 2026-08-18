@@ -45,7 +45,7 @@
 - Produces: `PlacementQuestion`, `PLACEMENT_QUESTIONS`, `estimateDifficulty(answers: number[]): number`, `isValidArEntry(value: number): boolean`, `AR_ENTRY_MIN`, `AR_ENTRY_MAX`
 - Consumes: 없음
 
-- [ ] **Step 1: 실패하는 판정 테스트 작성**
+- [x] **Step 1: 실패하는 판정 테스트 작성**
 
 `tests/placement-test.test.ts`:
 
@@ -85,12 +85,12 @@ describe("isValidArEntry", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트가 기능 부재로 실패하는지 확인**
+- [x] **Step 2: 테스트가 기능 부재로 실패하는지 확인**
 
 Run: `npm test -- tests/placement-test.test.ts`
 Expected: FAIL because `@/lib/placement-test` does not exist.
 
-- [ ] **Step 3: 판정 모듈 구현**
+- [x] **Step 3: 판정 모듈 구현**
 
 `lib/placement-test.ts`. 문항과 계산식은 `components/onboarding.tsx`에 있던 값을 그대로 옮긴다.
 
@@ -126,12 +126,12 @@ export function isValidArEntry(value: number): boolean {
 }
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `npm test -- tests/placement-test.test.ts`
 Expected: PASS, 5 tests.
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add lib/placement-test.ts tests/placement-test.test.ts
@@ -150,7 +150,7 @@ git commit -m "feat: extract placement test rules"
 - Consumes: `isValidArEntry` from `@/lib/placement-test`
 - Produces: `LearnerLevel = { enteredAr: number | null; estimatedDifficulty: number | null }`, `updateLearnerLevel(state: LearnerState, level: LearnerLevel): LearnerState`
 
-- [ ] **Step 1: 실패하는 갱신 테스트 추가**
+- [x] **Step 1: 실패하는 갱신 테스트 추가**
 
 `tests/learner-store.test.ts` 끝에 추가한다.
 
@@ -207,12 +207,12 @@ describe("updateLearnerLevel", () => {
 });
 ```
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
 Run: `npm test -- tests/learner-store.test.ts`
 Expected: FAIL because `updateLearnerLevel` is not exported.
 
-- [ ] **Step 3: 순수 갱신 함수 구현**
+- [x] **Step 3: 순수 갱신 함수 구현**
 
 `lib/learner-store.ts` 상단에 import를 추가하고 파일 끝에 함수를 추가한다.
 
@@ -242,12 +242,12 @@ export function updateLearnerLevel(state: LearnerState, level: LearnerLevel): Le
 }
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `npm test -- tests/learner-store.test.ts`
 Expected: PASS, 기존 테스트 포함 전부 통과.
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add lib/learner-store.ts tests/learner-store.test.ts
@@ -267,7 +267,7 @@ git commit -m "feat: update learner level without losing progress"
 - Consumes: `PLACEMENT_QUESTIONS`, `estimateDifficulty`, `isValidArEntry`, `AR_ENTRY_MIN`, `AR_ENTRY_MAX`, `LearnerLevel`
 - Produces: `LevelCheck({ initialMode, onSubmit, onCancel, submitLabel })`
 
-- [ ] **Step 1: 실패하는 컴포넌트 테스트 작성**
+- [x] **Step 1: 실패하는 컴포넌트 테스트 작성**
 
 `tests/level-check.test.tsx`:
 
@@ -321,12 +321,12 @@ test("취소하면 결과를 돌려주지 않는다", async () => {
 });
 ```
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
 Run: `npm test -- tests/level-check.test.tsx`
 Expected: FAIL because `@/components/level-check` does not exist.
 
-- [ ] **Step 3: 레벨 선택 컴포넌트 구현**
+- [x] **Step 3: 레벨 선택 컴포넌트 구현**
 
 `components/level-check.tsx`. 화면 마크업과 클래스 이름은 `components/onboarding.tsx`의 기존 `enter`·`test`·`result` 화면을 그대로 옮긴다.
 
@@ -435,12 +435,12 @@ export function LevelCheck({
 }
 ```
 
-- [ ] **Step 4: 컴포넌트 테스트 통과 확인**
+- [x] **Step 4: 컴포넌트 테스트 통과 확인**
 
 Run: `npm test -- tests/level-check.test.tsx`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 5: 온보딩이 같은 컴포넌트를 쓰도록 위임**
+- [x] **Step 5: 온보딩이 같은 컴포넌트를 쓰도록 위임**
 
 `components/onboarding.tsx`에서 `questions` 배열과 `enter`·`test`·`result` 화면 블록을 지우고 `LevelCheck`에 위임한다. `welcome` 화면과 관심 분야 선택, 세 버튼은 그대로 둔다.
 
@@ -505,12 +505,12 @@ export function Onboarding({ onComplete }: { onComplete: (profile: LearnerProfil
 }
 ```
 
-- [ ] **Step 6: 온보딩 회귀 테스트와 타입 검사**
+- [x] **Step 6: 온보딩 회귀 테스트와 타입 검사**
 
 Run: `npm test -- tests/onboarding.test.tsx tests/level-check.test.tsx && npm run lint`
 Expected: PASS, TypeScript exit 0. 온보딩 동작이 이전과 같아야 한다.
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add components/level-check.tsx components/onboarding.tsx tests/level-check.test.tsx
@@ -531,7 +531,7 @@ git commit -m "feat: share level check between onboarding and profile"
 - Consumes: `LevelCheck`, `updateLearnerLevel`, `LearnerLevel`
 - Produces: `ProfileScreen({ state, onReset, onLevelChange })`
 
-- [ ] **Step 1: 실패하는 프로필 테스트 추가**
+- [x] **Step 1: 실패하는 프로필 테스트 추가**
 
 `tests/profile-screen.test.tsx`에 추가한다.
 
@@ -564,12 +564,12 @@ test("레벨 재설정을 취소하면 프로필로 돌아온다", async () => {
 });
 ```
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
 Run: `npm test -- tests/profile-screen.test.tsx`
 Expected: FAIL because the button has no handler and `onLevelChange` is not a prop.
 
-- [ ] **Step 3: 프로필 화면에 재설정 흐름 연결**
+- [x] **Step 3: 프로필 화면에 재설정 흐름 연결**
 
 `components/profile-screen.tsx`에서 `useState`로 재설정 화면을 열고, 기존 `레벨 다시 확인하기` 버튼에 핸들러를 붙인다.
 
@@ -602,7 +602,7 @@ export function ProfileScreen({ state, onReset, onLevelChange }: { state: Learne
 }
 ```
 
-- [ ] **Step 4: 학습자 앱에서 저장 연결**
+- [x] **Step 4: 학습자 앱에서 저장 연결**
 
 `components/learner-app.tsx`의 import에 `updateLearnerLevel`과 `LearnerLevel`을 추가하고, 프로필 렌더링에 핸들러를 넘긴다.
 
@@ -618,12 +618,12 @@ import { recordAttempt, saveLearnerState, updateLearnerLevel, type LearnerLevel,
 />}
 ```
 
-- [ ] **Step 5: 단위 테스트와 타입 검사**
+- [x] **Step 5: 단위 테스트와 타입 검사**
 
 Run: `npm test && npm run lint`
 Expected: PASS 전부, TypeScript exit 0.
 
-- [ ] **Step 6: 레벨 변경 E2E 추가**
+- [x] **Step 6: 레벨 변경 E2E 추가**
 
 `e2e/learner-journey.spec.ts`에 추가한다. 기존 여정 테스트는 그대로 둔다.
 
@@ -643,12 +643,12 @@ test("레벨을 다시 정해도 학습 기록이 남는다", async ({ page }) =
 });
 ```
 
-- [ ] **Step 7: 전체 검증**
+- [x] **Step 7: 전체 검증**
 
 Run: `npm run verify`
 Expected: 모든 Vitest 파일 통과, TypeScript exit 0, 프로덕션 빌드 성공, Playwright 여정 전부 통과.
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add components/profile-screen.tsx components/learner-app.tsx tests/profile-screen.test.tsx e2e/learner-journey.spec.ts

@@ -9,7 +9,7 @@ import { CompletionScreen } from "./completion-screen";
 import { ExploreScreen } from "./explore-screen";
 import { ProfileScreen } from "./profile-screen";
 import { getPublishedArticles } from "@/lib/content";
-import { recordAttempt, saveLearnerState, type LearnerState } from "@/lib/learner-store";
+import { recordAttempt, saveLearnerState, updateLearnerLevel, type LearnerLevel, type LearnerState } from "@/lib/learner-store";
 import type { Article } from "@/lib/types";
 import { createDefaultLearnerState } from "@/lib/learner-store";
 
@@ -43,7 +43,11 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
     {session.screen === "learn" && article && session.phase === "quiz" && <QuizScreen questions={article.quiz} onExit={() => navigate("home")} onComplete={completeQuiz} />}
     {session.screen === "learn" && article && session.phase === "completion" && session.result && <CompletionScreen article={article} result={session.result} state={state} onHome={() => navigate("home")} onNext={connectedArticle ? () => start(connectedArticle) : undefined} />}
     {session.screen === "explore" && <ExploreScreen articles={articles} initialDomain={null} onOpen={start} />}
-    {session.screen === "profile" && <ProfileScreen state={state} onReset={() => { const reset = createDefaultLearnerState(); saveLearnerState(storage, reset); setState(reset); setSession({ screen: "home", events: [] }); }} />}
+    {session.screen === "profile" && <ProfileScreen
+      state={state}
+      onReset={() => { const reset = createDefaultLearnerState(); saveLearnerState(storage, reset); setState(reset); setSession({ screen: "home", events: [] }); }}
+      onLevelChange={(level: LearnerLevel) => { const next = updateLearnerLevel(state, level); saveLearnerState(storage, next); setState(next); }}
+    />}
     {session.screen === "learn" && !article && <section><p className="eyebrow">Nonfiction Lab</p><h1>학습</h1><p>홈이나 탐험에서 읽을 지식을 선택해 주세요.</p></section>}
   </AppShell>;
 }
