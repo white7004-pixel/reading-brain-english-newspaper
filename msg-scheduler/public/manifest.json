@@ -1,0 +1,17 @@
+{
+  "name": "예약 메시지 발송기",
+  "short_name": "예약 메시지",
+  "description": "지금 적어두고 정해진 시간에 카카오톡·문자·슬랙으로 자동 발송",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f6f8",
+  "theme_color": "#2f6df6",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%232f6df6'/%3E%3Ctext x='96' y='134' font-size='110' text-anchor='middle'%3E%E2%8F%B0%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

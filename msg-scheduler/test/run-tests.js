@@ -10,6 +10,7 @@ import { parseCron, cronMatches, nextRunAfter, matchesBetween, buildCron, descri
 import { parseLocalDateTime, formatInZone, minuteKey, partsInZone, isValidTimeZone } from '../src/time.js';
 import { chunkText, smsByteLength } from '../src/channels/http.js';
 import { renderMessage, Scheduler } from '../src/scheduler.js';
+import { quickPresets, resolveQuickPreset, isQuietTime, nextMorning, titleFromMessage, hourLabel, dayLabel } from '../src/quick.js';
 import { Store } from '../src/store.js';
 
 const KST = 'Asia/Seoul';
@@ -221,6 +222,102 @@ test('스케줄러: 전송 실패하면 재시도 큐에 쌓인다', async () =>
   assert.equal(store.retries.length, 1);
   assert.equal(store.listLogs()[0].status, 'retrying');
   await cleanup(dir, server, store);
+});
+
+// ---- 빠른 예약 ----
+
+test('빠른 예약: 새벽 3시40분에는 몇 시간 뒤인 "오늘 오전 9시"가 후보로 뜬다', () => {
+  const dawn = parseLocalDateTime('2026-08-19T03:40', KST);
+  const presets = quickPresets(dawn, KST);
+  const today9 = presets.find((p) => p.key === 'today-morning');
+  assert.ok(today9, '오늘 오전 9시 후보가 있어야 한다');
+  assert.equal(today9.at, '2026-08-19 09:00');
+  assert.equal(today9.quiet, false);
+  assert.equal(today9.when, '8/19(수)');
+  assert.equal(today9.whenFull, '8/19(수) 09:00', '확인 버튼에는 시각이 보여야 한다');
+});
+
+test('빠른 예약: 이미 지난 시각은 후보에서 빠진다', () => {
+  const evening = parseLocalDateTime('2026-08-18T20:00', KST);
+  const keys = quickPresets(evening, KST).map((p) => p.key);
+  assert.ok(!keys.includes('today-morning'), '지난 오전은 빠져야 한다');
+  assert.ok(!keys.includes('today-evening'), '지난 저녁은 빠져야 한다');
+  assert.ok(keys.includes('tomorrow-morning'));
+});
+
+test('빠른 예약: 새벽에 걸리는 후보는 심야로 표시된다', () => {
+  const dawn = parseLocalDateTime('2026-08-19T03:40', KST);
+  const inOneHour = quickPresets(dawn, KST).find((p) => p.key === 'in-1h');
+  assert.equal(inOneHour.quiet, true);
+  assert.equal(inOneHour.at, '2026-08-19 04:40');
+});
+
+test('빠른 예약: N시간 뒤는 5분 단위로 정렬된다', () => {
+  const now = parseLocalDateTime('2026-08-18T14:03', KST);
+  const inThree = quickPresets(now, KST).find((p) => p.key === 'in-3h');
+  assert.equal(inThree.at, '2026-08-18 17:05');
+});
+
+test('빠른 예약: 다음 월요일은 오늘이 월요일이면 일주일 뒤다', () => {
+  const monday = parseLocalDateTime('2026-08-17T10:00', KST);
+  const next = quickPresets(monday, KST).find((p) => p.key === 'monday-morning');
+  assert.equal(next.at, '2026-08-24 09:00');
+});
+
+test('빠른 예약: 프리셋 키를 시각으로 되돌린다', () => {
+  const now = parseLocalDateTime('2026-08-18T14:00', KST);
+  assert.equal(resolveQuickPreset('tomorrow-morning', now, KST).at, '2026-08-19 09:00');
+  assert.equal(resolveQuickPreset('today-morning', now, KST), null); // 이미 지난 키
+});
+
+test('심야 판정: 자정을 넘는 구간(22시~7시)을 올바르게 다룬다', () => {
+  const at = (v) => parseLocalDateTime(v, KST);
+  assert.equal(isQuietTime(at('2026-08-18T23:30'), KST), true);
+  assert.equal(isQuietTime(at('2026-08-19T03:00'), KST), true);
+  assert.equal(isQuietTime(at('2026-08-19T06:59'), KST), true);
+  assert.equal(isQuietTime(at('2026-08-19T07:00'), KST), false);
+  assert.equal(isQuietTime(at('2026-08-19T21:59'), KST), false);
+});
+
+test('심야 대안: 새벽이면 그날 아침, 밤이면 다음 날 아침을 제안한다', () => {
+  const dawn = parseLocalDateTime('2026-08-19T03:40', KST);
+  const night = parseLocalDateTime('2026-08-18T23:30', KST);
+  assert.equal(formatInZone(nextMorning(dawn, KST), KST), '2026-08-19 09:00');
+  assert.equal(formatInZone(nextMorning(night, KST), KST), '2026-08-19 09:00');
+});
+
+test('예약 이름은 메시지 첫 줄에서 자동으로 만들어진다', () => {
+  assert.equal(titleFromMessage('교재 주문 확인 부탁'), '교재 주문 확인 부탁');
+  assert.equal(titleFromMessage('첫 줄입니다\n둘째 줄'), '첫 줄입니다');
+  assert.equal(titleFromMessage('가'.repeat(40)).length, 25); // 24자 + 말줄임표
+  assert.equal(titleFromMessage('   '), '메모');
+});
+
+test('시각 라벨이 오전/오후로 읽힌다', () => {
+  assert.equal(hourLabel(9), '오전 9시');
+  assert.equal(hourLabel(12), '낮 12시');
+  assert.equal(hourLabel(19), '오후 7시');
+  assert.equal(dayLabel(parseLocalDateTime('2026-08-19T09:00', KST), KST), '8/19(수)');
+});
+
+test('주소록: 추가·수정·삭제가 저장된다', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'msgsched-'));
+  const store = new Store(dir);
+  store.load();
+  const recipient = store.addRecipient({ label: '김선생님', channel: 'sms', target: { to: '01012345678' } });
+  store.rememberRecipients([recipient.id]);
+  store.updateRecipient(recipient.id, { label: '김선생님(담임)' });
+  store.saveSync();
+
+  const reopened = new Store(dir);
+  reopened.load();
+  assert.equal(reopened.recipients[0].label, '김선생님(담임)');
+  assert.deepEqual(reopened.settings.lastRecipientIds, [recipient.id]);
+
+  reopened.removeRecipient(recipient.id);
+  assert.equal(reopened.recipients.length, 0);
+  assert.deepEqual(reopened.settings.lastRecipientIds, [], '삭제하면 최근 목록에서도 빠져야 한다');
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
 // ---- 테스트용 로컬 수신 서버 (웹훅 채널을 그대로 쓴다) ----

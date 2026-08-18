@@ -2,42 +2,79 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>예약 메시지 발송기</title>
+<meta name="theme-color" content="#2f6df6" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="예약 메시지" />
+<link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>" />
 <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 <header class="top">
   <h1>예약 메시지 발송기</h1>
-  <div class="sub">카카오톡 · 문자 · 카카오워크 · 슬랙에 정해진 시간에 자동으로 메시지를 보냅니다. <span id="tzLabel"></span></div>
+  <div class="sub">지금 적어두고, 정해진 시간에 자동으로 보냅니다. <span id="tzLabel"></span></div>
   <nav class="tabs">
-    <button data-tab="jobs" class="active">예약 목록</button>
-    <button data-tab="new">새 예약</button>
-    <button data-tab="channels">채널 설정</button>
-    <button data-tab="logs">발송 기록</button>
+    <button data-tab="quick" class="active">빠른 예약</button>
+    <button data-tab="jobs">예약 목록 <span class="count" id="jobCount"></span></button>
+    <button data-tab="new">반복 예약</button>
+    <button data-tab="settings">설정</button>
+    <button data-tab="logs">기록</button>
   </nav>
 </header>
 
 <main>
-  <!-- 예약 목록 -->
-  <section class="tab-panel active" id="tab-jobs">
+  <!-- ─────────── 빠른 예약 (홈) ─────────── -->
+  <section class="tab-panel active" id="tab-quick">
+    <div class="card compose">
+      <div class="compose-head">
+        <h2>지금 생각난 걸 적어두세요</h2>
+        <span class="saved-note" id="draftNote"></span>
+      </div>
+      <textarea id="quickMessage" placeholder="예) 김선생님께 내일 교재 주문 확인 부탁드린다고 전하기" autofocus></textarea>
+
+      <h3>언제 보낼까요?</h3>
+      <div class="chips" id="presetChips"></div>
+      <div id="customTimeBox" style="display:none;margin-top:10px">
+        <input type="datetime-local" id="quickCustomAt" />
+      </div>
+      <div class="notice" id="quietNotice" style="display:none"></div>
+
+      <h3>어디로 보낼까요?</h3>
+      <div class="chips" id="recipientChips"></div>
+      <div class="empty-inline" id="noRecipients" style="display:none">
+        보낼 곳이 아직 없습니다. 자주 보내는 사람이나 대화방을 한 번만 등록해두면 다음부터는 누르기만 하면 됩니다.
+      </div>
+      <button type="button" class="btn ghost small" id="addRecipientQuick" style="margin-top:10px">+ 받는 곳 추가</button>
+
+      <button type="button" class="btn big" id="quickSubmit">예약하기</button>
+    </div>
+
+    <div class="card" id="upcomingCard">
+      <h3 style="margin-bottom:8px">곧 나갈 메시지</h3>
+      <div id="upcomingList"></div>
+    </div>
+  </section>
+
+  <!-- ─────────── 예약 목록 ─────────── -->
+  <section class="tab-panel" id="tab-jobs">
     <div class="stack" style="margin-bottom:14px">
-      <button class="btn" id="goNew">+ 새 예약 만들기</button>
+      <button class="btn" id="goQuick">+ 빠른 예약</button>
       <button class="btn ghost small" id="refreshJobs">새로고침</button>
     </div>
     <div id="jobList"></div>
   </section>
 
-  <!-- 새 예약 / 수정 -->
+  <!-- ─────────── 반복 예약 (상세 폼) ─────────── -->
   <section class="tab-panel" id="tab-new">
     <form class="card" id="jobForm">
-      <h2 id="formTitle">새 예약 만들기</h2>
-      <p class="hint">보낼 내용과 시간, 받을 채널을 정하면 서버가 그 시각에 자동으로 발송합니다.</p>
+      <h2 id="formTitle">반복 예약 만들기</h2>
+      <p class="hint">매일·매주처럼 되풀이되는 발송을 만듭니다. 한 번만 보낼 거라면 <b>빠른 예약</b>이 더 편합니다.</p>
 
       <label class="field">
-        <span>예약 이름</span>
-        <input type="text" id="jobName" placeholder="예: 매일 아침 학원 공지" required />
+        <span>예약 이름 <em class="opt">(비우면 첫 줄에서 자동 생성)</em></span>
+        <input type="text" id="jobName" placeholder="예: 매일 아침 학원 공지" />
       </label>
 
       <label class="field">
@@ -109,8 +146,9 @@
       <div class="upcoming" id="upcoming"></div>
 
       <h3 style="margin-top:20px">어디로 보낼까요?</h3>
-      <p class="hint">채널을 선택하면 상세 옵션이 열립니다. 여러 채널을 동시에 선택할 수 있습니다.</p>
-      <div id="targetPicker"></div>
+      <p class="hint">저장해둔 받는 곳을 고르거나, 아래에서 채널을 직접 지정할 수 있습니다.</p>
+      <div class="chips" id="formRecipientChips"></div>
+      <div id="targetPicker" style="margin-top:12px"></div>
 
       <div class="stack" style="margin-top:20px">
         <button type="submit" class="btn" id="saveJob">예약 저장</button>
@@ -119,20 +157,35 @@
     </form>
   </section>
 
-  <!-- 채널 설정 -->
-  <section class="tab-panel" id="tab-channels">
+  <!-- ─────────── 설정 ─────────── -->
+  <section class="tab-panel" id="tab-settings">
     <div class="card">
-      <h2>기준 타임존</h2>
-      <p class="hint">모든 예약 시각은 이 타임존을 기준으로 계산됩니다.</p>
-      <div class="row">
-        <input type="text" id="timeZone" placeholder="Asia/Seoul" />
-        <button class="btn" id="saveTimeZone" style="flex:0 0 auto">저장</button>
-      </div>
+      <h2>받는 곳 (주소록)</h2>
+      <p class="hint">자주 보내는 사람이나 대화방을 등록해두면 빠른 예약에서 누르기만 하면 됩니다.</p>
+      <div id="recipientList"></div>
+      <button class="btn small" id="addRecipient" style="margin-top:10px">+ 받는 곳 추가</button>
     </div>
+
+    <div class="card">
+      <h2>기준 시각</h2>
+      <p class="hint">빠른 예약의 [오전 / 점심 / 저녁] 버튼이 가리킬 시각과, 심야 발송을 경고할 구간입니다.</p>
+      <div class="row">
+        <label class="field"><span>오전</span><input type="number" id="hourMorning" min="0" max="23" /></label>
+        <label class="field"><span>점심</span><input type="number" id="hourLunch" min="0" max="23" /></label>
+        <label class="field"><span>저녁</span><input type="number" id="hourEvening" min="0" max="23" /></label>
+      </div>
+      <div class="row">
+        <label class="field"><span>심야 시작</span><input type="number" id="quietStart" min="0" max="23" /></label>
+        <label class="field"><span>심야 끝</span><input type="number" id="quietEnd" min="0" max="23" /></label>
+        <label class="field"><span>타임존</span><input type="text" id="timeZone" placeholder="Asia/Seoul" /></label>
+      </div>
+      <button class="btn small" id="saveTimeSettings">시각 설정 저장</button>
+    </div>
+
     <div id="channelSettings"></div>
   </section>
 
-  <!-- 발송 기록 -->
+  <!-- ─────────── 기록 ─────────── -->
   <section class="tab-panel" id="tab-logs">
     <div class="card">
       <div class="stack" style="justify-content:space-between">
@@ -151,6 +204,27 @@
     </div>
   </section>
 </main>
+
+<!-- 받는 곳 추가/수정 -->
+<div class="modal-back" id="recipientModal" style="display:none">
+  <div class="modal">
+    <h2 id="recipientModalTitle">받는 곳 추가</h2>
+    <label class="field">
+      <span>이름 (내가 알아볼 이름)</span>
+      <input type="text" id="recipientLabel" placeholder="예: 김선생님, 학원 공지방, 나에게" />
+    </label>
+    <label class="field">
+      <span>채널</span>
+      <select id="recipientChannel"></select>
+    </label>
+    <div id="recipientTargetFields"></div>
+    <div class="stack" style="margin-top:16px">
+      <button class="btn" id="saveRecipient">저장</button>
+      <button class="btn ghost" id="closeRecipientModal">취소</button>
+      <button class="btn danger" id="deleteRecipient" style="display:none;margin-left:auto">삭제</button>
+    </div>
+  </div>
+</div>
 
 <script type="module" src="/app.js"></script>
 </body>

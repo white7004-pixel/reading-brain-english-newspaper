@@ -1,15 +1,29 @@
 /** 관리 화면 프런트엔드. 빌드 도구 없이 브라우저에서 그대로 실행된다. */
 
+const DRAFT_KEY = 'msgsched.draft';
+
 const state = {
   channels: [],
   channelConfigs: {},
   jobs: [],
   logs: [],
+  recipients: [],
+  presets: [],
   timeZone: 'Asia/Seoul',
+  dayHours: {},
+  quietHours: {},
+  // 빠른 예약
+  selectedPreset: null,
+  customAt: '',
+  quickRecipients: new Set(),
+  // 반복 예약 폼
   editingId: null,
   scheduleType: 'cron',
   selectedChannels: new Set(),
+  formRecipients: new Set(),
   weekdays: new Set([1, 2, 3, 4, 5]),
+  // 받는 곳 모달
+  editingRecipientId: null,
 };
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -23,7 +37,7 @@ const STATUS_BADGE = {
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
 
-// ---------------------------------------------------------------- API
+// ---------------------------------------------------------------- 공통
 
 async function api(path, options = {}) {
   const res = await fetch(path, {
@@ -37,26 +51,62 @@ async function api(path, options = {}) {
 }
 
 function toast(message, kind = '') {
+  // 새 알림이 이전 알림을 가리지 않도록 항상 하나만 띄운다.
+  $$('.toast').forEach((old) => old.remove());
   const el = document.createElement('div');
   el.className = `toast ${kind}`;
   el.textContent = message;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), kind === 'err' ? 6000 : 3200);
+  setTimeout(() => el.remove(), kind === 'err' ? 6000 : 3600);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function channelLabel(key) {
+  return state.channels.find((c) => c.key === key)?.label || key || '-';
+}
+
+function channelMeta(key) {
+  return state.channels.find((c) => c.key === key);
+}
+
+/** 받는 곳을 "김선생님 · 문자(01012345678)" 처럼 한 줄로. */
+function recipientDetail(recipient) {
+  const values = Object.values(recipient.target || {}).filter(Boolean);
+  return values.length ? `${channelLabel(recipient.channel)} · ${values.join(' / ')}` : channelLabel(recipient.channel);
 }
 
 // ---------------------------------------------------------------- 부팅
 
 async function boot() {
   const data = await api('/api/bootstrap');
-  state.channels = data.channels;
-  state.channelConfigs = data.channelConfigs;
-  state.jobs = data.jobs;
-  state.logs = data.logs;
-  state.timeZone = data.timeZone;
+  Object.assign(state, {
+    channels: data.channels,
+    channelConfigs: data.channelConfigs,
+    jobs: data.jobs,
+    logs: data.logs,
+    recipients: data.recipients,
+    presets: data.presets,
+    timeZone: data.timeZone,
+    dayHours: data.dayHours,
+    quietHours: data.quietHours,
+  });
+  state.quickRecipients = new Set((data.lastRecipientIds || []).filter((id) => state.recipients.some((r) => r.id === id)));
 
-  $('#tzLabel').textContent = `· 기준 시간 ${data.timeZone}`;
+  $('#tzLabel').textContent = `· ${data.timeZone}`;
   $('#timeZone').value = data.timeZone;
+  $('#hourMorning').value = data.dayHours.morning;
+  $('#hourLunch').value = data.dayHours.lunch;
+  $('#hourEvening').value = data.dayHours.evening;
+  $('#quietStart').value = data.quietHours.start;
+  $('#quietEnd').value = data.quietHours.end;
 
+  restoreDraft();
+  renderPresets();
+  renderRecipientChips();
+  renderRecipientList();
   renderWeekdayChips();
   renderTargetPicker();
   renderJobs();
@@ -66,27 +116,279 @@ async function boot() {
 
 // ---------------------------------------------------------------- 탭
 
-$$('nav.tabs button').forEach((btn) => {
-  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-});
+$$('nav.tabs button').forEach((btn) => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
 function switchTab(name) {
   $$('nav.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
   $$('section.tab-panel').forEach((s) => s.classList.toggle('active', s.id === `tab-${name}`));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0 });
+  if (name === 'quick') refreshPresets();
 }
 
-$('#goNew').addEventListener('click', () => {
-  resetForm();
-  switchTab('new');
+$('#goQuick').addEventListener('click', () => switchTab('quick'));
+
+// ---------------------------------------------------------------- 빠른 예약: 임시저장
+
+let draftTimer = null;
+
+$('#quickMessage').addEventListener('input', () => {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(saveDraft, 400);
 });
+
+function saveDraft() {
+  const message = $('#quickMessage').value;
+  try {
+    if (message.trim()) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ message, at: Date.now() }));
+      $('#draftNote').textContent = '자동 저장됨';
+    } else {
+      localStorage.removeItem(DRAFT_KEY);
+      $('#draftNote').textContent = '';
+    }
+  } catch {
+    // 시크릿 모드 등에서 localStorage가 막혀 있어도 예약 자체는 동작해야 한다.
+  }
+}
+
+function restoreDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+    if (draft?.message) {
+      $('#quickMessage').value = draft.message;
+      $('#draftNote').textContent = '이전에 쓰던 내용을 불러왔습니다';
+    }
+  } catch {
+    /* 무시 */
+  }
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* 무시 */
+  }
+  $('#draftNote').textContent = '';
+}
+
+// ---------------------------------------------------------------- 빠른 예약: 시각
+
+function renderPresets() {
+  const box = $('#presetChips');
+  const chips = state.presets
+    .map(
+      (p) => `<button type="button" class="chip time ${p.key === state.selectedPreset ? 'on' : ''} ${p.quiet ? 'moon' : ''}"
+        data-preset="${p.key}">${escapeHtml(p.label)}<small>${escapeHtml(p.when)}</small></button>`,
+    )
+    .join('');
+  const customOn = state.selectedPreset === '__custom__';
+  box.innerHTML = `${chips}<button type="button" class="chip time ${customOn ? 'on' : ''}" data-preset="__custom__">직접 고르기<small>날짜·시각 지정</small></button>`;
+
+  box.querySelectorAll('[data-preset]').forEach((chip) => {
+    chip.addEventListener('click', () => selectPreset(chip.dataset.preset));
+  });
+  $('#customTimeBox').style.display = customOn ? 'block' : 'none';
+  updateSubmitLabel();
+}
+
+async function selectPreset(key) {
+  state.selectedPreset = key;
+  renderPresets();
+  if (key === '__custom__') {
+    $('#quickCustomAt').focus();
+    await checkTime();
+    return;
+  }
+  const preset = state.presets.find((p) => p.key === key);
+  showQuietNotice(preset?.quiet ? { when: preset.when } : null);
+  updateSubmitLabel();
+}
+
+$('#quickCustomAt').addEventListener('change', () => {
+  state.customAt = $('#quickCustomAt').value;
+  checkTime();
+});
+
+/** 고른 시각이 심야인지 서버에 물어보고(타임존 계산은 서버가 정확하다) 안내를 띄운다. */
+async function checkTime() {
+  const body = pickedTime();
+  if (!body) {
+    showQuietNotice(null);
+    return;
+  }
+  try {
+    const data = await api('/api/quick/check', { method: 'POST', body });
+    if (data.past) {
+      showQuietNotice(null, '이미 지난 시각입니다. 다른 시간을 골라주세요.');
+      return;
+    }
+    showQuietNotice(data.quiet ? data : null);
+    updateSubmitLabel(data.when);
+  } catch (err) {
+    showQuietNotice(null, err.message);
+  }
+}
+
+function showQuietNotice(quietData, errorText) {
+  const box = $('#quietNotice');
+  if (errorText) {
+    box.style.display = 'block';
+    box.innerHTML = escapeHtml(errorText);
+    return;
+  }
+  if (!quietData) {
+    box.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  box.style.display = 'block';
+  const morning = quietData.morning;
+  box.innerHTML = `🌙 <b>${escapeHtml(quietData.when)}</b>은 한밤중이라 상대방을 깨울 수 있습니다.
+    ${morning ? `<button type="button" id="moveToMorning" data-at="${morning.runAt}">${escapeHtml(morning.when)}에 보내기</button>` : ''}`;
+  const button = $('#moveToMorning');
+  if (button) {
+    button.addEventListener('click', () => {
+      state.selectedPreset = '__custom__';
+      state.customAt = button.dataset.at;
+      renderPresets();
+      $('#quickCustomAt').value = button.dataset.at;
+      checkTime();
+    });
+  }
+}
+
+function pickedTime() {
+  if (state.selectedPreset === '__custom__') {
+    return state.customAt ? { runAt: state.customAt } : null;
+  }
+  return state.selectedPreset ? { presetKey: state.selectedPreset } : null;
+}
+
+function updateSubmitLabel(whenOverride) {
+  const button = $('#quickSubmit');
+  let when = whenOverride;
+  if (!when && state.selectedPreset && state.selectedPreset !== '__custom__') {
+    when = state.presets.find((p) => p.key === state.selectedPreset)?.whenFull;
+  }
+  if (!when && state.selectedPreset === '__custom__' && state.customAt) {
+    when = state.customAt.replace('T', ' ');
+  }
+  button.textContent = when ? `${when}에 예약하기` : '예약하기';
+}
+
+/** 시간이 흐르면 "오늘 오전 9시" 같은 후보가 지나가므로 주기적으로 새로 받아온다. */
+async function refreshPresets() {
+  try {
+    const data = await api('/api/quick/presets');
+    state.presets = data.presets;
+    if (state.selectedPreset && state.selectedPreset !== '__custom__' && !data.presets.some((p) => p.key === state.selectedPreset)) {
+      state.selectedPreset = null;
+    }
+    renderPresets();
+  } catch {
+    /* 네트워크가 잠깐 끊겨도 화면은 그대로 둔다 */
+  }
+}
+
+setInterval(refreshPresets, 60_000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) refreshPresets();
+});
+
+// ---------------------------------------------------------------- 빠른 예약: 받는 곳
+
+function renderRecipientChips() {
+  const render = (box, selected) => {
+    box.innerHTML = state.recipients
+      .map(
+        (r) => `<button type="button" class="chip ${selected.has(r.id) ? 'on' : ''}" data-recipient="${r.id}"
+          title="${escapeHtml(recipientDetail(r))}">${escapeHtml(r.label)}</button>`,
+      )
+      .join('');
+    box.querySelectorAll('[data-recipient]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const id = chip.dataset.recipient;
+        if (selected.has(id)) selected.delete(id);
+        else selected.add(id);
+        chip.classList.toggle('on');
+      });
+    });
+  };
+  render($('#recipientChips'), state.quickRecipients);
+  render($('#formRecipientChips'), state.formRecipients);
+  $('#noRecipients').style.display = state.recipients.length ? 'none' : 'block';
+}
+
+$('#quickSubmit').addEventListener('click', async () => {
+  const message = $('#quickMessage').value.trim();
+  if (!message) {
+    toast('보낼 내용을 적어주세요.', 'err');
+    $('#quickMessage').focus();
+    return;
+  }
+  const time = pickedTime();
+  if (!time) {
+    toast('언제 보낼지 골라주세요.', 'err');
+    return;
+  }
+  if (!state.quickRecipients.size) {
+    toast('보낼 곳을 하나 이상 골라주세요.', 'err');
+    return;
+  }
+
+  const button = $('#quickSubmit');
+  button.disabled = true;
+  try {
+    const data = await api('/api/quick', {
+      method: 'POST',
+      body: { message, ...time, recipientIds: [...state.quickRecipients] },
+    });
+    toast(`${data.when}에 발송됩니다.`, 'ok');
+    $('#quickMessage').value = '';
+    clearDraft();
+    state.selectedPreset = null;
+    state.customAt = '';
+    $('#quickCustomAt').value = '';
+    showQuietNotice(null);
+    renderPresets();
+    await reloadJobsAndLogs();
+  } catch (err) {
+    toast(err.message, 'err');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// ---------------------------------------------------------------- 곧 나갈 메시지
+
+function renderUpcoming() {
+  const rows = state.jobs
+    .filter((j) => j.enabled && j.nextRunMs)
+    .sort((a, b) => a.nextRunMs - b.nextRunMs)
+    .slice(0, 5);
+  $('#upcomingCard').style.display = rows.length ? 'block' : 'none';
+  $('#upcomingList').innerHTML = rows
+    .map(
+      (job) => `<div class="upcoming-row">
+        <span class="what">${escapeHtml(job.message.split('\n')[0])}</span>
+        <span class="when">${escapeHtml(job.nextRunWhen || job.nextRunText)}</span>
+      </div>`,
+    )
+    .join('');
+}
 
 // ---------------------------------------------------------------- 예약 목록
 
 function renderJobs() {
   const list = $('#jobList');
+  $('#jobCount').textContent = state.jobs.filter((j) => j.enabled).length || '';
+  renderUpcoming();
+
   if (!state.jobs.length) {
-    list.innerHTML = '<div class="card empty">아직 예약이 없습니다. [새 예약 만들기]로 첫 예약을 등록하세요.</div>';
+    list.innerHTML = '<div class="card empty">아직 예약이 없습니다. [빠른 예약]에서 첫 메시지를 적어보세요.</div>';
     return;
   }
   list.innerHTML = state.jobs
@@ -101,14 +403,14 @@ function renderJobs() {
 }
 
 function jobCard(job) {
-  const channels = job.targets.map((t) => channelLabel(t.channel)).join(', ');
+  const channels = job.targets.map((t) => recipientNameFor(t)).join(', ');
   const status = job.state?.lastStatus;
   const statusBadge = status
     ? `<span class="badge ${STATUS_BADGE[status]?.[0] || 'muted'}">${STATUS_BADGE[status]?.[1] || status}</span>`
     : '';
   const next = job.enabled
-    ? job.nextRunText
-      ? `다음 발송 ${escapeHtml(job.nextRunText)}`
+    ? job.nextRunWhen
+      ? `다음 발송 ${escapeHtml(job.nextRunWhen)}`
       : '예정된 발송 없음'
     : '중지됨';
 
@@ -133,6 +435,15 @@ function jobCard(job) {
       <button class="btn danger small" data-action="delete" data-id="${job.id}">삭제</button>
     </div>
   </div>`;
+}
+
+/** 주소록에서 온 대상이면 저장해둔 이름으로 보여준다. */
+function recipientNameFor(target) {
+  if (target.recipientId) {
+    const recipient = state.recipients.find((r) => r.id === target.recipientId);
+    if (recipient) return recipient.label;
+  }
+  return channelLabel(target.channel);
 }
 
 async function handleJobAction(action, id) {
@@ -177,7 +488,114 @@ async function reloadJobsAndLogs() {
 
 $('#refreshJobs').addEventListener('click', () => reloadJobsAndLogs().catch((e) => toast(e.message, 'err')));
 
-// ---------------------------------------------------------------- 예약 폼
+// ---------------------------------------------------------------- 받는 곳 관리
+
+function renderRecipientList() {
+  const list = $('#recipientList');
+  if (!state.recipients.length) {
+    list.innerHTML = '<div class="empty-inline">등록된 받는 곳이 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = state.recipients
+    .map(
+      (r) => `<div class="recipient-row">
+        <div>
+          <div class="who">${escapeHtml(r.label)}</div>
+          <div class="where">${escapeHtml(recipientDetail(r))}</div>
+        </div>
+        <button class="btn ghost small" data-edit-recipient="${r.id}">수정</button>
+      </div>`,
+    )
+    .join('');
+  list.querySelectorAll('[data-edit-recipient]').forEach((btn) => {
+    btn.addEventListener('click', () => openRecipientModal(btn.dataset.editRecipient));
+  });
+}
+
+function openRecipientModal(id = null) {
+  state.editingRecipientId = id;
+  const recipient = id ? state.recipients.find((r) => r.id === id) : null;
+  $('#recipientModalTitle').textContent = recipient ? '받는 곳 수정' : '받는 곳 추가';
+  $('#recipientLabel').value = recipient?.label || '';
+  $('#recipientChannel').innerHTML = state.channels
+    .map((c) => `<option value="${c.key}" ${c.key === recipient?.channel ? 'selected' : ''}>${escapeHtml(c.label)}</option>`)
+    .join('');
+  renderRecipientTargetFields(recipient?.target || {});
+  $('#deleteRecipient').style.display = recipient ? 'inline-block' : 'none';
+  $('#recipientModal').style.display = 'flex';
+  if (!recipient) $('#recipientLabel').focus();
+}
+
+function renderRecipientTargetFields(values = {}) {
+  const meta = channelMeta($('#recipientChannel').value);
+  $('#recipientTargetFields').innerHTML = (meta?.targetFields || [])
+    .map((field) => {
+      const id = `rt_${field.key}`;
+      if (field.type === 'select') {
+        const options = field.options
+          .map((o) => `<option value="${o}" ${o === (values[field.key] || field.default) ? 'selected' : ''}>${o}</option>`)
+          .join('');
+        return `<label class="field"><span>${escapeHtml(field.label)}</span><select id="${id}" data-rt="${field.key}">${options}</select></label>`;
+      }
+      return `<label class="field"><span>${escapeHtml(field.label)}</span>
+        <input type="text" id="${id}" data-rt="${field.key}" value="${escapeHtml(values[field.key] || '')}"
+          placeholder="${escapeHtml(field.placeholder || '')}" /></label>`;
+    })
+    .join('');
+  const help = meta?.help ? `<p class="hint" style="margin-top:4px">${escapeHtml(meta.help)}</p>` : '';
+  $('#recipientTargetFields').insertAdjacentHTML('beforeend', help);
+}
+
+$('#recipientChannel').addEventListener('change', () => renderRecipientTargetFields());
+$('#addRecipient').addEventListener('click', () => openRecipientModal());
+$('#addRecipientQuick').addEventListener('click', () => openRecipientModal());
+$('#closeRecipientModal').addEventListener('click', () => ($('#recipientModal').style.display = 'none'));
+$('#recipientModal').addEventListener('click', (event) => {
+  if (event.target.id === 'recipientModal') $('#recipientModal').style.display = 'none';
+});
+
+$('#saveRecipient').addEventListener('click', async () => {
+  const label = $('#recipientLabel').value.trim();
+  const channel = $('#recipientChannel').value;
+  const target = {};
+  $$('[data-rt]').forEach((input) => {
+    if (input.value.trim()) target[input.dataset.rt] = input.value.trim();
+  });
+  try {
+    if (state.editingRecipientId) {
+      await api(`/api/recipients/${state.editingRecipientId}`, { method: 'PUT', body: { label, channel, target } });
+    } else {
+      const created = await api('/api/recipients', { method: 'POST', body: { label, channel, target } });
+      state.quickRecipients.add(created.id); // 방금 만든 곳은 바로 선택해준다
+    }
+    state.recipients = await api('/api/recipients');
+    $('#recipientModal').style.display = 'none';
+    renderRecipientChips();
+    renderRecipientList();
+    toast('저장했습니다.', 'ok');
+  } catch (err) {
+    toast(err.message, 'err');
+  }
+});
+
+$('#deleteRecipient').addEventListener('click', async () => {
+  if (!state.editingRecipientId) return;
+  if (!confirm('이 받는 곳을 삭제할까요? 기존 예약에는 영향이 없습니다.')) return;
+  try {
+    await api(`/api/recipients/${state.editingRecipientId}`, { method: 'DELETE' });
+    state.quickRecipients.delete(state.editingRecipientId);
+    state.formRecipients.delete(state.editingRecipientId);
+    state.recipients = await api('/api/recipients');
+    $('#recipientModal').style.display = 'none';
+    renderRecipientChips();
+    renderRecipientList();
+    toast('삭제했습니다.', 'ok');
+  } catch (err) {
+    toast(err.message, 'err');
+  }
+});
+
+// ---------------------------------------------------------------- 반복 예약 폼
 
 $$('#scheduleType button').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -220,9 +638,7 @@ function renderTargetPicker() {
   box.innerHTML = state.channels
     .map((meta) => {
       const configured = state.channelConfigs[meta.key]?.configured;
-      const fields = meta.targetFields
-        .map((f) => targetFieldHtml(meta.key, f))
-        .join('');
+      const fields = meta.targetFields.map((f) => targetFieldHtml(meta.key, f)).join('');
       return `
       <div class="target-box" data-channel="${meta.key}">
         <div class="stack" style="justify-content:space-between">
@@ -238,7 +654,6 @@ function renderTargetPicker() {
     .join('');
 
   box.querySelectorAll('[data-pick]').forEach((cb) => {
-    // 설정 저장 등으로 다시 그려도 사용자가 고른 채널은 유지한다.
     if (state.selectedChannels.has(cb.dataset.pick)) {
       cb.checked = true;
       box.querySelector(`[data-fields="${cb.dataset.pick}"]`).style.display = 'block';
@@ -265,9 +680,7 @@ function targetFieldHtml(channelKey, field) {
 }
 
 function collectSchedule() {
-  if (state.scheduleType === 'once') {
-    return { type: 'once', runAt: $('#onceAt').value };
-  }
+  if (state.scheduleType === 'once') return { type: 'once', runAt: $('#onceAt').value };
   const repeat = $('#repeatType').value;
   if (repeat === 'custom') return { type: 'cron', cron: $('#customCron').value.trim() };
   return {
@@ -318,6 +731,7 @@ $('#jobForm').addEventListener('submit', async (event) => {
     timeZone: state.timeZone,
     schedule: collectSchedule(),
     targets: collectTargets(),
+    recipientIds: [...state.formRecipients],
     enabled: true,
   };
   try {
@@ -343,7 +757,7 @@ $('#cancelEdit').addEventListener('click', () => {
 
 function resetForm() {
   state.editingId = null;
-  $('#formTitle').textContent = '새 예약 만들기';
+  $('#formTitle').textContent = '반복 예약 만들기';
   $('#saveJob').textContent = '예약 저장';
   $('#cancelEdit').style.display = 'none';
   $('#jobName').value = '';
@@ -352,6 +766,8 @@ function resetForm() {
   $('#customCron').value = '';
   $('#upcoming').textContent = '';
   state.selectedChannels.clear();
+  state.formRecipients.clear();
+  renderRecipientChips();
   $$('[data-pick]').forEach((cb) => {
     cb.checked = false;
     $(`[data-fields="${cb.dataset.pick}"]`).style.display = 'none';
@@ -394,6 +810,10 @@ function fillForm(job) {
   syncRepeatFields();
 
   for (const t of job.targets) {
+    if (t.recipientId && state.recipients.some((r) => r.id === t.recipientId)) {
+      state.formRecipients.add(t.recipientId);
+      continue;
+    }
     state.selectedChannels.add(t.channel);
     const cb = $(`[data-pick="${t.channel}"]`);
     if (cb) {
@@ -405,19 +825,15 @@ function fillForm(job) {
       if (input) input.value = value;
     }
   }
+  renderRecipientChips();
 }
 
-// ---------------------------------------------------------------- 채널 설정
+// ---------------------------------------------------------------- 설정
 
 function renderChannelSettings() {
   $('#channelSettings').innerHTML = state.channels.map(channelSettingCard).join('');
-
-  $$('[data-save-channel]').forEach((btn) => {
-    btn.addEventListener('click', () => saveChannel(btn.dataset.saveChannel));
-  });
-  $$('[data-test-channel]').forEach((btn) => {
-    btn.addEventListener('click', () => testChannel(btn.dataset.testChannel));
-  });
+  $$('[data-save-channel]').forEach((btn) => btn.addEventListener('click', () => saveChannel(btn.dataset.saveChannel)));
+  $$('[data-test-channel]').forEach((btn) => btn.addEventListener('click', () => testChannel(btn.dataset.testChannel)));
 }
 
 function channelSettingCard(meta) {
@@ -469,8 +885,7 @@ function channelSettingCard(meta) {
 async function saveChannel(key) {
   const values = {};
   $$(`[data-conf^="${key}."]`).forEach((input) => {
-    const field = input.dataset.conf.split('.')[1];
-    values[field] = input.value;
+    values[input.dataset.conf.split('.')[1]] = input.value;
   });
   try {
     const data = await api('/api/settings', { method: 'PUT', body: { channels: { [key]: values } } });
@@ -488,8 +903,7 @@ async function testChannel(key) {
   if (message === null) return;
   const target = {};
   $$(`[data-target^="${key}."]`).forEach((input) => {
-    const field = input.dataset.target.split('.')[1];
-    if (input.value.trim()) target[field] = input.value.trim();
+    if (input.value.trim()) target[input.dataset.target.split('.')[1]] = input.value.trim();
   });
   try {
     const data = await api(`/api/channels/${key}/test`, { method: 'POST', body: { message, target } });
@@ -500,19 +914,34 @@ async function testChannel(key) {
   await reloadJobsAndLogs();
 }
 
-$('#saveTimeZone').addEventListener('click', async () => {
+$('#saveTimeSettings').addEventListener('click', async () => {
   try {
-    const data = await api('/api/settings', { method: 'PUT', body: { timeZone: $('#timeZone').value.trim() } });
+    const data = await api('/api/settings', {
+      method: 'PUT',
+      body: {
+        timeZone: $('#timeZone').value.trim(),
+        dayHours: {
+          morning: Number($('#hourMorning').value),
+          lunch: Number($('#hourLunch').value),
+          evening: Number($('#hourEvening').value),
+        },
+        quietHours: { start: Number($('#quietStart').value), end: Number($('#quietEnd').value) },
+      },
+    });
     state.timeZone = data.timeZone;
-    $('#tzLabel').textContent = `· 기준 시간 ${data.timeZone}`;
-    toast('타임존을 저장했습니다.', 'ok');
+    state.dayHours = data.dayHours;
+    state.quietHours = data.quietHours;
+    state.presets = data.presets;
+    $('#tzLabel').textContent = `· ${data.timeZone}`;
+    renderPresets();
+    toast('저장했습니다.', 'ok');
     await reloadJobsAndLogs();
   } catch (err) {
     toast(err.message, 'err');
   }
 });
 
-// ---------------------------------------------------------------- 발송 기록
+// ---------------------------------------------------------------- 기록
 
 function renderLogs() {
   const body = $('#logBody');
@@ -546,15 +975,7 @@ $('#clearLogs').addEventListener('click', async () => {
   renderLogs();
 });
 
-// ---------------------------------------------------------------- 유틸
-
-function channelLabel(key) {
-  return state.channels.find((c) => c.key === key)?.label || key || '-';
-}
-
-function escapeHtml(value) {
-  return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
+// ----------------------------------------------------------------
 
 syncRepeatFields();
 boot().catch((err) => toast(`초기화 실패: ${err.message}`, 'err'));

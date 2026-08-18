@@ -17,6 +17,12 @@ const EMPTY = {
   settings: {
     timeZone: 'Asia/Seoul',
     channels: {},
+    // 빠른 예약에서 쓰는 기준 시각과 심야 경고 구간
+    dayHours: { morning: 9, lunch: 13, evening: 19 },
+    quietHours: { start: 22, end: 7 },
+    // 자주 보내는 곳 (주소록)
+    recipients: [],
+    lastRecipientIds: [],
   },
   jobs: [],
   logs: [],
@@ -45,6 +51,10 @@ export class Store {
       this.data = { ...structuredClone(EMPTY), ...parsed };
       this.data.settings = { ...EMPTY.settings, ...(parsed.settings || {}) };
       this.data.settings.channels = { ...(parsed.settings?.channels || {}) };
+      this.data.settings.dayHours = { ...EMPTY.settings.dayHours, ...(parsed.settings?.dayHours || {}) };
+      this.data.settings.quietHours = { ...EMPTY.settings.quietHours, ...(parsed.settings?.quietHours || {}) };
+      this.data.settings.recipients ||= [];
+      this.data.settings.lastRecipientIds ||= [];
       this.data.jobs ||= [];
       this.data.logs ||= [];
       this.data.retries ||= [];
@@ -93,6 +103,8 @@ export class Store {
 
   updateSettings(patch) {
     if (patch.timeZone) this.data.settings.timeZone = patch.timeZone;
+    if (patch.dayHours) this.data.settings.dayHours = { ...this.data.settings.dayHours, ...patch.dayHours };
+    if (patch.quietHours) this.data.settings.quietHours = { ...this.data.settings.quietHours, ...patch.quietHours };
     if (patch.channels) {
       for (const [key, value] of Object.entries(patch.channels)) {
         const current = this.data.settings.channels[key] || {};
@@ -115,6 +127,46 @@ export class Store {
 
   setChannelConfig(key, config) {
     this.data.settings.channels[key] = { ...(this.data.settings.channels[key] || {}), ...config };
+    this.save();
+  }
+
+  // ---- 주소록 (자주 보내는 곳) ----
+
+  get recipients() {
+    return this.data.settings.recipients;
+  }
+
+  getRecipient(id) {
+    return this.data.settings.recipients.find((r) => r.id === id) || null;
+  }
+
+  addRecipient({ label, channel, target = {} }) {
+    const record = { id: newId('rcp'), label, channel, target };
+    this.data.settings.recipients.push(record);
+    this.save();
+    return record;
+  }
+
+  updateRecipient(id, patch) {
+    const recipient = this.getRecipient(id);
+    if (!recipient) return null;
+    Object.assign(recipient, patch, { id: recipient.id });
+    this.save();
+    return recipient;
+  }
+
+  removeRecipient(id) {
+    const before = this.data.settings.recipients.length;
+    this.data.settings.recipients = this.data.settings.recipients.filter((r) => r.id !== id);
+    this.data.settings.lastRecipientIds = this.data.settings.lastRecipientIds.filter((r) => r !== id);
+    const removed = this.data.settings.recipients.length !== before;
+    if (removed) this.save();
+    return removed;
+  }
+
+  /** 마지막으로 보낸 곳을 기억해 다음 예약에서 미리 선택해준다. */
+  rememberRecipients(ids) {
+    this.data.settings.lastRecipientIds = [...new Set(ids)];
     this.save();
   }
 

@@ -19,6 +19,7 @@ import { channelCatalog, getChannel, CHANNEL_KEYS } from './src/channels/index.j
 import * as kakaotalk from './src/channels/kakaotalk.js';
 import { parseCron, buildCron, describeCron, nextRunAfter } from './src/cron.js';
 import { parseLocalDateTime, formatInZone, isValidTimeZone } from './src/time.js';
+import { quickPresets, resolveQuickPreset, isQuietTime, nextMorning, titleFromMessage, dayLabel } from './src/quick.js';
 import { loadDotEnv, seedChannelsFromEnv } from './src/env.js';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -127,6 +128,11 @@ async function handleApi(req, res, url) {
       channelConfigs: maskedConfigs(),
       jobs: store.jobs.map(decorateJob),
       logs: store.listLogs({ limit: 100 }),
+      recipients: store.recipients,
+      lastRecipientIds: store.settings.lastRecipientIds,
+      presets: currentPresets(),
+      dayHours: store.settings.dayHours,
+      quietHours: store.settings.quietHours,
       passwordProtected: Boolean(APP_PASSWORD),
     });
   }
@@ -170,6 +176,111 @@ async function handleApi(req, res, url) {
     }
   }
 
+  // ---- 빠른 예약: 메시지만 쓰고 버튼 하나로 예약 ----
+
+  if (pathname === '/api/quick/presets' && method === 'GET') {
+    return sendJson(res, 200, { presets: currentPresets(), timeZone: store.settings.timeZone });
+  }
+
+  // 저장 전에 "이 시각이 새벽은 아닌지" 확인하고 아침 대안을 제안한다.
+  if (pathname === '/api/quick/check' && method === 'POST') {
+    const body = await readJson(req);
+    const tz = store.settings.timeZone;
+    let atMs;
+    if (body.presetKey) {
+      const preset = resolveQuickPreset(body.presetKey, Date.now(), tz, quickOptions());
+      if (!preset) return sendJson(res, 400, { error: '이미 지난 시각입니다.' });
+      atMs = preset.atMs;
+    } else if (body.runAt) {
+      atMs = parseLocalDateTime(body.runAt, tz);
+    } else {
+      return sendJson(res, 400, { error: '시각이 없습니다.' });
+    }
+    const quiet = isQuietTime(atMs, tz, store.settings.quietHours);
+    const morningMs = nextMorning(atMs, tz, quickOptions());
+    return sendJson(res, 200, {
+      atMs,
+      when: `${dayLabel(atMs, tz)} ${formatInZone(atMs, tz).slice(11)}`,
+      past: atMs <= Date.now(),
+      quiet,
+      morning: {
+        atMs: morningMs,
+        runAt: formatInZone(morningMs, tz).replace(' ', 'T'),
+        when: `${dayLabel(morningMs, tz)} ${formatInZone(morningMs, tz).slice(11)}`,
+      },
+    });
+  }
+
+  if (pathname === '/api/quick' && method === 'POST') {
+    const body = await readJson(req);
+    const message = String(body.message || '').trim();
+    if (!message) throw new HttpError(400, '보낼 내용을 입력하세요.');
+
+    const tz = store.settings.timeZone;
+    let runAtMs;
+    if (body.presetKey) {
+      const preset = resolveQuickPreset(body.presetKey, Date.now(), tz, quickOptions());
+      if (!preset) throw new HttpError(400, '이미 지난 시각입니다. 다른 시간을 골라주세요.');
+      runAtMs = preset.atMs;
+    } else if (body.runAt) {
+      runAtMs = parseLocalDateTime(body.runAt, tz);
+    } else {
+      throw new HttpError(400, '보낼 시각을 골라주세요.');
+    }
+    if (runAtMs <= Date.now()) throw new HttpError(400, '이미 지난 시각입니다. 다른 시간을 골라주세요.');
+
+    const targets = resolveTargets(body);
+    if (!targets.length) throw new HttpError(400, '보낼 곳을 하나 이상 고르세요.');
+
+    const job = store.addJob({
+      name: String(body.name || '').trim() || titleFromMessage(message),
+      message,
+      timeZone: tz,
+      targets,
+      schedule: { type: 'once', runAt: formatInZone(runAtMs, tz).replace(' ', 'T'), runAtMs },
+      enabled: true,
+      state: {},
+    });
+    if (Array.isArray(body.recipientIds) && body.recipientIds.length) store.rememberRecipients(body.recipientIds);
+
+    return sendJson(res, 201, {
+      job: decorateJob(job),
+      when: `${dayLabel(runAtMs, tz)} ${formatInZone(runAtMs, tz).slice(11)}`,
+      quiet: isQuietTime(runAtMs, tz, store.settings.quietHours),
+    });
+  }
+
+  // ---- 주소록: 자주 보내는 곳 ----
+
+  if (pathname === '/api/recipients' && method === 'GET') {
+    return sendJson(res, 200, store.recipients);
+  }
+
+  if (pathname === '/api/recipients' && method === 'POST') {
+    const body = await readJson(req);
+    const label = String(body.label || '').trim();
+    if (!label) throw new HttpError(400, '받는 곳 이름을 입력하세요. (예: 김선생님, 학원 공지방)');
+    if (!CHANNEL_KEYS.includes(body.channel)) throw new HttpError(400, `알 수 없는 채널: ${body.channel}`);
+    return sendJson(res, 201, store.addRecipient({ label, channel: body.channel, target: body.target || {} }));
+  }
+
+  if (segments[1] === 'recipients' && segments[2]) {
+    const id = segments[2];
+    if (!store.getRecipient(id)) return sendJson(res, 404, { error: '받는 곳을 찾을 수 없습니다.' });
+    if (method === 'PUT') {
+      const body = await readJson(req);
+      return sendJson(res, 200, store.updateRecipient(id, {
+        label: String(body.label || '').trim() || undefined,
+        channel: CHANNEL_KEYS.includes(body.channel) ? body.channel : undefined,
+        target: body.target || undefined,
+      }));
+    }
+    if (method === 'DELETE') {
+      store.removeRecipient(id);
+      return sendJson(res, 200, { ok: true });
+    }
+  }
+
   if (pathname === '/api/settings' && method === 'GET') {
     return sendJson(res, 200, { timeZone: store.settings.timeZone, channelConfigs: maskedConfigs() });
   }
@@ -180,7 +291,13 @@ async function handleApi(req, res, url) {
       return sendJson(res, 400, { error: `알 수 없는 타임존: ${body.timeZone}` });
     }
     store.updateSettings(body);
-    return sendJson(res, 200, { timeZone: store.settings.timeZone, channelConfigs: maskedConfigs() });
+    return sendJson(res, 200, {
+      timeZone: store.settings.timeZone,
+      channelConfigs: maskedConfigs(),
+      dayHours: store.settings.dayHours,
+      quietHours: store.settings.quietHours,
+      presets: currentPresets(),
+    });
   }
 
   if (segments[1] === 'channels' && segments[2] && segments[3] === 'test' && method === 'POST') {
@@ -275,20 +392,40 @@ async function handleKakaoOAuth(req, res, url) {
 
 // ---------------------------------------------------------------- 검증/변환
 
+function quickOptions() {
+  return { dayHours: store.settings.dayHours, quietHours: store.settings.quietHours };
+}
+
+function currentPresets() {
+  return quickPresets(Date.now(), store.settings.timeZone, quickOptions());
+}
+
+/** 주소록에서 고른 것과 직접 입력한 대상을 하나의 targets 배열로 합친다. */
+function resolveTargets(body) {
+  const targets = [];
+  for (const id of body.recipientIds || []) {
+    const recipient = store.getRecipient(id);
+    if (!recipient) throw new HttpError(400, `받는 곳을 찾을 수 없습니다: ${id}`);
+    targets.push({ channel: recipient.channel, target: recipient.target || {}, recipientId: recipient.id });
+  }
+  for (const t of body.targets || []) {
+    if (!CHANNEL_KEYS.includes(t.channel)) throw new HttpError(400, `알 수 없는 채널: ${t.channel}`);
+    targets.push({ channel: t.channel, target: t.target || {} });
+  }
+  return targets;
+}
+
 function buildJobRecord(body, existing = null) {
-  const name = String(body.name || '').trim();
-  if (!name) throw new HttpError(400, '예약 이름을 입력하세요.');
   const message = String(body.message || '').trim();
   if (!message) throw new HttpError(400, '보낼 메시지를 입력하세요.');
+  // 새벽에 이름까지 짓게 하지 않는다. 비워두면 첫 줄에서 만든다.
+  const name = String(body.name || '').trim() || titleFromMessage(message);
 
   const timeZone = body.timeZone || existing?.timeZone || store.settings.timeZone;
   if (!isValidTimeZone(timeZone)) throw new HttpError(400, `알 수 없는 타임존: ${timeZone}`);
 
-  const targets = Array.isArray(body.targets) ? body.targets : [];
-  if (!targets.length) throw new HttpError(400, '보낼 채널을 하나 이상 선택하세요.');
-  for (const t of targets) {
-    if (!CHANNEL_KEYS.includes(t.channel)) throw new HttpError(400, `알 수 없는 채널: ${t.channel}`);
-  }
+  const targets = resolveTargets(body);
+  if (!targets.length) throw new HttpError(400, '보낼 곳을 하나 이상 선택하세요.');
 
   const schedule = buildSchedule(body.schedule || {}, timeZone);
 
@@ -296,7 +433,7 @@ function buildJobRecord(body, existing = null) {
     name,
     message,
     timeZone,
-    targets: targets.map((t) => ({ channel: t.channel, target: t.target || {} })),
+    targets,
     schedule,
     enabled: body.enabled !== false,
     state: existing?.state || {},
@@ -336,6 +473,7 @@ function decorateJob(job) {
         : safeDescribe(job.schedule.cron),
     nextRunMs: nextMs,
     nextRunText: nextMs ? formatInZone(nextMs, tz) : null,
+    nextRunWhen: nextMs ? `${dayLabel(nextMs, tz)} ${formatInZone(nextMs, tz).slice(11)}` : null,
   };
 }
 

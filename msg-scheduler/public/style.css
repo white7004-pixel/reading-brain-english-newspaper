@@ -199,3 +199,93 @@ td.detail { color: var(--muted); word-break: break-word; }
 code.inline { background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; font-size: 12px; }
 .upcoming { font-size: 13px; color: var(--muted); margin-top: 8px; }
 .stack { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+
+/* ───────── 빠른 예약 화면 ───────── */
+
+.compose h2 { font-size: 17px; margin: 0; }
+.compose h3 { margin: 22px 0 10px; font-size: 14px; }
+.compose-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.saved-note { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+#quickMessage {
+  min-height: 140px;
+  margin-top: 12px;
+  font-size: 16px; /* iOS에서 16px 미만이면 입력 시 화면이 확대된다 */
+  line-height: 1.65;
+}
+
+.chip.time { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 8px 14px; }
+.chip.time small { font-size: 11px; opacity: 0.75; font-weight: 400; }
+.chip.moon::after { content: ' 🌙'; }
+
+.notice {
+  margin-top: 12px; padding: 11px 13px; border-radius: 10px; font-size: 13px;
+  background: var(--warn-soft); color: var(--warn); border: 1px solid transparent;
+}
+.notice button {
+  margin-left: 8px; border: 0; background: var(--warn); color: #fff;
+  border-radius: 7px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+
+button.btn.big {
+  width: 100%; margin-top: 24px; padding: 15px; font-size: 16px; border-radius: 11px;
+}
+
+.empty-inline {
+  margin-top: 8px; padding: 12px; border-radius: 10px; font-size: 13px;
+  background: var(--panel-2); color: var(--muted); border: 1px dashed var(--border);
+}
+
+.upcoming-row {
+  display: flex; justify-content: space-between; gap: 12px; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.upcoming-row:last-child { border-bottom: 0; }
+.upcoming-row .when { color: var(--accent); font-weight: 600; white-space: nowrap; font-size: 13px; }
+.upcoming-row .what { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+nav.tabs .count {
+  display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 3px;
+  border-radius: 999px; background: var(--panel-2); color: var(--muted);
+  font-size: 11px; line-height: 17px; text-align: center;
+}
+
+label.field .opt { font-weight: 400; color: var(--muted); font-style: normal; font-size: 12px; }
+
+/* 받는 곳 목록 */
+.recipient-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.recipient-row:last-child { border-bottom: 0; }
+.recipient-row .who { font-weight: 600; font-size: 14px; }
+.recipient-row .where { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* 모달 */
+.modal-back {
+  position: fixed; inset: 0; background: rgba(16, 24, 40, 0.5);
+  display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 40;
+}
+.modal {
+  background: var(--panel); border-radius: 14px; padding: 20px;
+  width: 100%; max-width: 440px; max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow);
+}
+.modal h2 { margin: 0 0 16px; font-size: 17px; }
+
+/* ───────── 모바일 ───────── */
+
+@media (max-width: 640px) {
+  header.top { padding: 14px 16px 0; }
+  header.top h1 { font-size: 17px; }
+  main { padding: 16px 12px 60px; }
+  .card { padding: 15px; border-radius: 14px; }
+  nav.tabs { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  nav.tabs button { white-space: nowrap; padding: 10px 11px; font-size: 13px; }
+  .chip { padding: 9px 14px; font-size: 14px; }
+  .row > * { min-width: 100%; }
+  .job .job-actions button { flex: 1 1 auto; }
+  input[type='text'], input[type='password'], input[type='number'],
+  input[type='datetime-local'], select, textarea { font-size: 16px; }
+}
