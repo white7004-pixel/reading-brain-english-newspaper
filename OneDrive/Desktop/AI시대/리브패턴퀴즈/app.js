@@ -4,6 +4,7 @@ const bqPatterns = window.BOOKQUIZ_PATTERNS || [];
 const bqWords = window.BOOKQUIZ_WORDS || [];
 const learningModel = window.ReadingBrainLearningModel || {};
 const patternHub = window.ReadingBrainPatternHub || {};
+const interpretation = window.ReadingBrainInterpretation || {};
 const wordGames = window.ReadingBrainWordGames || {};
 
 const state = {
@@ -20,6 +21,9 @@ const state = {
   hubGroup: "basic",
   navOpenGroups: { basic: true, training: false },
   daily: null,
+  cleared: new Set(),
+  interpret: null,
+  interpretShowingResult: false,
   quizItem: null,
   quizAnswer: null,
   quizCount: 1,
@@ -414,7 +418,14 @@ function renderRoutineInto(host, steps) {
 // ──────────── 패턴 영어 허브 ────────────
 
 const DAILY_GOAL = { cards: 20, correct: 10 };
+const UNIT_SIZE = 6;
 const HUB_STATUS_LABEL = { new: "시작 전", learning: "학습 중", done: "완료" };
+const PATH_STATUS_LABEL = {
+  locked: "잠김",
+  available: "시작 전",
+  learning: "학습 중",
+  cleared: "클리어",
+};
 const HTML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 
 function escapeHtml(text) {
@@ -475,9 +486,31 @@ function saveLastPosition() {
   );
 }
 
+function loadCleared() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("rb-cleared") || "[]");
+    return new Set(Array.isArray(saved) ? saved : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveCleared() {
+  localStorage.setItem("rb-cleared", JSON.stringify([...state.cleared]));
+}
+
+function markSectionCleared(key) {
+  if (!key || state.cleared.has(key)) return;
+  state.cleared.add(key);
+  saveCleared();
+}
+
+// 경로 상태(잠김 / 진행 / 클리어)까지 입힌 섹션 목록.
 function patternSections() {
   if (!patternHub.buildSections) return [];
-  return patternHub.buildSections(expressions, state.mastered);
+  const sections = patternHub.buildSections(expressions, state.mastered);
+  if (!patternHub.applyPathState) return sections;
+  return patternHub.applyPathState(sections, state.cleared);
 }
 
 function sectionByKey(sections, key) {
@@ -535,14 +568,21 @@ function renderPatternNav(sections) {
       const rows = group.sections
         .map(
           (section) => `
-          <button class="pnav-row status-${section.status}${section.key === state.category ? " active" : ""}"
-                  type="button" data-section="${escapeHtml(section.key)}">
+          <button class="pnav-row status-${section.pathStatus || section.status}${section.key === state.category ? " active" : ""}"
+                  type="button" data-section="${escapeHtml(section.key)}"
+                  ${section.unlocked === false ? "disabled aria-disabled=\"true\"" : ""}>
             <span class="pnav-row-no">${section.number === null ? "·" : String(section.number).padStart(2, "0")}</span>
             <span class="pnav-row-body">
               <span class="pnav-row-title">${escapeHtml(section.title)}</span>
               <span class="pnav-row-track"><i style="width:${section.percent}%"></i></span>
             </span>
-            <span class="pnav-row-count">${section.mastered}/${section.total}</span>
+            ${
+              section.cleared
+                ? '<svg class="pnav-row-mark"><use href="#ico-check" /></svg>'
+                : section.unlocked === false
+                  ? '<svg class="pnav-row-mark"><use href="#ico-lock" /></svg>'
+                  : `<span class="pnav-row-count">${section.mastered}/${section.total}</span>`
+            }
           </button>`,
         )
         .join("");
@@ -594,9 +634,50 @@ function renderHubGoal() {
   if (correctEl) correctEl.textContent = `${summary.correct} / ${summary.correctGoal}`;
 }
 
+function pathNodeGlyph(section) {
+  if (section.cleared) return '<svg class="path-glyph"><use href="#ico-check" /></svg>';
+  if (!section.unlocked) return '<svg class="path-glyph"><use href="#ico-lock" /></svg>';
+  return `<em class="path-percent">${section.percent}</em>`;
+}
+
+function renderPathUnit(unit, currentKey) {
+  const nodes = unit.sections
+    .map(
+      (section) => `
+      <li class="path-node status-${section.pathStatus}${section.key === currentKey ? " current" : ""}">
+        <button class="path-btn" type="button" data-section="${escapeHtml(section.key)}"
+                ${section.unlocked ? "" : "disabled aria-disabled=\"true\""}
+                title="${escapeHtml(sectionLabel(section))}">
+          <span class="path-ring" style="--p:${section.unlocked ? section.percent : 0}">
+            ${pathNodeGlyph(section)}
+          </span>
+        </button>
+        <span class="path-node-label">
+          <strong>${section.number === null ? "" : String(section.number).padStart(2, "0")}</strong>
+          ${escapeHtml(section.title)}
+        </span>
+      </li>`,
+    )
+    .join("");
+
+  return `
+    <section class="path-unit${unit.unlocked ? "" : " locked"}">
+      <header class="path-unit-head">
+        <div>
+          <span class="path-unit-label">${unit.label} · ${unit.range}</span>
+          <strong>${escapeHtml(unit.title)}</strong>
+        </div>
+        <span class="path-unit-progress">
+          ${unit.unlocked ? `${unit.clearedCount} / ${unit.total} 클리어` : "잠김"}
+        </span>
+      </header>
+      <ol class="path-nodes">${nodes}</ol>
+    </section>`;
+}
+
 function renderHub(sections) {
-  const grid = $("#hubGrid");
-  if (!grid || !patternHub.groupSections) return;
+  const path = $("#hubPath");
+  if (!path || !patternHub.groupSections) return;
 
   renderHubResume(sections);
   renderHubGoal();
@@ -609,35 +690,416 @@ function renderHub(sections) {
   if (tabs) {
     tabs.innerHTML = patternHub
       .groupSections(sections)
-      .map(
-        (group) => `
+      .map((group) => {
+        const clearedCount = group.sections.filter((section) => section.cleared).length;
+        return `
         <button class="hub-tab${group.id === state.hubGroup ? " active" : ""}" type="button"
                 role="tab" aria-selected="${group.id === state.hubGroup}" data-group="${group.id}">
           <strong>${escapeHtml(group.label)}</strong>
-          <small>${matchedCounts.get(group.id) || 0}개 섹션 · ${group.percent}% 완료</small>
-        </button>`,
-      )
+          <small>${matchedCounts.get(group.id) || 0}개 섹션 · ${clearedCount} 클리어</small>
+        </button>`;
+      })
       .join("");
   }
 
   const visible = matched.filter((section) => section.group === state.hubGroup);
-  grid.innerHTML = visible
-    .map(
-      (section) => `
-      <button class="hub-card status-${section.status}${section.key === state.category ? " current" : ""}"
-              type="button" data-section="${escapeHtml(section.key)}">
-        <span class="hub-card-ring" style="--p:${section.percent}"><em>${section.percent}<i>%</i></em></span>
-        <span class="hub-card-body">
-          <span class="hub-card-no">${section.number === null ? "SECTION" : `SECTION ${String(section.number).padStart(2, "0")}`}</span>
-          <strong>${escapeHtml(section.title)}</strong>
-          <small>${section.total}표현 · ${section.mastered} 마스터</small>
-        </span>
-        <span class="hub-card-badge">${HUB_STATUS_LABEL[section.status]}</span>
-      </button>`,
-    )
-    .join("");
+  const current = patternHub.findCurrentSection
+    ? patternHub.findCurrentSection(sections.filter((section) => section.group === state.hubGroup))
+    : null;
+  const units = patternHub.buildUnits ? patternHub.buildUnits(visible, UNIT_SIZE) : [];
+
+  path.innerHTML = units.map((unit) => renderPathUnit(unit, current ? current.key : null)).join("");
   const emptyEl = $("#hubEmpty");
   if (emptyEl) emptyEl.classList.toggle("hidden", visible.length > 0);
+}
+
+// ──────────── 통역 테스트 ────────────
+//
+// 한글을 보고 영어로 말하면 음성 인식으로 받아 채점한다.
+// 인식을 쓸 수 없는 환경에서는 자가 채점으로 넘어간다.
+
+const INTERPRET_COUNTDOWN = 3;
+const INTERPRET_LISTEN_MS = 8000;
+
+function speechRecognitionCtor() {
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+
+function newInterpretRun(section, items) {
+  return {
+    section,
+    items,
+    index: 0,
+    attempt: 0, // 문장당 0 = 첫 시도, 1 = 재도전
+    results: [],
+    phase: "idle", // idle | countdown | listening | verdict
+    countdown: INTERPRET_COUNTDOWN,
+    timers: [],
+    recognizer: null,
+    selfScored: false,
+  };
+}
+
+function clearInterpretTimers() {
+  const run = state.interpret;
+  if (!run) return;
+  run.timers.forEach((id) => clearTimeout(id));
+  run.timers = [];
+  if (run.recognizer) {
+    try {
+      run.recognizer.abort();
+    } catch {
+      /* 이미 멈춘 경우는 무시한다 */
+    }
+    run.recognizer = null;
+  }
+}
+
+function interpretLater(fn, delay) {
+  const run = state.interpret;
+  if (!run) return;
+  run.timers.push(setTimeout(fn, delay));
+}
+
+function stopInterpret() {
+  clearInterpretTimers();
+  state.interpret = null;
+  state.interpretShowingResult = false;
+}
+
+function interpretSectionItems(section) {
+  return expressions.filter((item) => item.category === section.key);
+}
+
+function showInterpretPane(name) {
+  ["interpretLocked", "interpretIntro", "interpretRun", "interpretResult"].forEach((id) => {
+    const el = $(`#${id}`);
+    if (el) el.classList.toggle("hidden", id !== name);
+  });
+}
+
+function renderInterpretEntry(sections) {
+  const section = sectionByKey(sections, state.category);
+  const unlocked = interpretation.isSectionUnlocked
+    ? interpretation.isSectionUnlocked(section)
+    : false;
+
+  const lock = $("#pmodeInterpretLock");
+  if (lock) lock.classList.toggle("hidden", unlocked);
+
+  if (state.mode !== "interpret") return;
+  if (state.interpret) return; // 진행 중에는 화면을 갈아끼우지 않는다
+  if (state.interpretShowingResult) return; // 결과 화면을 덮지 않는다
+
+  if (!unlocked) {
+    showInterpretPane("interpretLocked");
+    const msg = $("#interpretLockedMsg");
+    if (msg && section) {
+      msg.textContent =
+        `${sectionLabel(section)} 카드 학습이 ${section.mastered} / ${section.total} 입니다. ` +
+        "모두 마치면 통역 테스트가 열려요.";
+    }
+    const bar = $("#interpretLockBar");
+    if (bar) bar.style.width = `${section ? section.percent : 0}%`;
+    return;
+  }
+
+  showInterpretPane("interpretIntro");
+  const title = $("#interpretIntroTitle");
+  if (title) title.textContent = `${sectionLabel(section)} 통역 테스트`;
+  const desc = $("#interpretIntroDesc");
+  if (desc) {
+    desc.textContent = `${section.total}문장을 한글만 보고 영어로 말합니다.` +
+      (section.cleared ? " 이미 클리어한 섹션이에요. 다시 도전할 수 있습니다." : "");
+  }
+
+  const note = $("#interpretSupportNote");
+  if (note) {
+    const supported = Boolean(speechRecognitionCtor());
+    note.classList.toggle("hidden", supported);
+    if (!supported) {
+      note.textContent =
+        "이 브라우저는 음성 인식을 지원하지 않아 자가 채점으로 진행합니다. " +
+        "정답을 보고 스스로 맞췄는지 눌러 주세요.";
+    }
+  }
+}
+
+function startInterpretRun() {
+  const sections = patternSections();
+  const section = sectionByKey(sections, state.category);
+  if (!section) return;
+
+  const items = shuffle(interpretSectionItems(section));
+  if (!items.length) return;
+
+  state.interpretShowingResult = false;
+  state.interpret = newInterpretRun(section, items);
+  showInterpretPane("interpretRun");
+  renderInterpretProgress();
+  beginInterpretQuestion();
+}
+
+function renderInterpretProgress() {
+  const run = state.interpret;
+  if (!run) return;
+  const progress = $("#interpretProgressText");
+  if (progress) progress.textContent = `문장 ${run.index + 1} / ${run.items.length}`;
+  const pass = $("#interpretPassText");
+  if (pass) pass.textContent = String(run.results.filter((r) => r.verdict === "pass").length);
+  const bar = $("#interpretBar");
+  if (bar) bar.style.width = `${Math.round((run.index / run.items.length) * 100)}%`;
+}
+
+function setInterpretStatus(text, countLabel = "") {
+  const status = $("#interpretStatusText");
+  if (status) status.textContent = text;
+  const count = $("#interpretCount");
+  if (count) {
+    count.textContent = countLabel;
+    count.classList.toggle("hidden", !countLabel);
+  }
+}
+
+function beginInterpretQuestion() {
+  const run = state.interpret;
+  if (!run) return;
+
+  // 이전 문장에서 남은 예약(카운트다운·자가채점 노출·자동 진행)을 먼저 끊는다.
+  // 남겨 두면 다음 문장 위로 늦게 터져 화면이 어긋난다.
+  clearInterpretTimers();
+
+  const item = run.items[run.index];
+  run.phase = "countdown";
+  run.countdown = INTERPRET_COUNTDOWN;
+
+  $("#interpretKorean").textContent = item.korean;
+  $("#interpretHeard").textContent = "";
+  $("#interpretVerdict").classList.add("hidden");
+  $("#interpretSelf").classList.add("hidden");
+  $("#interpretStatus").className = "interpret-status";
+  renderInterpretProgress();
+
+  const tick = () => {
+    const active = state.interpret;
+    if (!active || active.phase !== "countdown") return;
+    if (active.countdown > 0) {
+      setInterpretStatus(
+        active.attempt ? "다시 한 번 — 준비하세요" : "준비하세요",
+        String(active.countdown),
+      );
+      active.countdown -= 1;
+      interpretLater(tick, 700);
+      return;
+    }
+    listenInterpretAnswer();
+  };
+  tick();
+}
+
+function listenInterpretAnswer() {
+  const run = state.interpret;
+  if (!run) return;
+  run.phase = "listening";
+
+  const Recognizer = speechRecognitionCtor();
+  if (!Recognizer) {
+    run.selfScored = true;
+    setInterpretStatus("지금 말해 보세요", "");
+    $("#interpretStatus").className = "interpret-status listening";
+    interpretLater(() => revealSelfScoring(), 4000);
+    return;
+  }
+
+  setInterpretStatus("듣고 있어요", "");
+  $("#interpretStatus").className = "interpret-status listening";
+
+  let settled = false;
+  const recognizer = new Recognizer();
+  recognizer.lang = "en-US";
+  recognizer.interimResults = false;
+  recognizer.maxAlternatives = 3;
+  run.recognizer = recognizer;
+
+  const settle = (transcript) => {
+    if (settled) return;
+    settled = true;
+    run.recognizer = null;
+    judgeInterpretAnswer(transcript);
+  };
+
+  recognizer.onresult = (event) => {
+    const alternatives = [...event.results[0]].map((alt) => alt.transcript);
+    const expected = run.items[run.index].english;
+    // 대안 중 가장 점수가 높은 것을 택한다.
+    const best = alternatives.reduce(
+      (top, text) => {
+        const score = interpretation.scoreAttempt(text, expected);
+        return score.ratio > top.ratio ? { text, ratio: score.ratio } : top;
+      },
+      { text: alternatives[0] || "", ratio: -1 },
+    );
+    settle(best.text);
+  };
+  recognizer.onerror = (event) => {
+    if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+      run.selfScored = true;
+      settled = true;
+      run.recognizer = null;
+      revealSelfScoring();
+      return;
+    }
+    settle("");
+  };
+  recognizer.onend = () => settle("");
+
+  try {
+    recognizer.start();
+  } catch {
+    settle("");
+    return;
+  }
+  interpretLater(() => {
+    if (!settled && run.recognizer) {
+      try {
+        run.recognizer.stop();
+      } catch {
+        settle("");
+      }
+    }
+  }, INTERPRET_LISTEN_MS);
+}
+
+function revealSelfScoring() {
+  const run = state.interpret;
+  if (!run) return;
+  run.phase = "verdict";
+  const item = run.items[run.index];
+  $("#interpretStatus").className = "interpret-status";
+  setInterpretStatus("정답을 보고 스스로 채점하세요", "");
+  $("#interpretAnswer").textContent = item.english;
+  $("#interpretVerdictLabel").textContent = "정답";
+  $("#interpretVerdict").classList.remove("hidden");
+  $("#interpretVerdict").className = "interpret-verdict";
+  $("#interpretSelf").classList.remove("hidden");
+  speakExpression(item, 1);
+}
+
+function judgeInterpretAnswer(transcript) {
+  const run = state.interpret;
+  if (!run) return;
+  run.phase = "verdict";
+
+  const item = run.items[run.index];
+  const score = interpretation.scoreAttempt(transcript, item.english);
+  const heard = $("#interpretHeard");
+  if (heard) heard.textContent = transcript ? `들린 말: ${transcript}` : "소리를 듣지 못했어요";
+
+  // 재도전은 문장당 한 번만 준다.
+  if (score.verdict === "retry" && run.attempt === 0) {
+    run.attempt = 1;
+    $("#interpretStatus").className = "interpret-status retry";
+    setInterpretStatus("거의 맞았어요 — 한 번 더!", "");
+    interpretLater(beginInterpretQuestion, 1400);
+    return;
+  }
+
+  const verdict = score.verdict === "pass" ? "pass" : "fail";
+  finishInterpretQuestion(verdict, item);
+}
+
+function finishInterpretQuestion(verdict, item) {
+  const run = state.interpret;
+  if (!run) return;
+  // 한 문장은 한 번만 채점한다 — 늦게 들어온 클릭이나 인식 결과를 막는다.
+  if (run.results.length > run.index) return;
+
+  clearInterpretTimers();
+  run.results.push({ verdict, id: item.id, english: item.english, korean: item.korean });
+
+  const box = $("#interpretVerdict");
+  box.className = `interpret-verdict ${verdict}`;
+  box.classList.remove("hidden");
+  $("#interpretVerdictLabel").textContent = verdict === "pass" ? "통과" : "다시 연습";
+  $("#interpretAnswer").textContent = item.english;
+  $("#interpretSelf").classList.add("hidden");
+  $("#interpretStatus").className = `interpret-status ${verdict}`;
+  setInterpretStatus(verdict === "pass" ? "좋아요!" : "정답을 확인하세요", "");
+
+  if (verdict === "pass") {
+    state.score += 15;
+    state.mastered.add(item.id);
+    bumpDaily("correct");
+  } else {
+    state.review.add(item.id);
+  }
+  saveState();
+  updateStats();
+  renderInterpretProgress();
+
+  speakExpression(item, 1);
+  interpretLater(advanceInterpret, verdict === "pass" ? 1100 : 1900);
+}
+
+function advanceInterpret() {
+  const run = state.interpret;
+  if (!run) return;
+  run.index += 1;
+  run.attempt = 0;
+  if (run.index >= run.items.length) {
+    finishInterpretRun();
+    return;
+  }
+  beginInterpretQuestion();
+}
+
+function finishInterpretRun() {
+  const run = state.interpret;
+  if (!run) return;
+
+  const summary = interpretation.summarizeRun(run.results, interpretation.SECTION_PASS_RATE);
+  const sectionKey = run.section.key;
+  const missed = run.results.filter((result) => result.verdict !== "pass");
+
+  clearInterpretTimers();
+  state.interpret = null;
+
+  if (summary.cleared) markSectionCleared(sectionKey);
+
+  state.interpretShowingResult = true;
+  showInterpretPane("interpretResult");
+  const ring = $("#interpretResultRing");
+  if (ring) {
+    ring.style.setProperty("--p", summary.percent);
+    ring.classList.toggle("cleared", summary.cleared);
+  }
+  $("#interpretResultPercent").textContent = `${summary.percent}%`;
+  $("#interpretResultTitle").textContent = summary.cleared
+    ? "섹션 클리어!"
+    : `${summary.threshold}% 를 넘기면 클리어예요`;
+  $("#interpretResultDetail").textContent =
+    `${summary.total}문장 중 ${summary.passed}문장 통과`
+    + (summary.cleared ? " · 다음 섹션이 열렸어요" : "");
+
+  const missedBox = $("#interpretMissed");
+  if (missedBox) {
+    missedBox.innerHTML = missed.length
+      ? `<h4>다시 볼 문장 ${missed.length}개</h4>` +
+        missed
+          .slice(0, 12)
+          .map(
+            (result) => `
+          <div class="interpret-missed-row">
+            <strong>${escapeHtml(result.english)}</strong>
+            <span>${escapeHtml(result.korean)}</span>
+          </div>`,
+          )
+          .join("")
+      : "";
+  }
+
+  saveState();
+  updateStats();
 }
 
 function renderStudyContext(sections) {
@@ -654,15 +1116,30 @@ function renderStudyContext(sections) {
 
   const banner = $("#sectionDoneBanner");
   if (!banner) return;
-  const next =
-    section && section.percent >= 100 && patternHub.findNextSection
-      ? patternHub.findNextSection(sections, section.key)
-      : null;
-  banner.classList.toggle("hidden", !next);
-  if (next) {
-    banner.dataset.section = next.key;
-    $("#sectionDoneNext").textContent = `다음은 ${sectionLabel(next)} · ${next.total}표현`;
+
+  // 카드를 다 마치면 통역 테스트로, 이미 클리어했으면 다음 섹션으로 보낸다.
+  const cardsDone = Boolean(section && section.percent >= 100);
+  const next = cardsDone && patternHub.findNextSection
+    ? patternHub.findNextSection(sections, section.key)
+    : null;
+  const showBanner = cardsDone && (!section.cleared || Boolean(next));
+  banner.classList.toggle("hidden", !showBanner);
+  if (!showBanner) return;
+
+  if (!section.cleared) {
+    banner.dataset.action = "interpret";
+    banner.dataset.section = "";
+    banner.querySelector("strong").textContent = "카드를 다 익혔어요!";
+    $("#sectionDoneNext").textContent = "이제 통역 테스트를 통과하면 이 섹션이 클리어됩니다.";
+    $("#sectionDoneBtn").textContent = "통역 테스트 보기";
+    return;
   }
+
+  banner.dataset.action = "next";
+  banner.dataset.section = next.key;
+  banner.querySelector("strong").textContent = "이 섹션은 클리어했어요!";
+  $("#sectionDoneNext").textContent = `다음은 ${sectionLabel(next)} · ${next.total}표현`;
+  $("#sectionDoneBtn").textContent = "다음 섹션 시작";
 }
 
 function updateReviewBadge() {
@@ -676,6 +1153,7 @@ function renderPatternSurfaces() {
   const sections = patternSections();
   renderPatternNav(sections);
   renderStudyContext(sections);
+  renderInterpretEntry(sections);
   updateReviewBadge();
   if (state.mode === "hub") renderHub(sections);
 }
@@ -684,6 +1162,8 @@ function updateStats() {
   elements.scoreText.textContent = state.score;
   elements.streakText.textContent = state.streak;
   elements.studentNameText.textContent = state.studentName;
+  const mobileScore = $("#mobileScoreText");
+  if (mobileScore) mobileScore.textContent = state.score;
   renderDashboard();
   renderPatternSurfaces();
 }
@@ -789,16 +1269,24 @@ function moveCard(step = 1) {
   const newIndex = state.index + step;
   if (newIndex < 0) return;
   if (step > 0) bumpDaily("cards");
+  // 섹션 마지막 카드를 넘기면 다음 섹션으로 이어간다. 다만 학습 경로에서
+  // 아직 잠긴 섹션으로는 넘어가지 않고 마지막 카드에 머문다 —
+  // 그 자리에서 통역 테스트 안내 배너가 뜬다.
   if (step > 0 && newIndex >= items.length && state.category !== "all") {
-    const categories = [...new Set(expressions.map((e) => e.category))].sort();
-    const currentIdx = categories.indexOf(state.category);
-    if (currentIdx !== -1 && currentIdx < categories.length - 1) {
-      state.category = categories[currentIdx + 1];
+    const sections = patternSections();
+    const next = patternHub.findNextSection
+      ? patternHub.findNextSection(sections, state.category)
+      : null;
+    if (next && next.unlocked !== false) {
+      state.category = next.key;
       state.index = 0;
       elements.categorySelect.value = state.category;
       renderStudy();
       return;
     }
+    state.index = items.length - 1;
+    renderStudy();
+    return;
   }
   state.index = newIndex;
   renderStudy();
@@ -1210,7 +1698,7 @@ async function speakAllVerbForms(button = null) {
       ["pp", "과거분사"],
     ];
     for (const [form, label] of sequence) {
-      if (button) button.textContent = `▶ ${label} 듣는 중`;
+      if (button) button.textContent = `${label} 듣는 중`;
       await speakVerb(verb, form);
       await new Promise((r) => setTimeout(r, 550));
     }
@@ -1380,7 +1868,7 @@ function handleMahjong(el, card) {
       state.score += 50;
       saveState();
       updateStats();
-      elements.matchStatus.textContent = "🎉 완성! 보너스 50점! 새 판이 시작됩니다…";
+      elements.matchStatus.textContent = "완성! 보너스 50점 · 새 판이 시작됩니다";
       setTimeout(renderMatch, 2200);
     }
   } else {
@@ -1397,10 +1885,58 @@ function handleMahjong(el, card) {
   }
 }
 
-// ── 동사 블래스트 게임 ─────────────────────────────────────────
-let verbBlast = {
-  active: false, lives: 3, score: 0, wave: 1, correct: 0, currentVerb: null, enemyTimer: null,
+// ── 블래스트 공통 난이도 ───────────────────────────────────────
+// 패턴 / 동사 / 북퀴즈 세 게임이 같은 값을 쓴다.
+const BLAST_TUNING = {
+  lives: 5,
+  maxLives: 5,
+  waveEvery: 8, // 정답 N개마다 웨이브 상승
+  bonusLifeEvery: 3, // 웨이브 N개마다 목숨 +1
+  fallStart: 6.5,
+  fallMin: 2.2,
+  fallStep: 0.25,
+  respawnAfterHit: 700,
+  respawnAfterMiss: 1200,
 };
+
+// 목숨 표시 — 이모지 대신 스프라이트 하트를 채운 개수만큼 켠다.
+function blastHeartsMarkup(lives) {
+  const filled = Math.max(0, Math.min(BLAST_TUNING.maxLives, lives));
+  return Array.from({ length: BLAST_TUNING.maxLives }, (unused, index) =>
+    `<svg class="blast-heart${index < filled ? " on" : ""}"><use href="#ico-heart" /></svg>`,
+  ).join("");
+}
+
+function newBlastGame(extra = {}) {
+  return {
+    active: false,
+    lives: BLAST_TUNING.lives,
+    score: 0,
+    wave: 1,
+    correct: 0,
+    enemyTimer: null,
+    ...extra,
+  };
+}
+
+function blastFallDuration(wave) {
+  return Math.max(
+    BLAST_TUNING.fallMin,
+    BLAST_TUNING.fallStart - (wave - 1) * BLAST_TUNING.fallStep,
+  );
+}
+
+// 정답 처리 뒤 호출한다. 웨이브를 올리고, 주기마다 목숨을 하나 돌려준다.
+function blastAdvanceWave(game) {
+  if (game.correct % BLAST_TUNING.waveEvery !== 0) return;
+  game.wave += 1;
+  if (game.wave % BLAST_TUNING.bonusLifeEvery === 0 && game.lives < BLAST_TUNING.maxLives) {
+    game.lives += 1;
+  }
+}
+
+// ── 동사 블래스트 게임 ─────────────────────────────────────────
+let verbBlast = newBlastGame({ currentVerb: null });
 
 function initVerbBlastScreen() {
   verbBlast.active = false;
@@ -1423,7 +1959,8 @@ function addVerbBlastStars() {
 }
 
 function startVerbBlast() {
-  verbBlast = { active: true, lives: 3, score: 0, wave: 1, correct: 0, currentVerb: null, enemyTimer: null };
+  verbBlast = newBlastGame({ currentVerb: null });
+  verbBlast.active = true;
   updateVerbBlastHUD();
   $("#verbBlastOverlay").classList.add("hidden");
   spawnVerbBlastEnemy();
@@ -1452,7 +1989,7 @@ function spawnVerbBlastEnemy() {
   const enemy = document.createElement("div");
   enemy.className = "blast-enemy";
   enemy.textContent = `${item.base} (${item.meaning})`;
-  const duration = Math.max(1.5, 5.5 - (verbBlast.wave - 1) * 0.4);
+  const duration = blastFallDuration(verbBlast.wave);
   enemy.style.animationDuration = `${duration}s`;
   arena.appendChild(enemy);
 
@@ -1491,12 +2028,12 @@ function handleVerbBlastAnswer(isCorrect, clickedBtn, enemy, correctItem) {
     clickedBtn.classList.add("blast-correct");
     verbBlast.score += 10 + verbBlast.wave * 2;
     verbBlast.correct += 1;
-    if (verbBlast.correct % 5 === 0) verbBlast.wave += 1;
+    blastAdvanceWave(verbBlast);
     state.score += 5;
     saveState();
     updateStats();
     updateVerbBlastHUD();
-    verbBlast.enemyTimer = setTimeout(spawnVerbBlastEnemy, 700);
+    verbBlast.enemyTimer = setTimeout(spawnVerbBlastEnemy, BLAST_TUNING.respawnAfterHit);
   } else {
     clickedBtn.classList.add("blast-wrong");
     $$(".blast-option").forEach((b) => {
@@ -1514,13 +2051,13 @@ function verbBlastLoseLife() {
     verbBlastGameOver();
     return;
   }
-  verbBlast.enemyTimer = setTimeout(spawnVerbBlastEnemy, 1200);
+  verbBlast.enemyTimer = setTimeout(spawnVerbBlastEnemy, BLAST_TUNING.respawnAfterMiss);
 }
 
 function updateVerbBlastHUD() {
-  const hearts = "❤️".repeat(Math.max(0, verbBlast.lives)) + "🖤".repeat(Math.max(0, 3 - verbBlast.lives));
+  const hearts = blastHeartsMarkup(verbBlast.lives);
   const livesEl = $("#verbBlastLivesText");
-  if (livesEl) livesEl.textContent = hearts;
+  if (livesEl) livesEl.innerHTML = hearts;
   const scoreEl = $("#verbBlastScoreText");
   if (scoreEl) scoreEl.textContent = verbBlast.score;
   const waveEl = $("#verbBlastWaveText");
@@ -1540,16 +2077,14 @@ function verbBlastGameOver() {
 }
 
 // ── 블래스트 게임 ──────────────────────────────────────────────
-let blast = {
-  active: false, lives: 3, score: 0, wave: 1, correct: 0, currentItem: null, enemyTimer: null,
-};
+let blast = newBlastGame({ currentItem: null });
 
 function initBlastScreen() {
   blast.active = false;
   const overlay = $("#blastOverlay");
   if (overlay) {
     overlay.classList.remove("hidden");
-    $("#blastOverlayTitle").textContent = "🚀 블래스트!";
+    $("#blastOverlayTitle").textContent = "블래스트!";
     $("#blastOverlayMsg").textContent = "떨어지는 한글 뜻을 보고\n맞는 영어 표현을 눌러 격파하세요!";
   }
   $("#blastOptions").innerHTML = "";
@@ -1568,7 +2103,8 @@ function addBlastStars() {
 }
 
 function startBlast() {
-  blast = { active: true, lives: 3, score: 0, wave: 1, correct: 0, currentItem: null, enemyTimer: null };
+  blast = newBlastGame({ currentItem: null });
+  blast.active = true;
   updateBlastHUD();
   const overlay = $("#blastOverlay");
   if (overlay) overlay.classList.add("hidden");
@@ -1596,7 +2132,7 @@ function spawnBlastEnemy() {
   const enemy = document.createElement("div");
   enemy.className = "blast-enemy";
   enemy.textContent = item.korean;
-  const duration = Math.max(1.5, 5.5 - (blast.wave - 1) * 0.4);
+  const duration = blastFallDuration(blast.wave);
   enemy.style.animationDuration = `${duration}s`;
   arena.appendChild(enemy);
 
@@ -1634,12 +2170,12 @@ function handleBlastAnswer(isCorrect, clickedBtn, enemy, correctItem) {
     clickedBtn.classList.add("blast-correct");
     blast.score += 10 + blast.wave * 2;
     blast.correct += 1;
-    if (blast.correct % 5 === 0) blast.wave += 1;
+    blastAdvanceWave(blast);
     state.score += 5;
     saveState();
     updateStats();
     updateBlastHUD();
-    blast.enemyTimer = setTimeout(spawnBlastEnemy, 700);
+    blast.enemyTimer = setTimeout(spawnBlastEnemy, BLAST_TUNING.respawnAfterHit);
   } else {
     clickedBtn.classList.add("blast-wrong");
     $$(".blast-option").forEach((b) => {
@@ -1657,13 +2193,13 @@ function blastLoseLife() {
     blastGameOver();
     return;
   }
-  blast.enemyTimer = setTimeout(spawnBlastEnemy, 1200);
+  blast.enemyTimer = setTimeout(spawnBlastEnemy, BLAST_TUNING.respawnAfterMiss);
 }
 
 function updateBlastHUD() {
-  const hearts = "❤️".repeat(Math.max(0, blast.lives)) + "🖤".repeat(Math.max(0, 3 - blast.lives));
+  const hearts = blastHeartsMarkup(blast.lives);
   const livesEl = $("#blastLivesText");
-  if (livesEl) livesEl.textContent = hearts;
+  if (livesEl) livesEl.innerHTML = hearts;
   const scoreEl = $("#blastScoreText");
   if (scoreEl) scoreEl.textContent = blast.score;
   const waveEl = $("#blastWaveText");
@@ -1729,7 +2265,7 @@ async function renderLeaderboard() {
   }
 }
 
-const PATTERN_MODES = ["hub", "study", "quiz", "match", "blast", "review", "leaderboard"];
+const PATTERN_MODES = ["hub", "study", "quiz", "match", "blast", "review", "leaderboard", "interpret"];
 
 function setMode(mode) {
   if (mode === "wordgames" || !$(`#${mode}View`)) mode = "study";
@@ -1747,6 +2283,7 @@ function setMode(mode) {
   $(`#${mode}View`).classList.add("active");
   elements.screenTitle.textContent = {
     hub: "패턴 허브",
+    interpret: "통역 테스트",
     study: "카드 학습",
     quiz: "퀴즈",
     match: "매칭 게임",
@@ -1756,7 +2293,12 @@ function setMode(mode) {
     blast: "블래스트 게임",
     bookquiz: "북퀴즈 학습",
   }[mode];
+  const mobileTitle = $("#mobileTitle");
+  if (mobileTitle) mobileTitle.textContent = elements.screenTitle.textContent;
+  setNavOpen(false);
 
+  if (mode !== "interpret") stopInterpret();
+  if (mode === "interpret") renderInterpretEntry(patternSections());
   if (mode === "study") renderStudy();
   if (mode === "quiz") {
     updateQuizTabs();
@@ -1831,11 +2373,11 @@ function bindPatternHubEvents() {
     });
   }
 
-  const hubGrid = $("#hubGrid");
-  if (hubGrid) {
-    hubGrid.addEventListener("click", (event) => {
-      const card = event.target.closest(".hub-card");
-      if (card) selectSection(card.dataset.section, "study");
+  const hubPath = $("#hubPath");
+  if (hubPath) {
+    hubPath.addEventListener("click", (event) => {
+      const node = event.target.closest(".path-btn");
+      if (node && !node.disabled) selectSection(node.dataset.section, "study");
     });
   }
 
@@ -1854,12 +2396,87 @@ function bindPatternHubEvents() {
   const doneBtn = $("#sectionDoneBtn");
   if (doneBtn) {
     doneBtn.addEventListener("click", () => {
-      const key = $("#sectionDoneBanner").dataset.section;
-      if (key) selectSection(key, "study");
+      const banner = $("#sectionDoneBanner");
+      if (banner.dataset.action === "interpret") {
+        setMode("interpret");
+        return;
+      }
+      if (banner.dataset.section) selectSection(banner.dataset.section, "study");
     });
   }
 
+  bindInterpretEvents();
+  bindMobileNavEvents();
   document.addEventListener("keydown", handleStudyShortcut);
+}
+
+// ── 모바일 드로어 ──────────────────────────────────────────────
+function setNavOpen(open) {
+  document.body.classList.toggle("nav-open", open);
+  const scrim = $("#navScrim");
+  if (scrim) scrim.hidden = !open;
+  const toggle = $("#mobileNavBtn");
+  if (toggle) toggle.setAttribute("aria-expanded", String(open));
+}
+
+function bindMobileNavEvents() {
+  const toggle = $("#mobileNavBtn");
+  if (toggle) toggle.addEventListener("click", () => setNavOpen(!document.body.classList.contains("nav-open")));
+
+  const close = $("#sidebarCloseBtn");
+  if (close) close.addEventListener("click", () => setNavOpen(false));
+
+  const scrim = $("#navScrim");
+  if (scrim) scrim.addEventListener("click", () => setNavOpen(false));
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setNavOpen(false);
+  });
+
+  // 사이드바에서 무언가를 고르면 드로어를 닫는다.
+  const sidebar = $(".sidebar");
+  if (sidebar) {
+    sidebar.addEventListener("click", (event) => {
+      if (event.target.closest(".pnav-row, .pattern-hub-btn, .mode-button")) setNavOpen(false);
+    });
+  }
+}
+
+function bindInterpretEvents() {
+  const start = $("#interpretStartBtn");
+  if (start) start.addEventListener("click", startInterpretRun);
+
+  const retry = $("#interpretRetryBtn");
+  if (retry) retry.addEventListener("click", startInterpretRun);
+
+  const back = $("#interpretBackBtn");
+  if (back) back.addEventListener("click", () => setMode("hub"));
+
+  const goStudy = $("#interpretGoStudy");
+  if (goStudy) goStudy.addEventListener("click", () => setMode("study"));
+
+  const stop = $("#interpretStopBtn");
+  if (stop) {
+    stop.addEventListener("click", () => {
+      stopInterpret();
+      renderInterpretEntry(patternSections());
+    });
+  }
+
+  const selfPass = $("#interpretSelfPass");
+  if (selfPass) {
+    selfPass.addEventListener("click", () => {
+      const run = state.interpret;
+      if (run) finishInterpretQuestion("pass", run.items[run.index]);
+    });
+  }
+  const selfFail = $("#interpretSelfFail");
+  if (selfFail) {
+    selfFail.addEventListener("click", () => {
+      const run = state.interpret;
+      if (run) finishInterpretQuestion("fail", run.items[run.index]);
+    });
+  }
 }
 
 function handleStudyShortcut(event) {
@@ -2970,7 +3587,7 @@ function handleBQMahjong(el, card) {
       state.score += 50;
       saveState();
       updateStats();
-      if (status) status.textContent = "🎉 완성! 보너스 50점! 새 판이 시작됩니다…";
+      if (status) status.textContent = "완성! 보너스 50점 · 새 판이 시작됩니다";
       setTimeout(renderBQMatch, 2200);
     }
   } else {
@@ -2989,9 +3606,7 @@ function handleBQMahjong(el, card) {
 }
 
 // ── 북퀴즈 블래스트 게임 ──────────────────────────────────────
-let bqBlast = {
-  active: false, lives: 3, score: 0, wave: 1, correct: 0, currentItem: null, enemyTimer: null,
-};
+let bqBlast = newBlastGame({ currentItem: null });
 
 function initBQBlastScreen() {
   bqBlast.active = false;
@@ -2999,7 +3614,7 @@ function initBQBlastScreen() {
   const overlay = $("#bqBlastOverlay");
   if (overlay) {
     overlay.classList.remove("hidden");
-    overlay.querySelector("h2").textContent = "🚀 북퀴즈 블래스트!";
+    overlay.querySelector("h2").textContent = "북퀴즈 블래스트!";
     overlay.querySelector("p").textContent = "떨어지는 한글 뜻을 보고\n맞는 영어 표현을 눌러 격파하세요!";
   }
   $("#bqBlastOptions").innerHTML = "";
@@ -3017,7 +3632,8 @@ function initBQBlastScreen() {
 }
 
 function startBQBlast() {
-  bqBlast = { active: true, lives: 3, score: 0, wave: 1, correct: 0, currentItem: null, enemyTimer: null };
+  bqBlast = newBlastGame({ currentItem: null });
+  bqBlast.active = true;
   updateBQBlastHUD();
   $("#bqBlastOverlay").classList.add("hidden");
   spawnBQBlastEnemy();
@@ -3044,7 +3660,7 @@ function spawnBQBlastEnemy() {
   const enemy = document.createElement("div");
   enemy.className = "blast-enemy";
   enemy.textContent = item.korean;
-  const duration = Math.max(2.0, 6.0 - (bqBlast.wave - 1) * 0.4);
+  const duration = blastFallDuration(bqBlast.wave);
   enemy.style.animationDuration = `${duration}s`;
   arena.appendChild(enemy);
 
@@ -3083,12 +3699,12 @@ function handleBQBlastAnswer(isCorrect, clickedBtn, enemy, correctItem) {
     clickedBtn.classList.add("blast-correct");
     bqBlast.score += 10 + bqBlast.wave * 2;
     bqBlast.correct += 1;
-    if (bqBlast.correct % 5 === 0) bqBlast.wave += 1;
+    blastAdvanceWave(bqBlast);
     state.score += 5;
     saveState();
     updateStats();
     updateBQBlastHUD();
-    bqBlast.enemyTimer = setTimeout(spawnBQBlastEnemy, 700);
+    bqBlast.enemyTimer = setTimeout(spawnBQBlastEnemy, BLAST_TUNING.respawnAfterHit);
   } else {
     clickedBtn.classList.add("blast-wrong");
     $$("#bqBlastOptions .blast-option").forEach((b) => {
@@ -3106,13 +3722,13 @@ function bqBlastLoseLife() {
     bqBlastGameOver();
     return;
   }
-  bqBlast.enemyTimer = setTimeout(spawnBQBlastEnemy, 1200);
+  bqBlast.enemyTimer = setTimeout(spawnBQBlastEnemy, BLAST_TUNING.respawnAfterMiss);
 }
 
 function updateBQBlastHUD() {
-  const hearts = "❤️".repeat(Math.max(0, bqBlast.lives)) + "🖤".repeat(Math.max(0, 3 - bqBlast.lives));
+  const hearts = blastHeartsMarkup(bqBlast.lives);
   const livesEl = $("#bqBlastLivesText");
-  if (livesEl) livesEl.textContent = hearts;
+  if (livesEl) livesEl.innerHTML = hearts;
   const scoreEl = $("#bqBlastScoreText");
   if (scoreEl) scoreEl.textContent = bqBlast.score;
   const waveEl = $("#bqBlastWaveText");
@@ -3142,7 +3758,7 @@ function checkBQAnswer(clickedBtn, selectedId, correctId, ansKey) {
     clickedBtn.classList.add("correct");
     state.score += 10;
     state.streak += 1;
-    $("#bqQuizFeedback").textContent = "정답입니다! ✅";
+    $("#bqQuizFeedback").textContent = "정답입니다!";
   } else {
     clickedBtn.classList.add("wrong");
     state.streak = 0;
@@ -3158,12 +3774,13 @@ async function init() {
     window.speechSynthesis.getVoices();
     window.speechSynthesis.addEventListener("voiceschanged", () => { _cachedVoice = null; });
   }
+  state.cleared = loadCleared();
   renderCategories();
   bindEvents();
   updateStats();
   renderStudy();
   if (location.protocol === "file:") {
-    elements.loginMessage.textContent = "⚠️ 파일로 직접 열면 로그인이 안 됩니다. 브라우저에서 http://localhost:4174 로 접속해 주세요.";
+    elements.loginMessage.textContent = "파일로 직접 열면 로그인이 안 됩니다. 브라우저에서 http://localhost:4174 로 접속해 주세요.";
     return;
   }
   await restoreSession();
@@ -3176,3 +3793,4 @@ async function init() {
 }
 
 init();
+

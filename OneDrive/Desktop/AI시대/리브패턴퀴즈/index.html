@@ -4,9 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reading Brain 영어표현 카드 게임</title>
-    <link rel="stylesheet" href="styles.css?v=20260818-pattern-hub" />
+    <link rel="stylesheet" href="styles.css?v=20260818-calm2" />
   </head>
   <body class="locked">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="ico-hub" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+        </symbol>
+        <symbol id="ico-card" viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="M7 10h7M7 14h4" />
+        </symbol>
+        <symbol id="ico-quiz" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2.5" /><path d="M8 12.5l2.6 2.6L16.2 9.4" />
+        </symbol>
+        <symbol id="ico-match" viewBox="0 0 24 24">
+          <path d="M9.6 14.4l4.8-4.8" /><path d="M13.2 7.2l1.6-1.6a3.6 3.6 0 1 1 5.1 5.1l-1.6 1.6" />
+          <path d="M10.8 16.8l-1.6 1.6a3.6 3.6 0 1 1-5.1-5.1l1.6-1.6" />
+        </symbol>
+        <symbol id="ico-blast" viewBox="0 0 24 24">
+          <path d="M13.2 2.4 4.8 13.8h5.6L10 21.6l8.4-11.4h-5.6l.4-7.8z" />
+        </symbol>
+        <symbol id="ico-review" viewBox="0 0 24 24">
+          <path d="M20.4 12a8.4 8.4 0 1 1-2.5-6" /><path d="M20.4 3.6v5.2h-5.2" />
+        </symbol>
+        <symbol id="ico-rank" viewBox="0 0 24 24">
+          <path d="M5 20.4V11M12 20.4V3.6M19 20.4v-6.2" />
+        </symbol>
+        <symbol id="ico-speak" viewBox="0 0 24 24">
+          <rect x="9" y="2.6" width="6" height="11.4" rx="3" /><path d="M5 11.4a7 7 0 0 0 14 0M12 18.4v3" />
+        </symbol>
+        <symbol id="ico-heart" viewBox="0 0 24 24">
+          <path d="M12 20.4S3.6 15.2 3.6 9.2a4.6 4.6 0 0 1 8.4-2.6 4.6 4.6 0 0 1 8.4 2.6c0 6-8.4 11.2-8.4 11.2z" />
+        </symbol>
+        <symbol id="ico-search" viewBox="0 0 24 24">
+          <circle cx="10.6" cy="10.6" r="6.6" /><path d="M15.4 15.4 21 21" />
+        </symbol>
+        <symbol id="ico-menu" viewBox="0 0 24 24">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </symbol>
+        <symbol id="ico-close" viewBox="0 0 24 24">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </symbol>
+        <symbol id="ico-check" viewBox="0 0 24 24">
+          <path d="M5 12.6 10 17.6 19.4 7" />
+        </symbol>
+        <symbol id="ico-lock" viewBox="0 0 24 24">
+          <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5" />
+          <path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9" />
+        </symbol>
+        <symbol id="ico-star" viewBox="0 0 24 24">
+          <path d="m12 3.2 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17.2l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3.2z" />
+        </symbol>
+      </defs>
+    </svg>
+
     <div class="program-tagline">
       <span class="tagline-brand">Reading Brain</span>
       <span class="tagline-pipe">|</span>
@@ -32,8 +85,20 @@
       </form>
     </section>
 
+    <div class="mobile-bar">
+      <button class="mobile-nav-btn" id="mobileNavBtn" type="button" aria-label="학습 메뉴 열기" aria-expanded="false">
+        <svg class="pmode-ico"><use href="#ico-menu" /></svg>
+      </button>
+      <strong id="mobileTitle">패턴 허브</strong>
+      <span class="mobile-score"><strong id="mobileScoreText">0</strong> P</span>
+    </div>
+    <div class="nav-scrim" id="navScrim" hidden></div>
+
     <div class="app-shell">
       <aside class="sidebar">
+        <button class="sidebar-close" id="sidebarCloseBtn" type="button" aria-label="메뉴 닫기">
+          <svg class="pmode-ico"><use href="#ico-close" /></svg>
+        </button>
         <div class="brand">
           <img src="assets/reading-brain-logo.jpg" alt="Reading Brain" />
           <div>
@@ -146,13 +211,14 @@
         </section>
 
         <nav class="pattern-mode-bar" id="patternModeBar" aria-label="학습 모드">
-          <button class="pmode-btn active" data-pmode="hub"><span class="pmode-ico">🏠</span>허브</button>
-          <button class="pmode-btn" data-pmode="study"><span class="pmode-ico">🃏</span>카드학습</button>
-          <button class="pmode-btn" data-pmode="quiz"><span class="pmode-ico">✏️</span>퀴즈</button>
-          <button class="pmode-btn" data-pmode="match"><span class="pmode-ico">🔗</span>매칭</button>
-          <button class="pmode-btn" data-pmode="blast"><span class="pmode-ico">⚡</span>블래스트</button>
-          <button class="pmode-btn" data-pmode="review"><span class="pmode-ico">🔁</span>복습<span class="pmode-count hidden" id="pmodeReviewCount">0</span></button>
-          <button class="pmode-btn" data-pmode="leaderboard"><span class="pmode-ico">🏆</span>랭킹</button>
+          <button class="pmode-btn active" data-pmode="hub"><svg class="pmode-ico"><use href="#ico-hub" /></svg>허브</button>
+          <button class="pmode-btn" data-pmode="study"><svg class="pmode-ico"><use href="#ico-card" /></svg>카드학습</button>
+          <button class="pmode-btn" data-pmode="quiz"><svg class="pmode-ico"><use href="#ico-quiz" /></svg>퀴즈</button>
+          <button class="pmode-btn" data-pmode="match"><svg class="pmode-ico"><use href="#ico-match" /></svg>매칭</button>
+          <button class="pmode-btn" data-pmode="blast"><svg class="pmode-ico"><use href="#ico-blast" /></svg>블래스트</button>
+          <button class="pmode-btn" data-pmode="review"><svg class="pmode-ico"><use href="#ico-review" /></svg>복습<span class="pmode-count hidden" id="pmodeReviewCount">0</span></button>
+          <button class="pmode-btn" data-pmode="leaderboard"><svg class="pmode-ico"><use href="#ico-rank" /></svg>랭킹</button>
+          <button class="pmode-btn" data-pmode="interpret"><svg class="pmode-ico"><use href="#ico-speak" /></svg>통역 테스트<span class="pmode-lock hidden" id="pmodeInterpretLock">잠김</span></button>
         </nav>
 
         <section id="hubView" class="view active">
@@ -188,8 +254,8 @@
 
             <div class="hub-toolbar">
               <div class="hub-section-title">
-                <span class="eyebrow">Pattern Sections</span>
-                <h3>섹션 선택</h3>
+                <span class="eyebrow">Learning Path</span>
+                <h3>학습 경로</h3>
               </div>
               <div class="hub-group-tabs" id="hubGroupTabs" role="tablist"></div>
               <input
@@ -202,8 +268,77 @@
               />
             </div>
 
-            <div class="hub-grid" id="hubGrid"></div>
+            <div class="hub-path" id="hubPath"></div>
             <p class="hub-empty hidden" id="hubEmpty">검색 결과가 없어요. 다른 단어로 찾아보세요.</p>
+          </div>
+        </section>
+
+        <section id="interpretView" class="view">
+          <div class="interpret-shell">
+            <div class="interpret-locked hidden" id="interpretLocked">
+              <span class="interpret-eyebrow">Locked</span>
+              <h2>아직 잠겨 있어요</h2>
+              <p id="interpretLockedMsg">카드 학습을 100% 마치면 통역 테스트가 열립니다.</p>
+              <div class="interpret-lock-track" aria-hidden="true"><span id="interpretLockBar"></span></div>
+              <button class="primary" id="interpretGoStudy" type="button">카드 학습으로 가기</button>
+            </div>
+
+            <div class="interpret-intro hidden" id="interpretIntro">
+              <span class="interpret-eyebrow">Final Test</span>
+              <h2 id="interpretIntroTitle">통역 테스트</h2>
+              <p id="interpretIntroDesc">한글을 보고 영어로 바로 말하면 됩니다.</p>
+              <ul class="interpret-rules">
+                <li><strong>3 · 2 · 1</strong> 카운트다운이 끝나면 마이크가 켜집니다</li>
+                <li>최대 <strong>8초</strong> 안에 한 문장을 말하세요</li>
+                <li>애매하면 <strong>한 번 더</strong> 기회가 있습니다</li>
+                <li><strong>80% 이상</strong> 통과하면 이 섹션이 클리어됩니다</li>
+              </ul>
+              <p class="interpret-support hidden" id="interpretSupportNote"></p>
+              <button class="primary" id="interpretStartBtn" type="button">테스트 시작</button>
+            </div>
+
+            <div class="interpret-run hidden" id="interpretRun">
+              <div class="interpret-hud">
+                <span id="interpretProgressText">문장 1 / 1</span>
+                <span class="interpret-hud-stat">통과 <strong id="interpretPassText">0</strong></span>
+                <button class="ghost small" id="interpretStopBtn" type="button">그만두기</button>
+              </div>
+              <div class="interpret-track" aria-hidden="true"><span id="interpretBar"></span></div>
+
+              <div class="interpret-stage">
+                <p class="interpret-korean" id="interpretKorean">한국어 문장</p>
+                <div class="interpret-status" id="interpretStatus">
+                  <span class="interpret-count" id="interpretCount">3</span>
+                  <span class="interpret-status-text" id="interpretStatusText">준비하세요</span>
+                </div>
+                <p class="interpret-heard" id="interpretHeard"></p>
+                <div class="interpret-verdict hidden" id="interpretVerdict">
+                  <strong id="interpretVerdictLabel">통과</strong>
+                  <p id="interpretAnswer"></p>
+                </div>
+                <div class="interpret-self hidden" id="interpretSelf">
+                  <button class="study-mark-btn know" id="interpretSelfPass" type="button">
+                    <span>말했어요</span><small>정답과 같게 말함</small>
+                  </button>
+                  <button class="study-mark-btn unsure" id="interpretSelfFail" type="button">
+                    <span>못 했어요</span><small>다시 연습할래요</small>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="interpret-result hidden" id="interpretResult">
+              <div class="interpret-result-ring" id="interpretResultRing" style="--p: 0">
+                <strong id="interpretResultPercent">0%</strong>
+              </div>
+              <h2 id="interpretResultTitle">결과</h2>
+              <p id="interpretResultDetail"></p>
+              <div class="interpret-missed" id="interpretMissed"></div>
+              <div class="interpret-result-actions">
+                <button class="primary" id="interpretRetryBtn" type="button">다시 도전</button>
+                <button class="ghost" id="interpretBackBtn" type="button">허브로 돌아가기</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -303,7 +438,7 @@
             <div class="blast-hud">
               <strong id="blastScoreText">0</strong>
               <span id="blastWaveText">Wave 1</span>
-              <div id="blastLivesText" class="blast-lives">♥♥♥</div>
+              <div id="blastLivesText" class="blast-lives"></div>
             </div>
             <div id="blastArena" class="blast-arena">
               <div id="blastOverlay" class="blast-overlay">
@@ -412,7 +547,7 @@
                 <div class="blast-hud">
                   <strong id="bqBlastScoreText">0</strong>
                   <span id="bqBlastWaveText">Wave 1</span>
-                  <div id="bqBlastLivesText" class="blast-lives">♥♥♥</div>
+                  <div id="bqBlastLivesText" class="blast-lives"></div>
                 </div>
                 <div id="bqBlastArena" class="blast-arena">
                   <div id="bqBlastOverlay" class="blast-overlay">
@@ -502,7 +637,7 @@
                 <div class="blast-hud">
                   <strong id="verbBlastScoreText">0</strong>
                   <span id="verbBlastWaveText">Wave 1</span>
-                  <div id="verbBlastLivesText" class="blast-lives">♥♥♥</div>
+                  <div id="verbBlastLivesText" class="blast-lives"></div>
                 </div>
                 <div id="verbBlastArena" class="blast-arena">
                   <div id="verbBlastOverlay" class="blast-overlay">
@@ -523,7 +658,8 @@
     <script src="data/verbs.js"></script>
     <script src="data/bookquiz.js"></script>
     <script src="learning-dashboard-model.js?v=20260627-dashboard"></script>
-    <script src="pattern-hub-model.js?v=20260818-pattern-hub"></script>
-    <script src="app.js?v=20260818-pattern-hub"></script>
+    <script src="pattern-hub-model.js?v=20260818-path"></script>
+    <script src="interpretation-model.js?v=20260818-path"></script>
+    <script src="app.js?v=20260818-calm"></script>
   </body>
 </html>

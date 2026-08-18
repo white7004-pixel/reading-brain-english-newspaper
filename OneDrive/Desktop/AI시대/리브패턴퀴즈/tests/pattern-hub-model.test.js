@@ -6,6 +6,9 @@ const {
   filterSections,
   findNextSection,
   summarizeDaily,
+  applyPathState,
+  findCurrentSection,
+  buildUnits,
 } = require("../pattern-hub-model.js");
 
 const SAMPLE = [
@@ -126,6 +129,88 @@ function testSummarizeDaily() {
   assert.equal(empty.done, false);
 }
 
+// 경로용 가짜 섹션 — buildSections 를 거치지 않고 직접 만든다.
+function pathSections(specs) {
+  return specs.map((spec, index) => ({
+    key: `k${index + 1}`,
+    number: index + 1,
+    title: `섹션 ${index + 1}`,
+    group: "basic",
+    total: 10,
+    mastered: spec.mastered || 0,
+    percent: (spec.mastered || 0) * 10,
+    status: "new",
+  }));
+}
+
+function testApplyPathState() {
+  const sections = pathSections([{}, {}, {}, {}]);
+
+  // 아무것도 클리어하지 않았으면 첫 섹션만 열린다.
+  const fresh = applyPathState(sections, []);
+  assert.deepEqual(fresh.map((s) => s.unlocked), [true, false, false, false]);
+  assert.deepEqual(fresh.map((s) => s.pathStatus), ["available", "locked", "locked", "locked"]);
+
+  // 클리어하면 그 다음 하나가 열린다.
+  const afterFirst = applyPathState(sections, ["k1"]);
+  assert.deepEqual(afterFirst.map((s) => s.unlocked), [true, true, false, false]);
+  assert.deepEqual(afterFirst.map((s) => s.pathStatus), ["cleared", "available", "locked", "locked"]);
+
+  // 이미 진도가 있는 섹션은 순서와 무관하게 열어 둔다 — 기존 학생을 막지 않기 위해서다.
+  const withProgress = applyPathState(pathSections([{}, {}, { mastered: 4 }, {}]), []);
+  assert.deepEqual(withProgress.map((s) => s.unlocked), [true, false, true, false]);
+  assert.equal(withProgress[2].pathStatus, "learning");
+
+  // 클리어 표시는 진도와 무관하게 유지된다.
+  const clearedLater = applyPathState(pathSections([{}, {}, {}, {}]), ["k3"]);
+  assert.equal(clearedLater[2].pathStatus, "cleared");
+  assert.equal(clearedLater[3].unlocked, true);
+
+  // Set 도 받는다.
+  assert.equal(applyPathState(sections, new Set(["k1"]))[1].unlocked, true);
+
+  assert.deepEqual(applyPathState([], []), []);
+}
+
+function testFindCurrentSection() {
+  const sections = applyPathState(pathSections([{}, {}, {}]), ["k1"]);
+  assert.equal(findCurrentSection(sections).key, "k2");
+
+  const allCleared = applyPathState(pathSections([{}, {}]), ["k1", "k2"]);
+  assert.equal(findCurrentSection(allCleared), null);
+
+  assert.equal(findCurrentSection([]), null);
+}
+
+function testBuildUnits() {
+  const sections = applyPathState(pathSections([{}, {}, {}, {}, {}, {}, {}]), ["k1", "k2"]);
+  const units = buildUnits(sections, 3);
+
+  assert.equal(units.length, 3);
+  assert.deepEqual(units.map((u) => u.sections.length), [3, 3, 1]);
+  assert.equal(units[0].label, "UNIT 1");
+  assert.equal(units[0].range, "01 – 03");
+  assert.equal(units[0].clearedCount, 2);
+  assert.equal(units[0].total, 3);
+  assert.equal(units[0].unlocked, true);
+
+  // 유닛은 첫 섹션이 열려 있을 때 열린 것으로 본다. 03 을 아직 클리어하지
+  // 않았으므로 04 로 시작하는 다음 유닛은 잠겨 있다.
+  assert.equal(units[1].unlocked, false);
+  assert.equal(units[2].unlocked, false);
+
+  // 유닛 1 의 마지막 섹션을 클리어하면 다음 유닛이 열린다.
+  const advanced = buildUnits(
+    applyPathState(pathSections([{}, {}, {}, {}, {}, {}, {}]), ["k1", "k2", "k3"]),
+    3,
+  );
+  assert.equal(advanced[1].unlocked, true);
+  assert.equal(advanced[1].clearedCount, 0);
+  assert.equal(advanced[2].unlocked, false);
+
+  assert.deepEqual(buildUnits([], 3), []);
+}
+
 function run() {
   testParseSectionName();
   testBuildSections();
@@ -133,6 +218,9 @@ function run() {
   testFilterSections();
   testFindNextSection();
   testSummarizeDaily();
+  testApplyPathState();
+  testFindCurrentSection();
+  testBuildUnits();
   console.log("pattern-hub-model tests passed");
 }
 

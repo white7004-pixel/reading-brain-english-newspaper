@@ -147,6 +147,65 @@
     };
   }
 
+  // ── 듀오링고식 학습 경로 ────────────────────────────────
+  //
+  // 잠금 규칙: 첫 섹션은 항상 열려 있고, 그 뒤로는 바로 앞 섹션을
+  // 클리어해야 열린다. 다만 이미 진도가 있는 섹션은 순서와 무관하게
+  // 열어 둔다 — 경로를 도입하면서 기존 학생의 진도를 막지 않기 위해서다.
+  function applyPathState(sections, clearedKeys) {
+    const list = Array.isArray(sections) ? sections : [];
+    const clearedSet = clearedKeys instanceof Set
+      ? clearedKeys
+      : new Set(Array.isArray(clearedKeys) ? clearedKeys : []);
+
+    return list.map((section, index) => {
+      const cleared = clearedSet.has(section.key);
+      const previous = index > 0 ? list[index - 1] : null;
+      const unlocked =
+        index === 0 || cleared || section.mastered > 0 || clearedSet.has(previous.key);
+
+      let pathStatus = "locked";
+      if (cleared) pathStatus = "cleared";
+      else if (unlocked) pathStatus = section.mastered > 0 ? "learning" : "available";
+
+      return { ...section, cleared, unlocked, pathStatus };
+    });
+  }
+
+  // 학생이 지금 붙어야 할 섹션 — 열려 있으면서 아직 클리어하지 않은 첫 칸.
+  function findCurrentSection(sections) {
+    const list = Array.isArray(sections) ? sections : [];
+    return list.find((section) => section.unlocked && !section.cleared) || null;
+  }
+
+  function buildUnits(sections, size = 6) {
+    const list = Array.isArray(sections) ? sections : [];
+    const step = Math.max(1, Number(size) || 6);
+    const units = [];
+
+    for (let start = 0; start < list.length; start += step) {
+      const members = list.slice(start, start + step);
+      const index = units.length;
+      const first = members[0];
+      const last = members[members.length - 1];
+      const label = (section) =>
+        section.number === null ? "··" : String(section.number).padStart(2, "0");
+
+      units.push({
+        index,
+        label: `UNIT ${index + 1}`,
+        range: `${label(first)} – ${label(last)}`,
+        title: first.title,
+        sections: members,
+        total: members.length,
+        clearedCount: members.filter((section) => section.cleared).length,
+        unlocked: Boolean(first.unlocked),
+      });
+    }
+
+    return units;
+  }
+
   return {
     parseSectionName,
     buildSections,
@@ -154,5 +213,8 @@
     filterSections,
     findNextSection,
     summarizeDaily,
+    applyPathState,
+    findCurrentSection,
+    buildUnits,
   };
 });
