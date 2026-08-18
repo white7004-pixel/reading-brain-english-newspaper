@@ -39,3 +39,7 @@ it("measures the longest sentence in a passage", () => {
 it("ignores empty sentence fragments when measuring", () => {
   expect(longestSentenceWords(["Rain falls.  ", ""])).toBe(2);
 });
+
+it("ends a sentence that closes with a quotation mark", () => {
+  expect(longestSentenceWords(['Each one says, "I see you." Learning a greeting is a kind gift.'])).toBe(7);
+});

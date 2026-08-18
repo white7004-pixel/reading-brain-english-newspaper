@@ -1,4 +1,5 @@
 import { ageBoundsForInterestBand } from "./content-taxonomy";
+import { createLibraryDrafts } from "./library";
 import { deepFreeze, parsePublicArticle } from "./public-article-schema";
 import { REVIEW_CHECKLISTS } from "./studio-workflow";
 import type { ReviewStage, StageReviewRecord, StudioArticle } from "./studio-types";
@@ -7,7 +8,10 @@ import { SAMPLE_ARTICLES } from "./sample-content";
 import type { Article } from "./types";
 
 export function createSeedStudioState(): StudioState {
-  return { schemaVersion: 3, articles: SAMPLE_ARTICLES.map(createSeedStudioArticle) };
+  return {
+    schemaVersion: 3,
+    articles: [...SAMPLE_ARTICLES.map(createSeedStudioArticle), ...createLibraryDrafts()],
+  };
 }
 
 function createSeedStudioArticle(article: Article): StudioArticle {

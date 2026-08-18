@@ -71,7 +71,7 @@ export function countWords(pages: string[]): number {
 
 export function longestSentenceWords(pages: string[]): number {
   return pages
-    .flatMap((page) => page.split(/(?<=[.!?])\s+/))
+    .flatMap((page) => page.split(/(?<=[.!?]["'”’]?)\s+/))
     .map((sentence) => sentence.split(/\s+/).filter(Boolean).length)
     .reduce((longest, length) => Math.max(longest, length), 0);
 }
