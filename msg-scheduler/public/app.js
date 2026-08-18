@@ -15,6 +15,8 @@ const state = {
   // 빠른 예약
   selectedPreset: null,
   customAt: '',
+  pickedAtMs: null,
+  showAllPresets: false,
   quickRecipients: new Set(),
   // 반복 예약 폼
   editingId: null,
@@ -50,14 +52,51 @@ async function api(path, options = {}) {
   return data;
 }
 
-function toast(message, kind = '') {
+function toast(message, kind = '', action = null) {
   // 새 알림이 이전 알림을 가리지 않도록 항상 하나만 띄운다.
   $$('.toast').forEach((old) => old.remove());
   const el = document.createElement('div');
   el.className = `toast ${kind}`;
   el.textContent = message;
+  if (action) {
+    const btn = document.createElement('button');
+    btn.className = 'toast-action';
+    btn.textContent = action.label;
+    btn.addEventListener('click', () => {
+      el.remove();
+      action.onClick();
+    });
+    el.appendChild(btn);
+  }
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), kind === 'err' ? 6000 : 3600);
+  // 실행 취소가 달린 토스트는 누를 시간을 넉넉히 준다.
+  setTimeout(() => el.remove(), action ? 8000 : kind === 'err' ? 6000 : 3600);
+}
+
+/** "17시간 뒤"처럼 남은 시간을 감각적으로. 시간 계산 부담을 덜어주는 표기다. */
+function fmtRelative(atMs) {
+  const diff = atMs - Date.now();
+  if (diff <= 0) return '';
+  const min = Math.round(diff / 60000);
+  if (min < 1) return '곧';
+  if (min < 60) return `${min}분 뒤`;
+  const hours = Math.round(min / 60);
+  if (hours < 24) return `약 ${hours}시간 뒤`;
+  return `약 ${Math.round(hours / 24)}일 뒤`;
+}
+
+/** 예약 완료를 짧고 확실하게 보여준다. */
+function celebrate(when, atMs) {
+  const rel = atMs ? fmtRelative(atMs) : '';
+  const el = document.createElement('div');
+  el.className = 'success-pop';
+  el.innerHTML = `<div class="success-card">
+    <div class="success-check">✓</div>
+    <div class="success-title">예약 완료</div>
+    <div class="success-when"><b>${escapeHtml(when)}</b>${rel ? ` · ${escapeHtml(rel)}` : ''}에 나갑니다</div>
+  </div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
 }
 
 function escapeHtml(value) {
@@ -94,6 +133,9 @@ async function boot() {
     quietHours: data.quietHours,
   });
   state.quickRecipients = new Set((data.lastRecipientIds || []).filter((id) => state.recipients.some((r) => r.id === id)));
+  if (!state.quickRecipients.size && state.recipients.length === 1) {
+    state.quickRecipients.add(state.recipients[0].id);
+  }
 
   $('#tzLabel').textContent = `· ${data.timeZone}`;
   $('#timeZone').value = data.timeZone;
@@ -131,6 +173,10 @@ $('#goQuick').addEventListener('click', () => switchTab('quick'));
 // ---------------------------------------------------------------- 빠른 예약: 임시저장
 
 let draftTimer = null;
+
+$('#quickMessage').addEventListener('keydown', (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') $('#quickSubmit').click();
+});
 
 $('#quickMessage').addEventListener('input', () => {
   clearTimeout(draftTimer);
@@ -179,17 +225,40 @@ function clearDraft() {
 
 function renderPresets() {
   const box = $('#presetChips');
-  const chips = state.presets
-    .map(
-      (p) => `<button type="button" class="chip time ${p.key === state.selectedPreset ? 'on' : ''} ${p.quiet ? 'moon' : ''}"
-        data-preset="${p.key}">${escapeHtml(p.label)}<small>${escapeHtml(p.when)}</small></button>`,
-    )
-    .join('');
+  const presets = state.presets;
+  const firstOf = (...keys) => keys.find((k) => presets.some((p) => p.key === k));
+  const primary = firstOf('today-morning', 'tomorrow-morning');
+
+  // 아무것도 안 골랐으면 "다음 아침"을 골라둔다. 메시지만 쓰면 바로 예약할 수 있게.
+  if (!state.selectedPreset && primary) {
+    state.selectedPreset = primary;
+    const preset = presets.find((p) => p.key === primary);
+    state.pickedAtMs = preset?.atMs || null;
+  }
+
+  // 선택지는 4개만 먼저 보여준다. 많으면 고르다가 지친다.
+  const mainKeys = [primary, 'in-1h', firstOf('today-evening', 'tomorrow-evening'), firstOf('today-lunch', 'tomorrow-lunch')].filter(Boolean);
+  const main = mainKeys.map((k) => presets.find((p) => p.key === k)).filter(Boolean);
+  const rest = presets.filter((p) => !mainKeys.includes(p.key));
+  const showRest = state.showAllPresets || rest.some((p) => p.key === state.selectedPreset);
+
+  const chipHtml = (p) => `<button type="button" class="chip time ${p.key === state.selectedPreset ? 'on' : ''} ${p.quiet ? 'moon' : ''}"
+    data-preset="${p.key}">${escapeHtml(p.label)}<small>${escapeHtml(p.when)} · ${fmtRelative(p.atMs)}</small></button>`;
+
   const customOn = state.selectedPreset === '__custom__';
-  box.innerHTML = `${chips}<button type="button" class="chip time ${customOn ? 'on' : ''}" data-preset="__custom__">직접 고르기<small>날짜·시각 지정</small></button>`;
+  box.innerHTML = [
+    ...main.map(chipHtml),
+    ...(showRest ? rest.map(chipHtml) : []),
+    `<button type="button" class="chip time ${customOn ? 'on' : ''}" data-preset="__custom__">직접 고르기<small>날짜·시각 지정</small></button>`,
+    showRest ? '' : `<button type="button" class="chip more" data-more>+ 다른 시간</button>`,
+  ].join('');
 
   box.querySelectorAll('[data-preset]').forEach((chip) => {
     chip.addEventListener('click', () => selectPreset(chip.dataset.preset));
+  });
+  box.querySelector('[data-more]')?.addEventListener('click', () => {
+    state.showAllPresets = true;
+    renderPresets();
   });
   $('#customTimeBox').style.display = customOn ? 'block' : 'none';
   updateSubmitLabel();
@@ -204,6 +273,7 @@ async function selectPreset(key) {
     return;
   }
   const preset = state.presets.find((p) => p.key === key);
+  state.pickedAtMs = preset?.atMs || null;
   showQuietNotice(preset?.quiet ? { when: preset.when } : null);
   updateSubmitLabel();
 }
@@ -226,6 +296,7 @@ async function checkTime() {
       showQuietNotice(null, '이미 지난 시각입니다. 다른 시간을 골라주세요.');
       return;
     }
+    state.pickedAtMs = data.atMs;
     showQuietNotice(data.quiet ? data : null);
     updateSubmitLabel(data.when);
   } catch (err) {
@@ -278,6 +349,8 @@ function updateSubmitLabel(whenOverride) {
     when = state.customAt.replace('T', ' ');
   }
   button.textContent = when ? `${when}에 예약하기` : '예약하기';
+  const rel = state.pickedAtMs ? fmtRelative(state.pickedAtMs) : '';
+  $('#sendCaption').innerHTML = rel ? `지금부터 <b>${escapeHtml(rel)}</b>에 나갑니다` : '';
 }
 
 /** 시간이 흐르면 "오늘 오전 9시" 같은 후보가 지나가므로 주기적으로 새로 받아온다. */
@@ -285,8 +358,14 @@ async function refreshPresets() {
   try {
     const data = await api('/api/quick/presets');
     state.presets = data.presets;
-    if (state.selectedPreset && state.selectedPreset !== '__custom__' && !data.presets.some((p) => p.key === state.selectedPreset)) {
-      state.selectedPreset = null;
+    if (state.selectedPreset && state.selectedPreset !== '__custom__') {
+      const found = data.presets.find((p) => p.key === state.selectedPreset);
+      if (!found) {
+        state.selectedPreset = null;
+        state.pickedAtMs = null;
+      } else {
+        state.pickedAtMs = found.atMs;
+      }
     }
     renderPresets();
   } catch {
@@ -347,14 +426,16 @@ $('#quickSubmit').addEventListener('click', async () => {
       method: 'POST',
       body: { message, ...time, recipientIds: [...state.quickRecipients] },
     });
-    toast(`${data.when}에 발송됩니다.`, 'ok');
+    celebrate(data.when, data.job?.nextRunMs || null);
     $('#quickMessage').value = '';
     clearDraft();
     state.selectedPreset = null;
     state.customAt = '';
+    state.pickedAtMs = null;
+    state.showAllPresets = false;
     $('#quickCustomAt').value = '';
     showQuietNotice(null);
-    renderPresets();
+    renderPresets(); // 다음 예약을 위해 "다음 아침"이 다시 자동 선택된다
     await reloadJobsAndLogs();
   } catch (err) {
     toast(err.message, 'err');
@@ -375,7 +456,7 @@ function renderUpcoming() {
     .map(
       (job) => `<div class="upcoming-row">
         <span class="what">${escapeHtml(job.message.split('\n')[0])}</span>
-        <span class="when">${escapeHtml(job.nextRunWhen || job.nextRunText)}</span>
+        <span class="when">${escapeHtml(job.nextRunWhen || job.nextRunText)} · ${fmtRelative(job.nextRunMs)}</span>
       </div>`,
     )
     .join('');
@@ -412,7 +493,7 @@ function jobCard(job) {
     : '';
   const next = job.enabled
     ? job.nextRunWhen
-      ? `다음 발송 ${escapeHtml(job.nextRunWhen)}`
+      ? `다음 발송 ${escapeHtml(job.nextRunWhen)} · ${fmtRelative(job.nextRunMs)}`
       : '예정된 발송 없음'
     : '중지됨';
 
@@ -471,13 +552,43 @@ async function handleJobAction(action, id) {
       return;
     }
     if (action === 'delete') {
-      if (!confirm(`"${job.name}" 예약을 삭제할까요?`)) return;
+      // 확인창은 읽지 않고 눌러버리기 쉽다. 바로 지우되 되돌릴 수 있게 한다.
       await api(`/api/jobs/${id}`, { method: 'DELETE' });
-      toast('삭제했습니다.', 'ok');
       await reloadJobsAndLogs();
+      toast(`"${job.name}" 삭제됨`, '', { label: '되돌리기', onClick: () => restoreJob(job) });
     }
   } catch (err) {
     toast(err.message, 'err');
+  }
+}
+
+/** 삭제 직후 실행 취소: 같은 내용으로 예약을 다시 만든다. */
+async function restoreJob(job) {
+  const known = (id) => state.recipients.some((r) => r.id === id);
+  const recipientIds = job.targets.filter((t) => t.recipientId && known(t.recipientId)).map((t) => t.recipientId);
+  const targets = job.targets
+    .filter((t) => !(t.recipientId && known(t.recipientId)))
+    .map((t) => ({ channel: t.channel, target: t.target || {} }));
+  try {
+    await api('/api/jobs', {
+      method: 'POST',
+      body: {
+        name: job.name,
+        message: job.message,
+        timeZone: job.timeZone,
+        schedule:
+          job.schedule.type === 'once'
+            ? { type: 'once', runAt: job.schedule.runAt }
+            : { type: 'cron', cron: job.schedule.cron, preset: job.schedule.preset || undefined },
+        targets,
+        recipientIds,
+        enabled: job.enabled,
+      },
+    });
+    toast('되돌렸습니다.', 'ok');
+    await reloadJobsAndLogs();
+  } catch (err) {
+    toast(`되돌리기 실패: ${err.message}`, 'err');
   }
 }
 

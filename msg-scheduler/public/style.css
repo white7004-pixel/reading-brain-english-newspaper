@@ -503,3 +503,64 @@ code.inline { background: var(--surface-2); border-radius: 6px; padding: 2px 6px
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+
+/* ───────────────────────── ADHD 친화 요소 ───────────────────────── */
+
+/* 단계 번호: 지금 어디까지 왔는지 한눈에 */
+.step-n {
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px; margin-right: 7px;
+  border-radius: var(--r-full);
+  background: var(--accent-soft); color: var(--accent);
+  font-size: 12px; font-weight: 800; vertical-align: -3px;
+}
+
+/* 접힌 시간 선택지를 여는 칩 */
+.chip.more {
+  color: var(--text-3);
+  background: transparent;
+  border-style: dashed;
+}
+
+/* 예약 버튼 아래: 상대 시간으로 "언제 나가는지" 감각 보조 */
+.send-caption {
+  text-align: center; margin-top: 10px; min-height: 18px;
+  font-size: 13px; color: var(--text-3);
+}
+.send-caption b { color: var(--accent); font-weight: 700; }
+
+/* 실행 취소 버튼이 달린 토스트 */
+.toast .toast-action {
+  margin-left: 12px; border: 0; cursor: pointer; font: inherit;
+  font-size: 13px; font-weight: 800; color: inherit;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 5px 12px; border-radius: var(--r-full);
+}
+
+/* 예약 완료: 짧고 확실한 보상 피드백 */
+.success-pop {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(2px);
+  animation: fade 0.18s ease;
+  pointer-events: none;
+}
+.success-card {
+  background: var(--surface); border-radius: var(--r-xl);
+  padding: 28px 36px; text-align: center; box-shadow: var(--shadow-lg);
+  animation: popIn 0.34s var(--ease);
+}
+.success-check {
+  width: 54px; height: 54px; margin: 0 auto 12px;
+  border-radius: var(--r-full); display: grid; place-items: center;
+  background: var(--ok); color: #fff; font-size: 28px; font-weight: 800;
+}
+.success-title { font-size: 17px; font-weight: 800; }
+.success-when { margin-top: 4px; font-size: 14px; color: var(--text-2); }
+.success-when b { color: var(--accent); }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.86); }
+  to { opacity: 1; transform: none; }
+}

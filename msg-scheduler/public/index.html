@@ -39,14 +39,14 @@
       </div>
       <textarea id="quickMessage" placeholder="예) 김선생님께 내일 교재 주문 확인 부탁드린다고 전하기" autofocus></textarea>
 
-      <h3>언제 보낼까요?</h3>
+      <h3><span class="step-n">1</span>언제 보낼까요?</h3>
       <div class="chips" id="presetChips"></div>
       <div id="customTimeBox" style="display:none;margin-top:10px">
         <input type="datetime-local" id="quickCustomAt" />
       </div>
       <div class="notice" id="quietNotice" style="display:none"></div>
 
-      <h3>어디로 보낼까요?</h3>
+      <h3><span class="step-n">2</span>어디로 보낼까요?</h3>
       <div class="chips" id="recipientChips"></div>
       <div class="empty-inline" id="noRecipients" style="display:none">
         보낼 곳이 아직 없습니다. 자주 보내는 사람이나 대화방을 한 번만 등록해두면 다음부터는 누르기만 하면 됩니다.
@@ -54,6 +54,7 @@
       <button type="button" class="btn ghost small" id="addRecipientQuick" style="margin-top:10px">+ 받는 곳 추가</button>
 
       <button type="button" class="btn big" id="quickSubmit">예약하기</button>
+      <div class="send-caption" id="sendCaption"></div>
     </div>
 
     <div class="card" id="upcomingCard">
