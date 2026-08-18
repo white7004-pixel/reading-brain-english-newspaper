@@ -4,9 +4,10 @@ import * as slack from './slack.js';
 import * as kakaowork from './kakaowork.js';
 import * as kakaotalk from './kakaotalk.js';
 import * as sms from './sms.js';
+import * as telegram from './telegram.js';
 import * as webhook from './webhook.js';
 
-export const channels = { slack, kakaotalk, kakaowork, sms, webhook };
+export const channels = { slack, kakaotalk, kakaowork, telegram, sms, webhook };
 
 export const CHANNEL_KEYS = Object.keys(channels);
 

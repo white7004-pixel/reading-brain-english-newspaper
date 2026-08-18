@@ -844,6 +844,33 @@ function renderChannelSettings() {
   $('#channelSettings').innerHTML = state.channels.map(channelSettingCard).join('');
   $$('[data-save-channel]').forEach((btn) => btn.addEventListener('click', () => saveChannel(btn.dataset.saveChannel)));
   $$('[data-test-channel]').forEach((btn) => btn.addEventListener('click', () => testChannel(btn.dataset.testChannel)));
+  $('#findTelegramChats')?.addEventListener('click', findTelegramChats);
+}
+
+/** 봇이 받은 최근 메시지에서 chat_id를 찾아, 하나면 바로 입력칸에 넣어준다. */
+async function findTelegramChats() {
+  try {
+    const { chats } = await api('/api/channels/telegram/chats');
+    if (!chats.length) {
+      toast('아직 봇이 받은 메시지가 없습니다. 봇에게 아무 메시지나 보낸 뒤 다시 눌러주세요.', 'err');
+      return;
+    }
+    const input = $('[data-conf="telegram.defaultChatId"]');
+    if (chats.length === 1) {
+      if (input) input.value = chats[0].id;
+      toast(`"${chats[0].name}" (${chats[0].id})을 기본 대화방에 넣었습니다. [설정 저장]을 눌러주세요.`, 'ok');
+      return;
+    }
+    const lines = chats.map((c, i) => `${i + 1}. ${c.name} (${c.type}) — ${c.id}`).join('\n');
+    const pick = prompt(`찾은 대화방입니다. 번호를 입력하면 기본 대화방에 넣어드립니다.\n\n${lines}`, '1');
+    const chosen = chats[Number(pick) - 1];
+    if (chosen && input) {
+      input.value = chosen.id;
+      toast(`"${chosen.name}" (${chosen.id}) 선택됨. [설정 저장]을 눌러주세요.`, 'ok');
+    }
+  } catch (err) {
+    toast(err.message, 'err');
+  }
 }
 
 function channelSettingCard(meta) {
@@ -871,10 +898,12 @@ function channelSettingCard(meta) {
     })
     .join('');
 
-  const kakaoAuth =
+  const extra =
     meta.key === 'kakaotalk'
       ? '<a class="btn ghost small" href="/oauth/kakao/start" target="_blank" rel="noopener">카카오 인증하기</a>'
-      : '';
+      : meta.key === 'telegram'
+        ? '<button type="button" class="btn ghost small" id="findTelegramChats">대화방 찾기</button>'
+        : '';
 
   return `
   <div class="card">
@@ -887,7 +916,7 @@ function channelSettingCard(meta) {
     <div class="stack">
       <button class="btn small" data-save-channel="${meta.key}">설정 저장</button>
       <button class="btn ghost small" data-test-channel="${meta.key}">테스트 발송</button>
-      ${kakaoAuth}
+      ${extra}
     </div>
   </div>`;
 }

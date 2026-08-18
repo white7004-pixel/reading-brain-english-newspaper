@@ -40,6 +40,10 @@ const ENV_MAP = {
     accessToken: 'KAKAO_ACCESS_TOKEN',
     refreshToken: 'KAKAO_REFRESH_TOKEN',
   },
+  telegram: {
+    botToken: 'TELEGRAM_BOT_TOKEN',
+    defaultChatId: 'TELEGRAM_DEFAULT_CHAT_ID',
+  },
   sms: {
     provider: 'SMS_PROVIDER',
     apiKey: 'SMS_API_KEY',

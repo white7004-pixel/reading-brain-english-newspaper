@@ -17,6 +17,7 @@ import { Store } from './src/store.js';
 import { Scheduler, renderMessage } from './src/scheduler.js';
 import { channelCatalog, getChannel, CHANNEL_KEYS } from './src/channels/index.js';
 import * as kakaotalk from './src/channels/kakaotalk.js';
+import * as telegram from './src/channels/telegram.js';
 import { parseCron, buildCron, describeCron, nextRunAfter } from './src/cron.js';
 import { parseLocalDateTime, formatInZone, isValidTimeZone } from './src/time.js';
 import { quickPresets, resolveQuickPreset, isQuietTime, nextMorning, titleFromMessage, dayLabel } from './src/quick.js';
@@ -300,6 +301,16 @@ async function handleApi(req, res, url) {
     });
   }
 
+  // 텔레그램 봇이 최근 받은 메시지에서 chat_id 목록을 뽑아준다.
+  if (pathname === '/api/channels/telegram/chats' && method === 'GET') {
+    try {
+      const chats = await telegram.listChats({ config: { ...store.getChannelConfig('telegram') } });
+      return sendJson(res, 200, { chats });
+    } catch (err) {
+      return sendJson(res, 400, { error: err.message });
+    }
+  }
+
   if (segments[1] === 'channels' && segments[2] && segments[3] === 'test' && method === 'POST') {
     const key = segments[2];
     if (!CHANNEL_KEYS.includes(key)) return sendJson(res, 404, { error: '알 수 없는 채널' });
@@ -514,6 +525,8 @@ function isConfigured(meta, config) {
       return Boolean(config.accessToken || config.refreshToken);
     case 'kakaowork':
       return Boolean(config.appKey);
+    case 'telegram':
+      return Boolean(config.botToken);
     case 'sms':
       return Boolean(config.apiKey && config.apiSecret && config.from);
     case 'webhook':

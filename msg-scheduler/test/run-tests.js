@@ -320,6 +320,71 @@ test('주소록: 추가·수정·삭제가 저장된다', () => {
   fs.rmSync(dir, { recursive: true, force: true });
 });
 
+// ---- 텔레그램 ----
+
+test('텔레그램: 봇 API 형식으로 메시지를 보낸다', async () => {
+  const { server, base, calls } = await mockTelegram();
+  const telegram = await import('../src/channels/telegram.js');
+  const result = await telegram.send({
+    config: { botToken: 'TOKEN', apiBase: base },
+    target: { chatId: '12345' },
+    message: '안녕하세요',
+  });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].path, '/botTOKEN/sendMessage');
+  assert.deepEqual(calls[0].body, { chat_id: '12345', text: '안녕하세요' });
+  assert.match(result.detail, /12345/);
+  await new Promise((r) => server.close(r));
+});
+
+test('텔레그램: 4000자를 넘으면 나눠 보낸다', async () => {
+  const { server, base, calls } = await mockTelegram();
+  const telegram = await import('../src/channels/telegram.js');
+  await telegram.send({
+    config: { botToken: 'TOKEN', defaultChatId: '77', apiBase: base },
+    message: '가'.repeat(9000),
+  });
+  assert.equal(calls.length, 3);
+  assert.match(calls[0].body.text, /\(1\/3\)$/);
+  assert.equal(calls[0].body.chat_id, '77', '대상을 안 주면 기본 chat_id를 쓴다');
+  await new Promise((r) => server.close(r));
+});
+
+test('텔레그램: 대화방 목록을 getUpdates에서 중복 없이 뽑는다', async () => {
+  const updates = [
+    { message: { chat: { id: 111, type: 'private', first_name: '김', last_name: '선생' } } },
+    { message: { chat: { id: 111, type: 'private', first_name: '김', last_name: '선생' } } },
+    { message: { chat: { id: -100200, type: 'group', title: '학원 공지방' } } },
+  ];
+  const { server, base } = await mockTelegram({ updates });
+  const telegram = await import('../src/channels/telegram.js');
+  const chats = await telegram.listChats({ config: { botToken: 'TOKEN', apiBase: base } });
+  assert.equal(chats.length, 2);
+  assert.deepEqual(chats[0], { id: 111, name: '김 선생', type: 'private' });
+  assert.deepEqual(chats[1], { id: -100200, name: '학원 공지방', type: 'group' });
+  await new Promise((r) => server.close(r));
+});
+
+async function mockTelegram({ updates = [] } = {}) {
+  const http = await import('node:http');
+  const calls = [];
+  const server = http.createServer((req, res) => {
+    let body = '';
+    req.on('data', (c) => (body += c));
+    req.on('end', () => {
+      res.setHeader('Content-Type', 'application/json');
+      if (req.url.includes('/getUpdates')) {
+        res.end(JSON.stringify({ ok: true, result: updates }));
+        return;
+      }
+      calls.push({ path: req.url, body: body ? JSON.parse(body) : null });
+      res.end(JSON.stringify({ ok: true, result: { message_id: calls.length } }));
+    });
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  return { server, base: `http://127.0.0.1:${server.address().port}`, calls };
+}
+
 // ---- 테스트용 로컬 수신 서버 (웹훅 채널을 그대로 쓴다) ----
 
 async function withMockChannel({ fail = false } = {}) {
