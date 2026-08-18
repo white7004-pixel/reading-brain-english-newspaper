@@ -18,6 +18,7 @@ import { Scheduler, renderMessage } from './src/scheduler.js';
 import { channelCatalog, getChannel, CHANNEL_KEYS } from './src/channels/index.js';
 import * as kakaotalk from './src/channels/kakaotalk.js';
 import * as telegram from './src/channels/telegram.js';
+import * as line from './src/channels/line.js';
 import { parseCron, buildCron, describeCron, nextRunAfter } from './src/cron.js';
 import { parseLocalDateTime, formatInZone, isValidTimeZone } from './src/time.js';
 import { quickPresets, resolveQuickPreset, isQuietTime, nextMorning, titleFromMessage, dayLabel } from './src/quick.js';
@@ -48,6 +49,10 @@ const MIME = {
 
 const server = http.createServer(async (req, res) => {
   try {
+    const url0 = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    // 외부 서비스가 호출하는 웹훅은 Authorization 헤더를 못 보내므로
+    // 비밀번호 검사 대신 각 서비스의 서명 검증을 쓴다.
+    if (url0.pathname.startsWith('/webhooks/')) return await handleWebhook(req, res, url0);
     if (!authorized(req)) {
       res.writeHead(401, {
         'WWW-Authenticate': 'Basic realm="msg-scheduler"',
@@ -301,6 +306,11 @@ async function handleApi(req, res, url) {
     });
   }
 
+  // 웹훅으로 수집된 LINE 발신원(userId/groupId) 목록.
+  if (pathname === '/api/channels/line/sources' && method === 'GET') {
+    return sendJson(res, 200, { sources: store.getChannelConfig('line').sources || [] });
+  }
+
   // 텔레그램 봇이 최근 받은 메시지에서 chat_id 목록을 뽑아준다.
   if (pathname === '/api/channels/telegram/chats' && method === 'GET') {
     try {
@@ -366,6 +376,60 @@ async function handleApi(req, res, url) {
   }
 
   return sendJson(res, 404, { error: `경로를 찾을 수 없습니다: ${method} ${pathname}` });
+}
+
+// ---------------------------------------------------------------- 웹훅 수신
+
+/**
+ * LINE 웹훅: 봇에게 말을 건 사람/그룹의 ID를 수집한다.
+ * 서명(X-Line-Signature)이 맞아야만 받아들이고, 항상 200으로 빨리 응답한다.
+ */
+async function handleWebhook(req, res, url) {
+  if (url.pathname === '/webhooks/line' && req.method === 'POST') {
+    const config = store.getChannelConfig('line');
+    const chunks = [];
+    let size = 0;
+    for await (const chunk of req) {
+      size += chunk.length;
+      if (size > 1_000_000) {
+        res.writeHead(413).end();
+        return;
+      }
+      chunks.push(chunk);
+    }
+    const rawBody = Buffer.concat(chunks).toString('utf8');
+
+    if (!line.verifySignature(rawBody, req.headers['x-line-signature'], config.channelSecret)) {
+      // Channel Secret 미설정이거나 위조 요청. 조용히 거절한다.
+      res.writeHead(403).end();
+      return;
+    }
+
+    let events = [];
+    try {
+      events = JSON.parse(rawBody).events || [];
+    } catch {
+      /* 본문이 JSON이 아니면 무시 */
+    }
+
+    const incoming = line.extractSources(events);
+    if (incoming.length) {
+      // 이름을 붙일 수 있으면 붙인다. 실패해도 ID만으로 동작한다.
+      for (const source of incoming) {
+        source.name =
+          source.type === 'user' && source.userId
+            ? (await line.fetchDisplayName({ config, userId: source.userId })) || source.id
+            : source.type === 'group'
+              ? '(그룹)'
+              : source.id;
+      }
+      store.setChannelConfig('line', { sources: line.mergeSources(config.sources, incoming) });
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' }).end('{}');
+    return;
+  }
+  res.writeHead(404).end();
 }
 
 // ---------------------------------------------------------------- 카카오 OAuth
@@ -527,6 +591,8 @@ function isConfigured(meta, config) {
       return Boolean(config.appKey);
     case 'telegram':
       return Boolean(config.botToken);
+    case 'line':
+      return Boolean(config.channelAccessToken);
     case 'sms':
       return Boolean(config.apiKey && config.apiSecret && config.from);
     case 'webhook':

@@ -385,6 +385,98 @@ async function mockTelegram({ updates = [] } = {}) {
   return { server, base: `http://127.0.0.1:${server.address().port}`, calls };
 }
 
+// ---- LINE ----
+
+test('LINE: push 형식으로 메시지를 보낸다', async () => {
+  const { server, base, calls } = await mockLine();
+  const line = await import('../src/channels/line.js');
+  const result = await line.send({
+    config: { channelAccessToken: 'TOKEN', apiBase: base },
+    target: { to: 'U123' },
+    message: '안녕하세요',
+  });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].path, '/v2/bot/message/push');
+  assert.equal(calls[0].auth, 'Bearer TOKEN');
+  assert.deepEqual(calls[0].body, { to: 'U123', messages: [{ type: 'text', text: '안녕하세요' }] });
+  assert.match(result.detail, /U123/);
+  await new Promise((r) => server.close(r));
+});
+
+test('LINE: broadcast 모드는 to 없이 전체 발송 주소로 보낸다', async () => {
+  const { server, base, calls } = await mockLine();
+  const line = await import('../src/channels/line.js');
+  const result = await line.send({
+    config: { channelAccessToken: 'TOKEN', apiBase: base },
+    target: { mode: 'broadcast' },
+    message: '전체 공지',
+  });
+  assert.equal(calls[0].path, '/v2/bot/message/broadcast');
+  assert.equal(calls[0].body.to, undefined);
+  assert.match(result.detail, /broadcast/);
+  await new Promise((r) => server.close(r));
+});
+
+test('LINE: 긴 글은 나누고 요청당 5개 제한을 지킨다', async () => {
+  const { server, base, calls } = await mockLine();
+  const line = await import('../src/channels/line.js');
+  // 4900자 기준 7조각 → 5개 + 2개, 두 번의 요청
+  await line.send({
+    config: { channelAccessToken: 'TOKEN', defaultTo: 'U9', apiBase: base },
+    message: '가'.repeat(4900 * 6 + 100),
+  });
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].body.messages.length, 5);
+  assert.equal(calls[1].body.messages.length, 2);
+  assert.match(calls[0].body.messages[0].text, /\(1\/7\)$/);
+  await new Promise((r) => server.close(r));
+});
+
+test('LINE: 웹훅 서명을 검증한다', async () => {
+  const line = await import('../src/channels/line.js');
+  const crypto = await import('node:crypto');
+  const body = JSON.stringify({ events: [] });
+  const good = crypto.createHmac('sha256', 'SECRET').update(body).digest('base64');
+  assert.equal(line.verifySignature(body, good, 'SECRET'), true);
+  assert.equal(line.verifySignature(body, good, 'WRONG'), false);
+  assert.equal(line.verifySignature(body, 'bogus', 'SECRET'), false);
+  assert.equal(line.verifySignature(body, good, ''), false, '시크릿 미설정이면 거절');
+});
+
+test('LINE: 웹훅 이벤트에서 발신원을 뽑고 중복 없이 합친다', async () => {
+  const line = await import('../src/channels/line.js');
+  const events = [
+    { source: { type: 'user', userId: 'U1' } },
+    { source: { type: 'group', groupId: 'C1', userId: 'U2' } },
+    { source: { type: 'user', userId: 'U1' } },
+    { type: 'unfollow' }, // source 없는 이벤트는 무시
+  ];
+  const sources = line.extractSources(events);
+  assert.deepEqual(sources.map((s) => s.id), ['U1', 'C1', 'U1']);
+
+  const merged = line.mergeSources(
+    [{ id: 'U1', type: 'user', name: '기존' }],
+    [{ id: 'U1', type: 'user', name: '새값' }, { id: 'C1', type: 'group', name: '(그룹)' }],
+  );
+  assert.equal(merged.length, 2);
+  assert.equal(merged.find((s) => s.id === 'U1').name, '새값', '새로 들어온 값이 우선');
+});
+
+async function mockLine() {
+  const http = await import('node:http');
+  const calls = [];
+  const server = http.createServer((req, res) => {
+    let body = '';
+    req.on('data', (c) => (body += c));
+    req.on('end', () => {
+      calls.push({ path: req.url, auth: req.headers.authorization, body: body ? JSON.parse(body) : null });
+      res.writeHead(200, { 'Content-Type': 'application/json' }).end('{}');
+    });
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  return { server, base: `http://127.0.0.1:${server.address().port}`, calls };
+}
+
 // ---- 테스트용 로컬 수신 서버 (웹훅 채널을 그대로 쓴다) ----
 
 async function withMockChannel({ fail = false } = {}) {

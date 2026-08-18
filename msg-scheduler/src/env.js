@@ -44,6 +44,11 @@ const ENV_MAP = {
     botToken: 'TELEGRAM_BOT_TOKEN',
     defaultChatId: 'TELEGRAM_DEFAULT_CHAT_ID',
   },
+  line: {
+    channelAccessToken: 'LINE_CHANNEL_ACCESS_TOKEN',
+    channelSecret: 'LINE_CHANNEL_SECRET',
+    defaultTo: 'LINE_DEFAULT_TO',
+  },
   sms: {
     provider: 'SMS_PROVIDER',
     apiKey: 'SMS_API_KEY',

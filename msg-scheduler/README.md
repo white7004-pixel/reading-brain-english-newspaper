@@ -33,7 +33,7 @@ npm start                 # http://localhost:3000
 브라우저에서 `http://localhost:3000` 을 열고 **채널 설정 → 새 예약** 순서로 진행하면 됩니다.
 
 ```bash
-npm test                  # 단위 테스트 (34개)
+npm test                  # 단위 테스트 (39개)
 npm run dev               # 파일 변경 시 자동 재시작
 ```
 
@@ -95,8 +95,8 @@ npm run dev               # 파일 변경 시 자동 재시작
 | 텔레그램 | ✅ 지원 중 | @BotFather 봇 — 연동 난도 최하 |
 | 문자(SMS/LMS) | ✅ 지원 중 | 솔라피 / 트윌리오 |
 | 디스코드, MS Teams | ✅ 지원 중 | "기타 웹훅" 채널로 바로 사용 |
+| LINE | ✅ 지원 중 | Messaging API — push(개별)·broadcast(친구 전원) |
 | 카카오톡 | ⚠️ 제한적 | 나에게 보내기만 자유, 친구 발송은 심사 필요 (아래 참고) |
-| LINE | 🔧 추가 가능 | Messaging API push — 어댑터만 만들면 됨 |
 | 이메일 | 🔧 추가 가능 | SMTP — 어댑터만 만들면 됨 |
 | WhatsApp | ⚠️ 어려움 | Business API 계약·심사·과금 필요 |
 | 인스타그램 DM, iMessage | ❌ 불가 | 외부 발송 API를 제공하지 않음 |
@@ -129,6 +129,20 @@ npm run dev               # 파일 변경 시 자동 재시작
 4. **테스트 발송**으로 확인
 
 개인·그룹·채널 모두 지원하고, 4096자 제한을 넘는 긴 글은 자동으로 나눠 보냅니다.
+
+### LINE
+1. [LINE Developers](https://developers.line.biz)에서 **Messaging API 채널** 생성
+2. **Channel Access Token(long-lived)** 발급, Basic settings의 **Channel Secret** 확인
+3. 채널 설정 → LINE → 토큰·시크릿 입력 → **설정 저장**
+4. 받는 사람 ID 확보 — 둘 중 하나:
+   - 서버가 외부에서 접속 가능하면: 콘솔에 웹훅 URL로 `https://내주소/webhooks/line` 등록 →
+     상대가 봇에게 메시지를 보내면 **[보낸 사람 찾기]** 버튼이 이름과 함께 ID를 수집해줍니다
+   - 나에게만 보낼 거면: 콘솔 Basic settings의 **Your user ID**를 직접 입력
+5. **테스트 발송**으로 확인
+
+발송 방식이 둘입니다 — `push`는 지정한 사람/그룹에게, `broadcast`는 **공식계정을 친구 추가한 전원**에게
+갑니다(학원 전체 공지에 적합, 무료 플랜은 월 발송량 제한 주의). 웹훅은 Channel Secret 서명을 검증하므로
+관리 비밀번호 없이도 안전하게 열려 있습니다.
 
 ### 카카오톡 ⚠️ 정책 제약이 있습니다
 카카오는 **임의의 상대에게 자유롭게 메시지를 보내는 API를 제공하지 않습니다.** 가능한 것은 두 가지입니다.
@@ -221,7 +235,7 @@ msg-scheduler/
 │   ├── time.js            타임존 변환 (KST 벽시계 ↔ UTC)
 │   ├── store.js           JSON 파일 저장소 (원자적 쓰기)
 │   ├── env.js             .env 파싱 및 환경변수 → 채널 설정 주입
-│   └── channels/          채널 어댑터 (slack, kakaotalk, kakaowork, telegram, sms, webhook)
+│   └── channels/          채널 어댑터 (slack, kakaotalk, kakaowork, telegram, line, sms, webhook)
 ├── public/                관리 화면 (빌드 도구 없는 순수 HTML/CSS/JS)
 └── test/run-tests.js      단위 테스트
 ```
@@ -245,5 +259,8 @@ msg-scheduler/
 | POST | `/api/jobs/:id/toggle` | 켜기/끄기 |
 | GET/PUT | `/api/settings` | 타임존·채널 설정 (비밀값은 마스킹되어 내려감) |
 | POST | `/api/channels/:key/test` | 채널 연결 테스트 발송 |
+| GET | `/api/channels/telegram/chats` | 텔레그램 봇이 받은 대화방 목록 |
+| GET | `/api/channels/line/sources` | 웹훅으로 수집된 LINE 발신원 목록 |
+| POST | `/webhooks/line` | LINE 웹훅 수신 (서명 검증, 인증 면제) |
 | GET/DELETE | `/api/logs` | 발송 기록 조회 / 비우기 |
 | POST | `/api/cron/preview` | cron 해석 + 다음 5회 발송 시각 |

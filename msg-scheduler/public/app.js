@@ -845,6 +845,33 @@ function renderChannelSettings() {
   $$('[data-save-channel]').forEach((btn) => btn.addEventListener('click', () => saveChannel(btn.dataset.saveChannel)));
   $$('[data-test-channel]').forEach((btn) => btn.addEventListener('click', () => testChannel(btn.dataset.testChannel)));
   $('#findTelegramChats')?.addEventListener('click', findTelegramChats);
+  $('#findLineSources')?.addEventListener('click', findLineSources);
+}
+
+/** 웹훅으로 수집된 LINE 발신원 중 하나를 골라 기본 받는 사람에 넣어준다. */
+async function findLineSources() {
+  try {
+    const { sources } = await api('/api/channels/line/sources');
+    if (!sources.length) {
+      toast('아직 수집된 사람이 없습니다. LINE 콘솔에 웹훅 URL(이 서버의 /webhooks/line)을 등록하고, 봇에게 메시지를 보내달라고 한 뒤 다시 눌러주세요.', 'err');
+      return;
+    }
+    const input = $('[data-conf="line.defaultTo"]');
+    if (sources.length === 1) {
+      if (input) input.value = sources[0].id;
+      toast(`"${sources[0].name}" (${sources[0].id})을 기본 받는 사람에 넣었습니다. [설정 저장]을 눌러주세요.`, 'ok');
+      return;
+    }
+    const lines = sources.map((s, i) => `${i + 1}. ${s.name} (${s.type}) — ${s.id}`).join('\n');
+    const pick = prompt(`수집된 발신원입니다. 번호를 입력하면 기본 받는 사람에 넣어드립니다.\n\n${lines}`, '1');
+    const chosen = sources[Number(pick) - 1];
+    if (chosen && input) {
+      input.value = chosen.id;
+      toast(`"${chosen.name}" (${chosen.id}) 선택됨. [설정 저장]을 눌러주세요.`, 'ok');
+    }
+  } catch (err) {
+    toast(err.message, 'err');
+  }
 }
 
 /** 봇이 받은 최근 메시지에서 chat_id를 찾아, 하나면 바로 입력칸에 넣어준다. */
@@ -903,7 +930,9 @@ function channelSettingCard(meta) {
       ? '<a class="btn ghost small" href="/oauth/kakao/start" target="_blank" rel="noopener">카카오 인증하기</a>'
       : meta.key === 'telegram'
         ? '<button type="button" class="btn ghost small" id="findTelegramChats">대화방 찾기</button>'
-        : '';
+        : meta.key === 'line'
+          ? '<button type="button" class="btn ghost small" id="findLineSources">보낸 사람 찾기</button>'
+          : '';
 
   return `
   <div class="card">
