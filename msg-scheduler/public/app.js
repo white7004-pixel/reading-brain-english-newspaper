@@ -116,10 +116,11 @@ async function boot() {
 
 // ---------------------------------------------------------------- 탭
 
-$$('nav.tabs button').forEach((btn) => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+// 상단 탭(넓은 화면)과 하단 탭바(모바일)가 같은 핸들러를 공유한다.
+$$('[data-tab]').forEach((btn) => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
 function switchTab(name) {
-  $$('nav.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
+  $$('[data-tab]').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
   $$('section.tab-panel').forEach((s) => s.classList.toggle('active', s.id === `tab-${name}`));
   window.scrollTo({ top: 0 });
   if (name === 'quick') refreshPresets();
@@ -384,7 +385,8 @@ function renderUpcoming() {
 
 function renderJobs() {
   const list = $('#jobList');
-  $('#jobCount').textContent = state.jobs.filter((j) => j.enabled).length || '';
+  const activeCount = state.jobs.filter((j) => j.enabled).length;
+  $$('.job-count').forEach((el) => (el.textContent = activeCount || ''));
   renderUpcoming();
 
   if (!state.jobs.length) {
@@ -429,7 +431,7 @@ function jobCard(job) {
     </div>
     <div class="job-msg">${escapeHtml(job.message)}</div>
     <div class="job-actions">
-      <button class="btn small" data-action="run" data-id="${job.id}">지금 보내기</button>
+      <button class="btn tonal small" data-action="run" data-id="${job.id}">지금 보내기</button>
       <button class="btn ghost small" data-action="toggle" data-id="${job.id}">${job.enabled ? '중지' : '재개'}</button>
       <button class="btn ghost small" data-action="edit" data-id="${job.id}">수정</button>
       <button class="btn danger small" data-action="delete" data-id="${job.id}">삭제</button>
@@ -549,10 +551,18 @@ function renderRecipientTargetFields(values = {}) {
 $('#recipientChannel').addEventListener('change', () => renderRecipientTargetFields());
 $('#addRecipient').addEventListener('click', () => openRecipientModal());
 $('#addRecipientQuick').addEventListener('click', () => openRecipientModal());
-$('#closeRecipientModal').addEventListener('click', () => ($('#recipientModal').style.display = 'none'));
+$('#closeRecipientModal').addEventListener('click', () => closeRecipientModal());
 $('#recipientModal').addEventListener('click', (event) => {
-  if (event.target.id === 'recipientModal') $('#recipientModal').style.display = 'none';
+  if (event.target.id === 'recipientModal') closeRecipientModal();
 });
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeRecipientModal();
+});
+
+function closeRecipientModal() {
+  $('#recipientModal').style.display = 'none';
+}
 
 $('#saveRecipient').addEventListener('click', async () => {
   const label = $('#recipientLabel').value.trim();
@@ -569,7 +579,7 @@ $('#saveRecipient').addEventListener('click', async () => {
       state.quickRecipients.add(created.id); // 방금 만든 곳은 바로 선택해준다
     }
     state.recipients = await api('/api/recipients');
-    $('#recipientModal').style.display = 'none';
+    closeRecipientModal();
     renderRecipientChips();
     renderRecipientList();
     toast('저장했습니다.', 'ok');
@@ -586,7 +596,7 @@ $('#deleteRecipient').addEventListener('click', async () => {
     state.quickRecipients.delete(state.editingRecipientId);
     state.formRecipients.delete(state.editingRecipientId);
     state.recipients = await api('/api/recipients');
-    $('#recipientModal').style.display = 'none';
+    closeRecipientModal();
     renderRecipientChips();
     renderRecipientList();
     toast('삭제했습니다.', 'ok');

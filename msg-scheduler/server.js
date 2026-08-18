@@ -469,7 +469,7 @@ function decorateJob(job) {
     ...job,
     description:
       job.schedule.type === 'once'
-        ? `1회 · ${formatInZone(job.schedule.runAtMs, tz)}`
+        ? `1회 · ${dayLabel(job.schedule.runAtMs, tz)} ${formatInZone(job.schedule.runAtMs, tz).slice(11)}`
         : safeDescribe(job.schedule.cron),
     nextRunMs: nextMs,
     nextRunText: nextMs ? formatInZone(nextMs, tz) : null,
