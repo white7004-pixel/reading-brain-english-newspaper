@@ -5,6 +5,7 @@ import {
   recordAttempt,
   saveLearnerState,
   updateLearnerLevel,
+  type LearnerState,
   type NewLearningAttempt,
 } from "@/lib/learner-store";
 
@@ -88,7 +89,7 @@ it("increments a streak once per local calendar day", () => {
   expect(nextDay.profile.streak).toBe(2);
 });
 
-const seededLearner = () => {
+const seededLearner = (): LearnerState => {
   const base = createDefaultLearnerState();
   return {
     ...base,
