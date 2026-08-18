@@ -6,7 +6,10 @@ export default defineConfig({
   retries: 0,
   reporter: "line",
   use: { baseURL: "http://127.0.0.1:3100", trace: "retain-on-failure" },
-  webServer: { command: "npm run dev -- --hostname 127.0.0.1 --port 3100", url: "http://127.0.0.1:3100", reuseExistingServer: true, timeout: 120_000 },
+  // Never reuse a server this config did not start: a leftover dev server keeps answering the
+  // url probe with 200 while serving 403 for its static chunks, which turns every test into a
+  // 30s timeout instead of a clear failure.
+  webServer: { command: "npm run dev -- --hostname 127.0.0.1 --port 3100", url: "http://127.0.0.1:3100", reuseExistingServer: false, timeout: 120_000 },
   projects: [
     {
       name: "mobile-chromium",
