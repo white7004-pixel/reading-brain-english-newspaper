@@ -18,19 +18,21 @@ type Seed = Pick<Article, "id" | "title" | "titleKo" | "summaryKo" | "domain" | 
 function makeArticle(seed: Seed): Article {
   const first = seed.pages[0];
   const key = seed.words[0][0];
+  const { words, ...articleFields } = seed;
   return {
-    ...seed,
+    ...articleFields,
     interestBand: "all-ages",
     estimatedMinutes: 3,
     wordCount: seed.pages.join(" ").split(/\s+/).length,
     status: "published",
     version: 1,
-    vocabulary: seed.words.map(([word, pronunciation, meaningKo, definitionEn]) => ({ word, pronunciation, meaningKo, definitionEn })),
+    vocabulary: words.map(([word, pronunciation, meaningKo, definitionEn]) => ({ word, pronunciation, meaningKo, definitionEn })),
     quiz: [
       { id: `${seed.id}-q1`, prompt: "What is the main idea?", options: [seed.summaryKo, "The topic cannot be explained.", "Only experts can learn this."], correctIndex: 0, explanation: `The passage explains ${seed.title.toLowerCase()} in a short, connected way.` },
       { id: `${seed.id}-q2`, prompt: `Which word is important to this topic?`, options: ["table", key, "window"], correctIndex: 1, explanation: `${key} is introduced and explained as a key word in the passage.` },
       { id: `${seed.id}-q3`, prompt: "Which statement is supported by the passage?", options: [first.split(".")[0] + ".", "Nothing changes over time.", "There is no evidence in the text."], correctIndex: 0, explanation: "The first option repeats a fact stated directly in the reading." },
     ],
+    media: [],
     review,
   };
 }

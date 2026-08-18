@@ -16,6 +16,8 @@ export type LearnerProfile = {
 export type LearningAttempt = {
   id: string;
   articleId: string;
+  articleTitle?: string;
+  articleVersion?: number;
   completedAt: string;
   localDate: string;
   correct: number;
@@ -25,8 +27,13 @@ export type LearningAttempt = {
   xpAwarded: number;
 };
 
+export type NewLearningAttempt = Omit<LearningAttempt, "articleTitle" | "articleVersion"> & {
+  articleTitle: string;
+  articleVersion: number;
+};
+
 export type LearnerState = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   profile: LearnerProfile;
   attempts: LearningAttempt[];
   completedArticleIds: string[];
@@ -35,7 +42,7 @@ export type LearnerState = {
 
 export function createDefaultLearnerState(): LearnerState {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     profile: {
       name: "탐험가",
       onboardingComplete: false,
@@ -52,10 +59,36 @@ export function createDefaultLearnerState(): LearnerState {
   };
 }
 
-function isLearnerState(value: unknown): value is LearnerState {
+type LegacyLearnerState = Omit<LearnerState, "schemaVersion"> & { schemaVersion: 1 };
+
+function hasLearnerStateShape(value: unknown): value is Omit<LearnerState, "schemaVersion"> & { schemaVersion: number } {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<LearnerState>;
-  return candidate.schemaVersion === 1 && !!candidate.profile && Array.isArray(candidate.attempts) && Array.isArray(candidate.completedArticleIds) && Array.isArray(candidate.savedWords);
+  return typeof candidate.schemaVersion === "number"
+    && !!candidate.profile
+    && Array.isArray(candidate.attempts)
+    && Array.isArray(candidate.completedArticleIds)
+    && Array.isArray(candidate.savedWords);
+}
+
+function isLearnerState(value: unknown): value is LearnerState {
+  return hasLearnerStateShape(value) && value.schemaVersion === 2;
+}
+
+function isLegacyLearnerState(value: unknown): value is LegacyLearnerState {
+  return hasLearnerStateShape(value) && value.schemaVersion === 1;
+}
+
+function migrateLegacyLearnerState(state: LegacyLearnerState): LearnerState {
+  return {
+    ...state,
+    schemaVersion: 2,
+    attempts: state.attempts.map((attempt) => ({
+      ...attempt,
+      articleTitle: typeof attempt.articleTitle === "string" ? attempt.articleTitle : undefined,
+      articleVersion: typeof attempt.articleVersion === "number" ? attempt.articleVersion : undefined,
+    })),
+  };
 }
 
 export function loadLearnerState(storage: Pick<Storage, "getItem">): LearnerState {
@@ -63,7 +96,9 @@ export function loadLearnerState(storage: Pick<Storage, "getItem">): LearnerStat
     const raw = storage.getItem(STORAGE_KEY);
     if (!raw) return createDefaultLearnerState();
     const parsed: unknown = JSON.parse(raw);
-    return isLearnerState(parsed) ? parsed : createDefaultLearnerState();
+    if (isLearnerState(parsed)) return parsed;
+    if (isLegacyLearnerState(parsed)) return migrateLegacyLearnerState(parsed);
+    return createDefaultLearnerState();
   } catch {
     return createDefaultLearnerState();
   }
@@ -79,7 +114,15 @@ function dayDistance(from: string, to: string): number {
   return Math.round((end - start) / 86_400_000);
 }
 
-export function recordAttempt(state: LearnerState, attempt: LearningAttempt): LearnerState {
+export function recordAttempt(state: LearnerState, attempt: NewLearningAttempt): LearnerState {
+  if (
+    typeof attempt.articleTitle !== "string"
+    || attempt.articleTitle.trim().length === 0
+    || !Number.isInteger(attempt.articleVersion)
+    || attempt.articleVersion < 1
+  ) {
+    throw new Error("Article snapshot requires a title and positive integer version.");
+  }
   if (state.attempts.some((item) => item.id === attempt.id)) return state;
 
   const previousDate = state.profile.lastLearningDate;

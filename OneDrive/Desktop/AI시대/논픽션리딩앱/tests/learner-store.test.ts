@@ -4,12 +4,14 @@ import {
   loadLearnerState,
   recordAttempt,
   saveLearnerState,
-  type LearningAttempt,
+  type NewLearningAttempt,
 } from "@/lib/learner-store";
 
-const attempt: LearningAttempt = {
+const attempt: NewLearningAttempt = {
   id: "attempt-1",
   articleId: "stars-shine",
+  articleTitle: "Why Stars Shine",
+  articleVersion: 3,
   completedAt: "2026-08-17T10:00:00.000Z",
   localDate: "2026-08-17",
   correct: 3,
@@ -35,6 +37,32 @@ it("recovers from corrupt or unknown-version storage", () => {
   expect(loadLearnerState(localStorage)).toEqual(createDefaultLearnerState());
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 99 }));
   expect(loadLearnerState(localStorage)).toEqual(createDefaultLearnerState());
+});
+
+it("migrates old attempts without inventing missing article snapshots", () => {
+  const legacy = createDefaultLearnerState() as unknown as Record<string, unknown>;
+  legacy.schemaVersion = 1;
+  const { articleTitle: _title, articleVersion: _version, ...legacyAttempt } = attempt;
+  legacy.attempts = [legacyAttempt];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+
+  const loaded = loadLearnerState(localStorage);
+
+  expect(loaded.schemaVersion).toBe(2);
+  expect(loaded.attempts[0]).toMatchObject({
+    articleId: "stars-shine",
+    articleTitle: undefined,
+    articleVersion: undefined,
+  });
+});
+
+it("rejects new attempts without a complete immutable article snapshot", () => {
+  expect(() => recordAttempt(createDefaultLearnerState(), { ...attempt, articleTitle: "   " })).toThrow(
+    "Article snapshot",
+  );
+  expect(() => recordAttempt(createDefaultLearnerState(), { ...attempt, articleVersion: 0 })).toThrow(
+    "Article snapshot",
+  );
 });
 
 it("records an attempt once without overwriting entered AR", () => {

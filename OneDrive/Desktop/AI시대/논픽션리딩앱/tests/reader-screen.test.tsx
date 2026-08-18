@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { ReaderScreen } from "@/components/reader-screen";
 import { getPublishedArticles } from "@/lib/content";
+import type { Article } from "@/lib/types";
 
 it("opens vocabulary help and completes every reading page", async () => {
   const user = userEvent.setup();
@@ -25,4 +26,35 @@ it("keeps reading available when audio cannot play", async () => {
   await user.click(screen.getByRole("button", { name: "원어민 오디오로 듣기" }));
   expect(screen.getByText("오디오는 지금 사용할 수 없어요")).toBeVisible();
   expect(screen.getByText((_, element) => element?.classList.contains("article-copy") === true && element.textContent?.includes("Stars look like tiny lights") === true)).toBeVisible();
+});
+
+it("ignores empty and whitespace-only vocabulary drafts while rendering preview text", () => {
+  const article = {
+    ...getPublishedArticles()[0],
+    pages: ["Plain preview text remains intact."],
+    vocabulary: [
+      { word: "", pronunciation: "", meaningKo: "", definitionEn: "" },
+      { word: "   ", pronunciation: "", meaningKo: "", definitionEn: "" },
+    ],
+  };
+
+  render(<ReaderScreen article={article} onFinish={() => {}} onBack={() => {}} onEvent={() => {}} />);
+
+  expect(screen.getByText("Plain preview text remains intact.")).toBeVisible();
+  expect(screen.queryByRole("button", { name: /뜻 보기/ })).not.toBeInTheDocument();
+});
+
+it("renders safe tagged image and official video media", () => {
+  const article = {
+    ...getPublishedArticles()[0],
+    media: [
+      { kind: "image", url: "https://images.example.org/stars.jpg", alt: "Stars in the night sky" },
+      { kind: "video", provider: "youtube", embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", alt: "How stars shine" },
+    ],
+  } as Article;
+
+  render(<ReaderScreen article={article} onFinish={() => {}} onBack={() => {}} onEvent={() => {}} />);
+
+  expect(screen.getByRole("img", { name: "Stars in the night sky" })).toHaveAttribute("src", "https://images.example.org/stars.jpg");
+  expect(screen.getByTitle("How stars shine")).toHaveAttribute("src", "https://www.youtube.com/embed/dQw4w9WgXcQ");
 });
