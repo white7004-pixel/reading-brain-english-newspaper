@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reading Brain 학생관리</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="program-tagline">
+      <span class="tagline-brand">Reading Brain</span>
+      <span class="tagline-pipe">|</span>
+      <span class="tagline-sub">Pattern Learning &amp; Interpretation Training</span>
+    </div>
+    <main class="admin-page">
+      <header class="admin-header">
+        <div class="brand">
+          <img src="assets/reading-brain-logo.jpg" alt="Reading Brain" />
+          <div>
+            <strong>READING BRAIN</strong>
+            <span>Student Manager</span>
+          </div>
+        </div>
+        <a class="admin-link" href="/">학습 화면</a>
+      </header>
+
+      <section class="admin-grid">
+        <form class="admin-panel" id="adminLoginForm">
+          <span class="eyebrow">관리자 인증</span>
+          <h1>학생 아이디 관리</h1>
+          <label>
+            관리자 PIN
+            <input id="adminPinInput" type="password" inputmode="numeric" autocomplete="current-password" required />
+          </label>
+          <button class="primary" type="submit">관리 시작</button>
+          <p id="adminLoginMessage">기본 관리자 PIN은 0000입니다.</p>
+        </form>
+
+        <form class="admin-panel hidden" id="studentForm">
+          <span class="eyebrow">새 학생 등록</span>
+          <h2>학생 추가</h2>
+          <label>
+            학생 아이디
+            <input id="studentNameInput" autocomplete="off" placeholder="예: student01" required />
+          </label>
+          <label>
+            학생 이름
+            <input id="studentDisplayNameInput" autocomplete="off" placeholder="예: 김리딩" required />
+          </label>
+          <label>
+            학교/학년
+            <input id="studentSchoolGradeInput" autocomplete="off" placeholder="예: 리딩초 4학년" required />
+          </label>
+          <label>
+            PIN
+            <input id="studentPinInput" autocomplete="off" inputmode="numeric" placeholder="예: 1234" required />
+          </label>
+          <button class="primary" type="submit">등록</button>
+          <p id="studentFormMessage"></p>
+        </form>
+      </section>
+
+      <section class="admin-panel hidden" id="commentPanel">
+        <div class="admin-list-head">
+          <div>
+            <span class="eyebrow">학부모 코멘트</span>
+            <h2>기간별 코멘트 작성</h2>
+          </div>
+          <button class="ghost small" id="copyCommentButton" type="button">복사</button>
+        </div>
+        <div class="comment-controls">
+          <label>
+            학생 선택
+            <select id="commentStudentSelect"></select>
+          </label>
+          <label>
+            기간
+            <select id="commentPeriodSelect">
+              <option value="daily">데일리</option>
+              <option value="weekly">위클리</option>
+              <option value="monthly">먼슬리</option>
+            </select>
+          </label>
+        </div>
+        <textarea id="parentCommentText" class="parent-comment" rows="7" readonly></textarea>
+        <p id="commentMessage">학생과 기간을 선택하면 학부모용 코멘트가 자동으로 만들어집니다.</p>
+      </section>
+
+      <section class="admin-panel hidden" id="studentListPanel">
+        <div class="admin-list-head">
+          <div>
+            <span class="eyebrow">등록 학생</span>
+            <h2 id="studentCount">0명</h2>
+          </div>
+          <button class="ghost small" id="refreshStudentsButton" type="button">새로고침</button>
+        </div>
+        <div class="student-table-wrap">
+          <table class="student-table">
+            <thead>
+              <tr>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>학교/학년</th>
+                <th>PIN</th>
+                <th>점수</th>
+                <th>완료</th>
+                <th>복습</th>
+                <th>수정일</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

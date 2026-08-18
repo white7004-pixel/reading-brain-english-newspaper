@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reading Brain 영어표현 카드 게임</title>
+    <link rel="stylesheet" href="styles.css?v=20260818-pattern-hub" />
+  </head>
+  <body class="locked">
+    <div class="program-tagline">
+      <span class="tagline-brand">Reading Brain</span>
+      <span class="tagline-pipe">|</span>
+      <span class="tagline-sub">Pattern Learning &amp; Interpretation Training</span>
+    </div>
+
+    <section class="login-screen" id="loginScreen">
+      <form class="login-card" id="loginForm">
+        <img src="assets/reading-brain-logo.jpg" alt="Reading Brain" />
+        <span>Reading Brain Class</span>
+        <h1>학생 로그인</h1>
+        <label>
+          이름 또는 학생 아이디
+          <input id="studentNameInput" autocomplete="name" placeholder="예: 김리딩 또는 student01" required />
+        </label>
+        <label>
+          PIN
+          <input id="studentPinInput" autocomplete="current-password" inputmode="numeric" placeholder="숫자 4자리" required />
+        </label>
+        <button class="primary" type="submit">학습 시작</button>
+        <p id="loginMessage">이름 또는 학생 아이디와 PIN으로 로그인합니다.</p>
+        <a class="admin-entry" href="admin.html">학생 등록 관리</a>
+      </form>
+    </section>
+
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="assets/reading-brain-logo.jpg" alt="Reading Brain" />
+          <div>
+            <strong>READING BRAIN</strong>
+            <span>Expression Quest</span>
+          </div>
+        </div>
+
+        <div class="profile-panel">
+          <div class="student-chip">
+            <span id="studentNameText">Guest</span>
+            <button id="logoutButton" type="button">로그아웃</button>
+          </div>
+        </div>
+
+        <nav class="pattern-nav" aria-label="패턴 영어 섹션">
+          <div class="pattern-nav-head">
+            <div>
+              <span class="pattern-nav-eyebrow">Pattern English</span>
+              <strong>패턴 영어</strong>
+            </div>
+            <span class="pattern-nav-total" id="patternNavTotal">0%</span>
+          </div>
+
+          <button class="pattern-hub-btn" id="patternHubBtn" type="button" data-mode="hub">
+            <span class="pattern-hub-btn-title">패턴 허브</span>
+            <small id="patternHubBtnSub">전체 섹션 한눈에 보기</small>
+          </button>
+
+          <div class="pattern-search">
+            <input
+              id="patternSearchInput"
+              type="search"
+              autocomplete="off"
+              placeholder="섹션 검색 · 예) What, 인사, 12"
+              aria-label="패턴 섹션 검색"
+            />
+          </div>
+
+          <div class="pattern-nav-groups" id="patternNavGroups"></div>
+          <p class="pattern-nav-empty hidden" id="patternNavEmpty">검색 결과가 없어요.</p>
+        </nav>
+
+        <div class="filters hidden" aria-hidden="true">
+          <label for="categorySelect">패턴 섹션</label>
+          <select id="categorySelect" tabindex="-1"></select>
+        </div>
+
+        <div class="sidebar-section-sep"><span>보조 학습</span></div>
+        <button class="mode-button verb-mode-button" id="verbNavBtn" data-mode="verb">동사 3단 변화</button>
+        <button class="mode-button" id="bqNavBtn" data-mode="bookquiz">북퀴즈 핵심단어</button>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">필수 영어표현 1189</span>
+            <h1 id="screenTitle">카드 학습</h1>
+          </div>
+          <div class="stats">
+            <span><strong id="scoreText">0</strong> 포인트</span>
+            <span><strong id="streakText">0</strong> 연속</span>
+          </div>
+        </header>
+
+        <section class="student-dashboard" id="studentDashboard" aria-label="오늘의 학습 현황">
+          <div class="dashboard-main">
+            <div class="dashboard-copy">
+              <span class="eyebrow">Today Mission</span>
+              <h2 id="dashboardGreeting">오늘의 학습을 시작해요</h2>
+              <p id="dashboardFocus">카드 5개로 오늘 학습을 시작해요.</p>
+            </div>
+            <div class="progress-card">
+              <div class="progress-card-head">
+                <span>전체 진도</span>
+                <strong id="dashboardProgressText">0%</strong>
+              </div>
+              <div class="dashboard-progress-track" aria-hidden="true">
+                <span id="dashboardProgressBar"></span>
+              </div>
+              <p id="dashboardProgressDetail">0 / 1189 표현 마스터</p>
+            </div>
+          </div>
+
+          <div class="dashboard-metrics" aria-label="학습 지표">
+            <div>
+              <span>현재 섹션</span>
+              <strong id="dashboardCategory">패턴 섹션</strong>
+              <small id="dashboardCategoryCount">0개 표현</small>
+            </div>
+            <div>
+              <span>복습 상자</span>
+              <strong id="dashboardReviewCount">0</strong>
+              <small>다시 볼 표현</small>
+            </div>
+            <div>
+              <span>누적 포인트</span>
+              <strong id="dashboardScore">0</strong>
+              <small id="dashboardStreak">0 연속 정답</small>
+            </div>
+          </div>
+
+          <div class="routine-card">
+            <div>
+              <span class="eyebrow">Daily Routine</span>
+              <h3>추천 학습 루틴</h3>
+            </div>
+            <div id="routineSteps" class="routine-steps"></div>
+          </div>
+        </section>
+
+        <nav class="pattern-mode-bar" id="patternModeBar" aria-label="학습 모드">
+          <button class="pmode-btn active" data-pmode="hub"><span class="pmode-ico">🏠</span>허브</button>
+          <button class="pmode-btn" data-pmode="study"><span class="pmode-ico">🃏</span>카드학습</button>
+          <button class="pmode-btn" data-pmode="quiz"><span class="pmode-ico">✏️</span>퀴즈</button>
+          <button class="pmode-btn" data-pmode="match"><span class="pmode-ico">🔗</span>매칭</button>
+          <button class="pmode-btn" data-pmode="blast"><span class="pmode-ico">⚡</span>블래스트</button>
+          <button class="pmode-btn" data-pmode="review"><span class="pmode-ico">🔁</span>복습<span class="pmode-count hidden" id="pmodeReviewCount">0</span></button>
+          <button class="pmode-btn" data-pmode="leaderboard"><span class="pmode-ico">🏆</span>랭킹</button>
+        </nav>
+
+        <section id="hubView" class="view active">
+          <div class="hub-shell">
+            <div class="hub-top">
+              <button class="hub-resume" id="hubResume" type="button">
+                <span class="hub-resume-label">이어서 학습하기</span>
+                <strong id="hubResumeSection">01. 인사와 소개 패턴</strong>
+                <span class="hub-resume-detail" id="hubResumeDetail">1번째 카드부터 다시 시작</span>
+                <span class="hub-resume-track" aria-hidden="true"><i id="hubResumeBar"></i></span>
+                <span class="hub-resume-cta">계속하기 →</span>
+              </button>
+
+              <div class="hub-goal">
+                <span class="hub-goal-label">오늘의 목표</span>
+                <div class="hub-goal-ring" id="hubGoalRing" style="--p: 0">
+                  <strong id="hubGoalPercent">0%</strong>
+                </div>
+                <ul class="hub-goal-list">
+                  <li><span>카드 넘기기</span><strong id="hubGoalCards">0 / 20</strong></li>
+                  <li><span>퀴즈 정답</span><strong id="hubGoalCorrect">0 / 10</strong></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="hub-routine">
+              <div class="hub-routine-head">
+                <span class="eyebrow">Daily Routine</span>
+                <h3>추천 학습 루틴</h3>
+              </div>
+              <div id="hubRoutineSteps" class="routine-steps"></div>
+            </div>
+
+            <div class="hub-toolbar">
+              <div class="hub-section-title">
+                <span class="eyebrow">Pattern Sections</span>
+                <h3>섹션 선택</h3>
+              </div>
+              <div class="hub-group-tabs" id="hubGroupTabs" role="tablist"></div>
+              <input
+                id="hubSearchInput"
+                class="hub-search"
+                type="search"
+                autocomplete="off"
+                placeholder="섹션 검색 · 예) What, 인사, 12"
+                aria-label="패턴 섹션 검색"
+              />
+            </div>
+
+            <div class="hub-grid" id="hubGrid"></div>
+            <p class="hub-empty hidden" id="hubEmpty">검색 결과가 없어요. 다른 단어로 찾아보세요.</p>
+          </div>
+        </section>
+
+        <section id="studyView" class="view">
+          <div class="study-layout">
+            <div class="study-card-zone">
+              <div class="study-context" id="studyContext">
+                <div class="study-context-top">
+                  <span class="study-context-chip" id="studyContextChip">01. 인사와 소개 패턴</span>
+                  <span class="study-context-count" id="studyContextCount">0 / 0 마스터</span>
+                </div>
+                <div class="study-context-track" aria-hidden="true"><span id="studyContextBar"></span></div>
+              </div>
+              <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="카드 뒤집기">
+                <div class="flashcard-inner">
+                  <div class="card-face card-front">
+                    <span id="cardMeta">Section 1</span>
+                    <div class="new-words" id="newWords"></div>
+                    <h2 id="cardEnglish">Hello, my name is Minho.</h2>
+                    <p>카드를 클릭하면 뜻을 확인할 수 있어요.</p>
+                  </div>
+                  <div class="card-face card-back">
+                    <h2 id="cardKorean">안녕, 나는 민호야.</h2>
+                    <p id="cardBackEnglish">Hello, my name is Minho.</p>
+                    <p class="card-back-hint">다시 클릭하면 영어로 돌아갑니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="study-mark-buttons">
+                <button class="study-mark-btn know" id="markKnownBtn" type="button">
+                  <span>알아요</span><small>마스터에 담고 다음 카드</small>
+                </button>
+                <button class="study-mark-btn unsure" id="markUnsureBtn" type="button">
+                  <span>헷갈려요</span><small>복습 상자에 담기</small>
+                </button>
+              </div>
+              <div class="study-actions">
+                <button id="speakButton" class="primary" title="자연스러운 영어 발음 듣기">원어민 발음 듣기</button>
+              </div>
+              <div class="nav-buttons">
+                <button id="prevButton" class="ghost">이전</button>
+                <span id="cardIndexDisplay" class="card-index-display"></span>
+                <button id="nextButton" class="ghost">다음</button>
+              </div>
+              <p class="study-shortcuts">
+                <kbd>←</kbd><kbd>→</kbd> 카드 이동 · <kbd>Space</kbd> 뒤집기 · <kbd>S</kbd> 발음 ·
+                <kbd>1</kbd> 알아요 · <kbd>2</kbd> 헷갈려요
+              </p>
+              <div class="section-done-banner hidden" id="sectionDoneBanner">
+                <div>
+                  <strong>이 섹션을 다 마스터했어요!</strong>
+                  <span id="sectionDoneNext">다음 섹션으로 넘어가 볼까요?</span>
+                </div>
+                <button class="primary small" id="sectionDoneBtn" type="button">다음 섹션 시작</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="quizView" class="view">
+          <div class="panel">
+            <div class="quiz-tabs" aria-label="퀴즈 종류">
+              <button class="quiz-tab active" data-quiz-type="section" type="button">섹션퀴즈</button>
+              <button class="quiz-tab" data-quiz-type="cumulative" type="button">누적퀴즈</button>
+            </div>
+            <div class="panel-head">
+              <span id="quizCount">섹션퀴즈 · 문제 1</span>
+              <button id="newQuizButton" class="ghost small">새 문제</button>
+            </div>
+            <p id="quizScopeText" class="quiz-scope">현재 선택한 패턴 섹션에서 출제됩니다.</p>
+            <h2 id="quizPrompt">뜻에 맞는 영어 표현은?</h2>
+            <div id="quizQuestion" class="quiz-question">안녕, 나는 민호야.</div>
+            <div id="quizOptions" class="options"></div>
+            <p id="quizFeedback" class="feedback"></p>
+          </div>
+        </section>
+
+        <section id="matchView" class="view">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>영어와 뜻을 클릭해 짝을 맞춰보세요</h2>
+                <p id="matchStatus">영어와 뜻을 찾아서 클릭하세요.</p>
+              </div>
+              <button id="resetMatchButton" class="ghost small">다시 놓기</button>
+            </div>
+            <div class="match-columns">
+              <div id="englishColumn" class="match-column"></div>
+              <div id="koreanColumn" class="match-column"></div>
+            </div>
+            <div id="mahjongBoard" class="mahjong-board hidden"></div>
+          </div>
+        </section>
+
+        <section id="blastView" class="view">
+          <div class="blast-shell">
+            <div class="blast-hud">
+              <strong id="blastScoreText">0</strong>
+              <span id="blastWaveText">Wave 1</span>
+              <div id="blastLivesText" class="blast-lives">♥♥♥</div>
+            </div>
+            <div id="blastArena" class="blast-arena">
+              <div id="blastOverlay" class="blast-overlay">
+                <h2 id="blastOverlayTitle">블래스트!</h2>
+                <p id="blastOverlayMsg">떨어지는 뜻을 보고 맞는 영어 표현을 눌러 격파하세요.</p>
+                <button id="blastStartBtn" class="primary">게임 시작</button>
+              </div>
+            </div>
+            <div id="blastOptions" class="blast-options"></div>
+          </div>
+        </section>
+
+        <section id="reviewView" class="view">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>오답 복습 상자</h2>
+                <p id="reviewSummary">아직 복습할 표현이 없습니다.</p>
+              </div>
+            </div>
+            <div id="reviewList" class="review-list"></div>
+          </div>
+        </section>
+
+        <section id="leaderboardView" class="view">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>포인트 랭킹 TOP 10</h2>
+                <p id="leaderboardSummary">로그인한 학생들의 누적 포인트 순위입니다.</p>
+              </div>
+              <button id="refreshLeaderboardButton" class="ghost small" type="button">새로고침</button>
+            </div>
+            <div id="leaderboardList" class="leaderboard-list"></div>
+          </div>
+        </section>
+
+        <section id="bookquizView" class="view">
+          <div class="bookquiz-shell">
+            <div class="bq-control-row">
+              <button class="bqtype-btn active" data-bqtype="word">핵심 단어 (21)</button>
+              <button class="bqtype-btn" data-bqtype="pattern">질문 패턴 (22)</button>
+            </div>
+            <div class="bq-control-row">
+              <button class="bqmode-btn active" data-bqmode="card">카드학습</button>
+              <button class="bqmode-btn" data-bqmode="quiz">퀴즈</button>
+              <button class="bqmode-btn" data-bqmode="match">카드맞추기</button>
+              <button class="bqmode-btn" data-bqmode="blast">블래스트</button>
+            </div>
+
+            <div id="bqCardArea" class="bq-area">
+              <div class="bq-card-wrap">
+                <div class="bq-card" id="bqCard" tabindex="0" role="button" aria-label="카드를 뒤집어 뜻 확인">
+                  <div class="bq-face bq-front">
+                    <div id="bqCardMeta" class="bq-card-meta">1 / 21</div>
+                    <div class="bq-card-badge" id="bqCardBadge">핵심 단어</div>
+                    <h2 id="bqCardEnglish">What</h2>
+                    <p id="bqCardBackEnglish">What</p>
+                    <button class="primary bq-speak-btn" id="bqSpeakBtn" type="button">원어민 발음 듣기</button>
+                    <small>카드를 클릭하면 뜻을 확인할 수 있어요.</small>
+                  </div>
+                  <div class="bq-face bq-back">
+                    <h2 id="bqCardKorean">무엇 / 어떤</h2>
+                    <p>다시 클릭하면 영어 표현으로 돌아갑니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="nav-buttons">
+                <button id="bqPrevBtn" class="ghost">이전</button>
+                <span id="bqIndexDisplay">1 / 21</span>
+                <button id="bqNextBtn" class="ghost">다음</button>
+              </div>
+            </div>
+
+            <div id="bqQuizArea" class="bq-area hidden">
+              <div class="panel">
+                <div class="panel-head">
+                  <span id="bqQuizCount">문제 1</span>
+                  <button id="newBQQuizBtn" class="ghost small" type="button">새 문제</button>
+                </div>
+                <h2 id="bqQuizPrompt">뜻에 맞는 영어 표현은?</h2>
+                <div class="bq-quiz-question-wrap">
+                  <div id="bqQuizQuestion" class="quiz-question">무엇 / 어떤</div>
+                  <button class="bq-quiz-speak-btn" id="bqQuizSpeakBtn" type="button" title="발음 듣기">듣기</button>
+                </div>
+                <div id="bqQuizOptions" class="options"></div>
+                <p id="bqQuizFeedback" class="feedback"></p>
+              </div>
+            </div>
+
+            <div id="bqMatchArea" class="bq-area hidden">
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <h2>영어와 뜻을 클릭해 짝을 맞춰보세요</h2>
+                    <p id="bqMatchStatus">영어와 뜻을 찾아서 클릭하세요.</p>
+                  </div>
+                  <button id="resetBQMatchBtn" class="ghost small">다시 놓기</button>
+                </div>
+                <div id="bqMatchBoard" class="bq-match-board"></div>
+              </div>
+            </div>
+
+            <div id="bqBlastArea" class="bq-area hidden">
+              <div class="blast-shell">
+                <div class="blast-hud">
+                  <strong id="bqBlastScoreText">0</strong>
+                  <span id="bqBlastWaveText">Wave 1</span>
+                  <div id="bqBlastLivesText" class="blast-lives">♥♥♥</div>
+                </div>
+                <div id="bqBlastArena" class="blast-arena">
+                  <div id="bqBlastOverlay" class="blast-overlay">
+                    <h2>북퀴즈 블래스트!</h2>
+                    <p id="bqBlastOverlayMsg">떨어지는 뜻을 보고 맞는 영어 표현을 눌러 격파하세요.</p>
+                    <button id="bqBlastStartBtn" class="primary">게임 시작</button>
+                  </div>
+                </div>
+                <div id="bqBlastOptions" class="blast-options"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="verbView" class="view">
+          <div class="verb-shell">
+            <div class="verb-type-bar" aria-label="동사 유형 필터">
+              <button class="vtype-btn active" data-vtype="규칙">규칙</button>
+              <button class="vtype-btn" data-vtype="AAA">AAA</button>
+              <button class="vtype-btn" data-vtype="ABA">ABA</button>
+              <button class="vtype-btn" data-vtype="ABB">ABB</button>
+              <button class="vtype-btn" data-vtype="ABC">ABC</button>
+              <button class="vtype-btn" data-vtype="일동">일동</button>
+            </div>
+            <div class="verb-mode-bar">
+              <button class="vmode-btn active" data-vmode="card">카드학습</button>
+              <button class="vmode-btn" data-vmode="quiz">빈칸퀴즈</button>
+              <button class="vmode-btn" data-vmode="blast">블래스트</button>
+            </div>
+
+            <div id="verbCardArea" class="verb-area">
+              <div class="verb-card" id="verbCard" tabindex="0" role="button" aria-label="카드 뒤집기">
+                <div class="verb-face verb-front">
+                  <div id="verbCardMeta" class="verb-card-meta">1 / 1</div>
+                  <div id="verbTypeBadge" class="verb-badge">규칙 동사</div>
+                  <h2 id="verbMeaningDisplay">하다</h2>
+                  <div class="verb-forms">
+                    <div>
+                      <span class="vf-label">원형</span>
+                      <strong id="verbBaseDisplay">play</strong>
+                      <button class="vf-speak-btn" data-vf="base" type="button" title="발음 듣기">듣기</button>
+                    </div>
+                    <div>
+                      <span class="vf-label">과거형</span>
+                      <strong id="verbPastDisplay">played</strong>
+                      <button class="vf-speak-btn" data-vf="past" type="button" title="발음 듣기">듣기</button>
+                    </div>
+                    <div>
+                      <span class="vf-label">과거분사</span>
+                      <strong id="verbPPDisplay">played</strong>
+                      <button class="vf-speak-btn" data-vf="pp" type="button" title="발음 듣기">듣기</button>
+                    </div>
+                  </div>
+                  <button class="vf-all-btn" type="button" id="verbAllSpeakBtn" title="원형, 과거형, 과거분사 순서로 듣기">원형부터 3단 모두 듣기</button>
+                  <small>카드를 클릭하면 예문을 볼 수 있어요.</small>
+                </div>
+                <div class="verb-face verb-back">
+                  <div id="verbTypeBadge2" class="verb-badge">규칙 동사</div>
+                  <p id="verbEx1">I play soccer.</p>
+                  <p id="verbEx2">I played soccer.</p>
+                  <p id="verbEx3">I have played soccer.</p>
+                </div>
+              </div>
+              <div class="nav-buttons">
+                <button id="verbPrevBtn" class="ghost">이전</button>
+                <span id="verbIndexDisplay">1 / 1</span>
+                <button id="verbNextBtn" class="ghost">다음 카드</button>
+              </div>
+            </div>
+
+            <div id="verbQuizArea" class="verb-area hidden">
+              <div class="panel">
+                <div class="panel-head">
+                  <span id="verbQuizCount">문제 1</span>
+                  <button id="newVerbQuizBtn" class="ghost small" type="button">새 문제</button>
+                </div>
+                <h2 id="verbQuizPrompt">다음 동사의 과거형은?</h2>
+                <div id="verbQuizBase" class="quiz-question">play</div>
+                <p id="verbQuizMeaning">하다</p>
+                <div id="verbQuizOptions" class="options"></div>
+                <p id="verbQuizFeedback" class="feedback"></p>
+              </div>
+            </div>
+
+            <div id="verbBlastArea" class="verb-area hidden">
+              <div class="blast-shell">
+                <div class="blast-hud">
+                  <strong id="verbBlastScoreText">0</strong>
+                  <span id="verbBlastWaveText">Wave 1</span>
+                  <div id="verbBlastLivesText" class="blast-lives">♥♥♥</div>
+                </div>
+                <div id="verbBlastArena" class="blast-arena">
+                  <div id="verbBlastOverlay" class="blast-overlay">
+                    <h2>동사 블래스트!</h2>
+                    <p>떨어지는 동사의 원형을 보고 맞는 과거분사(PP)를 눌러 격파하세요.</p>
+                    <button id="verbBlastStartBtn" class="primary">게임 시작</button>
+                  </div>
+                </div>
+                <div id="verbBlastOptions" class="blast-options"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="data/expressions.js"></script>
+    <script src="data/verbs.js"></script>
+    <script src="data/bookquiz.js"></script>
+    <script src="learning-dashboard-model.js?v=20260627-dashboard"></script>
+    <script src="pattern-hub-model.js?v=20260818-pattern-hub"></script>
+    <script src="app.js?v=20260818-pattern-hub"></script>
+  </body>
+</html>

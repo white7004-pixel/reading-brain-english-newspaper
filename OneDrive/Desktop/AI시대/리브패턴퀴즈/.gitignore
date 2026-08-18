@@ -1,0 +1,17 @@
+# 생성물 — scripts/generate-images.js, tools/generate_native_audio.py 로 다시 만든다
+assets/images/
+assets/native-audio/
+assets/verb-audio/
+assets/bookquiz-audio/
+
+# 학생 개인정보(이름 · PIN)와 학습 기록
+data/students.json
+
+# 실행 산출물
+*.log
+test-results/
+page-check.png
+node_modules/
+__pycache__/
+tools/out.txt
+tools/err.txt
