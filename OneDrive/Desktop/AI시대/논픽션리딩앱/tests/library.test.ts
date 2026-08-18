@@ -5,8 +5,8 @@ import { validateStage } from "@/lib/studio-workflow";
 
 const normalize = (value: string) => value.toLocaleLowerCase().replace(/[’']/g, "'");
 
-it("includes forty reviewed AR 1 passages after the third batch", () => {
-  expect(LIBRARY_SEEDS.filter((seed) => bandForAr(seed.ar) === "ar1")).toHaveLength(40);
+it("includes fifty-five reviewed AR 1 passages after the fourth batch", () => {
+  expect(LIBRARY_SEEDS.filter((seed) => bandForAr(seed.ar) === "ar1")).toHaveLength(55);
 });
 
 it("authors every passage inside its AR band targets", () => {
