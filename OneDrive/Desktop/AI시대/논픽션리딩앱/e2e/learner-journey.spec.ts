@@ -21,3 +21,19 @@ test("is installable and retains a completed lesson after reload", async ({ page
   await page.getByRole("button", { name: "나" }).click();
   await expect(page.getByText("1개")).toBeVisible();
 });
+
+test("keeps finished lessons after the reading level is chosen again", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "가장 쉬운 단계부터" }).click();
+  await page.getByRole("button", { name: "나" }).click();
+
+  await page.getByRole("button", { name: "레벨 다시 확인하기" }).click();
+  await page.getByRole("button", { name: "내 AR 지수 입력" }).click();
+  await page.getByLabel("AR 지수").fill("3.4");
+  await page.getByRole("button", { name: "이 수준으로 시작" }).click();
+
+  await expect(page.getByText("나의 읽기 수준")).toBeVisible();
+  await page.reload();
+  await page.getByRole("button", { name: "나" }).click();
+  await expect(page.getByText("3.4")).toBeVisible();
+});

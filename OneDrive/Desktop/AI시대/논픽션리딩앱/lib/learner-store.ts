@@ -1,3 +1,4 @@
+import { isValidArEntry } from "./placement-test";
 import type { KnowledgeDomain } from "./types";
 
 export const STORAGE_KEY = "nonfiction-lab:learner:v1";
@@ -30,6 +31,11 @@ export type LearningAttempt = {
 export type NewLearningAttempt = Omit<LearningAttempt, "articleTitle" | "articleVersion"> & {
   articleTitle: string;
   articleVersion: number;
+};
+
+export type LearnerLevel = {
+  enteredAr: number | null;
+  estimatedDifficulty: number | null;
 };
 
 export type LearnerState = {
@@ -112,6 +118,23 @@ function dayDistance(from: string, to: string): number {
   const start = Date.parse(`${from}T00:00:00Z`);
   const end = Date.parse(`${to}T00:00:00Z`);
   return Math.round((end - start) / 86_400_000);
+}
+
+export function updateLearnerLevel(state: LearnerState, level: LearnerLevel): LearnerState {
+  if (level.enteredAr === null && level.estimatedDifficulty === null) {
+    throw new Error("읽기 레벨 값이 필요합니다.");
+  }
+  if (level.enteredAr !== null && !isValidArEntry(level.enteredAr)) {
+    throw new Error("AR 지수는 0.1에서 20.0 사이여야 합니다.");
+  }
+  return {
+    ...state,
+    profile: {
+      ...state.profile,
+      enteredAr: level.enteredAr,
+      estimatedDifficulty: level.estimatedDifficulty,
+    },
+  };
 }
 
 export function recordAttempt(state: LearnerState, attempt: NewLearningAttempt): LearnerState {
