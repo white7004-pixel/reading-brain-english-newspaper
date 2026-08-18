@@ -242,14 +242,22 @@ function renderPresets() {
   const rest = presets.filter((p) => !mainKeys.includes(p.key));
   const showRest = state.showAllPresets || rest.some((p) => p.key === state.selectedPreset);
 
+  const emojiFor = (key) => {
+    if (key.includes('morning')) return '🌅';
+    if (key.includes('lunch')) return '☀️';
+    if (key.includes('evening')) return '🌆';
+    if (key.startsWith('in-')) return '⚡';
+    if (key.includes('monday')) return '📅';
+    return '⏰';
+  };
   const chipHtml = (p) => `<button type="button" class="chip time ${p.key === state.selectedPreset ? 'on' : ''} ${p.quiet ? 'moon' : ''}"
-    data-preset="${p.key}">${escapeHtml(p.label)}<small>${escapeHtml(p.when)} · ${fmtRelative(p.atMs)}</small></button>`;
+    data-preset="${p.key}"><span><span class="chip-emoji">${emojiFor(p.key)}</span>${escapeHtml(p.label)}</span><small>${escapeHtml(p.when)} · ${fmtRelative(p.atMs)}</small></button>`;
 
   const customOn = state.selectedPreset === '__custom__';
   box.innerHTML = [
     ...main.map(chipHtml),
     ...(showRest ? rest.map(chipHtml) : []),
-    `<button type="button" class="chip time ${customOn ? 'on' : ''}" data-preset="__custom__">직접 고르기<small>날짜·시각 지정</small></button>`,
+    `<button type="button" class="chip time ${customOn ? 'on' : ''}" data-preset="__custom__"><span><span class="chip-emoji">🎯</span>직접 고르기</span><small>날짜·시각 지정</small></button>`,
     showRest ? '' : `<button type="button" class="chip more" data-more>+ 다른 시간</button>`,
   ].join('');
 

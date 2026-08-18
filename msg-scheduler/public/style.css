@@ -4,6 +4,14 @@
    - 새벽에 폰으로 쓰는 앱이라 모바일이 기준이고, 넓은 화면은 그 위에 얹는다.
    ========================================================================== */
 
+/* 내장 폰트: 어느 기기에서든 같은 인상을 준다 (오프라인에서도 동작) */
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-display: swap;
+}
+
 :root {
   --bg: #f1f3f7;
   --surface: #ffffff;
@@ -44,10 +52,22 @@
 
   /* 달력 피커·스크롤바 같은 브라우저 기본 위젯도 테마를 따라가게 한다 */
   color-scheme: light dark;
+
+  /* 포인트 그라데이션: 버튼·선택 칩·브랜드에 일관되게 쓴다 */
+  --grad: linear-gradient(135deg, #4c6fff 0%, #7a5cff 55%, #b45cff 100%);
+  --grad-glow: 0 8px 26px rgba(104, 94, 255, 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  /* 내장 폰트: 어느 기기에서든 같은 인상을 준다 (오프라인에서도 동작) */
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-display: swap;
+}
+
+:root {
     --bg: #0b0e14;
     --surface: #141922;
     --surface-2: #1b212c;
@@ -75,12 +95,27 @@
     --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
     --shadow-accent: 0 6px 20px rgba(124, 140, 255, 0.24);
+    --grad: linear-gradient(135deg, #6d8bff 0%, #9a7bff 55%, #cf7dff 100%);
+    --grad-glow: 0 8px 30px rgba(130, 110, 255, 0.35);
   }
 }
 
 * { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
+
+/* 은은한 오로라 배경: 화면에 깊이를 준다 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(560px 380px at 12% -6%, color-mix(in srgb, #6d8bff 16%, transparent), transparent 70%),
+    radial-gradient(520px 360px at 108% 4%, color-mix(in srgb, #d76dff 12%, transparent), transparent 70%),
+    radial-gradient(600px 420px at 50% 112%, color-mix(in srgb, #4cc2ff 9%, transparent), transparent 70%);
+}
 
 body {
   margin: 0;
@@ -115,13 +150,18 @@ header.top {
 .brand { display: flex; align-items: center; gap: 10px; }
 
 .brand-mark {
-  width: 32px; height: 32px; border-radius: 10px; flex: 0 0 auto;
-  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #a855f7));
-  display: grid; place-items: center; color: #fff; font-size: 16px;
-  box-shadow: var(--shadow-accent);
+  width: 34px; height: 34px; border-radius: 11px; flex: 0 0 auto;
+  background: var(--grad);
+  display: grid; place-items: center; color: #fff; font-size: 17px;
+  box-shadow: var(--grad-glow);
 }
 
-header.top h1 { margin: 0; font-size: 17px; font-weight: 700; }
+header.top h1 {
+  margin: 0; font-size: 18px; font-weight: 800;
+  background: var(--grad);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
 header.top .sub { color: var(--text-3); font-size: 12px; margin-top: 1px; }
 
 /* 넓은 화면에서만 보이는 상단 탭 */
@@ -155,9 +195,14 @@ nav.tabbar button {
   position: relative; transition: color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-nav.tabbar button svg { width: 22px; height: 22px; stroke-width: 1.8; transition: transform 0.25s var(--ease); }
+nav.tabbar button svg {
+  /* border-box 기준: 패딩을 포함해 22x22 내용이 유지되게 전체 크기를 잡는다 */
+  width: 54px; height: 30px; stroke-width: 1.8;
+  padding: 4px 16px; border-radius: var(--r-full);
+  transition: transform 0.25s var(--ease), background 0.25s var(--ease);
+}
 nav.tabbar button.active { color: var(--accent); }
-nav.tabbar button.active svg { transform: translateY(-1px) scale(1.08); }
+nav.tabbar button.active svg { background: var(--accent-soft); transform: translateY(-1px); }
 nav.tabbar button:active svg { transform: scale(0.9); }
 
 nav.tabs .job-count {
@@ -191,10 +236,14 @@ section.tab-panel.active { display: block; animation: fadeUp 0.28s var(--ease); 
 
 .card {
   background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--surface) 40%, transparent);
   border-radius: var(--r-xl);
   padding: 20px;
   margin-bottom: 14px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 34px rgba(16, 24, 40, 0.06);
+}
+@media (prefers-color-scheme: dark) {
+  .card { border-color: rgba(255, 255, 255, 0.05); box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 36px rgba(0,0,0,0.35); }
 }
 
 .card h2 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
@@ -247,8 +296,8 @@ input:focus, select:focus, textarea:focus {
 /* ───────────────────────── 버튼 ───────────────────────── */
 
 button.btn {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--grad);
+  color: #fff;
   border: 0;
   border-radius: var(--r-md);
   padding: 11px 18px;
@@ -259,7 +308,7 @@ button.btn {
   transition: transform 0.12s var(--ease), background 0.15s, opacity 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
-button.btn:hover { background: var(--accent-press); }
+button.btn:hover { filter: brightness(1.07); }
 button.btn:active { transform: scale(0.97); }
 button.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
@@ -276,7 +325,7 @@ button.btn.big {
   padding: 17px;
   font-size: 16px;
   border-radius: 18px;
-  box-shadow: var(--shadow-accent);
+  box-shadow: var(--grad-glow);
 }
 button.btn.big:active { transform: scale(0.985); }
 
@@ -318,10 +367,10 @@ a.btn {
 }
 .chip:active { transform: scale(0.95); }
 .chip.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-  box-shadow: var(--shadow-accent);
+  background: var(--grad);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--grad-glow);
 }
 
 .chip.time {
@@ -329,6 +378,7 @@ a.btn {
   padding: 9px 16px; border-radius: 18px; text-align: left;
 }
 .chip.time small { font-size: 11px; font-weight: 500; opacity: 0.7; }
+.chip .chip-emoji { margin-right: 5px; }
 .chip.moon::after { content: ' 🌙'; }
 
 /* ───────────────────────── 배지 ───────────────────────── */
@@ -345,7 +395,7 @@ a.btn {
 /* ───────────────────────── 빠른 예약 ───────────────────────── */
 
 .compose { padding: 22px 20px 24px; }
-.compose h2 { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.03em; }
+.compose h2 { font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -0.035em; }
 .compose h3 { margin: 24px 0 11px; font-size: 14px; }
 .compose-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .saved-note { font-size: 12px; color: var(--text-3); white-space: nowrap; }
@@ -553,9 +603,10 @@ code.inline { background: var(--surface-2); border-radius: 6px; padding: 2px 6px
   animation: popIn 0.34s var(--ease);
 }
 .success-check {
-  width: 54px; height: 54px; margin: 0 auto 12px;
+  width: 58px; height: 58px; margin: 0 auto 12px;
   border-radius: var(--r-full); display: grid; place-items: center;
-  background: var(--ok); color: #fff; font-size: 28px; font-weight: 800;
+  background: var(--grad); color: #fff; font-size: 30px; font-weight: 800;
+  box-shadow: var(--grad-glow);
 }
 .success-title { font-size: 17px; font-weight: 800; }
 .success-when { margin-top: 4px; font-size: 14px; color: var(--text-2); }
