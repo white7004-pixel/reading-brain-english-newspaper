@@ -5,6 +5,7 @@ export const defaultSettings: MonggleSettings = {
   key: 'main', profile: 'high_school', theme: 'system', reducedMotion: false,
   mascotVisible: true,
   quietHoursStart: '23:00', quietHoursEnd: '07:00',
+  nudgeIntervalMinutes: 60,
 }
 
 export const settingsRepository = {

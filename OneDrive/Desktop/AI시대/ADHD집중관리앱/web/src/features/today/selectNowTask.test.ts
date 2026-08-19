@@ -7,6 +7,7 @@ const makeTask = (id: string, overrides: Partial<Task> = {}): Task => ({
   id, title: id, day: '2026-08-20', status: 'open', priority: 2,
   estimateMinutes: 20, category: 'study',
   createdAt: now.toISOString(), updatedAt: now.toISOString(), ...overrides,
+  source: overrides.source ?? 'manual',
 })
 
 describe('Now One Thing selection', () => {

@@ -12,3 +12,8 @@ it('migrates old settings with the mascot visible by default', () => {
   localStorage.setItem('monggle.settings.v1', JSON.stringify({ profile: 'worker', theme: 'light' }))
   expect(settingsRepository.load().mascotVisible).toBe(true)
 })
+
+it('migrates old settings to a one-hour nudge interval', () => {
+  localStorage.setItem('monggle.settings.v1', JSON.stringify({ key: 'main', theme: 'system' }))
+  expect(settingsRepository.load().nudgeIntervalMinutes).toBe(60)
+})

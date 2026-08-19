@@ -34,6 +34,7 @@ function task(overrides: Partial<Task> = {}): Task {
     createdAt: '2026-08-20T00:00:00+09:00',
     updatedAt: '2026-08-20T00:00:00+09:00',
     ...overrides,
+    source: overrides.source ?? 'manual',
   }
 }
 
@@ -69,5 +70,21 @@ describe('local repositories', () => {
     const messages = await messageRepository.listByStatus('scheduled')
     expect(messages).toMatchObject([{ id: 'msg-1' }])
     expect(messages[0]).not.toHaveProperty('accessToken')
+  })
+
+  it('normalizes legacy tasks and preserves local parser metadata', async () => {
+    const { taskRepository } = setup()
+    await taskRepository.put(task() as Task)
+    await taskRepository.put({
+      ...task({ id: 'task-2' }),
+      source: 'local_parser',
+      parseConfidence: 0.86,
+      orderAfterTaskId: 'task-1',
+    } as Task)
+    const tasks = await taskRepository.listForDay('2026-08-20')
+    expect(tasks).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'task-1', source: 'manual' }),
+      expect.objectContaining({ id: 'task-2', source: 'local_parser', parseConfidence: 0.86, orderAfterTaskId: 'task-1' }),
+    ]))
   })
 })
