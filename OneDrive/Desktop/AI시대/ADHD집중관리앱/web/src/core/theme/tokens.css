@@ -7,6 +7,11 @@
   --color-accent: #7567d8;
   --color-accent-soft: #e8e3ff;
   --color-line: #ded9ec;
+  --color-glass: rgb(255 255 255 / 72%);
+  --color-glass-line: rgb(255 255 255 / 88%);
+  --shadow-card-3d: 0 24px 55px rgb(58 42 92 / 15%), inset 0 1px 0 rgb(255 255 255 / 88%);
+  --shadow-control-3d: 0 10px 24px rgb(92 70 155 / 20%), inset 0 1px 0 rgb(255 255 255 / 45%);
+  --glow-lavender: radial-gradient(circle, rgb(191 172 255 / 42%), transparent 68%);
   --radius-card: 24px;
   --radius-control: 16px;
   --space-page: 20px;
@@ -23,5 +28,10 @@
   --color-accent: #afa4ff;
   --color-accent-soft: #393353;
   --color-line: #403b4e;
+  --color-glass: rgb(40 36 52 / 78%);
+  --color-glass-line: rgb(255 255 255 / 13%);
+  --shadow-card-3d: 0 26px 60px rgb(4 2 12 / 34%), inset 0 1px 0 rgb(255 255 255 / 12%);
+  --shadow-control-3d: 0 10px 26px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 13%);
+  --glow-lavender: radial-gradient(circle, rgb(151 126 238 / 27%), transparent 68%);
   color-scheme: dark;
 }

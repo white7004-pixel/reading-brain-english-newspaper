@@ -5,7 +5,7 @@ import { BottomNav } from './BottomNav'
 export function AppShell({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileType>('high_school')
   return (
-    <div className="app-shell">
+    <div className="app-shell studio-surface">
       <header className="app-header">
         <h1>몽글</h1>
         <label className="profile-select">
