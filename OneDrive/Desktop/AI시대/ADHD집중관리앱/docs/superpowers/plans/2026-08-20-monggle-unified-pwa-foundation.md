@@ -21,6 +21,8 @@
 - Incomplete or deferred work never removes rewards or uses shaming copy.
 - Message content and recipients are sensitive data and remain local in this plan.
 - No platform access token is stored or requested in this plan.
+- No external generative-AI API, paid cloud service, or usage-based credit is called by the foundation.
+- Brain-dump parsing, task breakdown, tone transformation, and personal time estimates run locally with deterministic rules.
 - Every task follows red-green-refactor, ends with its focused tests passing, and creates a Git checkpoint.
 
 ---
