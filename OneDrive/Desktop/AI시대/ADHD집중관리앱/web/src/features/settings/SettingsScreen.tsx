@@ -4,6 +4,7 @@ import type { MonggleSettings, NudgeIntervalMinutes, ProfileType, ThemeMode } fr
 import { applyTheme } from '../../core/theme/theme'
 import { AppearanceScreen } from '../appearance/AppearanceScreen'
 import { settingsRepository } from './settingsRepository'
+import { nativeWidgetBridge } from '../widgets/nativeWidgetBridge'
 
 export function SettingsScreen() {
   const [settings, setSettings] = useState<MonggleSettings>(() => settingsRepository.load())
@@ -14,6 +15,7 @@ export function SettingsScreen() {
     settingsRepository.save(next)
     applyTheme(next.theme)
     window.dispatchEvent(new Event('monggle:settings-changed'))
+    void nativeWidgetBridge.scheduleNudges({ intervalMinutes: next.nudgeIntervalMinutes, quietHoursStart: next.quietHoursStart, quietHoursEnd: next.quietHoursEnd })
   }
   return <section className="feature-screen">
     <span>설정</span><h2>나에게 편안한 방식으로 맞춰요</h2>

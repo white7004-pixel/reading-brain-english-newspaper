@@ -10,6 +10,7 @@ function dependencies(): TodayDependencies {
       { id: 'draft-2', title: '병원 방문', day: '2026-08-20', priority: 2, estimateMinutes: 15, confidence: 0.9, needsReview: false },
     ]),
     saveMany: vi.fn().mockResolvedValue(undefined),
+    updateWidget: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -29,5 +30,6 @@ it('saves reviewed tasks and shows the first focus action', async () => {
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   await userEvent.click(screen.getByRole('button', { name: '모두 저장' }))
   expect(deps.saveMany).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ title: '수학 숙제', source: 'local_parser' })]))
+  expect(deps.updateWidget).toHaveBeenCalledWith(expect.objectContaining({ remainingCount: 2 }))
   expect(screen.getByRole('heading', { name: '수학 숙제' })).toBeVisible()
 })

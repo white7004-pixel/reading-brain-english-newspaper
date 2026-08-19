@@ -10,11 +10,14 @@ import { recommendForEnergy, type Energy } from './selectNowTask'
 import { TaskDraftReview } from './TaskDraftReview'
 import type { TaskDraft } from './taskDraft'
 import { Timeline } from './Timeline'
+import { nativeWidgetBridge } from '../widgets/nativeWidgetBridge'
+import { buildWidgetSnapshot, type WidgetSnapshot } from '../widgets/widgetSnapshot'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
   saveMany(tasks: Task[]): Promise<unknown>
   listForDay?(day: string): Promise<Task[]>
+  updateWidget(snapshot: WidgetSnapshot): Promise<unknown>
 }
 
 const taskRepository = createTaskRepository(createDatabase())
@@ -22,6 +25,7 @@ const defaultDependencies: TodayDependencies = {
   parse: parseTaskDrafts,
   saveMany: taskRepository.putMany,
   listForDay: taskRepository.listForDay,
+  updateWidget: (snapshot) => nativeWidgetBridge.update(snapshot),
 }
 
 function dayFor(date: Date) {
@@ -42,7 +46,9 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   const saveTasks = async (next: Task[]) => {
     await dependencies.saveMany(next)
-    setTasks((current) => [...current.filter((task) => !next.some(({ id }) => id === task.id)), ...next])
+    const merged = [...tasks.filter((task) => !next.some(({ id }) => id === task.id)), ...next]
+    setTasks(merged)
+    await dependencies.updateWidget(buildWidgetSnapshot(merged, '', new Date()))
     window.dispatchEvent(new Event('monggle:tasks-changed'))
   }
 
