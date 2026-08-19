@@ -9,9 +9,10 @@ const tabs = [
 export function BottomNav() {
   return (
     <nav className="bottom-nav" aria-label="주요 메뉴">
-      {tabs.map(([label, href], index) => (
-        <a key={href} href={href} aria-current={index === 0 ? 'page' : undefined}>{label}</a>
+      {tabs.map(([label, href]) => (
+        <NavLink key={href} to={href}>{label}</NavLink>
       ))}
     </nav>
   )
 }
+import { NavLink } from 'react-router-dom'

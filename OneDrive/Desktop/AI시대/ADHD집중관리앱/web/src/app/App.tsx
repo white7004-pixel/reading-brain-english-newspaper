@@ -1,11 +1,24 @@
 import '../core/theme/global.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { FocusScreen } from '../features/focus/FocusScreen'
+import { MessagesScreen } from '../features/messages/MessagesScreen'
+import { RoutinesScreen } from '../features/routines/RoutinesScreen'
+import { SettingsScreen } from '../features/settings/SettingsScreen'
 import { TodayScreen } from '../features/today/TodayScreen'
 import { AppShell } from './AppShell'
 
 export function App() {
   return (
-    <AppShell>
-      <TodayScreen />
-    </AppShell>
+    <BrowserRouter>
+      <AppShell>
+        <Routes>
+          <Route path="/" element={<TodayScreen />} />
+          <Route path="/focus" element={<FocusScreen title="지금 가장 중요한 일" minutes={25} />} />
+          <Route path="/messages" element={<MessagesScreen />} />
+          <Route path="/routines" element={<RoutinesScreen />} />
+          <Route path="/settings" element={<SettingsScreen />} />
+        </Routes>
+      </AppShell>
+    </BrowserRouter>
   )
 }
