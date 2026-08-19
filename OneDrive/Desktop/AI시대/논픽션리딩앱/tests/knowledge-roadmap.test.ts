@@ -30,3 +30,15 @@ it("keeps ids and AR ranges valid", () => {
     expect(item.goal.trim().length).toBeGreaterThan(10);
   }
 });
+
+it("builds two AR stages with one topic from every domain in each stage", () => {
+  for (const grade of ELEMENTARY_GRADES) {
+    const items = roadmapForGrade(grade);
+    const stages = [...new Set(items.map((item) => `${item.arMin}-${item.arMax}`))];
+    expect(stages).toHaveLength(2);
+    for (const stage of stages) {
+      const domains = items.filter((item) => `${item.arMin}-${item.arMax}` === stage).map((item) => item.domain);
+      expect(new Set(domains).size).toBe(6);
+    }
+  }
+});

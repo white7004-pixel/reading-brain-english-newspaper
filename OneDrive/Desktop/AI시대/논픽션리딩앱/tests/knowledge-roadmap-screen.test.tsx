@@ -12,7 +12,8 @@ it("switches between elementary grades and shows both grade and AR labels", asyn
   await user.click(screen.getByRole("tab", { name: "초4" }));
   expect(screen.getByRole("heading", { name: "초등 4학년" })).toBeVisible();
   expect(screen.getByText("차 문화와 교류")).toBeVisible();
-  expect(screen.getAllByText(/AR 2\.5–3\.4/)).toHaveLength(12);
+  expect(screen.getAllByText(/AR 2\.5–2\.9/)).toHaveLength(7);
+  expect(screen.getAllByText(/AR 3\.0–3\.4/)).toHaveLength(7);
 });
 
 it("opens an available reading and marks unavailable topics as preparing", async () => {
@@ -23,4 +24,15 @@ it("opens an available reading and marks unavailable topics as preparing", async
   await user.click(screen.getByRole("button", { name: /별과 태양계 읽기 시작/ }));
   expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ id: "stars-shine" }));
   expect(screen.getAllByText("준비 중").length).toBeGreaterThan(0);
+});
+
+it("renders a growth map with AR stages, domain lanes, and connected passage nodes", () => {
+  render(<KnowledgeRoadmap articles={getPublishedArticles()} onOpen={() => {}} />);
+
+  expect(screen.getByTestId("knowledge-growth-map")).toBeVisible();
+  expect(screen.getAllByTestId("ar-stage")).toHaveLength(2);
+  expect(screen.getAllByTestId("roadmap-lane")).toHaveLength(6);
+  expect(screen.getAllByTestId("passage-node")).toHaveLength(12);
+  expect(screen.getByText("기초 단계")).toBeVisible();
+  expect(screen.getByText("도전 단계")).toBeVisible();
 });

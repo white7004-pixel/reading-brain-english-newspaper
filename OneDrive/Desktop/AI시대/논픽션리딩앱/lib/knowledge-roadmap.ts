@@ -24,10 +24,8 @@ export const ROADMAP_DOMAIN_LABELS: Record<RoadmapDomain, string> = {
   philosophy: "철학·자기계발",
 };
 
-const DOMAIN_ORDER: RoadmapDomain[] = [
-  "science", "science", "history", "history", "society", "society",
-  "world-culture", "world-culture", "arts", "arts", "philosophy", "philosophy",
-];
+const DOMAIN_ORDER: RoadmapDomain[] = ["science", "history", "society", "world-culture", "arts", "philosophy"];
+const TOPIC_ORDER = [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11] as const;
 
 const GRADE_TOPICS: Record<ElementaryGrade, readonly string[]> = {
   1: ["생물과 무생물", "날씨와 계절", "우리 가족의 역사", "옛날과 오늘", "교실의 규칙", "우리 동네의 일", "세계의 인사", "세계의 집", "색과 모양", "음악과 리듬", "감정 알아보기", "선택과 결과"],
@@ -57,18 +55,24 @@ const ARTICLE_BY_TITLE: Partial<Record<string, string>> = {
 };
 
 export const KNOWLEDGE_ROADMAP: KnowledgeRoadmapItem[] = ELEMENTARY_GRADES.flatMap((grade) => {
-  const [arMin, arMax] = GRADE_AR[grade];
-  return GRADE_TOPICS[grade].map((titleKo, index) => ({
+  const [gradeArMin, gradeArMax] = GRADE_AR[grade];
+  const challengeArMin = Number((gradeArMin + 0.5).toFixed(1));
+  const basicArMax = Number((challengeArMin - 0.1).toFixed(1));
+  return TOPIC_ORDER.map((sourceIndex, index) => {
+    const titleKo = GRADE_TOPICS[grade][sourceIndex];
+    const challenge = index >= 6;
+    return {
     id: `grade-${grade}-${index + 1}`,
     grade,
-    domain: DOMAIN_ORDER[index],
+    domain: DOMAIN_ORDER[index % DOMAIN_ORDER.length],
     titleKo,
     goal: `${titleKo}의 핵심 원리와 생활 속 의미를 설명한다.`,
-    arMin,
-    arMax,
+    arMin: challenge ? challengeArMin : gradeArMin,
+    arMax: challenge ? gradeArMax : basicArMax,
     order: index + 1,
     ...(ARTICLE_BY_TITLE[titleKo] ? { articleId: ARTICLE_BY_TITLE[titleKo] } : {}),
-  }));
+    };
+  });
 });
 
 export function roadmapForGrade(grade: ElementaryGrade): KnowledgeRoadmapItem[] {

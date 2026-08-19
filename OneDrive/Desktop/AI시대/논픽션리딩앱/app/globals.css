@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./key-finder.css";
+@import "./knowledge-map.css";
 
 :root {
   --forest-950: #102d25;
