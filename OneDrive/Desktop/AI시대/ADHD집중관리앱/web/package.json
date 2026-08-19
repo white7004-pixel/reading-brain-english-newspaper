@@ -8,9 +8,11 @@
     "build": "tsc -b && vite build",
     "test": "vitest",
     "test:run": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "postinstall": "node scripts/copy-mediapipe-assets.mjs"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "1.0.1",
     "dexie": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

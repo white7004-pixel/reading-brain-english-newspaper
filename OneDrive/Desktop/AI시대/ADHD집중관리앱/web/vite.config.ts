@@ -7,6 +7,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,tflite,wasm}'],
+        maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
+      },
       manifest: {
         name: '몽글',
         short_name: '몽글',
