@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import type { MessagePlatform } from '../../core/model/message'
 import { deliveryModeFor } from './messagePolicy'
 import { transformDraft, type MessageTone } from './transformTone'
+import { emitCompanionEvent } from '../companion/companionEvents'
 
 const platformLabels: Record<MessagePlatform, string> = {
   kakaotalk: '카카오톡', kakaowork: '카카오워크', slack: 'Slack', telegram: 'Telegram',
@@ -38,6 +39,7 @@ export function MessagesScreen() {
       body: body.trim(), scheduledAt, deliveryMode: mode,
     }, ...current])
     setIsComposing(false); setRecipient(''); setBody(''); setScheduledAt('')
+    emitCompanionEvent('message_scheduled')
   }
 
   return (

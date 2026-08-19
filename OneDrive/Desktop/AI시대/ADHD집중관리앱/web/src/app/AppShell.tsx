@@ -1,12 +1,23 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { ProfileType } from '../core/model/settings'
 import { BottomNav } from './BottomNav'
 import { MonggleCompanion } from '../features/companion/MonggleCompanion'
 import { settingsRepository } from '../features/settings/settingsRepository'
+import { subscribeCompanionEvents, type CompanionEvent } from '../features/companion/companionEvents'
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileType>('high_school')
   const [settings] = useState(() => settingsRepository.load())
+  const [companionEvent, setCompanionEvent] = useState<CompanionEvent | null>(null)
+  useEffect(() => {
+    let expiry: number | undefined
+    const unsubscribe = subscribeCompanionEvents((event) => {
+      window.clearTimeout(expiry)
+      setCompanionEvent(event)
+      expiry = window.setTimeout(() => setCompanionEvent(null), 1_800)
+    })
+    return () => { unsubscribe(); window.clearTimeout(expiry) }
+  }, [])
   return (
     <div className="app-shell studio-surface">
       <header className="app-header">
@@ -22,7 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </label>
       </header>
       <main>{children}</main>
-      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={null} />
+      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} />
       <BottomNav />
     </div>
   )
