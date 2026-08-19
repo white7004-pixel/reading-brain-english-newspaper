@@ -32,6 +32,7 @@
 - `web/src/core/storage/`: Dexie schema, repositories, migration tests
 - `web/src/core/theme/`: design tokens, theme persistence, reduced-motion behavior
 - `web/src/features/today/`: quick capture, Now One Thing, unified timeline
+- `web/src/features/rescue/`: energy check-in and plan-collapse recovery actions
 - `web/src/features/focus/`: resilient focus timer and task-step execution
 - `web/src/features/messages/`: local message draft, schedule review, status list
 - `web/src/features/routines/`: ordered routine runner
@@ -268,6 +269,7 @@ git commit -m "feat: add stable Monggle app shell"
 **Interfaces:**
 - Produces: `selectNowTask(tasks, now): Task | null`
 - Produces: `buildTimeline(tasks, messages, events): TimelineItem[]`
+- Produces: `recommendForEnergy(tasks, energy, now): Task | null`
 - Consumes: task and message repositories
 
 - [ ] **Step 1: Write priority and home journey tests**
@@ -276,6 +278,11 @@ git commit -m "feat: add stable Monggle app shell"
 it('selects active, overdue, nearest due, then highest priority', () => {
   expect(selectNowTask([tomorrowHigh, overdueLow, active], now)?.id).toBe(active.id)
   expect(selectNowTask([tomorrowHigh, overdueLow], now)?.id).toBe(overdueLow.id)
+})
+
+it('uses energy only after active and overdue constraints', () => {
+  expect(recommendForEnergy([overdueHard, shortEasy], 'low', now)?.id).toBe(overdueHard.id)
+  expect(recommendForEnergy([tomorrowHard, shortEasy], 'low', now)?.id).toBe(shortEasy.id)
 })
 ```
 
@@ -297,7 +304,7 @@ Expected: FAIL because selectors and components do not exist.
 
 - [ ] **Step 3: Implement the Today flow**
 
-Quick capture offers exactly `할 일로 저장`, `메시지 분석`, and `답장 예약`. The Now card shows one title, estimate, and `집중 시작`, `완료`, `10분 미루기`. Timeline items use a shared shape `{ id, at, kind: 'task' | 'message' | 'event', title, statusLabel }` and sort by `at` ascending.
+Quick capture offers exactly `할 일로 저장`, `메시지 분석`, and `답장 예약`. The Now card shows one title, estimate, and `집중 시작`, `완료`, `10분 미루기`. A three-value energy control (`낮음`, `보통`, `높음`) may refine the recommendation but never displaces active or overdue work. Timeline items use a shared shape `{ id, at, kind: 'task' | 'message' | 'event', title, statusLabel }` and sort by `at` ascending.
 
 - [ ] **Step 4: Run Today and repository tests**
 
@@ -317,6 +324,7 @@ git commit -m "feat: add Today capture and next action"
 **Files:**
 - Create: `web/src/features/focus/focusTimer.ts`
 - Create: `web/src/features/focus/taskBreakdown.ts`
+- Create: `web/src/features/focus/timeEstimate.ts`
 - Create: `web/src/features/focus/FocusScreen.tsx`
 - Test: `web/src/features/focus/focusTimer.test.ts`
 - Test: `web/src/features/focus/FocusScreen.test.tsx`
@@ -324,6 +332,7 @@ git commit -m "feat: add Today capture and next action"
 **Interfaces:**
 - Produces: `startTimer(taskId, minutes, now): FocusTimerState`, `remaining(timer, now): number`, `extend(timer, minutes): FocusTimerState`
 - Produces: `breakIntoSteps(title): TaskStep[]` with deterministic local rules in this plan
+- Produces: `personalEstimate(records): number | null`
 
 - [ ] **Step 1: Write absolute-time restoration tests**
 
@@ -336,6 +345,11 @@ it('restores remaining time from an absolute end time', () => {
 it('never allows a second active timer', () => {
   expect(() => startTimer('task-2', 10, now, activeTimer)).toThrow('FOCUS_TIMER_ACTIVE')
 })
+
+it('waits for three samples before suggesting a personal estimate', () => {
+  expect(personalEstimate([20, 25])).toBeNull()
+  expect(personalEstimate([20, 25, 30])).toBe(26)
+})
 ```
 
 - [ ] **Step 2: Run focus tests and verify failure**
@@ -346,7 +360,7 @@ Expected: FAIL because the timer functions do not exist.
 
 - [ ] **Step 3: Implement focus state and screen**
 
-Persist `{ taskId, startedAt, endsAt, pausedAt, accumulatedPauseSeconds, status }`. Render one title, a visual progress ring, remaining time, checklist, and `시작/일시정지`, `완료`, `5분 추가`. The character stays in a fixed decorative slot and never crosses the controls.
+Persist `{ taskId, startedAt, endsAt, pausedAt, accumulatedPauseSeconds, status }`. Render one title, a visual progress ring, remaining time, checklist, and `시작/일시정지`, `완료`, `5분 추가`. On completion store estimated and actual minutes; after three matching category samples, calculate an exponentially weighted rounded estimate and require confirmation before applying it. The character stays in a fixed decorative slot and never crosses the controls.
 
 - [ ] **Step 4: Run focus and Today tests**
 
@@ -366,6 +380,7 @@ git commit -m "feat: add focused one-task execution"
 **Files:**
 - Create: `web/src/features/messages/parseSharedText.ts`
 - Create: `web/src/features/messages/messagePolicy.ts`
+- Create: `web/src/features/messages/transformTone.ts`
 - Create: `web/src/features/messages/MessageComposer.tsx`
 - Create: `web/src/features/messages/MessageReview.tsx`
 - Create: `web/src/features/messages/MessageList.tsx`
@@ -376,6 +391,7 @@ git commit -m "feat: add focused one-task execution"
 **Interfaces:**
 - Produces: `parseSharedText(text, receivedAt): ParsedMessageDraft`
 - Produces: `deliveryModeFor(platform, capability): 'automatic' | 'manual'`
+- Produces: `transformTone(body, tone): string` for local deterministic preview copy
 - Consumes: `messageRepository`
 
 - [ ] **Step 1: Write parsing and platform-policy tests**
@@ -393,6 +409,12 @@ it.each([
 ] as const)('%s capability maps to %s', (platform, capability, expected) => {
   expect(deliveryModeFor(platform, capability)).toBe(expected)
 })
+
+it('keeps tone transformations in draft status', () => {
+  const result = transformDraft(originalDraft, 'business')
+  expect(result.status).toBe('draft')
+  expect(result.body).not.toBe(originalDraft.body)
+})
 ```
 
 - [ ] **Step 2: Run message tests and verify failure**
@@ -403,7 +425,7 @@ Expected: FAIL because parsing, policy, and screens do not exist.
 
 - [ ] **Step 3: Implement local-only scheduling UX**
 
-The review screen requires platform, recipient label, body, local date/time, and timezone. It displays all three critical values—platform, recipient, time—before `예약 저장`. Saving creates `status: 'scheduled'`; it never sends a network request. Unsupported KakaoTalk targets display `예약 시 직접 보내기 필요` and store `deliveryMode: 'manual'`.
+The review screen requires platform, recipient label, body, local date/time, and timezone. It offers `정중하게`, `업무용`, `짧고 친근하게` previews, keeps every transformation editable and in `draft`, and displays platform, recipient, and time before `예약 저장`. Saving creates `status: 'scheduled'`; it never sends a network request. Unsupported KakaoTalk targets display `예약 시 직접 보내기 필요` and store `deliveryMode: 'manual'`.
 
 - [ ] **Step 4: Run message, timeline, and storage tests**
 
@@ -425,12 +447,14 @@ git commit -m "feat: add local message scheduling journey"
 - Create: `web/src/features/routines/RoutinesScreen.tsx`
 - Create: `web/src/features/settings/SettingsScreen.tsx`
 - Create: `web/src/features/settings/settingsRepository.ts`
+- Create: `web/src/features/rescue/reschedulePlan.ts`
 - Test: `web/src/features/routines/routineRunner.test.ts`
 - Test: `web/src/features/settings/SettingsScreen.test.tsx`
 
 **Interfaces:**
 - Produces: `advanceRoutine(state, action): RoutineRunState`
 - Produces: `settingsRepository.load()`, `settingsRepository.save(settings)`
+- Produces: `reschedulePlan(tasks, decisions, now): RescheduleResult`
 
 - [ ] **Step 1: Write routine and persistence tests**
 
@@ -445,6 +469,12 @@ it('persists profile, theme, and reduced motion without changing routes', async 
   await settingsRepository.save({ profile: 'high_school', theme: 'dark', reducedMotion: true })
   expect(await settingsRepository.load()).toMatchObject({ profile: 'high_school', theme: 'dark', reducedMotion: true })
 })
+
+it('supports keep, tomorrow, five-minute, and cancel decisions', () => {
+  const result = reschedulePlan(tasks, { a: 'keep', b: 'tomorrow', c: 'five_minute', d: 'cancel' }, now)
+  expect(result.items.map(item => item.status)).toEqual(['open', 'deferred', 'open', 'canceled'])
+  expect(result.items.find(item => item.id === 'c')?.estimateMinutes).toBe(5)
+})
 ```
 
 - [ ] **Step 2: Run focused tests and verify failure**
@@ -455,7 +485,7 @@ Expected: FAIL because the runner and settings repository do not exist.
 
 - [ ] **Step 3: Implement routine controls and stable settings**
 
-Routine controls are `시작`, `완료`, `건너뛰기`, `5분 추가` and always show the projected finish time. Settings provide profile values `middle_school`, `high_school`, `university`, `worker`; theme values `light`, `dark`, `system`; reduced motion; quiet hours defaulting to `23:00–07:00`; and read-only connector status cards.
+Routine controls are `시작`, `완료`, `건너뛰기`, `5분 추가` and always show the projected finish time. The plan rescue sheet supports `오늘 꼭 하기`, `내일로 이동`, `5분 버전`, `취소` and previews the new finish time before applying. Settings provide profile values `middle_school`, `high_school`, `university`, `worker`; theme values `light`, `dark`, `system`; reduced motion; quiet hours defaulting to `23:00–07:00`; and read-only connector status cards.
 
 - [ ] **Step 4: Run all unit and component tests**
 
