@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import type { TaskDraft } from './taskDraft'
+import { DEFAULT_CATEGORIES, type Category } from '../../core/model/category'
+import { CategoryPicker } from './CategoryPicker'
 
-export function TaskDraftReview({ drafts, onChange, onSave, onCancel }: {
+export function TaskDraftReview({ drafts, categories = DEFAULT_CATEGORIES, onCreateCategory = async () => { throw new Error('분류를 추가할 수 없어요.') }, onChange, onSave, onCancel }: {
   drafts: TaskDraft[]
+  categories?: Category[]
+  onCreateCategory?: (input: { name: string; color: string }) => Promise<Category>
   onChange: (drafts: TaskDraft[]) => void
   onSave: (drafts: TaskDraft[]) => void
   onCancel: () => void
@@ -21,6 +25,7 @@ export function TaskDraftReview({ drafts, onChange, onSave, onCancel }: {
       <label>할 일 제목<input value={draft.title} onChange={(event) => update(draft.id, { title: event.target.value })} /></label>
       <label>날짜<input type="date" value={draft.day} onChange={(event) => update(draft.id, { day: event.target.value })} /></label>
       <label>시간<input type="time" value={draft.dueAt?.slice(11, 16) ?? ''} onChange={(event) => update(draft.id, { dueAt: event.target.value ? `${draft.day}T${event.target.value}:00+09:00` : undefined })} /></label>
+      <CategoryPicker categories={categories} value={draft.categoryId} onSelect={(categoryId) => update(draft.id, { categoryId })} onCreate={onCreateCategory} />
       <label>중요도<select value={draft.priority} onChange={(event) => update(draft.id, { priority: Number(event.target.value) as TaskDraft['priority'] })}><option value="1">낮음</option><option value="2">보통</option><option value="3">높음</option></select></label>
       <label>예상 시간<input type="number" min="5" max="240" step="5" value={draft.estimateMinutes} onChange={(event) => update(draft.id, { estimateMinutes: Number(event.target.value) })} /></label>
       {draft.needsReview && <small>시간 표현을 한 번 확인해 주세요.</small>}

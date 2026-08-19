@@ -1,4 +1,5 @@
 import type { Task } from '../../core/model/task'
+import type { CategoryId } from '../../core/model/category'
 
 export interface TaskDraft {
   id: string
@@ -6,6 +7,7 @@ export interface TaskDraft {
   day: string
   dueAt?: string
   priority: Task['priority']
+  categoryId: CategoryId
   estimateMinutes: number
   orderAfterDraftId?: string
   confidence: number

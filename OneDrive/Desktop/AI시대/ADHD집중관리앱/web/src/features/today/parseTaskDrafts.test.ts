@@ -24,4 +24,13 @@ describe('local Korean task organizer', () => {
   it('returns no drafts for blank input', () => {
     expect(parseTaskDrafts('   ', now)).toEqual([])
   })
+
+  it.each([
+    ['회의 자료 만들기', 'work'],
+    ['저녁에 달리기', 'exercise'],
+    ['책 30쪽 읽기', 'reading'],
+    ['친구에게 전화하기', 'personal'],
+  ])('recommends a default category for %s', (input, categoryId) => {
+    expect(parseTaskDrafts(input, now)[0].categoryId).toBe(categoryId)
+  })
 })

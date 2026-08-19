@@ -73,6 +73,14 @@ function estimateMinutes(text: string) {
   return count ? Math.max(5, Math.min(120, Number(count[1]))) : 15
 }
 
+function recommendCategory(text: string) {
+  if (/회의|보고서|업무|회사|자료|기획|발표|메일/.test(text)) return 'work'
+  if (/운동|헬스|달리기|러닝|요가|수영|산책/.test(text)) return 'exercise'
+  if (/책|독서|읽기|읽다/.test(text)) return 'reading'
+  if (/취미|그림|게임|악기|사진|영화|뜨개/.test(text)) return 'hobby'
+  return 'personal'
+}
+
 export function parseTaskDrafts(input: string, now: Date): TaskDraft[] {
   if (!input.trim()) return []
   const baseDay = dateInSeoul(now)
@@ -91,6 +99,7 @@ export function parseTaskDrafts(input: string, now: Date): TaskDraft[] {
       day: inheritedDay,
       dueAt: clock ? `${inheritedDay}T${String(clock.hour).padStart(2, '0')}:${String(clock.minute).padStart(2, '0')}:00+09:00` : undefined,
       priority: 2,
+      categoryId: recommendCategory(clause.text),
       estimateMinutes: estimateMinutes(clause.text),
       orderAfterDraftId: clause.followsPrevious ? drafts.at(-1)?.id : undefined,
       confidence: ambiguous ? 0.55 : clock && !clock.certain ? 0.72 : 0.88,
