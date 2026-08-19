@@ -83,7 +83,7 @@ describe('local repositories', () => {
     } as Task)
     const tasks = await taskRepository.listForDay('2026-08-20')
     expect(tasks).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: 'task-1', source: 'manual' }),
+      expect.objectContaining({ id: 'task-1', source: 'manual', categoryId: 'personal' }),
       expect.objectContaining({ id: 'task-2', source: 'local_parser', parseConfidence: 0.86, orderAfterTaskId: 'task-1' }),
     ]))
   })

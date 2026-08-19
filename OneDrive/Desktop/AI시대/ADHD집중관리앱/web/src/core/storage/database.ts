@@ -4,6 +4,7 @@ import type { ScheduledMessage } from '../model/message'
 import type { Routine } from '../model/routine'
 import type { MonggleSettings } from '../model/settings'
 import type { Task } from '../model/task'
+import type { Category } from '../model/category'
 
 export class MonggleDatabase extends Dexie {
   tasks!: EntityTable<Task, 'id'>
@@ -13,6 +14,7 @@ export class MonggleDatabase extends Dexie {
   photoAssets!: EntityTable<PhotoAsset, 'id'>
   characterRenders!: EntityTable<CharacterRender, 'id'>
   appearanceSettings!: EntityTable<AppearanceSettings, 'key'>
+  categories!: EntityTable<Category, 'id'>
 
   constructor(name = 'monggle') {
     super(name)
@@ -30,6 +32,16 @@ export class MonggleDatabase extends Dexie {
       photoAssets: '&id,createdAt',
       characterRenders: '&id,sourcePhotoId,preset,createdAt',
       appearanceSettings: '&key',
+    })
+    this.version(3).stores({
+      tasks: '&id,day,status,dueAt,categoryId',
+      messages: '&id,status,scheduledAt,platform',
+      routines: '&id',
+      settings: '&key',
+      photoAssets: '&id,createdAt',
+      characterRenders: '&id,sourcePhotoId,preset,createdAt',
+      appearanceSettings: '&key',
+      categories: '&id,name,isDefault,createdAt',
     })
   }
 }

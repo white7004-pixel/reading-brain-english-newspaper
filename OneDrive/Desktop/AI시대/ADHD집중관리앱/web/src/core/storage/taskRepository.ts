@@ -1,8 +1,13 @@
 import type { Task } from '../model/task'
 import type { MonggleDatabase } from './database'
+import { normalizeCategoryId } from '../model/taskCategoryMigration'
 
 export function createTaskRepository(database: MonggleDatabase) {
-  const normalize = (task: Task): Task => ({ ...task, source: task.source ?? 'manual' })
+  const normalize = (task: Task): Task => ({
+    ...task,
+    categoryId: task.categoryId ?? normalizeCategoryId(task.category),
+    source: task.source ?? 'manual',
+  })
   return {
     put(task: Task) {
       return database.tasks.put(normalize(task))
