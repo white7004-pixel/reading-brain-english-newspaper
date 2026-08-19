@@ -9,6 +9,7 @@ export interface NativeNudgeConfig {
 
 export interface WidgetCompletionEvent {
   taskId: string
+  response: 'done' | 'working' | 'later'
   completedAt: string
 }
 

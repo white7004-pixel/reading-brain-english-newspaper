@@ -26,7 +26,7 @@ it('passes the exact snapshot and nudge config to the native boundary', async ()
 })
 
 it('reads and clears widget completion events through the native boundary', async () => {
-  const events = [{ taskId: 'task-1', completedAt: '2026-08-20T01:10:00.000Z' }]
+  const events = [{ taskId: 'task-1', response: 'done' as const, completedAt: '2026-08-20T01:10:00.000Z' }]
   const plugin = {
     updateWidget: vi.fn().mockResolvedValue(undefined),
     scheduleNudges: vi.fn().mockResolvedValue(undefined),

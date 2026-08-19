@@ -13,6 +13,9 @@ import { createTaskRepository } from '../core/storage/taskRepository'
 import { applyCheckInResponse, buildNudgeLine, isQuietTime, selectNudgeTask } from '../features/nudges/nudgePolicy'
 import { PersistentNowTask } from '../features/nudges/PersistentNowTask'
 import { taskCheckInRepository, type TaskCheckInAction } from '../features/nudges/taskCheckIn'
+import { nativeWidgetBridge } from '../features/widgets/nativeWidgetBridge'
+import { mergeWidgetEvents } from '../features/widgets/mergeWidgetEvents'
+import { buildWidgetSnapshot } from '../features/widgets/widgetSnapshot'
 
 const appearanceRepository = createAppearanceRepository(createDatabase())
 const shellTaskRepository = createTaskRepository(createDatabase())
@@ -44,8 +47,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
     const refreshTasks = async () => {
-      const saved = await shellTaskRepository.listForDay(todayInSeoul())
-      if (active) setTodayTasks(saved)
+      let saved = await shellTaskRepository.listForDay(todayInSeoul())
+      const nativeEvents = await nativeWidgetBridge.getCompletionEvents()
+      if (nativeEvents.available && nativeEvents.events.length > 0) {
+        const merged = mergeWidgetEvents(saved, nativeEvents.events)
+        await shellTaskRepository.putMany(merged)
+        await nativeWidgetBridge.clearCompletionEvents()
+        saved = merged
+      }
+      if (active) {
+        setTodayTasks(saved)
+        await nativeWidgetBridge.update(buildWidgetSnapshot(saved, '몽글이와 한 가지씩 해봐요'))
+      }
     }
     const refreshSettings = () => setSettings(settingsRepository.load())
     void refreshTasks()
@@ -70,6 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
     const result = applyCheckInResponse(todayTasks, response, respondedAt)
     await shellTaskRepository.putMany(result.tasks)
+    await nativeWidgetBridge.update(buildWidgetSnapshot(result.tasks, buildNudgeLine(result.tasks.find((task) => task.id === result.nextTaskId) ?? nudgeTask)))
     taskCheckInRepository.save(response)
     setTodayTasks(result.tasks)
     setLatestCheckIn(response)
