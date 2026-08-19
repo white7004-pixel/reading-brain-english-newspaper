@@ -7,9 +7,16 @@ export interface NativeNudgeConfig {
   quietHoursEnd: string
 }
 
+export interface WidgetCompletionEvent {
+  taskId: string
+  completedAt: string
+}
+
 export interface MonggleWidgetPlugin {
   updateWidget(options: { snapshot: WidgetSnapshot }): Promise<void>
   scheduleNudges(options: NativeNudgeConfig): Promise<void>
+  getCompletionEvents(): Promise<{ events: WidgetCompletionEvent[] }>
+  clearCompletionEvents(): Promise<void>
 }
 
 type PluginResolver = () => MonggleWidgetPlugin | undefined
@@ -34,6 +41,18 @@ export function createNativeWidgetBridge(resolvePlugin: PluginResolver = default
       const plugin = resolvePlugin()
       if (!plugin) return { available: false as const }
       await plugin.scheduleNudges(config)
+      return { available: true as const }
+    },
+    async getCompletionEvents() {
+      const plugin = resolvePlugin()
+      if (!plugin) return { available: false as const, events: [] as WidgetCompletionEvent[] }
+      const { events } = await plugin.getCompletionEvents()
+      return { available: true as const, events }
+    },
+    async clearCompletionEvents() {
+      const plugin = resolvePlugin()
+      if (!plugin) return { available: false as const }
+      await plugin.clearCompletionEvents()
       return { available: true as const }
     },
   }
