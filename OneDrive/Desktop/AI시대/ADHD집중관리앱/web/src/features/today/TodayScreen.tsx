@@ -12,20 +12,33 @@ import type { TaskDraft } from './taskDraft'
 import { Timeline } from './Timeline'
 import { nativeWidgetBridge } from '../widgets/nativeWidgetBridge'
 import { buildWidgetSnapshot, type WidgetSnapshot } from '../widgets/widgetSnapshot'
+import type { Category } from '../../core/model/category'
+import { DEFAULT_CATEGORIES } from '../../core/model/category'
+import { createCategoryRepository } from '../../core/storage/categoryRepository'
+import { PriorityTaskList } from './PriorityTaskList'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
   saveMany(tasks: Task[]): Promise<unknown>
   listForDay?(day: string): Promise<Task[]>
   updateWidget(snapshot: WidgetSnapshot): Promise<unknown>
+  listCategories?(): Promise<Category[]>
+  addCategory?(input: { name: string; color: string }): Promise<Category>
 }
 
-const taskRepository = createTaskRepository(createDatabase())
+const database = createDatabase()
+const taskRepository = createTaskRepository(database)
+const categoryRepository = createCategoryRepository(database)
 const defaultDependencies: TodayDependencies = {
   parse: parseTaskDrafts,
   saveMany: taskRepository.putMany,
   listForDay: taskRepository.listForDay,
   updateWidget: (snapshot) => nativeWidgetBridge.update(snapshot),
+  listCategories: async () => {
+    await categoryRepository.ensureDefaults()
+    return categoryRepository.list()
+  },
+  addCategory: (input) => categoryRepository.add(input),
 }
 
 function dayFor(date: Date) {
@@ -36,11 +49,14 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [tasks, setTasks] = useState<Task[]>([])
   const [drafts, setDrafts] = useState<TaskDraft[]>([])
   const [energy, setEnergy] = useState<Energy>('medium')
+  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES)
+  const [selectedCategoryId, setSelectedCategoryId] = useState('all')
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy), [tasks, energy])
 
   useEffect(() => {
     let active = true
     if (dependencies.listForDay) void dependencies.listForDay(dayFor(new Date())).then((saved) => { if (active) setTasks(saved) })
+    if (dependencies.listCategories) void dependencies.listCategories().then((saved) => { if (active) setCategories(saved) })
     return () => { active = false }
   }, [dependencies])
 
@@ -54,7 +70,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   const addSingleTask = (title: string) => {
     const now = new Date()
-    void saveTasks([{ id: crypto.randomUUID(), title, day: dayFor(now), status: 'open', priority: 2, estimateMinutes: 15, category: 'study', source: 'manual', createdAt: now.toISOString(), updatedAt: now.toISOString() }])
+    void saveTasks([{ id: crypto.randomUUID(), title, day: dayFor(now), status: 'open', priority: 2, estimateMinutes: 15, category: 'life', categoryId: 'personal', source: 'manual', createdAt: now.toISOString(), updatedAt: now.toISOString() }])
   }
 
   const saveDrafts = async (reviewed: TaskDraft[]) => {
@@ -63,7 +79,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     const next: Task[] = reviewed.map((draft) => ({
       id: ids.get(draft.id)!, title: draft.title.trim(), day: draft.day, dueAt: draft.dueAt,
       status: 'open', priority: draft.priority, estimateMinutes: draft.estimateMinutes,
-      category: 'study', source: 'local_parser', parseConfidence: draft.confidence,
+      category: draft.categoryId === 'work' ? 'work' : draft.categoryId === 'exercise' ? 'exercise' : draft.categoryId === 'personal' ? 'life' : 'rest', categoryId: draft.categoryId, source: 'local_parser', parseConfidence: draft.confidence,
       orderAfterTaskId: draft.orderAfterDraftId ? ids.get(draft.orderAfterDraftId) : undefined,
       createdAt: now.toISOString(), updatedAt: now.toISOString(),
     }))
@@ -74,8 +90,14 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   return <>
     <div className="energy"><span>지금 에너지는?</span>{(['low', 'medium', 'high'] as const).map((value, index) => <button aria-pressed={energy === value} key={value} onClick={() => setEnergy(value)}>{['낮음', '보통', '높음'][index]}</button>)}</div>
     <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, new Date()))} onSingleTask={addSingleTask} />
-    {drafts.length > 0 && <TaskDraftReview drafts={drafts} onChange={setDrafts} onSave={(reviewed) => void saveDrafts(reviewed)} onCancel={() => setDrafts([])} />}
+    {drafts.length > 0 && <TaskDraftReview drafts={drafts} categories={categories} onCreateCategory={async (input) => {
+      if (!dependencies.addCategory) throw new Error('분류를 추가할 수 없어요.')
+      const category = await dependencies.addCategory(input)
+      setCategories((current) => [...current, category])
+      return category
+    }} onChange={setDrafts} onSave={(reviewed) => void saveDrafts(reviewed)} onCancel={() => setDrafts([])} />}
     <NowCard task={nowTask} />
+    <PriorityTaskList tasks={tasks} categories={categories} activeTaskId={nowTask?.id} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
     <Timeline items={buildTimeline(tasks, [])} />
   </>
 }
