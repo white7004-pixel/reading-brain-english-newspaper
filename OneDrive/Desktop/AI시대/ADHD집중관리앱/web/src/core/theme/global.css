@@ -63,6 +63,21 @@ button, select, a { min-height: var(--tap-min); }
 .message-list article p { margin: 12px 0; }
 .message-list article small, .empty-state { color: var(--color-muted); }
 .status-chip { padding: 5px 9px; border-radius: 999px; background: var(--color-accent-soft); color: var(--color-accent); font-size: 12px; font-weight: 700; }
+.feature-screen { margin-top: 24px; }
+.feature-screen > span { color: var(--color-accent); font-weight: 700; }
+.feature-screen > h2 { margin: 6px 0 20px; font-size: clamp(24px, 6vw, 34px); }
+.feature-screen button { min-height: var(--tap-min); padding: 0 14px; border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-surface); color: var(--color-text); }
+.feature-screen button.primary { background: var(--color-accent); color: white; }
+.routine-card, .settings-card, .connector-card { padding: 20px; border: 1px solid var(--color-line); border-radius: var(--radius-card); background: var(--color-surface); }
+.routine-card h3 { font-size: 24px; margin: 10px 0; }
+.routine-card div { display: flex; flex-wrap: wrap; gap: 8px; }
+.settings-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.settings-card label { display: grid; gap: 7px; color: var(--color-muted); font-size: 13px; font-weight: 700; }
+.settings-card input, .settings-card select { min-height: var(--tap-min); border: 1px solid var(--color-line); border-radius: 12px; padding: 0 12px; background: var(--color-bg); color: var(--color-text); }
+.settings-card .check-row { display: flex; align-items: center; color: var(--color-text); }
+.settings-card .check-row input { min-height: auto; }
+.connector-card { margin-top: 14px; }
+.connector-card p { color: var(--color-muted); margin-bottom: 0; }
 .bottom-nav {
   position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
   width: min(calc(100% - 24px), 680px); display: grid; grid-template-columns: repeat(5, 1fr);
