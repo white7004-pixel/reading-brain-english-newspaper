@@ -18,11 +18,14 @@
 .passage-node { position: relative; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; }
 .passage-node__marker { position: relative; z-index: 2; width: 22px; height: 22px; margin-top: 13px; border-radius: 50%; display: grid; place-items: center; background: white; color: var(--lane-color); font-size: 16px; line-height: 1; }
 .passage-node__connector { position: absolute; z-index: 1; top: 34px; bottom: -23px; left: 10px; width: 2px; background: repeating-linear-gradient(to bottom, var(--lane-color) 0 5px, transparent 5px 9px); opacity: .5; }
-.passage-node__card { min-width: 0; border: 1px solid var(--sage-200); border-radius: 16px; padding: 12px; background: white; box-shadow: 0 5px 14px rgba(23,63,52,.05); }
+.passage-node__card { width: 100%; min-width: 0; border: 1px solid var(--sage-200); border-radius: 16px; padding: 12px; background: white; color: var(--ink); box-shadow: 0 5px 14px rgba(23,63,52,.05); text-align: left; word-break: keep-all; overflow-wrap: break-word; }
 .passage-node.is-available .passage-node__card { border-color: var(--lane-color); box-shadow: 0 7px 18px color-mix(in srgb, var(--lane-color) 16%, transparent); }
+.passage-node.is-available .passage-node__card { cursor: pointer; }
+.passage-node.is-available .passage-node__card:hover { background: color-mix(in srgb, var(--lane-color) 6%, white); }
+.passage-node.is-available .passage-node__card:focus-visible { outline: 3px solid color-mix(in srgb, var(--lane-color) 55%, white); outline-offset: 3px; }
 .passage-node.is-preparing .passage-node__card { border-style: dashed; background: rgba(248,250,246,.88); }
 .passage-node__card h5 { margin: 8px 0 4px; font-size: 15px; }
 .passage-node__card p { margin: 0 0 10px; color: var(--muted); font-size: 10px; line-height: 1.5; }
-.passage-node__card button { min-height: 42px; border: 0; border-radius: 11px; padding: 0 13px; background: var(--lane-color); color: white; font-size: 11px; font-weight: 900; }
+.passage-node__action { display: inline-flex; min-height: 42px; align-items: center; border-radius: 11px; padding: 0 13px; background: var(--lane-color); color: white; font-size: 11px; font-weight: 900; }
 .passage-node .roadmap-topic__status { min-height: 38px; }
-@media (min-width: 720px) { .roadmap-lanes { grid-template-columns: 1fr 1fr; }.roadmap-lane__track { grid-template-columns: 1fr 1fr; }.passage-node__connector { top: 10px; right: -16px; bottom: auto; left: auto; width: 18px; height: 2px; background: repeating-linear-gradient(to right, var(--lane-color) 0 5px, transparent 5px 9px); } }
+@media (min-width: 720px) { .roadmap-lanes { grid-template-columns: 1fr 1fr; }.roadmap-lane__track { grid-template-columns: 1fr; } }

@@ -21,7 +21,7 @@ it("opens an available reading and marks unavailable topics as preparing", async
   const onOpen = vi.fn();
   render(<KnowledgeRoadmap articles={getPublishedArticles()} onOpen={onOpen} />);
   await user.click(screen.getByRole("tab", { name: "초5" }));
-  await user.click(screen.getByRole("button", { name: /별과 태양계 읽기 시작/ }));
+  await user.click(screen.getByText("별과 태양계"));
   expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ id: "stars-shine" }));
   expect(screen.getAllByText("준비 중").length).toBeGreaterThan(0);
 });

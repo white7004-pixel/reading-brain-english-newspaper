@@ -52,12 +52,24 @@ export function KnowledgeRoadmap({ articles, onOpen }: { articles: Article[]; on
                   return (
                     <article className={`passage-node${article ? " is-available" : " is-preparing"}`} data-testid="passage-node" key={item.id}>
                       <span className="passage-node__marker" aria-hidden="true">{article ? "●" : "○"}</span>
-                      <div className="passage-node__card" data-testid="roadmap-topic">
+                      <div
+                        className="passage-node__card"
+                        data-testid="roadmap-topic"
+                        role={article ? "button" : undefined}
+                        tabIndex={article ? 0 : undefined}
+                        onClick={article ? () => onOpen(article) : undefined}
+                        onKeyDown={article ? (event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            onOpen(article);
+                          }
+                        } : undefined}
+                      >
                         <div className="roadmap-topic__meta"><span>초등 {item.grade}학년</span><span>AR {item.arMin.toFixed(1)}–{item.arMax.toFixed(1)}</span></div>
                         <h5>{item.titleKo}</h5>
                         <p>{item.goal}</p>
                         {article
-                          ? <button type="button" aria-label={`${item.titleKo} 읽기 시작`} onClick={() => onOpen(article)}>읽기 시작</button>
+                          ? <span className="passage-node__action">읽기 시작</span>
                           : <span className="roadmap-topic__status" aria-label={`${item.titleKo} 준비 중`}>준비 중</span>}
                       </div>
                       {index === 0 && <span className="passage-node__connector" aria-hidden="true" />}
