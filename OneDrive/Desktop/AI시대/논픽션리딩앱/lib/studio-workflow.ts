@@ -341,6 +341,7 @@ function createLearnerSnapshot(article: StudioArticle): Article {
     status: "published",
     version: article.workingVersion,
     pages: [...article.pages],
+    keySentence: article.keySentence,
     vocabulary: article.vocabulary.map(({ exampleSentence: _exampleSentence, ...item }) => ({ ...item })),
     quiz: article.quiz.map(({ type: _type, evidence: _evidence, ...question }) => ({ ...question, options: [...question.options] })),
     sources: article.sources.map(({ materialType: _materialType, supportedFact: _supportedFact, ...source }) => ({ ...source })),

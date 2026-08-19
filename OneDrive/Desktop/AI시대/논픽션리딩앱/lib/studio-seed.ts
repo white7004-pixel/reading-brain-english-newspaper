@@ -86,7 +86,7 @@ function createSeedStudioArticle(article: Article): StudioArticle {
     updatedAt: review.approvedAt,
     changeLog: [],
     learningGoal: article.summaryKo,
-    keySentence: article.pages[0] ?? "",
+    keySentence: article.keySentence,
     keyConcept: article.domain,
     sourceNotes: article.sources.map((source) => source.title).join(", "),
     reconstructionConfirmed: true,

@@ -58,3 +58,17 @@ it("renders safe tagged image and official video media", () => {
   expect(screen.getByRole("img", { name: "Stars in the night sky" })).toHaveAttribute("src", "https://images.example.org/stars.jpg");
   expect(screen.getByTitle("How stars shine")).toHaveAttribute("src", "https://www.youtube.com/embed/dQw4w9WgXcQ");
 });
+
+it("lets the learner choose core words and a key sentence before checking locally", async () => {
+  const user = userEvent.setup();
+  const article = getPublishedArticles()[0];
+  render(<ReaderScreen article={article} onFinish={() => {}} onBack={() => {}} onEvent={() => {}} />);
+
+  await user.click(screen.getByRole("button", { name: "핵심 찾기" }));
+  await user.click(screen.getAllByRole("button", { name: /핵심단어로 선택/ })[0]);
+  await user.click(screen.getByRole("button", { name: `${article.keySentence} 핵심문장으로 선택` }));
+  await user.click(screen.getByRole("button", { name: "정답 확인" }));
+
+  expect(screen.getByText("핵심문장을 찾았어요!")).toBeVisible();
+  expect(screen.getByText(/핵심단어 정답/)).toBeVisible();
+});

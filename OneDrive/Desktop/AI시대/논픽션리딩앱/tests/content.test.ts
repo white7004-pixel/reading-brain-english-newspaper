@@ -15,6 +15,7 @@ describe("learner-safe content repository", () => {
       expect(article.pages.length).toBeGreaterThanOrEqual(3);
       expect(article.pages.join(" ").length).toBeGreaterThanOrEqual(900);
       expect(article.pages.join(" ").length).toBeLessThanOrEqual(1150);
+      expect(article.pages.join(" ")).toContain(article.keySentence);
       expect(article.vocabulary.length).toBeGreaterThanOrEqual(4);
       expect(article.quiz).toHaveLength(3);
     }

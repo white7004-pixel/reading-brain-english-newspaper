@@ -19,6 +19,7 @@
 - Distinguish `읽기 가능` from `준비 중`; do not create placeholder articles.
 - Use only local TypeScript, the existing Next.js app, and existing test tools; do not call external AI, paid APIs, remote databases, or web services.
 - Preserve the existing search, domain, difficulty filters, and reading flow.
+- Store one exact key sentence and existing core vocabulary for every public article; grade learner selections entirely in the browser without external calls.
 
 ---
 
@@ -281,7 +282,87 @@ git commit -m "feat: show roadmap in knowledge library"
 
 ---
 
-### Task 4: Full verification
+### Task 4: Core-word and key-sentence finding activity
+
+**Files:**
+- Modify: `lib/types.ts`
+- Modify: `lib/sample-content.ts`
+- Modify: `lib/public-article-schema.ts`
+- Modify: `lib/studio-workflow.ts`
+- Modify: `components/reader-screen.tsx`
+- Modify: `app/globals.css`
+- Modify: `tests/public-article-schema.test.ts`
+- Modify: `tests/studio-workflow.test.ts`
+- Modify: `tests/reader-screen.test.tsx`
+
+**Interfaces:**
+- Consumes: existing `Article.vocabulary`, studio `keySentence`, and reader page text.
+- Produces: required `Article.keySentence: string` and a local `핵심 찾기` selection-and-check interaction.
+
+- [ ] **Step 1: Write failing public-data tests**
+
+Add assertions that `parsePublicArticle` rejects an empty `keySentence`, `clonePublicArticle` preserves it, `publishArticle` carries `StudioArticle.keySentence` into the learner snapshot, and every sample article's key sentence appears exactly within `article.pages.join(" ")`.
+
+- [ ] **Step 2: Run the public-data tests and verify failure**
+
+Run: `npm test -- tests/public-article-schema.test.ts tests/studio-workflow.test.ts tests/content.test.ts`
+
+Expected: FAIL because public `Article` has no required `keySentence` and publishing drops the studio value.
+
+- [ ] **Step 3: Preserve the key sentence in public articles**
+
+Add `keySentence: string` to `Article`. Validate it with `required(issues, value.keySentence, "keySentence")`, clone it in `clonePublicArticle`, and assign `keySentence: article.keySentence` in `createLearnerSnapshot`. Extend `Seed` in `sample-content.ts` with optional `keySentence`; set each sample article's public value to `seed.keySentence ?? seed.pages[0].split(/(?<=[.!?])\s+/)[0]`. This keeps every answer grounded in its passage without any generated runtime data.
+
+- [ ] **Step 4: Run the public-data tests and verify they pass**
+
+Run: `npm test -- tests/public-article-schema.test.ts tests/studio-workflow.test.ts tests/content.test.ts`
+
+Expected: all focused public-data tests PASS.
+
+- [ ] **Step 5: Write the failing reader interaction test**
+
+```tsx
+it("lets the learner choose core words and a key sentence before checking locally", async () => {
+  const user = userEvent.setup();
+  const article = getPublishedArticles()[0];
+  render(<ReaderScreen article={article} onFinish={() => {}} onBack={() => {}} onEvent={() => {}} />);
+  await user.click(screen.getByRole("button", { name: "핵심 찾기" }));
+  await user.click(screen.getAllByRole("button", { name: /핵심단어로 선택/ })[0]);
+  await user.click(screen.getByRole("button", { name: `${article.keySentence} 핵심문장으로 선택` }));
+  await user.click(screen.getByRole("button", { name: "정답 확인" }));
+  expect(screen.getByText("핵심문장을 찾았어요!" )).toBeVisible();
+  expect(screen.getByText(/핵심단어 정답/)).toBeVisible();
+});
+```
+
+- [ ] **Step 6: Run the reader test and verify controls are absent**
+
+Run: `npm test -- tests/reader-screen.test.tsx`
+
+Expected: FAIL because `핵심 찾기` does not exist.
+
+- [ ] **Step 7: Implement local selection and grading**
+
+In `ReaderScreen`, add state for activity visibility, selected vocabulary words, selected sentence, and checked result. Split the current page into sentences with `page.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [page]`. In activity mode render each non-empty vocabulary occurrence with a separate `${word} 핵심단어로 선택` control and each sentence with `${sentence.trim()} 핵심문장으로 선택`. Grade selected words against `article.vocabulary.map(({ word }) => word.toLocaleLowerCase())` and the selected sentence against `article.keySentence.trim()`. `정답 확인` must only compare these local strings, then show the correct words and key sentence; `다시 찾기` clears selections and result.
+
+- [ ] **Step 8: Style the activity and rerun reader tests**
+
+Add `.key-finder`, `.key-finder__toolbar`, `.key-finder__sentence`, `.key-finder__word`, `.key-finder__result`, and selected/correct state classes. Keep all interactive controls at least 44px high and do not encode correctness by color alone.
+
+Run: `npm test -- tests/reader-screen.test.tsx`
+
+Expected: all reader tests PASS.
+
+- [ ] **Step 9: Commit the reading activity**
+
+```powershell
+git add lib/types.ts lib/sample-content.ts lib/public-article-schema.ts lib/studio-workflow.ts components/reader-screen.tsx app/globals.css tests/public-article-schema.test.ts tests/studio-workflow.test.ts tests/reader-screen.test.tsx tests/content.test.ts
+git commit -m "feat: add key finding activity to every reading"
+```
+
+---
+
+### Task 5: Full verification
 
 **Files:**
 - Verify only; modify files solely to correct failures caused by Tasks 1–3.

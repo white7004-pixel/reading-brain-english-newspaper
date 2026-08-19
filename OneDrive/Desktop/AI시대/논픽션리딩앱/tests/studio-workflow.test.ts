@@ -228,6 +228,7 @@ describe("content review workflow", () => {
 
     const published = publishReviewedArticle();
     expect(published.versionHistory[0].snapshot.status).toBe("published");
+    expect(published.versionHistory[0].snapshot.keySentence).toBe(published.keySentence);
     expect(published.versionHistory[0].snapshot.review).toEqual({
       approvedBy: "approver",
       approvedAt: "2026-08-17T04:00:00.000Z",

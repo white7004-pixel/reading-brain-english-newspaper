@@ -29,6 +29,7 @@ export function parsePublicArticle(value: unknown): PublicArticleParseResult {
   if (value.status !== "published") issues.push({ field: "status", code: "status_invalid" });
   if (!isPositiveInteger(value.version)) issues.push({ field: "version", code: "version_invalid" });
   if (!isStringArray(value.pages)) issues.push({ field: "pages", code: "pages_invalid" });
+  required(issues, value.keySentence, "keySentence");
   if (!isVocabulary(value.vocabulary)) issues.push({ field: "vocabulary", code: "vocabulary_invalid" });
   if (!isQuiz(value.quiz)) issues.push({ field: "quiz", code: "quiz_invalid" });
   if (!isSources(value.sources)) issues.push({ field: "sources", code: "sources_invalid" });
@@ -78,6 +79,7 @@ export function clonePublicArticle(article: Readonly<Article>): Article {
     status: article.status,
     version: article.version,
     pages: [...article.pages],
+    keySentence: article.keySentence,
     vocabulary: article.vocabulary.map((item) => ({
       word: item.word,
       pronunciation: item.pronunciation,
