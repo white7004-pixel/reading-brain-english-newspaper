@@ -7,6 +7,9 @@ export function createTaskRepository(database: MonggleDatabase) {
     put(task: Task) {
       return database.tasks.put(normalize(task))
     },
+    putMany(tasks: Task[]) {
+      return database.transaction('rw', database.tasks, () => database.tasks.bulkPut(tasks.map(normalize)))
+    },
     async listForDay(day: string) {
       return (await database.tasks.where('day').equals(day).toArray()).map(normalize)
     },

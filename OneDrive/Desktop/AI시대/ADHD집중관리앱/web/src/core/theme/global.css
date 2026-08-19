@@ -44,6 +44,15 @@ button, select, a { min-height: var(--tap-min); }
 .capture-card label { display: block; font-weight: 700; margin-bottom: 12px; }
 .capture-card textarea { width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--color-line); border-radius: 16px; background: var(--color-bg); color: var(--color-text); padding: 14px; }
 .capture-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.capture-card > small { display: block; margin-top: 10px; color: var(--color-muted); }
+.task-draft-review { margin-top: 14px; padding: 22px; border: 1px solid var(--color-glass-line); border-radius: var(--radius-card); background: var(--color-glass); box-shadow: var(--shadow-card-3d); backdrop-filter: blur(18px); }
+.task-draft-review > p { color: var(--color-muted); }
+.task-draft-list { display: grid; gap: 12px; }
+.task-draft-list article { display: grid; grid-template-columns: auto 2fr 1fr 1fr; gap: 10px; align-items: end; padding: 14px; border: 1px solid var(--color-line); border-radius: 16px; background: color-mix(in srgb, var(--color-surface) 86%, transparent); }
+.task-draft-list article > strong { align-self: center; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--color-accent-soft); color: var(--color-accent); }
+.task-draft-list label { display: grid; gap: 6px; color: var(--color-muted); font-size: 12px; font-weight: 700; }
+.task-draft-list input, .task-draft-list select { min-height: 44px; width: 100%; padding: 0 10px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--color-bg); color: var(--color-text); }
+.task-draft-list small { grid-column: 2 / -1; color: #8d5f20; }
 .now-card { background: linear-gradient(145deg, rgb(225 216 255 / 82%), var(--color-glass)); }
 .now-card > span, .timeline small { color: var(--color-accent); font-weight: 700; }
 .now-card h2 { font-size: clamp(25px, 6vw, 36px); margin: 12px 0 4px; letter-spacing: -.035em; }
@@ -113,4 +122,6 @@ button, select, a { min-height: var(--tap-min); }
 @media (max-width: 520px) {
   .message-composer { grid-template-columns: 1fr; }
   .message-composer > * { grid-column: 1; }
+  .task-draft-list article { grid-template-columns: auto 1fr; }
+  .task-draft-list article > label, .task-draft-list small { grid-column: 2; }
 }

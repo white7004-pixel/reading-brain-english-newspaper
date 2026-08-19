@@ -87,4 +87,10 @@ describe('local repositories', () => {
       expect.objectContaining({ id: 'task-2', source: 'local_parser', parseConfidence: 0.86, orderAfterTaskId: 'task-1' }),
     ]))
   })
+
+  it('saves a reviewed task list together', async () => {
+    const { taskRepository } = setup()
+    await taskRepository.putMany([task({ id: 'task-1' }), task({ id: 'task-2' })])
+    expect(await taskRepository.listForDay('2026-08-20')).toHaveLength(2)
+  })
 })
