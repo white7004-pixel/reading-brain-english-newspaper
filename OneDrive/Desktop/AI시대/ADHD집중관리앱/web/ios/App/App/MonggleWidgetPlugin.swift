@@ -1,5 +1,6 @@
 import Capacitor
 import Foundation
+import WidgetKit
 
 final class MonggleBridgeViewController: CAPBridgeViewController {
     override func capacitorDidLoad() {
@@ -32,6 +33,7 @@ public class MonggleWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
         store.set(snapshot, forKey: snapshotKey)
+        WidgetCenter.shared.reloadAllTimelines()
         call.resolve()
     }
 
