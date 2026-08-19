@@ -20,3 +20,10 @@ it("offers a reset action when filters have no result", async () => {
   await user.click(screen.getByRole("button", { name: "필터 초기화" }));
   expect(screen.getAllByTestId("article-card").length).toBeGreaterThan(0);
 });
+
+it("places the grade roadmap before the existing knowledge library", () => {
+  render(<ExploreScreen articles={getPublishedArticles()} onOpen={() => {}} initialDomain={null} />);
+  const roadmap = screen.getByRole("heading", { name: "학년별 논픽션 지식" });
+  const library = screen.getByRole("heading", { name: "무엇이 궁금한가요?" });
+  expect(roadmap.compareDocumentPosition(library) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
