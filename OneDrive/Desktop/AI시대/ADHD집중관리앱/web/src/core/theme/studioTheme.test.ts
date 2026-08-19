@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { expect, it } from 'vitest'
 import { App } from '../../app/App'
-import { studioThemeTokens } from './theme'
+import { applyTheme, studioThemeTokens } from './theme'
 
 it('defines the approved Studio 3D surface contract', () => {
   for (const token of ['--color-glass', '--color-glass-line', '--shadow-card-3d', '--shadow-control-3d', '--glow-lavender']) {
@@ -9,4 +9,9 @@ it('defines the approved Studio 3D surface contract', () => {
   }
   render(App())
   expect(screen.getByRole('main').parentElement).toHaveClass('studio-surface')
+})
+
+it('falls back to light when system media information is unavailable', () => {
+  expect(() => applyTheme('system')).not.toThrow()
+  expect(document.documentElement.dataset.theme).toBe('light')
 })

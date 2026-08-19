@@ -6,6 +6,7 @@ export interface MonggleSettings {
   profile: ProfileType
   theme: ThemeMode
   reducedMotion: boolean
+  mascotVisible: boolean
   quietHoursStart: string
   quietHoursEnd: string
 }
