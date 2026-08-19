@@ -7,7 +7,7 @@
 .monggle-aura { position: absolute; inset: 20% -22%; background: var(--glow-lavender); border-radius: 50%; opacity: .75; }
 .monggle-companion[data-point='top-right'] { transform: translate(calc(100vw - clamp(105px, 17vw, 168px)), 98px); }
 .monggle-companion[data-point='middle-left'] { transform: translate(12px, 44vh); }
-.monggle-companion[data-point='bottom-right'] { transform: translate(calc(100vw - clamp(105px, 17vw, 168px)), calc(100vh - clamp(240px, 33vw, 286px))); }
+.monggle-companion[data-point='bottom-right'] { transform: translate(calc(100vw - clamp(105px, 17vw, 168px)), calc(100vh - clamp(330px, 42vw, 370px))); }
 .monggle-companion[data-mode='wandering'] img { animation: monggle-breathe 5.8s ease-in-out infinite; }
 .monggle-companion[data-mode='reacting'] img { animation: monggle-greet 1.8s ease-out both; }
 @keyframes monggle-breathe { 50% { transform: translateY(-6px) scale(1.015); } }

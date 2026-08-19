@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { AppearanceTarget } from '../../core/model/appearance'
-import type { MonggleSettings, ProfileType, ThemeMode } from '../../core/model/settings'
+import type { MonggleSettings, NudgeIntervalMinutes, ProfileType, ThemeMode } from '../../core/model/settings'
 import { applyTheme } from '../../core/theme/theme'
 import { AppearanceScreen } from '../appearance/AppearanceScreen'
 import { settingsRepository } from './settingsRepository'
@@ -13,6 +13,7 @@ export function SettingsScreen() {
     setSettings(next)
     settingsRepository.save(next)
     applyTheme(next.theme)
+    window.dispatchEvent(new Event('monggle:settings-changed'))
   }
   return <section className="feature-screen">
     <span>설정</span><h2>나에게 편안한 방식으로 맞춰요</h2>
@@ -23,6 +24,8 @@ export function SettingsScreen() {
       <label className="check-row"><input type="checkbox" checked={settings.mascotVisible} onChange={(event) => update({ mascotVisible: event.target.checked })} /> 몽글 캐릭터 표시</label>
       <label>방해 금지 시작<input type="time" value={settings.quietHoursStart} onChange={(event) => update({ quietHoursStart: event.target.value })} /></label>
       <label>종료<input type="time" value={settings.quietHoursEnd} onChange={(event) => update({ quietHoursEnd: event.target.value })} /></label>
+      <label>몽글이 확인 간격<select value={settings.nudgeIntervalMinutes} onChange={(event) => update({ nudgeIntervalMinutes: Number(event.target.value) as NudgeIntervalMinutes })}><option value="0">끄기</option><option value="30">30분마다</option><option value="60">1시간마다</option><option value="120">2시간마다</option></select></label>
+      <p className="full-width delivery-note">몽글이가 할 일을 하나씩 물어봐요. 방해 금지 시간에는 쉬고, 답하지 않은 알림은 쌓지 않아요.</p>
     </div>
     <div className="connector-card appearance-entry"><strong>배경과 캐릭터</strong><p>사진은 이 기기 안에서만 처리하고 저장해요.</p><div><button type="button" onClick={() => setAppearanceTarget('background')}>배경 꾸미기</button><button type="button" onClick={() => setAppearanceTarget('both')}>내 캐릭터 만들기</button></div></div>
     {appearanceTarget && <AppearanceScreen initialTarget={appearanceTarget} onClose={() => setAppearanceTarget(null)} />}

@@ -8,16 +8,30 @@ import { AppBackground } from '../features/appearance/AppBackground'
 import { createAppearanceRepository, defaultAppearanceSettings } from '../features/appearance/appearanceRepository'
 import { createDatabase } from '../core/storage/database'
 import type { AppearanceSettings } from '../core/model/appearance'
+import type { Task } from '../core/model/task'
+import { createTaskRepository } from '../core/storage/taskRepository'
+import { applyCheckInResponse, buildNudgeLine, isQuietTime, selectNudgeTask } from '../features/nudges/nudgePolicy'
+import { PersistentNowTask } from '../features/nudges/PersistentNowTask'
+import { taskCheckInRepository, type TaskCheckInAction } from '../features/nudges/taskCheckIn'
 
 const appearanceRepository = createAppearanceRepository(createDatabase())
+const shellTaskRepository = createTaskRepository(createDatabase())
+
+function todayInSeoul(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now)
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]))
+  return `${values.year}-${values.month}-${values.day}`
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileType>('high_school')
-  const [settings] = useState(() => settingsRepository.load())
+  const [settings, setSettings] = useState(() => settingsRepository.load())
   const [companionEvent, setCompanionEvent] = useState<CompanionEvent | null>(null)
   const [appearance, setAppearance] = useState<AppearanceSettings>(defaultAppearanceSettings)
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null)
   const [profileUrl, setProfileUrl] = useState<string | null>(null)
+  const [todayTasks, setTodayTasks] = useState<Task[]>([])
+  const [latestCheckIn, setLatestCheckIn] = useState(() => taskCheckInRepository.load())
   useEffect(() => {
     let expiry: number | undefined
     const unsubscribe = subscribeCompanionEvents((event) => {
@@ -27,6 +41,40 @@ export function AppShell({ children }: { children: ReactNode }) {
     })
     return () => { unsubscribe(); window.clearTimeout(expiry) }
   }, [])
+  useEffect(() => {
+    let active = true
+    const refreshTasks = async () => {
+      const saved = await shellTaskRepository.listForDay(todayInSeoul())
+      if (active) setTodayTasks(saved)
+    }
+    const refreshSettings = () => setSettings(settingsRepository.load())
+    void refreshTasks()
+    window.addEventListener('monggle:tasks-changed', refreshTasks)
+    window.addEventListener('monggle:settings-changed', refreshSettings)
+    return () => {
+      active = false
+      window.removeEventListener('monggle:tasks-changed', refreshTasks)
+      window.removeEventListener('monggle:settings-changed', refreshSettings)
+    }
+  }, [])
+  const now = new Date()
+  const nudgeTask = settings.nudgeIntervalMinutes === 0 || isQuietTime(now, settings.quietHoursStart, settings.quietHoursEnd)
+    ? null
+    : selectNudgeTask(todayTasks, now, latestCheckIn)
+  const respondToTask = async (action: TaskCheckInAction, delayMinutes?: number) => {
+    if (!nudgeTask) return
+    const respondedAt = new Date()
+    const response = {
+      taskId: nudgeTask.id, action, respondedAt: respondedAt.toISOString(),
+      remindAt: action === 'later' && delayMinutes ? new Date(respondedAt.getTime() + delayMinutes * 60_000).toISOString() : undefined,
+    }
+    const result = applyCheckInResponse(todayTasks, response, respondedAt)
+    await shellTaskRepository.putMany(result.tasks)
+    taskCheckInRepository.save(response)
+    setTodayTasks(result.tasks)
+    setLatestCheckIn(response)
+    window.dispatchEvent(new Event('monggle:tasks-changed'))
+  }
   useEffect(() => {
     let disposed = false
     let activeUrls: string[] = []
@@ -80,6 +128,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </label>
       </header>
       <main>{children}</main>
+      {nudgeTask && <PersistentNowTask task={nudgeTask} line={buildNudgeLine(nudgeTask)} onRespond={(action, delay) => void respondToTask(action, delay)} />}
       <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} />
       <BottomNav />
     </div>
