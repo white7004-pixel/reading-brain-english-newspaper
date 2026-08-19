@@ -11,3 +11,9 @@ it('persists the mascot visibility preference', async () => {
   await userEvent.click(screen.getByRole('checkbox', { name: '몽글 캐릭터 표시' }))
   expect(settingsRepository.load().mascotVisible).toBe(false)
 })
+
+it('opens one shared appearance wizard from both entry points', async () => {
+  render(<SettingsScreen />)
+  await userEvent.click(screen.getByRole('button', { name: '배경 꾸미기' }))
+  expect(screen.getByRole('region', { name: '배경과 캐릭터 꾸미기' })).toBeVisible()
+})

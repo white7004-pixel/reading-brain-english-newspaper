@@ -17,6 +17,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [companionEvent, setCompanionEvent] = useState<CompanionEvent | null>(null)
   const [appearance, setAppearance] = useState<AppearanceSettings>(defaultAppearanceSettings)
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null)
+  const [profileUrl, setProfileUrl] = useState<string | null>(null)
   useEffect(() => {
     let expiry: number | undefined
     const unsubscribe = subscribeCompanionEvents((event) => {
@@ -28,31 +29,39 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [])
   useEffect(() => {
     let disposed = false
-    let activeUrl: string | null = null
+    let activeUrls: string[] = []
     const refreshAppearance = async () => {
       const loaded = await appearanceRepository.loadSettings()
-      let nextUrl: string | null = null
+      let nextBackgroundUrl: string | null = null
+      let nextProfileUrl: string | null = null
       if (loaded.background.kind !== 'preset') {
         const asset = loaded.background.kind === 'photo'
           ? await appearanceRepository.getPhoto(loaded.background.assetId)
           : await appearanceRepository.getRender(loaded.background.assetId)
-        if (asset) nextUrl = URL.createObjectURL(asset.blob)
+        if (asset) nextBackgroundUrl = URL.createObjectURL(asset.blob)
+      }
+      if (loaded.profile.kind !== 'default_monggle') {
+        const asset = loaded.profile.kind === 'photo'
+          ? await appearanceRepository.getPhoto(loaded.profile.assetId)
+          : await appearanceRepository.getRender(loaded.profile.assetId)
+        if (asset) nextProfileUrl = URL.createObjectURL(asset.blob)
       }
       if (disposed) {
-        if (nextUrl) URL.revokeObjectURL(nextUrl)
+        ;[nextBackgroundUrl, nextProfileUrl].forEach((url) => { if (url) URL.revokeObjectURL(url) })
         return
       }
-      if (activeUrl) URL.revokeObjectURL(activeUrl)
-      activeUrl = nextUrl
-      setAppearance(loaded.background.kind !== 'preset' && !nextUrl ? defaultAppearanceSettings : loaded)
-      setBackgroundUrl(nextUrl)
+      activeUrls.forEach((url) => URL.revokeObjectURL(url))
+      activeUrls = [nextBackgroundUrl, nextProfileUrl].filter((url): url is string => Boolean(url))
+      setAppearance(loaded.background.kind !== 'preset' && !nextBackgroundUrl ? { ...loaded, background: defaultAppearanceSettings.background } : loaded)
+      setBackgroundUrl(nextBackgroundUrl)
+      setProfileUrl(nextProfileUrl)
     }
     void refreshAppearance()
     window.addEventListener('monggle:appearance-changed', refreshAppearance)
     return () => {
       disposed = true
       window.removeEventListener('monggle:appearance-changed', refreshAppearance)
-      if (activeUrl) URL.revokeObjectURL(activeUrl)
+      activeUrls.forEach((url) => URL.revokeObjectURL(url))
     }
   }, [])
   return (
@@ -71,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </label>
       </header>
       <main>{children}</main>
-      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} />
+      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} />
       <BottomNav />
     </div>
   )

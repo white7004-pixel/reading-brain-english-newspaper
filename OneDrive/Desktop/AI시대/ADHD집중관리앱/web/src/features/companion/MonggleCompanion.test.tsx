@@ -19,3 +19,9 @@ it('is decorative and cannot intercept input', () => {
   expect(companion).toHaveClass('monggle-companion')
   expect(companion.querySelector('img')).toHaveAttribute('alt', '')
 })
+
+it('uses a locally created profile when one is applied', () => {
+  render(<MonggleCompanion reducedMotion mascotVisible event={null} sourceUrl="blob:profile" />)
+  expect(screen.getByTestId('monggle-companion')).toHaveAttribute('data-source', 'personal')
+  expect(screen.getByTestId('monggle-companion').querySelector('img')).toHaveAttribute('src', 'blob:profile')
+})
