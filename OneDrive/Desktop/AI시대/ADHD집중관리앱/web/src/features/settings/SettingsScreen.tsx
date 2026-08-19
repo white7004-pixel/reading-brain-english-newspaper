@@ -24,6 +24,7 @@ export function SettingsScreen() {
       <label>화면 테마<select value={settings.theme} onChange={(event) => update({ theme: event.target.value as ThemeMode })}><option value="system">기기 설정</option><option value="light">밝게</option><option value="dark">어둡게</option></select></label>
       <label className="check-row"><input type="checkbox" checked={settings.reducedMotion} onChange={(event) => update({ reducedMotion: event.target.checked })} /> 움직임 줄이기</label>
       <label className="check-row"><input type="checkbox" checked={settings.mascotVisible} onChange={(event) => update({ mascotVisible: event.target.checked })} /> 몽글 캐릭터 표시</label>
+      <label className="check-row"><input type="checkbox" checked={settings.determinedMonggle} onChange={(event) => update({ determinedMonggle: event.target.checked })} /> 단호한 몽글이</label>
       <label>방해 금지 시작<input type="time" value={settings.quietHoursStart} onChange={(event) => update({ quietHoursStart: event.target.value })} /></label>
       <label>종료<input type="time" value={settings.quietHoursEnd} onChange={(event) => update({ quietHoursEnd: event.target.value })} /></label>
       <label>몽글이 확인 간격<select value={settings.nudgeIntervalMinutes} onChange={(event) => update({ nudgeIntervalMinutes: Number(event.target.value) as NudgeIntervalMinutes })}><option value="0">끄기</option><option value="30">30분마다</option><option value="60">1시간마다</option><option value="120">2시간마다</option></select></label>

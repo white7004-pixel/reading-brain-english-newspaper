@@ -8,7 +8,10 @@ body {
     radial-gradient(circle at 4% 58%, rgb(225 215 255 / 22%), transparent 28rem),
     var(--color-bg);
   color: var(--color-text);
-  font-family: Pretendard, Inter, system-ui, -apple-system, sans-serif;
+  font-family: "Pretendard Variable", Pretendard, "SUIT Variable", "Noto Sans KR", Inter, system-ui, -apple-system, sans-serif;
+  font-weight: 520;
+  letter-spacing: -.012em;
+  text-rendering: optimizeLegibility;
 }
 button, select, input, textarea { font: inherit; }
 button, select, a { min-height: var(--tap-min); }
@@ -32,7 +35,7 @@ button, select, a { min-height: var(--tap-min); }
   box-shadow: var(--shadow-card-3d); backdrop-filter: blur(18px) saturate(115%);
 }
 .app-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.app-header h1 { margin: 0; font-size: 32px; letter-spacing: -.04em; }
+.app-header h1 { margin: 0; font-size: 34px; font-weight: 820; letter-spacing: -.055em; }
 .profile-select { display: grid; gap: 4px; color: var(--color-muted); font-size: 12px; }
 .profile-select select { border: 1px solid var(--color-line); border-radius: 12px; background: var(--color-surface); color: var(--color-text); padding: 0 12px; }
 .welcome-card { margin-top: 28px; padding: 24px; border-radius: var(--radius-card); background: var(--color-glass); border: 1px solid var(--color-glass-line); box-shadow: var(--shadow-card-3d); backdrop-filter: blur(18px); }
@@ -41,7 +44,7 @@ button, select, a { min-height: var(--tap-min); }
 .energy button, .capture-actions button, .now-card button { border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-surface); color: var(--color-text); padding: 0 14px; }
 .energy button[aria-pressed='true'], button.primary { background: var(--color-accent); color: white; border-color: var(--color-accent); font-weight: 700; }
 .capture-card, .now-card, .timeline { margin-top: 14px; padding: 22px; border: 1px solid var(--color-glass-line); border-radius: var(--radius-card); background: var(--color-glass); box-shadow: var(--shadow-card-3d); backdrop-filter: blur(18px); }
-.capture-card label { display: block; font-weight: 700; margin-bottom: 12px; }
+.capture-card label { display: block; font-size: 18px; font-weight: 780; letter-spacing: -.025em; margin-bottom: 12px; }
 .capture-card textarea { width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--color-line); border-radius: 16px; background: var(--color-bg); color: var(--color-text); padding: 14px; }
 .capture-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .capture-card > small { display: block; margin-top: 10px; color: var(--color-muted); }
@@ -56,6 +59,7 @@ button, select, a { min-height: var(--tap-min); }
 .now-card { background: linear-gradient(145deg, rgb(225 216 255 / 82%), var(--color-glass)); }
 .now-card > span, .timeline small { color: var(--color-accent); font-weight: 700; }
 .now-card h2 { font-size: clamp(25px, 6vw, 36px); margin: 12px 0 4px; letter-spacing: -.035em; }
+.now-card h2, .section-heading h2, .feature-screen > h2 { font-weight: 800; }
 .now-card > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .timeline article { display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--color-line); }
 .timeline article div { display: grid; gap: 4px; }
@@ -117,6 +121,9 @@ button, select, a { min-height: var(--tap-min); }
 .persistent-now-task strong { overflow-wrap: anywhere; }
 .persistent-now-task__actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .persistent-now-task__actions button { min-height: 36px; padding: 0 10px; border: 1px solid var(--color-line); border-radius: 11px; background: var(--color-surface); color: var(--color-text); font-size: 12px; }
+.persistent-now-task[data-tone='firm'] { border-color: rgb(118 80 191 / 42%); box-shadow: 0 18px 44px rgb(81 56 134 / 22%); }
+.persistent-now-task[data-tone='angry'] { border-color: rgb(187 76 107 / 50%); background: color-mix(in srgb, #fff0f3 84%, var(--color-surface)); box-shadow: 0 18px 48px rgb(139 45 78 / 24%); }
+.persistent-now-task[data-tone='angry'] span { color: #9f294d; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

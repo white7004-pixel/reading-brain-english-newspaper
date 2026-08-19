@@ -11,7 +11,7 @@ export function FocusScreen({ title, minutes }: { title: string; minutes: number
   const [running, setRunning] = useState(false)
   const steps = useMemo(() => breakIntoSteps(title), [title])
   return <section className="focus-screen">
-    <span>지금 하나만</span>
+    <span>이 목표를 완료로 바꾸기</span>
     <h2>{title}</h2>
     <div className="focus-clock" aria-label="남은 시간">{clock(seconds)}</div>
     <ol>{steps.map((step) => <li key={step.id}><input type="checkbox" aria-label={step.title} /> <span>{step.title}</span><small>{step.minutes}분</small></li>)}</ol>

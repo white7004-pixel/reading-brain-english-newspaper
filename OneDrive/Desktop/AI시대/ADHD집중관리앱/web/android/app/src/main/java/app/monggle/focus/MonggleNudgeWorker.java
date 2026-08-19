@@ -32,7 +32,17 @@ public class MonggleNudgeWorker extends Worker {
             JSONObject snapshot = new JSONObject(store.getString(MonggleWidgetPlugin.SNAPSHOT_KEY, "{}"));
             JSONArray tasks = snapshot.optJSONArray("tasks");
             if (tasks == null || tasks.length() == 0) return Result.success();
-            String title = tasks.getJSONObject(0).optString("title");
+            JSONObject firstTask = tasks.getJSONObject(0);
+            String taskId = firstTask.optString("id");
+            String title = firstTask.optString("title");
+            String previousTask = store.getString(MonggleWidgetPlugin.MASTERY_TASK_KEY, "");
+            int misses = taskId.equals(previousTask)
+                ? NativeMasteryPolicy.onPrompt(store.getInt(MonggleWidgetPlugin.MASTERY_MISSES_KEY, 0), store.getBoolean(MonggleWidgetPlugin.MASTERY_ANSWERED_KEY, true))
+                : 0;
+            NativeMasteryPolicy.Tone tone = NativeMasteryPolicy.tone(misses);
+            store.edit().putString(MonggleWidgetPlugin.MASTERY_TASK_KEY, taskId)
+                .putInt(MonggleWidgetPlugin.MASTERY_MISSES_KEY, misses)
+                .putBoolean(MonggleWidgetPlugin.MASTERY_ANSWERED_KEY, false).apply();
             NotificationManager manager = context.getSystemService(NotificationManager.class);
             if (android.os.Build.VERSION.SDK_INT >= 26) {
                 manager.createNotificationChannel(new NotificationChannel(CHANNEL_ID, "몽글이 확인", NotificationManager.IMPORTANCE_DEFAULT));
@@ -41,7 +51,7 @@ public class MonggleNudgeWorker extends Worker {
             PendingIntent content = PendingIntent.getActivity(context, 10, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher).setContentTitle("몽글이가 물어봐요")
-                .setContentText(title + " 했어?").setContentIntent(content).setAutoCancel(true);
+                .setContentText(NativeMasteryPolicy.message(tone, title)).setStyle(new NotificationCompat.BigTextStyle().bigText(NativeMasteryPolicy.message(tone, title))).setContentIntent(content).setAutoCancel(true);
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED || android.os.Build.VERSION.SDK_INT < 33) {
                 manager.notify(NOTIFICATION_ID, notification.build());
             }

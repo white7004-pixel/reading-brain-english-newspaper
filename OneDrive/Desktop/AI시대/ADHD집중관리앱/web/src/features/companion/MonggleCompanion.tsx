@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { deriveCompanionMode, nextSafePoint, type SafePoint } from './companionState'
 import './companion.css'
+import { masteryMessage, type MasteryTone } from '../nudges/taskMastery'
 
 export interface CompanionReaction {
   id: string
@@ -12,9 +13,10 @@ interface MonggleCompanionProps {
   mascotVisible: boolean
   event: CompanionReaction | null
   sourceUrl?: string | null
+  intensity?: MasteryTone
 }
 
-export function MonggleCompanion({ reducedMotion, mascotVisible, event, sourceUrl = null }: MonggleCompanionProps) {
+export function MonggleCompanion({ reducedMotion, mascotVisible, event, sourceUrl = null, intensity = 'supportive' }: MonggleCompanionProps) {
   const [systemReducedMotion, setSystemReducedMotion] = useState(() => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const mode = deriveCompanionMode(mascotVisible, reducedMotion || systemReducedMotion, event !== null)
   const [point, setPoint] = useState<SafePoint>('bottom-right')
@@ -34,10 +36,11 @@ export function MonggleCompanion({ reducedMotion, mascotVisible, event, sourceUr
   }, [mode])
 
   if (mode === 'hidden') return null
-  return (
-    <div className="monggle-companion" data-testid="monggle-companion" data-mode={mode} data-point={point} data-source={sourceUrl ? 'personal' : 'default'} aria-hidden="true" inert>
+  return <>
+    <div className="monggle-companion" data-testid="monggle-companion" data-mode={mode} data-point={point} data-source={sourceUrl ? 'personal' : 'default'} data-intensity={intensity} aria-hidden="true" inert>
       <span className="monggle-aura" />
       <img src={sourceUrl ?? '/assets/mascot/monggle-3d-approved-v1.png'} alt="" />
     </div>
-  )
+    {intensity !== 'supportive' && <div className="monggle-companion__message" data-intensity={intensity} role="status">{masteryMessage(intensity)}</div>}
+  </>
 }

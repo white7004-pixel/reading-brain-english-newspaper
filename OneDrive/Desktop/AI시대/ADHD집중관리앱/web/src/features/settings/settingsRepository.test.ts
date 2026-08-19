@@ -17,3 +17,9 @@ it('migrates old settings to a one-hour nudge interval', () => {
   localStorage.setItem('monggle.settings.v1', JSON.stringify({ key: 'main', theme: 'system' }))
   expect(settingsRepository.load().nudgeIntervalMinutes).toBe(60)
 })
+
+it('enables determined Monggle by default and persists an opt-out', () => {
+  expect(settingsRepository.load().determinedMonggle).toBe(true)
+  settingsRepository.save({ determinedMonggle: false })
+  expect(settingsRepository.load().determinedMonggle).toBe(false)
+})

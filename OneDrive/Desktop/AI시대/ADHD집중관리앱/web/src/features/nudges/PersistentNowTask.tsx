@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import type { Task } from '../../core/model/task'
 import type { TaskCheckInAction } from './taskCheckIn'
+import type { MasteryTone } from './taskMastery'
 
-export function PersistentNowTask({ task, line, onRespond }: {
+export function PersistentNowTask({ task, line, onRespond, tone = 'supportive' }: {
   task: Task
   line: string
+  tone?: MasteryTone
   onRespond: (action: TaskCheckInAction, delayMinutes?: number) => void
 }) {
   const [choosingDelay, setChoosingDelay] = useState(false)
-  return <aside className="persistent-now-task" data-testid="persistent-now-task" aria-label="몽글이의 지금 할 일 확인">
+  return <aside className="persistent-now-task" data-testid="persistent-now-task" data-tone={tone} aria-label="몽글이의 지금 할 일 확인">
     <img src="/assets/mascot/monggle-3d-approved-v1.png" alt="" />
     <div><span>몽글이가 물어봐요</span><strong>{line}</strong>
       {!choosingDelay ? <div className="persistent-now-task__actions">

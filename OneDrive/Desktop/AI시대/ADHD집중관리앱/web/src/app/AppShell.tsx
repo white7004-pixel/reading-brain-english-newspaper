@@ -16,6 +16,7 @@ import { taskCheckInRepository, type TaskCheckInAction } from '../features/nudge
 import { nativeWidgetBridge } from '../features/widgets/nativeWidgetBridge'
 import { mergeWidgetEvents } from '../features/widgets/mergeWidgetEvents'
 import { buildWidgetSnapshot } from '../features/widgets/widgetSnapshot'
+import { applyMasteryEvent, masteryMessage, masteryTone, taskMasteryRepository, type MasteryTone, type TaskMasteryState } from '../features/nudges/taskMastery'
 
 const appearanceRepository = createAppearanceRepository(createDatabase())
 const shellTaskRepository = createTaskRepository(createDatabase())
@@ -35,6 +36,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [profileUrl, setProfileUrl] = useState<string | null>(null)
   const [todayTasks, setTodayTasks] = useState<Task[]>([])
   const [latestCheckIn, setLatestCheckIn] = useState(() => taskCheckInRepository.load())
+  const [clockTick, setClockTick] = useState(() => Date.now())
+  const [mastery, setMastery] = useState<TaskMasteryState | null>(null)
   useEffect(() => {
     let expiry: number | undefined
     const unsubscribe = subscribeCompanionEvents((event) => {
@@ -70,10 +73,31 @@ export function AppShell({ children }: { children: ReactNode }) {
       window.removeEventListener('monggle:settings-changed', refreshSettings)
     }
   }, [])
-  const now = new Date()
+  useEffect(() => {
+    const timer = window.setInterval(() => setClockTick(Date.now()), 60_000)
+    return () => window.clearInterval(timer)
+  }, [])
+  const now = new Date(clockTick)
   const nudgeTask = settings.nudgeIntervalMinutes === 0 || isQuietTime(now, settings.quietHoursStart, settings.quietHoursEnd)
     ? null
     : selectNudgeTask(todayTasks, now, latestCheckIn)
+  const nudgeBucket = settings.nudgeIntervalMinutes === 0 ? 0 : Math.floor(clockTick / (settings.nudgeIntervalMinutes * 60_000))
+  useEffect(() => {
+    if (!nudgeTask || !settings.determinedMonggle || settings.nudgeIntervalMinutes === 0) {
+      setMastery(null)
+      return
+    }
+    const current = taskMasteryRepository.load(nudgeTask.id)
+    const promptAt = new Date(nudgeBucket * settings.nudgeIntervalMinutes * 60_000).toISOString()
+    if (current.lastPromptAt === promptAt) {
+      setMastery(current)
+      return
+    }
+    const next = applyMasteryEvent(current, { type: 'prompt', at: promptAt })
+    taskMasteryRepository.save(next)
+    setMastery(next)
+  }, [nudgeTask?.id, nudgeBucket, settings.determinedMonggle, settings.nudgeIntervalMinutes])
+  const activeTone: MasteryTone = settings.determinedMonggle && mastery && mastery.taskId === nudgeTask?.id ? masteryTone(mastery) : 'supportive'
   const respondToTask = async (action: TaskCheckInAction, delayMinutes?: number) => {
     if (!nudgeTask) return
     const respondedAt = new Date()
@@ -85,6 +109,10 @@ export function AppShell({ children }: { children: ReactNode }) {
     await shellTaskRepository.putMany(result.tasks)
     await nativeWidgetBridge.update(buildWidgetSnapshot(result.tasks, buildNudgeLine(result.tasks.find((task) => task.id === result.nextTaskId) ?? nudgeTask)))
     taskCheckInRepository.save(response)
+    const masteryAction = action === 'in_progress' ? 'working' : action
+    const nextMastery = applyMasteryEvent(taskMasteryRepository.load(nudgeTask.id), { type: masteryAction, at: respondedAt.toISOString() })
+    taskMasteryRepository.save(nextMastery)
+    setMastery(nextMastery)
     setTodayTasks(result.tasks)
     setLatestCheckIn(response)
     window.dispatchEvent(new Event('monggle:tasks-changed'))
@@ -142,8 +170,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </label>
       </header>
       <main>{children}</main>
-      {nudgeTask && <PersistentNowTask task={nudgeTask} line={buildNudgeLine(nudgeTask)} onRespond={(action, delay) => void respondToTask(action, delay)} />}
-      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} />
+      {nudgeTask && <PersistentNowTask task={nudgeTask} line={settings.determinedMonggle ? masteryMessage(activeTone) : buildNudgeLine(nudgeTask)} tone={activeTone} onRespond={(action, delay) => void respondToTask(action, delay)} />}
+      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeTone} />
       <BottomNav />
     </div>
   )

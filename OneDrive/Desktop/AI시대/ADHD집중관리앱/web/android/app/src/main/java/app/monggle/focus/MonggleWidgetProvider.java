@@ -83,7 +83,11 @@ public class MonggleWidgetProvider extends AppWidgetProvider {
             JSONArray events = new JSONArray(store.getString(MonggleWidgetPlugin.COMPLETION_EVENTS_KEY, "[]"));
             JSONObject event = new JSONObject().put("taskId", taskId).put("response", response).put("completedAt", Instant.now().toString());
             events.put(event);
-            store.edit().putString(MonggleWidgetPlugin.COMPLETION_EVENTS_KEY, events.toString()).apply();
+            int misses = NativeMasteryPolicy.onResponse(store.getInt(MonggleWidgetPlugin.MASTERY_MISSES_KEY, 0), response);
+            store.edit().putString(MonggleWidgetPlugin.COMPLETION_EVENTS_KEY, events.toString())
+                .putInt(MonggleWidgetPlugin.MASTERY_MISSES_KEY, misses)
+                .putString(MonggleWidgetPlugin.MASTERY_TASK_KEY, taskId)
+                .putBoolean(MonggleWidgetPlugin.MASTERY_ANSWERED_KEY, true).apply();
         } catch (Exception ignored) {}
     }
 }

@@ -20,6 +20,9 @@ public class MonggleWidgetPlugin extends Plugin {
     static final String SNAPSHOT_KEY = "widget_snapshot_v1";
     static final String COMPLETION_EVENTS_KEY = "widget_completion_events_v1";
     static final String NUDGE_CONFIG_KEY = "widget_nudge_config_v1";
+    static final String MASTERY_MISSES_KEY = "widget_mastery_misses_v1";
+    static final String MASTERY_TASK_KEY = "widget_mastery_task_v1";
+    static final String MASTERY_ANSWERED_KEY = "widget_mastery_answered_v1";
 
     private SharedPreferences store() {
         return getContext().getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);

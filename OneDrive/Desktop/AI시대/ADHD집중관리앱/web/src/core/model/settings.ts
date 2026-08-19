@@ -8,6 +8,7 @@ export interface MonggleSettings {
   theme: ThemeMode
   reducedMotion: boolean
   mascotVisible: boolean
+  determinedMonggle: boolean
   quietHoursStart: string
   quietHoursEnd: string
   nudgeIntervalMinutes: NudgeIntervalMinutes
