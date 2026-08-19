@@ -20,6 +20,7 @@ describe("shared public article schema", () => {
 
   it.each([
     ["blank visual theme", { visualTheme: " " }],
+    ["blank key sentence", { keySentence: " " }],
     ["unresolved connection", { connectedArticleId: "pending" }],
     ["malformed quiz", { quiz: [{ id: "q", prompt: "?", options: ["one"], correctIndex: 4, explanation: "bad" }] }],
     ["unsafe image", { media: [{ kind: "image", url: "javascript:alert(1)", alt: "unsafe" }] }],
@@ -49,5 +50,14 @@ describe("shared public article schema", () => {
     expect(parsed.value.media).toEqual([
       { kind: "image", url: "https://images.example.org/star.jpg", alt: "A bright star" },
     ]);
+  });
+
+  it("preserves the exact key sentence through the public boundary", () => {
+    const source = getPublishedArticles()[0];
+    const parsed = parsePublicArticle(JSON.parse(JSON.stringify(source)));
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.keySentence).toBe(source.keySentence);
   });
 });

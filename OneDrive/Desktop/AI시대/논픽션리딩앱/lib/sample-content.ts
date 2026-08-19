@@ -26,6 +26,7 @@ function makeArticle(seed: Seed): Article {
     wordCount: seed.pages.join(" ").split(/\s+/).length,
     status: "published",
     version: 1,
+    keySentence: seed.pages[0].split(/(?<=[.!?])\s+/)[0],
     vocabulary: words.map(([word, pronunciation, meaningKo, definitionEn]) => ({ word, pronunciation, meaningKo, definitionEn })),
     quiz: [
       { id: `${seed.id}-q1`, prompt: "What is the main idea?", options: [seed.summaryKo, "The topic cannot be explained.", "Only experts can learn this."], correctIndex: 0, explanation: `The passage explains ${seed.title.toLowerCase()} in a short, connected way.` },

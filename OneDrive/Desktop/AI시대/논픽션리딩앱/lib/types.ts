@@ -66,6 +66,7 @@ export type Article = {
   status: ContentStatus;
   version: number;
   pages: string[];
+  keySentence: string;
   vocabulary: VocabularyItem[];
   quiz: QuizQuestion[];
   sources: SourceRef[];

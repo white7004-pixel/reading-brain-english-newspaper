@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./key-finder.css";
 
 :root {
   --forest-950: #102d25;

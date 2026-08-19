@@ -59,6 +59,7 @@ export function projectWorkingArticle(article: StudioArticle): Article {
     status: article.workflowStatus === "published" ? "published" : "review",
     version: article.workingVersion,
     pages: article.pages.length > 0 ? [...article.pages] : ["미리보기에 표시할 본문을 입력해 주세요."],
+    keySentence: article.keySentence || article.pages[0]?.split(/(?<=[.!?])\s+/)[0] || "핵심 문장을 입력해 주세요.",
     vocabulary: article.vocabulary.map((item) => ({ ...item })),
     quiz: article.quiz.map((question) => ({ ...question, options: [...question.options] })),
     sources: article.sources.map((source) => ({ ...source })),
