@@ -212,6 +212,8 @@ git commit -m "feat: review organized tasks before saving"
 - Create: `web/src/features/nudges/nudgePolicy.test.ts`
 - Create: `web/src/features/nudges/PersistentNowTask.tsx`
 - Create: `web/src/features/nudges/PersistentNowTask.test.tsx`
+- Create: `web/src/features/nudges/taskCheckIn.ts`
+- Create: `web/src/features/nudges/taskCheckIn.test.ts`
 - Modify: `web/src/app/AppShell.tsx`
 - Modify: `web/src/features/settings/SettingsScreen.tsx`
 - Modify: `web/src/core/theme/global.css`
@@ -221,6 +223,7 @@ git commit -m "feat: review organized tasks before saving"
 - Produces: `buildNudgeLine(task, state): string`
 - Produces: `isQuietTime(now, start, end): boolean`
 - Produces: `<PersistentNowTask task line />`
+- Produces: `TaskCheckInResponse` and `applyCheckInResponse(tasks, response, now)`
 
 - [ ] **Step 1: Write failing policy and UI tests**
 
@@ -237,6 +240,19 @@ it('renders the next task without covering navigation', () => {
   render(<PersistentNowTask task={task} line="문제 한 개만 먼저 열어볼까?" />)
   expect(screen.getByTestId('persistent-now-task')).toHaveTextContent(task.title)
 })
+
+it('asks about only one task and completes it when the user answers 했어', () => {
+  const response = { taskId: task.id, action: 'done', respondedAt: now.toISOString() } as const
+  expect(applyCheckInResponse([task, nextTask], response, now)).toMatchObject({
+    tasks: [expect.objectContaining({ id: task.id, status: 'done' }), nextTask],
+    nextTaskId: nextTask.id,
+  })
+})
+
+it('does not ask again before a later reminder', () => {
+  const response = { taskId: task.id, action: 'later', remindAt: oneHourLater.toISOString(), respondedAt: now.toISOString() } as const
+  expect(selectNudgeTask([task], thirtyMinutesLater, response)).toBeNull()
+})
 ```
 
 - [ ] **Step 2: Run and verify RED**
@@ -247,7 +263,7 @@ Expected: FAIL because nudge policy and card do not exist.
 
 - [ ] **Step 3: Implement pure scheduling policy and settings control**
 
-Add one select with `끄기`, `30분마다`, `1시간마다`, `2시간마다`. The persistent card subscribes to `monggle:tasks-changed`, reads today’s open tasks, and sits above the bottom navigation with `pointer-events` limited to its own buttons.
+Add one select with `끄기`, `30분마다`, `1시간마다`, `2시간마다`. The persistent card subscribes to `monggle:tasks-changed`, reads today’s open tasks, and sits above the bottom navigation with `pointer-events` limited to its own buttons. It shows one task question and exactly three actions: `했어`, `하는 중`, `나중에`. `나중에` opens `30분 뒤`, `1시간 뒤`, `오늘 저녁`; unanswered questions replace the prior pending notification instead of accumulating.
 
 - [ ] **Step 4: Run unit, app-shell, accessibility, and 320px tests**
 
@@ -276,6 +292,7 @@ git commit -m "feat: add supportive Monggle nudge controls"
 - Produces: `buildWidgetSnapshot(tasks, line, now): WidgetSnapshot`
 - Produces: `nativeWidgetBridge.update(snapshot)`, `scheduleNudges(config)`, `isAvailable()`
 - Consumes: Capacitor plugin name `MonggleWidget`
+- Consumes: latest `TaskCheckInResponse` so notification and widget actions share one state transition
 
 - [ ] **Step 1: Write failing minimal-data and fallback tests**
 
@@ -403,6 +420,7 @@ git commit -m "feat: add Capacitor widget bridge"
 **Interfaces:**
 - Consumes: `widget_snapshot_v1` and native nudge config
 - Produces: small and medium AppWidget views, completion broadcast, notification channel `monggle_nudges`
+- Produces: notification and widget actions `했어`, `하는 중`, `나중에`
 
 - [ ] **Step 1: Write failing rendering and scheduling tests**
 
@@ -426,7 +444,7 @@ Expected: FAIL because provider, policy, and worker do not exist.
 
 - [ ] **Step 3: Implement RemoteViews, completion broadcast, and worker**
 
-Render one task for small and three for medium. Completion writes `{ id, completed: true, updatedAt }` to `widget_completion_events_v1`, updates the widget immediately, and opens the app only when the title/body is tapped. Schedule unique periodic work named `monggle-nudges`; replace it when interval changes and cancel it for interval `0`.
+Render one task for small and three for medium. Action broadcasts write a timestamped `TaskCheckInResponse` to `widget_completion_events_v1`: `했어` completes and advances, `하는 중` keeps the task, and `나중에` opens the defer choices. Update the widget immediately and open the app only when the title/body is tapped. Schedule unique periodic work named `monggle-nudges`; replace it when interval changes and cancel it for interval `0`. Reuse one stable notification ID so unanswered prompts never stack.
 
 - [ ] **Step 4: Run Android unit and instrumentation-safe build checks**
 
@@ -457,6 +475,7 @@ git commit -m "feat: add Android Monggle home widget"
 - Consumes: App Group `group.app.monggle.focus`, `widget_snapshot_v1`
 - Produces: `systemSmall` and `systemMedium` widgets
 - Produces: `CompleteTaskIntent(taskID: String)`
+- Produces: `KeepWorkingIntent` and `RemindLaterIntent`
 
 - [ ] **Step 1: Write failing snapshot decoding and intent tests**
 
@@ -480,7 +499,7 @@ Expected: FAIL because widget target and intent do not exist.
 
 - [ ] **Step 3: Implement WidgetKit views, timeline, App Group, and intent**
 
-Use static Studio-purple gradients and bundled Monggle artwork. Timeline refreshes at the next scheduled nudge but accepts that iOS may defer it. `CompleteTaskIntent` appends a timestamped event and calls `WidgetCenter.shared.reloadAllTimelines()`.
+Use static Studio-purple gradients and bundled Monggle artwork. Timeline refreshes at the next scheduled nudge but accepts that iOS may defer it. `CompleteTaskIntent`, `KeepWorkingIntent`, and `RemindLaterIntent` append timestamped check-in events and call `WidgetCenter.shared.reloadAllTimelines()`.
 
 - [ ] **Step 4: Run tests and build both app and extension**
 
