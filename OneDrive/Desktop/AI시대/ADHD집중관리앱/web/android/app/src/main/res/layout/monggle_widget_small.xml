@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@drawable/monggle_widget_background">
+    <TextView android:id="@+id/widget_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#E9DEFF" android:textSize="12sp" android:textStyle="bold" />
+    <TextView android:id="@+id/widget_task_1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:gravity="center_vertical" android:textColor="#FFFFFF" android:textSize="17sp" android:maxLines="2" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/widget_done" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:text="했어" android:textSize="11sp" />
+        <Button android:id="@+id/widget_working" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:text="하는 중" android:textSize="11sp" />
+        <Button android:id="@+id/widget_later" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:text="나중에" android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>

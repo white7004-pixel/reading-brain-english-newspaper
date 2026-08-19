@@ -9,6 +9,10 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import java.util.concurrent.TimeUnit;
 
 @CapacitorPlugin(name = "MonggleWidget")
 public class MonggleWidgetPlugin extends Plugin {
@@ -29,12 +33,21 @@ public class MonggleWidgetPlugin extends Plugin {
             return;
         }
         store().edit().putString(SNAPSHOT_KEY, snapshot.toString()).apply();
+        MonggleWidgetProvider.refreshAll(getContext());
         call.resolve();
     }
 
     @PluginMethod
     public void scheduleNudges(PluginCall call) {
         store().edit().putString(NUDGE_CONFIG_KEY, call.getData().toString()).apply();
+        int interval = call.getInt("intervalMinutes", 0);
+        WorkManager workManager = WorkManager.getInstance(getContext());
+        if (interval == 0) {
+            workManager.cancelUniqueWork("monggle-nudges");
+        } else {
+            PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(MonggleNudgeWorker.class, interval, TimeUnit.MINUTES).build();
+            workManager.enqueueUniquePeriodicWork("monggle-nudges", ExistingPeriodicWorkPolicy.UPDATE, request);
+        }
         call.resolve();
     }
 
