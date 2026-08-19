@@ -14,8 +14,17 @@ interface MonggleCompanionProps {
 }
 
 export function MonggleCompanion({ reducedMotion, mascotVisible, event }: MonggleCompanionProps) {
-  const mode = deriveCompanionMode(mascotVisible, reducedMotion, event !== null)
+  const [systemReducedMotion, setSystemReducedMotion] = useState(() => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
+  const mode = deriveCompanionMode(mascotVisible, reducedMotion || systemReducedMotion, event !== null)
   const [point, setPoint] = useState<SafePoint>('bottom-right')
+
+  useEffect(() => {
+    const query = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')
+    if (!query) return
+    const update = () => setSystemReducedMotion(query.matches)
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
 
   useEffect(() => {
     if (mode !== 'wandering') return
