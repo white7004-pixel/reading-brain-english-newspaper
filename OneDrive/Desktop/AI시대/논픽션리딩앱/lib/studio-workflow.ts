@@ -56,7 +56,7 @@ const CHECKLIST_MESSAGES: Record<ReviewStage, string> = {
 const FIELD_STAGE = {
   title: "facts", titleKo: "facts", summaryEn: "facts", summaryKo: "facts", domain: "facts", subtopic: "facts",
   sources: "facts", sourceNotes: "facts", reconstructionConfirmed: "facts", rightsNotes: "facts", media: "facts",
-  connectedArticleId: "facts", visualTheme: "facts",
+  connectedArticleId: "facts", visualTheme: "facts", heroImage: "facts",
   difficulty: "language", estimatedReadingSeconds: "language", wordCount: "language", pages: "language",
   vocabulary: "language", quiz: "language", keySentence: "language", audioUrl: "language",
   interestBand: "age", minAge: "age", maxAge: "age", safetyFlags: "age", safetyReviewed: "age", learningGoal: "age", keyConcept: "age",
@@ -64,7 +64,7 @@ const FIELD_STAGE = {
 
 const LEARNER_FACING_FIELDS = new Set<keyof ArticleEditPatch>([
   "title", "titleKo", "summaryEn", "summaryKo", "domain", "subtopic", "interestBand", "difficulty", "minAge", "maxAge",
-  "estimatedReadingSeconds", "safetyFlags", "wordCount", "pages", "vocabulary", "quiz", "connectedArticleId", "visualTheme",
+  "estimatedReadingSeconds", "safetyFlags", "wordCount", "pages", "vocabulary", "quiz", "connectedArticleId", "visualTheme", "heroImage",
   "audioUrl", "learningGoal", "keySentence", "keyConcept", "media",
 ]);
 
@@ -354,6 +354,7 @@ function createLearnerSnapshot(article: StudioArticle): Article {
     },
     ...(normalizedConnection(article.connectedArticleId) ? { connectedArticleId: normalizedConnection(article.connectedArticleId) } : {}),
     visualTheme: article.visualTheme,
+    ...(article.heroImage ? { heroImage: { ...article.heroImage } } : {}),
     media: article.media.map((item) => item.kind === "image"
       ? { kind: "image", url: item.url, alt: item.alt }
       : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),

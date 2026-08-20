@@ -1,5 +1,6 @@
 import type {
   Article,
+  ArticleHeroImage,
   Difficulty,
   InterestBand,
   KnowledgeDomain,
@@ -139,6 +140,7 @@ export type ArticleEditPatch = Partial<
     | "sources"
     | "connectedArticleId"
     | "visualTheme"
+    | "heroImage"
     | "audioUrl"
     | "learningGoal"
     | "keySentence"
@@ -175,6 +177,7 @@ export type StudioArticle = {
   sources: StudioSourceRef[];
   connectedArticleId?: string;
   visualTheme: string;
+  heroImage?: ArticleHeroImage;
   audioUrl?: string;
   workingVersion: number;
   workflowStatus: WorkflowStatus;

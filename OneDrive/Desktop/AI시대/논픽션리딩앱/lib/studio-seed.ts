@@ -59,6 +59,7 @@ function createSeedStudioArticle(article: Article): StudioArticle {
     pages: [...article.pages],
     ...(article.connectedArticleId ? { connectedArticleId: article.connectedArticleId } : {}),
     visualTheme: article.visualTheme,
+    ...(article.heroImage ? { heroImage: { ...article.heroImage } } : {}),
     ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
     summaryEn: article.pages[0] ?? "",
     subtopic: article.domain,

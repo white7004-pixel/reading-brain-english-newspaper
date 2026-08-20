@@ -11,6 +11,17 @@ import type { StudioArticle } from "@/lib/studio-types";
 import { applyArticleEdit, withdrawArticle } from "@/lib/studio-workflow";
 import { completeAttestedStage, createMemoryStorage, makePublishedArticle, makeStudioArticle } from "@/tests/studio-fixtures";
 
+const heroImage = {
+  src: "/article-images/ar1-batch-07/owl-flight.jpg",
+  altKo: "날개를 펼쳐 낮게 나는 올빼미",
+  sourcePageUrl: "https://commons.wikimedia.org/wiki/File:Example.jpg",
+  title: "Example owl",
+  creator: "Example Creator",
+  licenseName: "CC BY-SA 4.0" as const,
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+  isModified: false as const,
+};
+
 describe("versioned studio content store", () => {
   it("keeps the last approved snapshot public while a replacement is edited", () => {
     const published = makePublishedArticle({ id: "live", title: "Approved title" });
@@ -81,6 +92,7 @@ describe("versioned studio content store", () => {
       sources: [{ title: "Source title", publisher: "Source publisher", url: "https://example.org/source", publishedAt: "2026-01-02", materialType: "paper", supportedFact: "The source supports the custom article." }],
       connectedArticleId: undefined,
       visualTheme: "ocean",
+      heroImage,
       audioUrl: "https://media.example.org/custom.mp3",
       media: [{ kind: "image", url: "https://images.example.org/custom.jpg", alt: "A custom illustration", usageConfirmed: true }],
     });
@@ -92,6 +104,7 @@ describe("versioned studio content store", () => {
     expect(outcome.kind).toBe("loaded");
     const publicArticle = getPublicArticles(outcome.state)[0];
     expect(publicArticle).toEqual(published.versionHistory[0].snapshot);
+    expect(publicArticle.heroImage).toEqual(heroImage);
     expect(publicArticle).not.toHaveProperty("connectedArticleId");
     expect(storage.getItem(CORRUPT_STUDIO_BACKUP_KEY)).toBeNull();
   });

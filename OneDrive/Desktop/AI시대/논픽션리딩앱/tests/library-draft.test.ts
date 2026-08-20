@@ -36,6 +36,17 @@ const seed: LibrarySeed = {
   ],
 };
 
+const heroImage = {
+  src: "/article-images/ar1-batch-07/owl-flight.jpg",
+  altKo: "날개를 펼쳐 낮게 나는 올빼미",
+  sourcePageUrl: "https://commons.wikimedia.org/wiki/File:Example.jpg",
+  title: "Example owl",
+  creator: "Example Creator",
+  licenseName: "CC BY-SA 4.0" as const,
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+  isModified: false as const,
+};
+
 it("builds an unreviewed draft from a library seed", () => {
   const draft = buildLibraryDraft(seed);
 
@@ -81,4 +92,11 @@ it("leaves only the source publication date for the editor to verify", () => {
 
 it("rejects a seed whose AR falls outside the authored bands", () => {
   expect(() => buildLibraryDraft({ ...seed, ar: 7.5 })).toThrow("AR 7.5는 제작 대상 대역이 아닙니다.");
+});
+
+it("preserves an attributed hero photograph in the studio draft", () => {
+  const draft = buildLibraryDraft({ ...seed, heroImage });
+
+  expect(draft.heroImage).toEqual(heroImage);
+  expect(draft.heroImage).not.toBe(heroImage);
 });

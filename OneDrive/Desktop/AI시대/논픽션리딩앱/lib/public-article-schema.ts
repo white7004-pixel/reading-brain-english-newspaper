@@ -1,4 +1,4 @@
-import type { Article, ArticleMedia } from "./types";
+import type { Article, ArticleHeroImage, ArticleMedia } from "./types";
 
 export type PublicArticleIssue = { field: string; code: string };
 export type PublicArticleParseResult =
@@ -7,6 +7,7 @@ export type PublicArticleParseResult =
 
 const DOMAINS = new Set(["science", "history", "arts", "philosophy", "self-development", "world-culture"]);
 const INTEREST_BANDS = new Set(["lower-elementary", "upper-elementary", "teen", "adult", "all-ages"]);
+const HERO_IMAGE_LICENSES = new Set(["CC BY 2.0", "CC BY 3.0", "CC BY 4.0", "CC BY-SA 2.0", "CC BY-SA 3.0", "CC BY-SA 4.0", "Public domain"]);
 const VIDEO_URLS = {
   youtube: /^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_-]{11}(?:\?[^\s]*)?$/,
   ted: /^https:\/\/embed\.ted\.com\/talks\/[A-Za-z0-9_-]+(?:\?[^\s]*)?$/,
@@ -38,6 +39,9 @@ export function parsePublicArticle(value: unknown): PublicArticleParseResult {
     issues.push({ field: "connectedArticleId", code: "connected_article_invalid" });
   }
   required(issues, value.visualTheme, "visualTheme");
+  if (value.heroImage !== undefined && !isArticleHeroImage(value.heroImage)) {
+    issues.push({ field: "heroImage", code: "hero_image_invalid" });
+  }
   if (value.audioUrl !== undefined && (!isString(value.audioUrl) || !isHttpUrl(value.audioUrl))) {
     issues.push({ field: "audioUrl", code: "audio_url_invalid" });
   }
@@ -59,6 +63,22 @@ export function isSafePublicMedia(value: unknown): value is ArticleMedia {
   if (value.kind === "image") return isString(value.url) && isHttpsUrl(value.url);
   if (value.kind !== "video" || !(value.provider === "youtube" || value.provider === "ted" || value.provider === "cnn") || !isString(value.embedUrl)) return false;
   return VIDEO_URLS[value.provider].test(value.embedUrl);
+}
+
+export function isArticleHeroImage(value: unknown): value is ArticleHeroImage {
+  return isRecord(value)
+    && isNonEmptyString(value.src)
+    && value.src.startsWith("/article-images/")
+    && !value.src.includes("..")
+    && isNonEmptyString(value.altKo)
+    && isNonEmptyString(value.sourcePageUrl)
+    && isHttpsUrl(value.sourcePageUrl)
+    && isNonEmptyString(value.title)
+    && isNonEmptyString(value.creator)
+    && HERO_IMAGE_LICENSES.has(value.licenseName as string)
+    && isNonEmptyString(value.licenseUrl)
+    && isHttpsUrl(value.licenseUrl)
+    && value.isModified === false;
 }
 
 export function clonePublicArticle(article: Readonly<Article>): Article {
@@ -108,6 +128,7 @@ export function clonePublicArticle(article: Readonly<Article>): Article {
     },
     ...(article.connectedArticleId !== undefined ? { connectedArticleId: article.connectedArticleId } : {}),
     visualTheme: article.visualTheme,
+    ...(article.heroImage ? { heroImage: { ...article.heroImage } } : {}),
     media: article.media.map((item) => item.kind === "image"
       ? { kind: "image", url: item.url, alt: item.alt }
       : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),

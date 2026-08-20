@@ -11,7 +11,24 @@ import {
 import { completeAttestedStage, makeStudioArticle } from "@/tests/studio-fixtures";
 import type { ArticleEditPatch, ReviewStage, StudioArticle } from "@/lib/studio-types";
 
+const heroImage = {
+  src: "/article-images/ar1-batch-07/owl-flight.jpg",
+  altKo: "날개를 펼쳐 낮게 나는 올빼미",
+  sourcePageUrl: "https://commons.wikimedia.org/wiki/File:Example.jpg",
+  title: "Example owl",
+  creator: "Example Creator",
+  licenseName: "CC BY-SA 4.0" as const,
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+  isModified: false as const,
+};
+
 describe("content review workflow", () => {
+  it("publishes the attributed hero photograph into the learner snapshot", () => {
+    const published = publishReviewedArticle(makeStudioArticle({ heroImage }));
+
+    expect(published.versionHistory[0].snapshot.heroImage).toEqual(heroImage);
+    expect(published.versionHistory[0].snapshot.heroImage).not.toBe(heroImage);
+  });
   it("requires a source before facts review can complete", () => {
     const article = makeStudioArticle({ sources: [] });
 
@@ -352,8 +369,8 @@ describe("content review workflow", () => {
   });
 });
 
-function publishReviewedArticle() {
-  const approved = approveArticle(reviewThroughAge(), "approver", "2026-08-17T04:00:00.000Z");
+function publishReviewedArticle(source = makeStudioArticle()) {
+  const approved = approveArticle(reviewThroughAge(source), "approver", "2026-08-17T04:00:00.000Z");
   return publishArticle(approved, "2026-08-17T05:00:00.000Z");
 }
 

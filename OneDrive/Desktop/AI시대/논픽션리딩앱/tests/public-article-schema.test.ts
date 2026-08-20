@@ -1,6 +1,17 @@
 import { parsePublicArticle } from "@/lib/public-article-schema";
 import { getPublishedArticles } from "@/lib/content";
 
+const heroImage = {
+  src: "/article-images/ar1-batch-07/owl-flight.jpg",
+  altKo: "날개를 펼쳐 낮게 나는 올빼미",
+  sourcePageUrl: "https://commons.wikimedia.org/wiki/File:Example.jpg",
+  title: "Example owl",
+  creator: "Example Creator",
+  licenseName: "CC BY-SA 4.0",
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+  isModified: false,
+};
+
 describe("shared public article schema", () => {
   it("round-trips every learner field and returns a deeply frozen value", () => {
     const source = {
@@ -59,5 +70,24 @@ describe("shared public article schema", () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(parsed.value.keySentence).toBe(source.keySentence);
+  });
+
+  it("preserves a valid local hero photograph and its attribution", () => {
+    const parsed = parsePublicArticle({ ...getPublishedArticles()[0], heroImage });
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.heroImage).toEqual(heroImage);
+    expect(parsed.value.heroImage).not.toBe(heroImage);
+  });
+
+  it.each([
+    ["remote asset path", { ...heroImage, src: "https://upload.wikimedia.org/owl.jpg" }],
+    ["blank creator", { ...heroImage, creator: " " }],
+    ["unsupported license", { ...heroImage, licenseName: "All rights reserved" }],
+    ["insecure source page", { ...heroImage, sourcePageUrl: "http://commons.wikimedia.org/wiki/File:Example.jpg" }],
+    ["modified asset", { ...heroImage, isModified: true }],
+  ])("rejects hero photography with %s", (_description, invalidHeroImage) => {
+    expect(parsePublicArticle({ ...getPublishedArticles()[0], heroImage: invalidHeroImage }).ok).toBe(false);
   });
 });

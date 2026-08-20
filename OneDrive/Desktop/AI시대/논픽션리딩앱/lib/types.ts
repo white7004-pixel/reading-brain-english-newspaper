@@ -53,6 +53,17 @@ export type ArticleVideoMedia = {
 
 export type ArticleMedia = ArticleImageMedia | ArticleVideoMedia;
 
+export type ArticleHeroImage = {
+  src: string;
+  altKo: string;
+  sourcePageUrl: string;
+  title: string;
+  creator: string;
+  licenseName: "CC BY 2.0" | "CC BY 3.0" | "CC BY 4.0" | "CC BY-SA 2.0" | "CC BY-SA 3.0" | "CC BY-SA 4.0" | "Public domain";
+  licenseUrl: string;
+  isModified: false;
+};
+
 export type Article = {
   id: string;
   title: string;
@@ -73,6 +84,7 @@ export type Article = {
   review: ReviewRecord;
   connectedArticleId?: string;
   visualTheme: string;
+  heroImage?: ArticleHeroImage;
   media: ArticleMedia[];
   audioUrl?: string;
 };

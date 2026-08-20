@@ -1,5 +1,5 @@
 import { ageBoundsForInterestBand } from "./content-taxonomy";
-import { clonePublicArticle, deepFreeze, parsePublicArticle } from "./public-article-schema";
+import { clonePublicArticle, deepFreeze, isArticleHeroImage, parsePublicArticle } from "./public-article-schema";
 import { createSeedStudioState } from "./studio-seed";
 import { getActivePublication } from "./studio-workflow";
 import type {
@@ -213,6 +213,7 @@ function migrateLegacyArticle(value: unknown): StudioArticle {
     sources: migrateSources(value.sources),
     ...(normalizeConnection(value.connectedArticleId) ? { connectedArticleId: normalizeConnection(value.connectedArticleId) } : {}),
     visualTheme: asString(value.visualTheme),
+    ...(isArticleHeroImage(value.heroImage) ? { heroImage: { ...value.heroImage } } : {}),
     ...(isString(value.audioUrl) ? { audioUrl: value.audioUrl } : {}),
     workingVersion,
     workflowStatus: wasPublished && publicationMatchesWorking ? "published" : wasWithdrawn && publicationMatchesWorking ? "withdrawn" : "draft",
@@ -341,6 +342,7 @@ function isStudioArticle(value: unknown): value is StudioArticle {
     || !isStudioSources(value.sources)
     || (value.connectedArticleId !== undefined && !isNonEmptyString(value.connectedArticleId))
     || !isString(value.visualTheme)
+    || (value.heroImage !== undefined && !isArticleHeroImage(value.heroImage))
     || (value.audioUrl !== undefined && !isString(value.audioUrl))
     || !isPositiveInteger(value.workingVersion)
     || !WORKFLOW_STATUSES.has(value.workflowStatus as string)

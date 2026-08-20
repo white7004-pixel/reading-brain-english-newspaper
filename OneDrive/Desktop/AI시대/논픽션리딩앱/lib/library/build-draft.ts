@@ -1,6 +1,6 @@
 import { AR_BANDS, bandForAr, countWords } from "../ar-bands";
 import type { QuizType, SourceMaterialType, StudioArticle } from "../studio-types";
-import type { KnowledgeDomain } from "../types";
+import type { ArticleHeroImage, KnowledgeDomain } from "../types";
 
 /** word, pronunciation, Korean meaning, plain-English definition, sentence from the passage */
 export type SeedWord = [string, string, string, string, string];
@@ -29,6 +29,7 @@ export type LibrarySeed = {
   learningGoal: string;
   keyConcept: string;
   visualTheme: string;
+  heroImage?: ArticleHeroImage;
   pages: string[];
   words: SeedWord[];
   quiz: SeedQuiz[];
@@ -97,6 +98,7 @@ export function buildLibraryDraft(seed: LibrarySeed): StudioArticle {
       supportedFact,
     })),
     visualTheme: seed.visualTheme,
+    ...(seed.heroImage ? { heroImage: { ...seed.heroImage } } : {}),
     workingVersion: 1,
     workflowStatus: "draft",
     reviewRecords: {},
