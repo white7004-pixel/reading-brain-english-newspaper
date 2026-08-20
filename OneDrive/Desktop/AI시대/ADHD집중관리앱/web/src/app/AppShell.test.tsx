@@ -16,11 +16,13 @@ const taskRepository = createTaskRepository(database)
 beforeEach(async () => {
   await database.tasks.clear()
   localStorage.clear()
+  window.history.replaceState({}, '', '/')
 })
 
 afterEach(async () => {
   taskCheckInRepository.clear()
   await database.tasks.clear()
+  window.history.replaceState({}, '', '/')
 })
 
 it('keeps the five tabs in the approved order', () => {
@@ -72,4 +74,22 @@ it('keeps a prior-day required mission delayed through quiet time and returns th
   settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00' })
   window.dispatchEvent(new Event('monggle:settings-changed'))
   await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('지난 미션'))
+})
+
+it('prioritizes the same unfinished mission on app entry after midnight', async () => {
+  await taskRepository.put({
+    id: 'extended-required', title: '독서', day: '2026-08-21', status: 'open', priority: 1,
+    estimateMinutes: 20, category: 'study', source: 'manual', required: true,
+    commitmentDay: '2026-08-21', firstAction: '책 펼치기',
+    createdAt: '2026-08-21T09:00:00+09:00', updatedAt: '2026-08-21T09:00:00+09:00',
+  })
+  settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00', determinedMonggle: false })
+  window.history.replaceState({}, '', '/?now=2026-08-22T00%3A10%3A00%2B09%3A00')
+
+  render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
+
+  const mode = await screen.findByRole('region', { name: '오늘 연장 완료 모드' })
+  expect(mode).toHaveAttribute('data-escalation-level', 'app-entry')
+  expect(mode).toHaveTextContent('독서')
+  await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('독서'))
 })

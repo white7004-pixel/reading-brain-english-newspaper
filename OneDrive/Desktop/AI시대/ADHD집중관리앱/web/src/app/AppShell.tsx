@@ -17,15 +17,12 @@ import { nativeWidgetBridge } from '../features/widgets/nativeWidgetBridge'
 import { mergeWidgetEvents } from '../features/widgets/mergeWidgetEvents'
 import { buildWidgetSnapshot } from '../features/widgets/widgetSnapshot'
 import { applyMasteryEvent, masteryMessage, masteryTone, taskMasteryRepository, type MasteryTone, type TaskMasteryState } from '../features/nudges/taskMastery'
+import { dayInSeoul, missionMode } from '../features/missions/extendedDay'
+import { selectCurrentMission } from '../features/today/selectNowTask'
+import { appNow } from '../core/time/appClock'
 
 const appearanceRepository = createAppearanceRepository(createDatabase())
 const shellTaskRepository = createTaskRepository(createDatabase())
-
-function todayInSeoul(now = new Date()) {
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now)
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]))
-  return `${values.year}-${values.month}-${values.day}`
-}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileType>('high_school')
@@ -36,7 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [profileUrl, setProfileUrl] = useState<string | null>(null)
   const [todayTasks, setTodayTasks] = useState<Task[]>([])
   const [latestCheckIn, setLatestCheckIn] = useState(() => taskCheckInRepository.load())
-  const [clockTick, setClockTick] = useState(() => Date.now())
+  const [clockTick, setClockTick] = useState(() => appNow().getTime())
   const [mastery, setMastery] = useState<TaskMasteryState | null>(null)
   useEffect(() => {
     let expiry: number | undefined
@@ -50,8 +47,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
     const refreshTasks = async () => {
+      const snapshotNow = appNow()
       const [forToday, required] = await Promise.all([
-        shellTaskRepository.listForDay(todayInSeoul()),
+        shellTaskRepository.listForDay(dayInSeoul(snapshotNow)),
         shellTaskRepository.listRequiredOpen(),
       ])
       let saved = [...forToday, ...required.filter((task) => !forToday.some(({ id }) => id === task.id))]
@@ -64,7 +62,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       }
       if (active) {
         setTodayTasks(saved)
-        await nativeWidgetBridge.update(buildWidgetSnapshot(saved, '몽글이와 한 가지씩 해봐요'))
+        await nativeWidgetBridge.update(buildWidgetSnapshot(saved, '몽글이와 한 가지씩 해봐요', snapshotNow))
       }
     }
     const refreshSettings = () => setSettings(settingsRepository.load())
@@ -81,10 +79,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }, [])
   useEffect(() => {
-    const timer = window.setInterval(() => setClockTick(Date.now()), 60_000)
+    const timer = window.setInterval(() => setClockTick(appNow().getTime()), 60_000)
     return () => window.clearInterval(timer)
   }, [])
   const now = new Date(clockTick)
+  const currentMission = selectCurrentMission(todayTasks, now)
+  const activeMissionMode = missionMode(todayTasks, now)
   const nudgeTask = settings.nudgeIntervalMinutes === 0 || isQuietTime(now, settings.quietHoursStart, settings.quietHoursEnd)
     ? null
     : selectNudgeTask(todayTasks, now, latestCheckIn)
@@ -107,14 +107,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const activeTone: MasteryTone = settings.determinedMonggle && mastery && mastery.taskId === nudgeTask?.id ? masteryTone(mastery) : 'supportive'
   const respondToTask = async (action: TaskCheckInAction, delayMinutes?: number) => {
     if (!nudgeTask) return
-    const respondedAt = new Date()
+    const respondedAt = appNow()
     const response = {
       taskId: nudgeTask.id, action, respondedAt: respondedAt.toISOString(),
       remindAt: action === 'later' && delayMinutes ? new Date(respondedAt.getTime() + delayMinutes * 60_000).toISOString() : undefined,
     }
     const result = applyCheckInResponse(todayTasks, response, respondedAt)
     await shellTaskRepository.putMany(result.tasks)
-    await nativeWidgetBridge.update(buildWidgetSnapshot(result.tasks, buildNudgeLine(result.tasks.find((task) => task.id === result.nextTaskId) ?? nudgeTask)))
+    await nativeWidgetBridge.update(buildWidgetSnapshot(result.tasks, buildNudgeLine(result.tasks.find((task) => task.id === result.nextTaskId) ?? nudgeTask), respondedAt))
     taskCheckInRepository.save(response)
     const masteryAction = action === 'in_progress' ? 'working' : action
     const nextMastery = applyMasteryEvent(taskMasteryRepository.load(nudgeTask.id), { type: masteryAction, at: respondedAt.toISOString() })
@@ -176,6 +176,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           </select>
         </label>
       </header>
+      {activeMissionMode === 'extended' && currentMission && <section className="extended-mission-entry" aria-label="오늘 연장 완료 모드" data-escalation-level="app-entry">
+        <span>오늘 연장 완료 모드</span>
+        <strong>{currentMission.title}</strong>
+        <p>{currentMission.firstAction ?? '첫 행동부터 다시 시작해요.'}</p>
+      </section>}
       <main>{children}</main>
       {nudgeTask && <PersistentNowTask task={nudgeTask} line={settings.determinedMonggle ? masteryMessage(activeTone) : buildNudgeLine(nudgeTask)} tone={activeTone} onRespond={(action, delay) => void respondToTask(action, delay)} />}
       <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeTone} />

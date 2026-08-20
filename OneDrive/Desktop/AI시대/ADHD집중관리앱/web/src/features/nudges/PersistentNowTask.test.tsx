@@ -9,6 +9,7 @@ const task: Task = { id: 'task-1', title: '수학 숙제', day: '2026-08-20', st
 it('shows one task with the three approved answers', () => {
   render(<PersistentNowTask task={task} line="수학 숙제 했어?" onRespond={vi.fn()} />)
   expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('수학 숙제 했어?')
+  expect(screen.getByTestId('persistent-now-task')).toHaveAttribute('data-escalation-level', 'push')
   expect(screen.getAllByRole('button').map((button) => button.textContent)).toEqual(['했어', '하는 중', '나중에'])
 })
 

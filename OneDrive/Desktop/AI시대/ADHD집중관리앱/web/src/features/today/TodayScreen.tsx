@@ -22,6 +22,7 @@ import { completeMission } from '../missions/missionState'
 import { FocusScreen } from '../focus/FocusScreen'
 import { taskCheckInRepository } from '../nudges/taskCheckIn'
 import { reschedulePlan, type RescueDecision } from '../rescue/reschedulePlan'
+import { appNow } from '../../core/time/appClock'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -61,13 +62,13 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [selectedCategoryId, setSelectedCategoryId] = useState('all')
   const [focusMission, setFocusMission] = useState<Task | null>(null)
   const [reschedulingMission, setReschedulingMission] = useState<Task | null>(null)
-  const nowTask = useMemo(() => recommendForEnergy(tasks, energy), [tasks, energy])
-  const currentMission = useMemo(() => selectCurrentMission(tasks), [tasks])
+  const nowTask = useMemo(() => recommendForEnergy(tasks, energy, appNow()), [tasks, energy])
+  const currentMission = useMemo(() => selectCurrentMission(tasks, appNow()), [tasks])
 
   useEffect(() => {
     let active = true
     if (dependencies.listForDay || dependencies.listRequiredOpen) void Promise.all([
-      dependencies.listForDay ? dependencies.listForDay(dayFor(new Date())) : Promise.resolve([]),
+      dependencies.listForDay ? dependencies.listForDay(dayFor(appNow())) : Promise.resolve([]),
       dependencies.listRequiredOpen ? dependencies.listRequiredOpen() : Promise.resolve([]),
     ]).then(([forToday, required]) => {
       if (!active) return
@@ -81,17 +82,17 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     await dependencies.saveMany(next)
     const merged = [...tasks.filter((task) => !next.some(({ id }) => id === task.id)), ...next]
     setTasks(merged)
-    await dependencies.updateWidget(buildWidgetSnapshot(merged, '', new Date()))
+    await dependencies.updateWidget(buildWidgetSnapshot(merged, '', appNow()))
     window.dispatchEvent(new Event('monggle:tasks-changed'))
   }
 
   const addSingleTask = (title: string) => {
-    const now = new Date()
+    const now = appNow()
     void saveTasks([{ id: crypto.randomUUID(), title, day: dayFor(now), status: 'open', priority: 2, estimateMinutes: 15, category: 'life', categoryId: 'personal', source: 'manual', createdAt: now.toISOString(), updatedAt: now.toISOString() }])
   }
 
   const saveDrafts = async (reviewed: TaskDraft[]) => {
-    const now = new Date()
+    const now = appNow()
     const ids = new Map(reviewed.map((draft) => [draft.id, crypto.randomUUID()]))
     const next: Task[] = reviewed.map((draft) => ({
       id: ids.get(draft.id)!, title: draft.title.trim(), day: draft.day, dueAt: draft.dueAt,
@@ -105,21 +106,21 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   }
 
   const startMission = (task: Task) => {
-    void saveTasks([{ ...task, status: 'active', updatedAt: new Date().toISOString() }])
+    void saveTasks([{ ...task, status: 'active', updatedAt: appNow().toISOString() }])
     setFocusMission(task)
   }
 
   const delayMission = (task: Task) => {
-    const now = new Date()
+    const now = appNow()
     taskCheckInRepository.save({ taskId: task.id, action: 'later', respondedAt: now.toISOString(), remindAt: new Date(now.getTime() + 5 * 60_000).toISOString() })
   }
 
   const completeCurrentMission = (task: Task) => {
-    void saveTasks([completeMission(task, new Date())])
+    void saveTasks([completeMission(task, appNow())])
   }
 
   const rescheduleMission = (task: Task, decision: RescueDecision) => {
-    const next = reschedulePlan([task], { [task.id]: decision }, new Date()).items[0]
+    const next = reschedulePlan([task], { [task.id]: decision }, appNow()).items[0]
     void saveTasks([next])
     setReschedulingMission(null)
   }
@@ -130,14 +131,14 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   return <>
     <div className="energy"><span>지금 에너지는?</span>{(['low', 'medium', 'high'] as const).map((value, index) => <button aria-pressed={energy === value} key={value} onClick={() => setEnergy(value)}>{['낮음', '보통', '높음'][index]}</button>)}</div>
-    <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, new Date()))} onSingleTask={addSingleTask} />
+    <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={addSingleTask} />
     {drafts.length > 0 && <TaskDraftReview drafts={drafts} categories={categories} onCreateCategory={async (input) => {
       if (!dependencies.addCategory) throw new Error('분류를 추가할 수 없어요.')
       const category = await dependencies.addCategory(input)
       setCategories((current) => [...current, category])
       return category
     }} onChange={setDrafts} onSave={(reviewed) => void saveDrafts(reviewed)} onCancel={() => setDrafts([])} />}
-    {reviewableTasks.length > 0 && <MissionCommitmentReview tasks={reviewableTasks} onConfirm={(committed) => void saveTasks(committed)} />}
+    {reviewableTasks.length > 0 && <MissionCommitmentReview tasks={reviewableTasks} onConfirm={(committed) => void saveTasks(committed)} now={appNow()} />}
     {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
     {reschedulingMission && <section className="mission-reschedule" aria-label="미션 일정 다시 잡기">
       <h2>{reschedulingMission.title}을 어떻게 다시 잡을까요?</h2>

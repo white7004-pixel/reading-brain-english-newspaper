@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import type { WidgetSnapshot } from './widgetSnapshot'
 import { createNativeWidgetBridge } from './nativeWidgetBridge'
 
-const snapshot: WidgetSnapshot = { generatedAt: '2026-08-20T01:00:00.000Z', remainingCount: 0, tasks: [], nudgeLine: '' }
+const snapshot: WidgetSnapshot = { generatedAt: '2026-08-20T01:00:00.000Z', remainingCount: 0, tasks: [], nudgeLine: '', escalationLevel: 'push' }
 
 afterEach(() => vi.restoreAllMocks())
 

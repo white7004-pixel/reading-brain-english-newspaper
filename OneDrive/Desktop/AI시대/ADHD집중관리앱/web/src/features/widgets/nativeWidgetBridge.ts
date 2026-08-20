@@ -14,10 +14,14 @@ export interface WidgetCompletionEvent {
 }
 
 export interface MonggleWidgetPlugin {
-  updateWidget(options: { snapshot: WidgetSnapshot }): Promise<void>
+  updateWidget(options: NativeWidgetUpdate): Promise<void>
   scheduleNudges(options: NativeNudgeConfig): Promise<void>
   getCompletionEvents(): Promise<{ events: WidgetCompletionEvent[] }>
   clearCompletionEvents(): Promise<void>
+}
+
+export interface NativeWidgetUpdate {
+  snapshot: WidgetSnapshot
 }
 
 type PluginResolver = () => MonggleWidgetPlugin | undefined

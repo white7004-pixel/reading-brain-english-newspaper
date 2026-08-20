@@ -35,12 +35,26 @@ describe('supportive nudge policy', () => {
     expect(selectNudgeTask([task('task-1')], new Date('2026-08-20T10:30:00+09:00'), response)).toBeNull()
   })
 
+  it('does not replace a delayed current mission with an optional nudge', () => {
+    const response = { taskId: 'task-1', action: 'later', remindAt: '2026-08-20T11:00:00+09:00', respondedAt: now.toISOString() } as const
+    const required = task('task-1', { required: true })
+
+    expect(selectNudgeTask([required, task('task-2')], new Date('2026-08-20T10:30:00+09:00'), response)).toBeNull()
+  })
+
   it('returns the same required mission first when its delayed reminder is due', () => {
     const response = { taskId: 'task-1', action: 'later', remindAt: '2026-08-20T10:05:00+09:00', respondedAt: now.toISOString() } as const
     const higherPriorityTask = task('task-2', { priority: 3 })
     const delayedRequiredTask = task('task-1', { required: true, priority: 1 })
 
     expect(selectNudgeTask([higherPriorityTask, delayedRequiredTask], new Date('2026-08-20T10:05:00+09:00'), response)?.id).toBe('task-1')
+  })
+
+  it('uses the shared current required mission before an optional task', () => {
+    const optional = task('task-2', { priority: 3, dueAt: '2026-08-20T09:00:00+09:00' })
+    const required = task('task-1', { required: true, priority: 1, commitmentDay: '2026-08-19' })
+
+    expect(selectNudgeTask([optional, required], now)?.id).toBe('task-1')
   })
 
   it('uses a supportive one-action question', () => {

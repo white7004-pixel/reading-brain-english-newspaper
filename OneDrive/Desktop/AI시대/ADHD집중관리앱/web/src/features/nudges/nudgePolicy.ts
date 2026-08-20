@@ -1,5 +1,5 @@
 import type { Task } from '../../core/model/task'
-import { selectNowTask } from '../today/selectNowTask'
+import { selectCurrentMission, selectNowTask } from '../today/selectNowTask'
 import type { TaskCheckInResponse } from './taskCheckIn'
 
 export type { TaskCheckInResponse } from './taskCheckIn'
@@ -32,10 +32,13 @@ export function selectNudgeTask(tasks: Task[], now: Date, latestResponse: TaskCh
   const open = tasks.filter((task) => !['completed', 'canceled'].includes(task.status))
   if (latestResponse?.action === 'later' && latestResponse.remindAt) {
     const delayed = open.find((task) => task.id === latestResponse.taskId)
-    if (new Date(latestResponse.remindAt) > now) return selectNowTask(open.filter((task) => task.id !== latestResponse.taskId), now)
+    if (new Date(latestResponse.remindAt) > now) {
+      if (delayed?.required) return null
+      return selectNowTask(open.filter((task) => task.id !== latestResponse.taskId), now)
+    }
     if (delayed?.required) return delayed
   }
-  return selectNowTask(open, now)
+  return selectCurrentMission(open, now) ?? selectNowTask(open, now)
 }
 
 export function buildNudgeLine(task: Task) {
