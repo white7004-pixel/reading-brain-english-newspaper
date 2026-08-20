@@ -6,6 +6,7 @@ import type { ReviewStage, StageReviewRecord, StudioArticle } from "./studio-typ
 import type { StudioState } from "./studio-store";
 import { SAMPLE_ARTICLES } from "./sample-content";
 import type { Article } from "./types";
+import { cloneQuestMetadata } from "./quest-types";
 
 export function createSeedStudioState(): StudioState {
   return {
@@ -61,6 +62,7 @@ function createSeedStudioArticle(article: Article): StudioArticle {
     visualTheme: article.visualTheme,
     ...(article.heroImage ? { heroImage: { ...article.heroImage } } : {}),
     ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
+    ...(article.quest ? { quest: cloneQuestMetadata(article.quest) } : {}),
     summaryEn: article.pages[0] ?? "",
     subtopic: article.domain,
     minAge,

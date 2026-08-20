@@ -8,6 +8,7 @@ import {
   upsertStudioArticle,
 } from "@/lib/studio-store";
 import type { StudioArticle } from "@/lib/studio-types";
+import type { QuestMetadata } from "@/lib/quest-types";
 import { applyArticleEdit, withdrawArticle } from "@/lib/studio-workflow";
 import { completeAttestedStage, createMemoryStorage, makePublishedArticle, makeStudioArticle } from "@/tests/studio-fixtures";
 
@@ -20,6 +21,11 @@ const heroImage = {
   licenseName: "CC BY-SA 4.0" as const,
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
   isModified: false as const,
+};
+
+const quest: QuestMetadata = {
+  curiosityQuestionKo: "열대우림은 왜 중요할까?", knowledgeTakeawayKo: "열대우림은 기후와 생명을 돕는다.",
+  collectionId: "ar1-living-world", mapOrder: 1, prerequisiteArticleIds: [], nextArticleIds: ["ar1-ocean-tides"],
 };
 
 describe("versioned studio content store", () => {
@@ -118,6 +124,16 @@ describe("versioned studio content store", () => {
 
     expect(getPublicArticles(loadStudioState(storage).state).find((article) => article.id === source.id)?.connectedArticleId)
       .toBe(target.id);
+  });
+
+  it("persists optional quest metadata without sharing relationship arrays after reload", () => {
+    const storage = createMemoryStorage();
+    saveStudioState(storage, { schemaVersion: 3, articles: [makePublishedArticle({ id: "quest", quest })] });
+    const loaded = loadStudioState(storage).state.articles[0];
+
+    expect(loaded.quest).toEqual(quest);
+    expect(loaded.quest?.nextArticleIds).not.toBe(quest.nextArticleIds);
+    expect(getPublicArticles({ schemaVersion: 3, articles: [loaded] })[0].quest).toEqual(quest);
   });
 
   it("hydrates publication and audit history as append-only runtime records", () => {

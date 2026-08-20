@@ -8,6 +8,7 @@ import type {
   SourceRef,
   VocabularyItem,
 } from "@/lib/types";
+import type { QuestMetadata } from "@/lib/quest-types";
 
 export type ReviewStage = "facts" | "language" | "age";
 
@@ -149,6 +150,7 @@ export type ArticleEditPatch = Partial<
     | "reconstructionConfirmed"
     | "rightsNotes"
     | "media"
+    | "quest"
   >
 >;
 
@@ -198,4 +200,5 @@ export type StudioArticle = {
   reconstructionConfirmed: boolean;
   rightsNotes: string;
   media: StudioMedia[];
+  quest?: QuestMetadata;
 };

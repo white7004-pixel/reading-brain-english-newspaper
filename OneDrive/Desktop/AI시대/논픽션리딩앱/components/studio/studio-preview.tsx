@@ -77,5 +77,7 @@ export function projectWorkingArticle(article: StudioArticle): Article {
       ? { kind: "image", url: item.url, alt: item.alt }
       : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),
     ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
+    ...(article.quest ? { quest: { ...article.quest, prerequisiteArticleIds: [...article.quest.prerequisiteArticleIds], nextArticleIds: [...article.quest.nextArticleIds] } } : {}),
+    mobilePreviewAcknowledged: article.previewReview?.workingVersion === article.workingVersion,
   };
 }

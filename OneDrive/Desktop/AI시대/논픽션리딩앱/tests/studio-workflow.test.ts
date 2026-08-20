@@ -10,6 +10,7 @@ import {
 } from "@/lib/studio-workflow";
 import { completeAttestedStage, makeStudioArticle } from "@/tests/studio-fixtures";
 import type { ArticleEditPatch, ReviewStage, StudioArticle } from "@/lib/studio-types";
+import type { QuestMetadata } from "@/lib/quest-types";
 
 const heroImage = {
   src: "/article-images/ar1-batch-07/owl-flight.jpg",
@@ -22,12 +23,24 @@ const heroImage = {
   isModified: false as const,
 };
 
+const quest: QuestMetadata = {
+  curiosityQuestionKo: "열대우림은 왜 중요할까?", knowledgeTakeawayKo: "열대우림은 기후와 생명을 돕는다.",
+  collectionId: "ar1-living-world", mapOrder: 1, prerequisiteArticleIds: [], nextArticleIds: ["ar1-ocean-tides"],
+};
+
 describe("content review workflow", () => {
   it("publishes the attributed hero photograph into the learner snapshot", () => {
     const published = publishReviewedArticle(makeStudioArticle({ heroImage }));
 
     expect(published.versionHistory[0].snapshot.heroImage).toEqual(heroImage);
     expect(published.versionHistory[0].snapshot.heroImage).not.toBe(heroImage);
+  });
+  it("publishes cloned quest relationships only after the existing approval workflow", () => {
+    const published = publishReviewedArticle(makeStudioArticle({ quest }));
+
+    expect(published.versionHistory[0].snapshot.quest).toEqual(quest);
+    expect(published.versionHistory[0].snapshot.quest?.nextArticleIds).not.toBe(quest.nextArticleIds);
+    expect(published.versionHistory[0].snapshot.mobilePreviewAcknowledged).toBe(true);
   });
   it("requires a source before facts review can complete", () => {
     const article = makeStudioArticle({ sources: [] });
@@ -337,7 +350,7 @@ describe("content review workflow", () => {
 
   it.each([
     ["title", "facts"], ["titleKo", "facts"], ["summaryEn", "facts"], ["summaryKo", "facts"], ["domain", "facts"], ["subtopic", "facts"],
-    ["sources", "facts"], ["sourceNotes", "facts"], ["reconstructionConfirmed", "facts"], ["rightsNotes", "facts"], ["media", "facts"], ["connectedArticleId", "facts"], ["visualTheme", "facts"],
+    ["sources", "facts"], ["sourceNotes", "facts"], ["reconstructionConfirmed", "facts"], ["rightsNotes", "facts"], ["media", "facts"], ["connectedArticleId", "facts"], ["visualTheme", "facts"], ["quest", "facts"],
     ["difficulty", "language"], ["estimatedReadingSeconds", "language"], ["wordCount", "language"], ["pages", "language"], ["vocabulary", "language"], ["quiz", "language"], ["keySentence", "language"], ["audioUrl", "language"],
     ["interestBand", "age"], ["minAge", "age"], ["maxAge", "age"], ["safetyFlags", "age"], ["safetyReviewed", "age"], ["learningGoal", "age"], ["keyConcept", "age"],
   ] as Array<[keyof ArticleEditPatch, ReviewStage]>)('invalidates %s from the %s stage', (field, stage) => {

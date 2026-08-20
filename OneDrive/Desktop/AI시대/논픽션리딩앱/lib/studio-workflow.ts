@@ -56,7 +56,7 @@ const CHECKLIST_MESSAGES: Record<ReviewStage, string> = {
 const FIELD_STAGE = {
   title: "facts", titleKo: "facts", summaryEn: "facts", summaryKo: "facts", domain: "facts", subtopic: "facts",
   sources: "facts", sourceNotes: "facts", reconstructionConfirmed: "facts", rightsNotes: "facts", media: "facts",
-  connectedArticleId: "facts", visualTheme: "facts", heroImage: "facts",
+  connectedArticleId: "facts", visualTheme: "facts", heroImage: "facts", quest: "facts",
   difficulty: "language", estimatedReadingSeconds: "language", wordCount: "language", pages: "language",
   vocabulary: "language", quiz: "language", keySentence: "language", audioUrl: "language",
   interestBand: "age", minAge: "age", maxAge: "age", safetyFlags: "age", safetyReviewed: "age", learningGoal: "age", keyConcept: "age",
@@ -65,7 +65,7 @@ const FIELD_STAGE = {
 const LEARNER_FACING_FIELDS = new Set<keyof ArticleEditPatch>([
   "title", "titleKo", "summaryEn", "summaryKo", "domain", "subtopic", "interestBand", "difficulty", "minAge", "maxAge",
   "estimatedReadingSeconds", "safetyFlags", "wordCount", "pages", "vocabulary", "quiz", "connectedArticleId", "visualTheme", "heroImage",
-  "audioUrl", "learningGoal", "keySentence", "keyConcept", "media",
+  "audioUrl", "learningGoal", "keySentence", "keyConcept", "media", "quest",
 ]);
 
 const REQUIRED_STATUS: Record<ReviewStage, StudioArticle["workflowStatus"]> = {
@@ -343,7 +343,7 @@ function createLearnerSnapshot(article: StudioArticle): Article {
     pages: [...article.pages],
     keySentence: article.keySentence,
     vocabulary: article.vocabulary.map(({ exampleSentence: _exampleSentence, ...item }) => ({ ...item })),
-    quiz: article.quiz.map(({ type: _type, evidence: _evidence, ...question }) => ({ ...question, options: [...question.options] })),
+    quiz: article.quiz.map(({ evidence: _evidence, ...question }) => ({ ...question, options: [...question.options] })),
     sources: article.sources.map(({ materialType: _materialType, supportedFact: _supportedFact, ...source }) => ({ ...source })),
     review: {
       approvedBy: article.approval.actor,
@@ -359,6 +359,8 @@ function createLearnerSnapshot(article: StudioArticle): Article {
       ? { kind: "image", url: item.url, alt: item.alt }
       : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),
     ...(article.audioUrl ? { audioUrl: article.audioUrl } : {}),
+    ...(article.quest ? { quest: { ...article.quest, prerequisiteArticleIds: [...article.quest.prerequisiteArticleIds], nextArticleIds: [...article.quest.nextArticleIds] } } : {}),
+    mobilePreviewAcknowledged: article.previewReview?.workingVersion === article.workingVersion,
   };
 }
 
