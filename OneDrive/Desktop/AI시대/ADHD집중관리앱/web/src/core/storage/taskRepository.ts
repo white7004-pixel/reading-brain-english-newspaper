@@ -7,6 +7,7 @@ export function createTaskRepository(database: MonggleDatabase) {
     ...task,
     categoryId: task.categoryId ?? normalizeCategoryId(task.category),
     source: task.source ?? 'manual',
+    required: task.required ?? false,
   })
   return {
     put(task: Task) {
@@ -17,6 +18,11 @@ export function createTaskRepository(database: MonggleDatabase) {
     },
     async listForDay(day: string) {
       return (await database.tasks.where('day').equals(day).toArray()).map(normalize)
+    },
+    async listRequiredOpen() {
+      return (await database.tasks.toArray())
+        .map(normalize)
+        .filter((task) => task.required && task.status !== 'completed')
     },
   }
 }

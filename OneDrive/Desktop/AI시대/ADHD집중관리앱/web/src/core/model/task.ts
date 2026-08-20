@@ -3,6 +3,16 @@ export type TaskCategory = 'study' | 'work' | 'life' | 'exercise' | 'rest'
 export type TaskSource = 'manual' | 'local_parser'
 import type { CategoryId } from './category'
 
+export interface MissionCommitment {
+  required: boolean
+  commitmentDay: string
+  firstAction: string
+  scheduledStart?: string
+  timeLocked: boolean
+  committedAt: string
+  completedAt?: string
+}
+
 export interface Task {
   id: string
   title: string
@@ -16,6 +26,13 @@ export interface Task {
   orderAfterTaskId?: string
   source: TaskSource
   parseConfidence?: number
+  required?: boolean
+  commitmentDay?: string
+  firstAction?: string
+  scheduledStart?: string
+  timeLocked?: boolean
+  committedAt?: string
+  completedAt?: string
   createdAt: string
   updatedAt: string
 }

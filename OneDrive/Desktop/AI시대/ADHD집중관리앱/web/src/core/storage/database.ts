@@ -43,6 +43,16 @@ export class MonggleDatabase extends Dexie {
       appearanceSettings: '&key',
       categories: '&id,name,isDefault,createdAt',
     })
+    this.version(4).stores({
+      tasks: '&id,day,status,dueAt,categoryId,required,commitmentDay',
+      messages: '&id,status,scheduledAt,platform',
+      routines: '&id',
+      settings: '&key',
+      photoAssets: '&id,createdAt',
+      characterRenders: '&id,sourcePhotoId,preset,createdAt',
+      appearanceSettings: '&key',
+      categories: '&id,name,isDefault,createdAt',
+    })
   }
 }
 

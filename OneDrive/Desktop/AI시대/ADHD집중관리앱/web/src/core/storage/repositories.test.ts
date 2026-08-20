@@ -5,6 +5,7 @@ import type { Task } from '../model/task'
 import { createDatabase } from './database'
 import { createMessageRepository } from './messageRepository'
 import { createTaskRepository } from './taskRepository'
+import { commitMission } from '../../features/missions/missionState'
 
 const databases: ReturnType<typeof createDatabase>[] = []
 
@@ -92,5 +93,19 @@ describe('local repositories', () => {
     const { taskRepository } = setup()
     await taskRepository.putMany([task({ id: 'task-1' }), task({ id: 'task-2' })])
     expect(await taskRepository.listForDay('2026-08-20')).toHaveLength(2)
+  })
+
+  it('keeps an unfinished required mission in its original commitment', async () => {
+    const { taskRepository } = setup()
+    const committed = commitMission(task(), {
+      firstAction: '책 펼치기',
+      scheduledStart: '2026-08-21T23:50:00+09:00',
+      timeLocked: false,
+    }, new Date('2026-08-21T09:00:00+09:00'))
+    await taskRepository.put(committed)
+
+    expect(await taskRepository.listRequiredOpen()).toMatchObject([
+      { id: 'task-1', required: true, commitmentDay: '2026-08-21' },
+    ])
   })
 })
