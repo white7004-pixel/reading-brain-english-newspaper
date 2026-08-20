@@ -634,44 +634,49 @@ function renderHubGoal() {
   if (correctEl) correctEl.textContent = `${summary.correct} / ${summary.correctGoal}`;
 }
 
-function pathNodeGlyph(section) {
-  if (section.cleared) return '<svg class="path-glyph"><use href="#ico-check" /></svg>';
-  if (!section.unlocked) return '<svg class="path-glyph"><use href="#ico-lock" /></svg>';
-  return `<em class="path-percent">${section.percent}</em>`;
+function planetStatus(section) {
+  if (section.cleared) return { icon: "#ico-check", text: "\uC644\uB8CC" };
+  if (!section.unlocked) return { icon: "#ico-lock", text: "\uC7A0\uAE40" };
+  return { icon: "#ico-card", text: `${section.percent}%` };
 }
 
 function renderPathUnit(unit, currentKey) {
   const nodes = unit.sections
     .map(
-      (section) => `
-      <li class="path-node status-${section.pathStatus}${section.key === currentKey ? " current" : ""}">
-        <button class="path-btn" type="button" data-section="${escapeHtml(section.key)}"
+      (section) => {
+        const status = planetStatus(section);
+        return `
+      <li class="planet-node status-${section.pathStatus}${section.cleared ? " status-done" : ""}${section.key === currentKey ? " current" : ""}">
+        <button class="planet-button" type="button" data-section="${escapeHtml(section.key)}"
                 ${section.unlocked ? "" : "disabled aria-disabled=\"true\""}
                 title="${escapeHtml(sectionLabel(section))}">
-          <span class="path-ring" style="--p:${section.unlocked ? section.percent : 0}">
-            ${pathNodeGlyph(section)}
+          <span class="planet-orbit" aria-hidden="true"></span>
+          <span class="planet-core" style="--p:${section.unlocked ? section.percent : 0}">
+            <svg class="planet-status-icon" aria-hidden="true"><use href="${status.icon}" /></svg>
           </span>
         </button>
-        <span class="path-node-label">
+        <span class="planet-node-label">
           <strong>${section.number === null ? "" : String(section.number).padStart(2, "0")}</strong>
           ${escapeHtml(section.title)}
         </span>
-      </li>`,
+        <span class="planet-status"><svg class="planet-status-icon" aria-hidden="true"><use href="${status.icon}" /></svg><span class="planet-status-text">${status.text}</span></span>
+      </li>`;
+      },
     )
     .join("");
 
   return `
-    <section class="path-unit${unit.unlocked ? "" : " locked"}">
-      <header class="path-unit-head">
+    <section class="galaxy-map${unit.unlocked ? "" : " locked"}">
+      <header class="galaxy-map-head">
         <div>
           <span class="path-unit-label">${unit.label} · ${unit.range}</span>
           <strong>${escapeHtml(unit.title)}</strong>
         </div>
-        <span class="path-unit-progress">
+        <span class="galaxy-map-progress">
           ${unit.unlocked ? `${unit.clearedCount} / ${unit.total} 클리어` : "잠김"}
         </span>
       </header>
-      <ol class="path-nodes">${nodes}</ol>
+      <ol class="galaxy-map-nodes">${nodes}</ol>
     </section>`;
 }
 

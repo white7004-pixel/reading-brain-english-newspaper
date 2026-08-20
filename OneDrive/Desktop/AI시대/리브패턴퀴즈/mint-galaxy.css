@@ -195,3 +195,49 @@
     box-shadow: 0 -6px 20px rgba(36, 52, 91, 0.12);
   }
 }
+
+/* Galaxy Quest Hub: an accessible, touch-friendly learning constellation. */
+.galaxy-map { position: relative; overflow: hidden; padding: 22px; color: var(--mg-ink); background: linear-gradient(145deg, #fff 0%, #eef8fb 100%); border: 2px solid var(--mg-line); border-radius: var(--mg-radius-lg); box-shadow: var(--mg-shadow-md); }
+.galaxy-map::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .52; background-image: radial-gradient(circle, var(--mg-sky) 1px, transparent 1.5px); background-size: 34px 34px; }
+.galaxy-map-head, .galaxy-map-nodes { position: relative; z-index: 1; }
+.galaxy-map-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding-bottom: 16px; border-bottom: 2px dashed var(--mg-line); }
+.galaxy-map-head > div > span { display: block; color: var(--mg-mint); font-size: .75rem; font-weight: 800; letter-spacing: .1em; }
+.galaxy-map-head strong { display: block; margin-top: 4px; font-size: 1.1rem; }
+.galaxy-map-progress { color: var(--mg-ink); font-size: .875rem; font-weight: 800; }
+.galaxy-map-nodes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px 20px; margin: 24px 0 0; padding: 0; list-style: none; }
+.planet-node { position: relative; display: grid; justify-items: center; gap: 7px; min-width: 0; text-align: center; }
+.planet-node:not(:last-child)::after { content: ""; position: absolute; top: 41px; left: calc(50% + 47px); width: calc(100% - 50px); height: 4px; background: var(--mg-line); border-radius: 999px; }
+.planet-button { position: relative; z-index: 1; display: grid; place-items: center; width: 82px; min-height: 82px; padding: 0; color: var(--mg-ink); background: transparent; border: 0; border-radius: 50%; cursor: pointer; transition: transform var(--mg-motion); }
+.planet-button:hover:not(:disabled) { transform: translateY(-3px); }
+.planet-button:active:not(:disabled) { transform: translateY(var(--mg-depth-sm)); }
+.planet-button:disabled { cursor: not-allowed; }
+.planet-button:focus-visible { outline: 4px solid var(--mg-star); outline-offset: 4px; }
+.planet-orbit { position: absolute; width: 76px; height: 34px; border: 3px solid rgba(77, 184, 255, .55); border-radius: 50%; transform: rotate(-20deg); }
+.planet-core { position: relative; z-index: 1; display: grid; place-items: center; width: 62px; height: 62px; color: var(--mg-ink); background: conic-gradient(var(--mg-sky) calc(var(--p, 0) * 1%), #e6eff5 0); border: 3px solid var(--mg-sky); border-radius: 50%; box-shadow: 0 var(--mg-depth-sm) 0 #258bc7, inset 0 5px 0 rgba(255, 255, 255, .48); }
+.planet-status-icon { width: 24px; height: 24px; stroke-width: 2.6; }
+.planet-node-label { max-width: 160px; font-size: .85rem; font-weight: 800; line-height: 1.35; word-break: keep-all; }
+.planet-node-label strong { margin-right: 4px; color: var(--mg-sky); font-size: .75rem; }
+.planet-status { display: inline-flex; align-items: center; gap: 4px; color: var(--mg-ink); font-size: .75rem; font-weight: 800; }
+.planet-status .planet-status-icon { width: 15px; height: 15px; }
+.planet-node.status-locked .planet-core { color: #718096; background: #edf1f5; border-color: #aab8c6; box-shadow: 0 var(--mg-depth-sm) 0 #91a0af, inset 0 5px 0 rgba(255, 255, 255, .6); }
+.planet-node.status-locked .planet-orbit { border-color: #c8d2dc; }
+.planet-node.status-locked .planet-status { color: #5d6b79; }
+.planet-node.status-learning .planet-core, .planet-node.status-available .planet-core { border-color: var(--mg-sky); }
+.planet-node.status-done .planet-core, .planet-node.status-cleared .planet-core { color: #fff; background: var(--mg-mint); border-color: var(--mg-mint); box-shadow: 0 var(--mg-depth-sm) 0 #21977f, inset 0 5px 0 rgba(255, 255, 255, .32); }
+.planet-node.status-done .planet-orbit, .planet-node.status-cleared .planet-orbit { border-color: rgba(53, 198, 168, .55); }
+.planet-node.current .planet-core { border-color: var(--mg-star); box-shadow: 0 var(--mg-depth-sm) 0 #d99a21, 0 0 0 5px rgba(255, 200, 87, .28), inset 0 5px 0 rgba(255, 255, 255, .48); }
+.planet-node.current .planet-orbit { border-color: var(--mg-star); }
+
+@media (max-width: 640px) {
+  .galaxy-map { padding: 18px 14px; }
+  .galaxy-map-head { align-items: start; flex-direction: column; gap: 6px; }
+  .galaxy-map-nodes { grid-template-columns: 1fr; gap: 20px; }
+  .planet-node { grid-template-columns: 82px minmax(0, 1fr); justify-items: start; text-align: left; }
+  .planet-status { grid-column: 2; }
+  .planet-node:not(:last-child)::after { top: 82px; left: 39px; width: 4px; height: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planet-button { transition: none; }
+  .planet-button:hover:not(:disabled), .planet-button:active:not(:disabled) { transform: none; }
+}
