@@ -112,18 +112,20 @@ const markSavedAt = markKnown.indexOf("saveState();");
 const markResultAt = markKnown.indexOf('ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong")');
 const studyMoveAt = markKnown.indexOf("moveCard(1);");
 assert.ok(markResultAt > markSavedAt, "study feedback must follow the existing state persistence");
-assert.ok(studyMoveAt > markResultAt, "study feedback must not bypass the existing moveCard continuation");
+assert.ok(markResultAt > studyMoveAt, "study feedback must follow the complete existing moveCard continuation");
 assert.ok(!markKnown.includes('setMascot?.("complete")'), "study must not invent a completion hook without a base condition");
 
 const checkQuiz = functionSlice("function checkQuiz(button, id)", "let mahjong");
+const quizResultStateAt = checkQuiz.indexOf('const mascotState = id === state.quizAnswer ? "correct" : "wrong";');
 const quizSavedAt = checkQuiz.indexOf("saveState();");
 const quizStatsAt = checkQuiz.indexOf("updateStats();", quizSavedAt);
-const quizResultAt = checkQuiz.indexOf('ReadingBrainGameUI?.setMascot?.(id === state.quizAnswer ? "correct" : "wrong")');
+const quizResultAt = checkQuiz.indexOf("ReadingBrainGameUI?.setMascot?.(mascotState)");
 const quizIncrementAt = checkQuiz.indexOf("state.quizCount += 1;");
 const quizContinuationAt = checkQuiz.indexOf("setTimeout(newQuiz, 950);");
+assert.ok(quizResultStateAt >= 0 && quizResultStateAt < quizSavedAt, "quiz must safely capture the result before later state changes");
 assert.ok(quizResultAt > quizStatsAt, "quiz feedback must follow existing grading, persistence, and stat updates");
-assert.ok(quizIncrementAt > quizResultAt, "quiz feedback must retain the existing question counter continuation");
 assert.ok(quizContinuationAt > quizIncrementAt, "quiz feedback must retain scheduling of the next question");
+assert.ok(quizResultAt > quizContinuationAt, "quiz feedback must follow the complete existing counter and next-question continuation");
 assert.ok(!checkQuiz.includes('setMascot?.("complete")'), "quiz must not invent a completion hook without a base condition");
 
 console.log("core learning game UI tests passed");

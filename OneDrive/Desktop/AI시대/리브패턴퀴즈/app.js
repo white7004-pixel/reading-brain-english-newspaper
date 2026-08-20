@@ -1307,8 +1307,8 @@ function markKnown(known) {
     state.streak = 0;
   }
   saveState();
-  window.ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong");
   moveCard(1);
+  window.ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong");
 }
 
 async function speakCurrent() {
@@ -1783,6 +1783,7 @@ function newQuiz() {
 
 function checkQuiz(button, id) {
   const buttons = $$("#quizOptions button");
+  const mascotState = id === state.quizAnswer ? "correct" : "wrong";
   buttons.forEach((option) => {
     option.disabled = true;
     if (Number(option.dataset.id) === state.quizAnswer) option.classList.add("correct");
@@ -1805,9 +1806,9 @@ function checkQuiz(button, id) {
 
   saveState();
   updateStats();
-  window.ReadingBrainGameUI?.setMascot?.(id === state.quizAnswer ? "correct" : "wrong");
   state.quizCount += 1;
   setTimeout(newQuiz, 950);
+  window.ReadingBrainGameUI?.setMascot?.(mascotState);
 }
 
 // ── 마작 스타일 매칭 게임 ──────────────────────────────────────
