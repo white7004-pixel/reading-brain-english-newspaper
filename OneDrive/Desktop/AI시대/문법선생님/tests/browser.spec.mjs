@@ -55,7 +55,7 @@ async function openUnit(targetPage, unitId) {
   await targetPage.selectOption('#unit-select', unitId);
   await targetPage.click('#start-button');
   await targetPage.locator('#lesson-visual').waitFor({ state: 'visible' });
-  await targetPage.waitForFunction(() => document.querySelector('#lesson-visual')?.naturalWidth > 1000);
+  await targetPage.locator('#lesson-visual').evaluate(image => image.decode());
 }
 
 for (const unitId of ['b1-c1-u1', 'b2-c4-u1', 'b3-c10-u1']) {
