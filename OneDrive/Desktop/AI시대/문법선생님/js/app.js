@@ -16,6 +16,28 @@ const state = { mode: 'home', lesson: null, step: 0, answers: [], quizIndex: 0, 
 
 const escapeHtml = text => String(text).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const highlight = text => escapeHtml(text).replace(/\[\[(.*?)\]\]/g, '<mark>$1</mark>');
+const prefersReducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+function setTeacherSpeaking(speaking) { $('teacher-character').classList.toggle('is-speaking', speaking); }
+function animateLessonWriting() {
+  const panel = document.querySelector('.master-panel:not([hidden])');
+  if (!panel) return;
+  const lines = [...panel.querySelectorAll('h2, p, .example-row, .trap-grid > div, small')];
+  lines.forEach((line, index) => {
+    line.classList.remove('writing-line');
+    line.style.setProperty('--write-order', index);
+    if (!prefersReducedMotion()) requestAnimationFrame(() => line.classList.add('writing-line'));
+  });
+  panel.querySelectorAll('mark').forEach((mark, index) => {
+    mark.classList.add('key-pop');
+    mark.style.setProperty('--key-order', index);
+  });
+}
+function renderNarration(text) {
+  const lines = String(text).split(/(?<=[.!?。])\s+/).filter(Boolean);
+  $('teacher-bubble').innerHTML = saved.settings.subtitles
+    ? lines.map((line, index) => `<span class="narration-line" style="--write-order:${index}">${escapeHtml(line)}</span>`).join('')
+    : '';
+}
 const lessonSteps = lesson => [
   { label: '10초 핵심', heading: lesson.hook, narration: `${lesson.hook} 먼저 뜻을 잡으면 형태는 자연스럽게 따라옵니다.` },
   { label: '실생활 비유', heading: '눈앞의 장면으로 이해해요', narration: lesson.analogy },
@@ -79,16 +101,18 @@ function renderLesson() {
   $('trap-card').querySelector('.trap-reason').textContent = lesson.trap.reason;
   $('memory-card').querySelector('p').textContent = lesson.memory;
   document.querySelectorAll('.master-panel').forEach(panel => { panel.hidden = Number(panel.dataset.panel) !== step; });
-  $('teacher-bubble').textContent = saved.settings.subtitles ? item.narration : '';
+  renderNarration(item.narration);
   $('step-pins').innerHTML = steps.map((_,index)=>`<button type="button" data-step="${index}" class="${index===step?'current':index<step?'done':''}" aria-label="${index+1}단계">${index+1}</button>`).join('');
   $('lesson-flow').innerHTML = steps.map((part,index)=>`<li class="${index===step?'current':index<step?'done':''}"><button type="button" data-step="${index}">${index+1}. ${escapeHtml(part.label)} · ${escapeHtml(part.heading)}</button></li>`).join('');
   $('print-content').innerHTML = `<header><p>문법 AI 선생님 · GRAMMAR ${lesson.book}</p><h1>${escapeHtml(lesson.title)}</h1><small>${escapeHtml(lesson.pageReference)}</small></header><article class="print-step"><h2>10초 핵심</h2><p>${escapeHtml(lesson.hook)}</p><h2>실생활 비유</h2><p>${escapeHtml(lesson.analogy)}</p><h2>형태 공식</h2><p>${escapeHtml(lesson.formula)}</p></article><article class="print-step"><h2>대표 예문</h2>${lesson.examples.map(example=>`<p>${highlight(example.en)} — ${escapeHtml(example.ko)}</p>`).join('')}<h2>시험 함정</h2><p>${escapeHtml(lesson.trap.wrong)} → ${escapeHtml(lesson.trap.correct)}</p><p>${escapeHtml(lesson.trap.reason)}</p><h2>기억 공식</h2><p>${escapeHtml(lesson.memory)}</p></article><section><h2>확인 문제</h2>${lesson.quiz.map((question,index)=>`<article class="print-question"><p><strong>${index+1}. ${escapeHtml(question.question)}</strong></p><p>${question.options.map((option,optionIndex)=>`${String.fromCharCode(65+optionIndex)}. ${escapeHtml(option)}`).join('　')}</p><p class="print-answer">정답 ${String.fromCharCode(65+question.answer)} · ${escapeHtml(question.explanation)}</p></article>`).join('')}</section>`;
   $('prev-button').disabled = step === 0;
   $('next-button').textContent = step === steps.length-1 ? '문제 풀기 →' : '다음 →';
+  animateLessonWriting();
 }
 function goStep(index) {
   if (index >= lessonSteps(state.lesson).length) return showQuiz();
   state.step = Math.max(0,index); renderLesson();
+  if (state.autoTimer) speakCurrentStep();
 }
 function showQuiz() {
   stopAuto(); state.mode='quiz'; state.answers=[];
@@ -107,8 +131,17 @@ function finishQuiz() {
   renderProgress();
 }
 function showHome(){stopAuto();$('class-view').hidden=true;$('home-view').hidden=false;state.mode='home';renderProgress();window.scrollTo({top:0,behavior:'smooth'})}
-function startAuto(){if(state.autoTimer)return stopAuto();$('play-button').textContent='Ⅱ 일시정지';state.autoTimer=setInterval(()=>{if(state.step<lessonSteps(state.lesson).length-1)goStep(state.step+1);else{stopAuto();showQuiz()}},4500)}
-function stopAuto(){clearInterval(state.autoTimer);state.autoTimer=null;if($('play-button'))$('play-button').textContent='▶ 자동 수업'}
+function startAuto(){if(state.autoTimer)return stopAuto();$('play-button').textContent='Ⅱ 일시정지';speakCurrentStep();state.autoTimer=setInterval(()=>{if(state.step<lessonSteps(state.lesson).length-1)goStep(state.step+1);else{stopAuto();showQuiz()}},4500)}
+function stopAuto(){clearInterval(state.autoTimer);state.autoTimer=null;speech.stop();setTeacherSpeaking(false);if($('play-button'))$('play-button').textContent='▶ 자동 수업'}
+function speakCurrentStep() {
+  const step = state.lesson ? lessonSteps(state.lesson)[state.step] : null;
+  if (!step || !speech.supported) return false;
+  return speech.speak(`${step.heading}. ${step.narration}`, {
+    rate: Number($('speech-rate').value),
+    onstart: () => setTeacherSpeaking(true),
+    onend: () => setTeacherSpeaking(false)
+  });
+}
 function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
 function downloadScript(){const text=[state.lesson.title,'',...lessonSteps(state.lesson).flatMap((s,i)=>[`[${i+1}] ${s.label} · ${s.heading}`,`선생님: ${s.narration}`,''])].join('\n');const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`${state.lesson.title}_수업대본.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 
@@ -131,8 +164,7 @@ $('speech-rate').addEventListener('input', event => {
 });
 $('speak-button').addEventListener('click', () => {
   if (!speech.supported) return toast('이 브라우저에서는 음성 읽기를 지원하지 않아요.');
-  const step = state.lesson ? lessonSteps(state.lesson)[state.step] : null;
-  if (step) speech.speak(`${step.heading}. ${step.narration}`, { rate: Number($('speech-rate').value) });
+  speakCurrentStep();
 });
 $('record-button').addEventListener('click', async () => {
   try {

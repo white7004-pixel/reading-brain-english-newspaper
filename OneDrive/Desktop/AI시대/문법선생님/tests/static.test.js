@@ -48,3 +48,16 @@ test('premium navy theme uses the local 3D teacher asset', () => {
   assert.match(css, /--navy:/);
   assert.match(css, /--gold:/);
 });
+
+test('lesson presentation supports handwriting reveal, highlights, and teacher lip sync', () => {
+  const html = fs.readFileSync('index.html', 'utf8');
+  const css = fs.readFileSync('styles.css', 'utf8');
+  const app = fs.readFileSync('js/app.js', 'utf8');
+  assert.match(html, /id="teacher-mouth"/);
+  assert.match(css, /\.writing-line/);
+  assert.match(css, /\.teacher\.is-speaking/);
+  assert.match(css, /\.key-pop/);
+  assert.match(css, /prefers-reduced-motion:reduce/);
+  assert.match(app, /animateLessonWriting/);
+  assert.match(app, /setTeacherSpeaking/);
+});

@@ -53,3 +53,15 @@ body{background:#eef0f5;background-image:radial-gradient(circle at 15% 5%,rgba(2
 .trap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.trap-grid>div{padding:18px;border-radius:13px}.trap-grid strong{display:block;margin-bottom:8px}.trap-grid p{margin:0}.trap-grid .wrong{background:#fff0ef;border:1px solid #d99;color:#7e2930}.trap-grid .correct{background:#fff8e4;border:1px solid var(--gold);color:var(--navy)}.trap-reason{padding:12px 15px;border-left:4px solid var(--gold);background:#fff;margin-top:14px}
 @media(max-width:900px){.masterclass-card{left:6%;right:4%;top:9%;min-height:72%}.lesson-visual{height:220px}}
 @media(max-width:580px){.board{min-height:680px}.masterclass-card{top:8%;left:4%;right:4%;min-height:74%;max-height:510px;padding:18px 16px}.lesson-visual{height:190px}.trap-grid{grid-template-columns:1fr}.teacher{opacity:.82}.teacher-bubble{max-height:90px;overflow:auto}}
+
+/* Teacher-led writing and speech motion */
+:root{--study-font:"Noto Sans KR","Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;--hand-font:"Nanum Pen Script","Segoe Print","Malgun Gothic",cursive}
+body{font-family:var(--study-font);letter-spacing:-.012em}.lesson-card h2,.unit-meta strong{font-weight:850;letter-spacing:-.045em}.formula-card>p,.memory-card>p{font-family:var(--hand-font);letter-spacing:.015em}
+.writing-line{animation:writeLine .62s cubic-bezier(.2,.72,.25,1) both;animation-delay:calc(var(--write-order,0) * .32s);transform-origin:left center}
+.narration-line{display:block;animation:writeLine .5s ease both;animation-delay:calc(var(--write-order,0) * .42s)}
+.key-pop{position:relative;background:none!important;z-index:0}.key-pop:after{content:"";position:absolute;z-index:-1;left:-3px;right:-3px;bottom:.02em;height:.42em;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));transform:scaleX(0);transform-origin:left;animation:keyUnderline .5s ease forwards;animation-delay:calc(.55s + var(--key-order,0) * .25s)}
+.teacher-mouth{position:absolute;z-index:4;left:49.1%;top:15.2%;width:10px;height:3px;border-radius:50%;background:#773e3d;opacity:0;transform:translate(-50%,-50%);pointer-events:none}.teacher.is-speaking .teacher-mouth{opacity:.82;animation:teacherTalk .22s ease-in-out infinite alternate}.teacher.is-speaking{filter:drop-shadow(0 25px 22px rgba(0,0,0,.42))}
+@keyframes writeLine{from{opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(5px)}to{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+@keyframes keyUnderline{to{transform:scaleX(1)}}
+@keyframes teacherTalk{0%{height:2px;transform:translate(-50%,-50%) scaleX(.8)}100%{height:8px;transform:translate(-50%,-50%) scaleX(1.15)}}
+@media(prefers-reduced-motion:reduce){.writing-line,.narration-line,.key-pop:after,.teacher.is-speaking .teacher-mouth{animation:none!important;clip-path:none!important;transform:none!important}.key-pop:after{transform:scaleX(1)!important}.teacher-mouth{display:none!important}}

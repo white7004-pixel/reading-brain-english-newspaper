@@ -9,6 +9,18 @@ test('speech controller degrades safely without browser synthesis', () => {
   assert.equal(speech.speak('hello'), false);
 });
 
+test('speech controller forwards start and end events for lip sync', () => {
+  const spoken = [];
+  class Utterance { constructor(text) { this.text = text; } }
+  const synth = { cancel() {}, getVoices: () => [], speak: utterance => spoken.push(utterance) };
+  const onstart = () => {};
+  const onend = () => {};
+  const speech = createSpeechController(synth, Utterance);
+  speech.speak('설명', { onstart, onend });
+  assert.equal(spoken[0].onstart, onstart);
+  assert.equal(spoken[0].onend, onend);
+});
+
 test('recording support explains missing capabilities', () => {
   assert.match(recordingSupportMessage({ mediaDevices: null, MediaRecorderCtor: null, secure: true }), /마이크/);
   assert.match(recordingSupportMessage({ mediaDevices: {}, MediaRecorderCtor: class {}, secure: false }), /로컬 서버/);
