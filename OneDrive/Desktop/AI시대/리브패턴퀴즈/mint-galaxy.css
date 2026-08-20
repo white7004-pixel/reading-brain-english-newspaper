@@ -128,3 +128,69 @@
     transform: none;
   }
 }
+
+/* Mint Galaxy app shell and navigation. */
+.mg-app-shell {
+  grid-template-columns: 280px minmax(0, 1fr);
+  background: var(--mg-bg);
+}
+
+.mg-sidebar {
+  background: var(--mg-ink);
+  border-right: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.mg-topbar {
+  color: var(--mg-ink);
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-line);
+  border-radius: var(--mg-radius-md);
+  box-shadow: var(--mg-shadow-sm);
+}
+
+.mg-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mg-bottom-nav .mobile-bottom-item {
+  min-height: 56px;
+}
+
+.mg-bottom-nav .mobile-bottom-item:focus-visible {
+  outline: 3px solid var(--mg-star);
+  outline-offset: -3px;
+}
+
+@media (max-width: 760px) {
+  .mg-app-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mg-sidebar {
+    transform: translateX(-100%);
+  }
+
+  body.nav-open .mg-sidebar {
+    transform: translateX(0);
+  }
+
+  .mg-app-shell main {
+    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 24px);
+  }
+
+  .mg-bottom-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-height: var(--bottom-nav-height);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    color: var(--mg-ink);
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 2px solid var(--mg-line);
+    box-shadow: 0 -6px 20px rgba(36, 52, 91, 0.12);
+  }
+}

@@ -2296,6 +2296,7 @@ function setMode(mode) {
   const mobileTitle = $("#mobileTitle");
   if (mobileTitle) mobileTitle.textContent = elements.screenTitle.textContent;
   setNavOpen(false);
+  window.ReadingBrainGameUI?.setMode?.(mode);
 
   if (mode !== "interpret") stopInterpret();
   if (mode === "interpret") renderInterpretEntry(patternSections());
