@@ -1,5 +1,6 @@
 import type { LibrarySeed, SeedQuiz, SeedSource, SeedWord } from "./build-draft";
 import { AR1_BATCH_07_IMAGES } from "./ar1-07-images";
+import { AR1_BATCH_07_QUESTS } from "./ar1-07-quests";
 
 type CompactSeed = Omit<LibrarySeed, "words" | "quiz" | "sources"> & {
   words: SeedWord[];
@@ -496,4 +497,5 @@ export const AR1_BATCH_07: LibrarySeed[] = AR1_BATCH_07_CANDIDATES.slice(0, 15).
   pages: [...item.pages, BATCH_07_EXPANSIONS[item.id]],
   quiz: [...item.quiz, BATCH_07_EXTRA_COMPREHENSION[item.id]],
   heroImage: AR1_BATCH_07_IMAGES[item.id],
+  quest: AR1_BATCH_07_QUESTS[item.id],
 }));

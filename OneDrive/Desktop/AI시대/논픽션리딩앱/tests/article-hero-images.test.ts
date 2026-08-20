@@ -34,5 +34,6 @@ it("provides one distinct attributed local photograph for every seventh-batch ar
 it("attaches the manifest photograph to every exported seventh-batch seed", () => {
   for (const seed of AR1_BATCH_07) {
     expect(seed.heroImage).toEqual(AR1_BATCH_07_IMAGES[seed.id]);
+    expect(seed.quest).toBeDefined();
   }
 });

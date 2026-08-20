@@ -1,6 +1,7 @@
 import { AR_BANDS, bandForAr, countWords, longestSentenceWords } from "@/lib/ar-bands";
 import { LIBRARY_SEEDS } from "@/lib/library";
 import { AR1_BATCH_07 } from "@/lib/library/ar1-07";
+import { AR1_BATCH_07_QUESTS } from "@/lib/library/ar1-07-quests";
 import { buildLibraryDraft } from "@/lib/library/build-draft";
 import { validateStage } from "@/lib/studio-workflow";
 
@@ -49,6 +50,31 @@ it("authors every passage inside its AR band targets", () => {
 it("gives every passage a unique id", () => {
   const ids = LIBRARY_SEEDS.map((seed) => seed.id);
   expect(new Set(ids).size).toBe(ids.length);
+});
+
+it("connects every representative batch-07 passage into a coherent quest collection", () => {
+  expect(Object.keys(AR1_BATCH_07_QUESTS)).toHaveLength(15);
+  expect(AR1_BATCH_07.every((seed) => seed.quest && seed.heroImage)).toBe(true);
+
+  const byId = new Map(AR1_BATCH_07.map((seed) => [seed.id, seed]));
+  const placements = AR1_BATCH_07.map((seed) => {
+    const quest = seed.quest!;
+    return `${quest.collectionId}:${quest.mapOrder}`;
+  });
+  expect(new Set(placements).size).toBe(placements.length);
+
+  for (const seed of AR1_BATCH_07) {
+    const quest = seed.quest!;
+    const references = [...quest.prerequisiteArticleIds, ...quest.nextArticleIds];
+    expect(references).not.toContain(seed.id);
+
+    for (const nextId of quest.nextArticleIds) {
+      expect(byId.get(nextId)?.quest?.prerequisiteArticleIds).toContain(seed.id);
+    }
+    for (const prerequisiteId of quest.prerequisiteArticleIds) {
+      expect(byId.get(prerequisiteId)?.quest?.nextArticleIds).toContain(seed.id);
+    }
+  }
 });
 
 it("teaches vocabulary that actually appears in the passage", () => {
