@@ -41,11 +41,26 @@ describe("knowledge quest map", () => {
     expect(nextQuestFromMap(nodes, "observe")).toEqual(expect.objectContaining({ articleId: "explain" }));
   });
 
-  it("keeps a published quest locked when its prerequisite is still only a Studio draft", () => {
+  it("orders unlocked branches deterministically while preserving authored next-link order", () => {
+    const nodes = buildKnowledgeMap([
+      article("source", quest("nature", 1, [], ["branch-b", "branch-a"])),
+      article("branch-a", quest("nature", 2, ["source"], [])),
+      article("branch-b", quest("nature", 3, ["source"], [])),
+    ], ["source"]);
+
+    expect(nodes.map((node) => [node.articleId, node.state])).toEqual([
+      ["source", "completed"],
+      ["branch-a", "recommended"],
+      ["branch-b", "available"],
+    ]);
+    expect(nextQuestFromMap(nodes, "source")?.articleId).toBe("branch-b");
+  });
+
+  it("keeps a published quest locked when completed IDs include only its Studio-draft prerequisite", () => {
     const nodes = buildKnowledgeMap([
       article("draft-prerequisite", quest("nature", 1, [], ["published-follow-up"]), "draft"),
       article("published-follow-up", quest("nature", 2, ["draft-prerequisite"], [])),
-    ], []);
+    ], ["draft-prerequisite"]);
 
     expect(nodes).toEqual([
       expect.objectContaining({ articleId: "published-follow-up", state: "locked" }),

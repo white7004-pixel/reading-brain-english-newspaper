@@ -17,8 +17,9 @@ export function buildKnowledgeMap(articles: readonly Article[], completedIds: re
   const questArticles = articles
     .filter((article) => article.status === "published" && article.quest)
     .sort(compareQuestArticles);
+  const publishedQuestIds = new Set(questArticles.map((article) => article.id));
   const unlocked = questArticles.filter((article) => article.quest!.prerequisiteArticleIds
-    .every((id) => completed.has(id)));
+    .every((id) => publishedQuestIds.has(id) && completed.has(id)));
   const recommendedId = unlocked.find((article) => !completed.has(article.id))?.id;
 
   return questArticles.map((article) => ({
