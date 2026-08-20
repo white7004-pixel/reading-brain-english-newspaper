@@ -70,7 +70,7 @@ it("persists reader and quiz progress across a remount, then clears it on exit",
   expect(loadLearnerState(localStorage).activeQuest).toBeNull();
 });
 
-it("resumes an unfinished quest instead of replacing it from Explore", async () => {
+it("keeps an unfinished quest focused without persistent navigation", async () => {
   const user = userEvent.setup();
   const state = createDefaultLearnerState();
   state.profile.onboardingComplete = true;
@@ -79,9 +79,8 @@ it("resumes an unfinished quest instead of replacing it from Explore", async () 
 
   await user.click(screen.getByRole("button", { name: "\uC624\uB298\uC758 \uC9C0\uC2DD \uC2DC\uC791\uD558\uAE30" }));
   await user.click(screen.getByRole("button", { name: "\uB2E4\uC74C \uD398\uC774\uC9C0" }));
-  await user.click(screen.getByRole("button", { name: "\uD0D0\uD5D8" }));
-  await user.click(screen.getAllByTestId("article-card")[1]);
 
   expect(loadLearnerState(localStorage).activeQuest).toEqual({ articleId: article.id, phase: "reader", pageIndex: 1 });
   expect(screen.getByText(`2 / ${article.pages.length}`)).toBeVisible();
+  expect(screen.queryByRole("navigation", { name: "주요 메뉴" })).not.toBeInTheDocument();
 });

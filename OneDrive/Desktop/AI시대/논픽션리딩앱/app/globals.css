@@ -18,22 +18,37 @@
   --shadow-card: 0 18px 45px rgba(34, 65, 50, 0.12);
   --font-ui: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   --font-reading: "Lexend", "Avenir Next", "Segoe UI", Arial, sans-serif;
+  --color-surface: var(--paper);
+  --color-surface-subtle: var(--sage-100);
+  --color-border: var(--sage-200);
+  --color-text: var(--ink);
+  --color-text-muted: var(--muted);
+  --color-brand: var(--forest-700);
+  --color-brand-strong: var(--forest-950);
+  --color-accent: var(--lime-300);
+  --color-danger: var(--danger);
+  --focus-ring: #1769aa;
 }
 
 * { box-sizing: border-box; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 html { background: #e7ebe5; }
-body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--font-ui); }
+body { margin: 0; color: var(--color-text); background: var(--color-surface); font-family: var(--font-ui); }
 button, input, select { font: inherit; }
 button { min-width: 44px; min-height: 44px; }
-button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid #7dbdff; outline-offset: 2px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 
-.app-shell { width: 100%; max-width: 430px; min-height: 100dvh; margin: 0 auto; background: var(--paper); position: relative; box-shadow: 0 0 60px rgba(16, 45, 37, .12); }
+.app-shell { width: 100%; max-width: 430px; min-height: 100dvh; margin: 0 auto; background: var(--color-surface); position: relative; box-shadow: 0 0 60px rgba(16, 45, 37, .12); }
 .app-main { min-height: 100dvh; padding: 24px 20px 96px; }
-.bottom-nav { position: fixed; z-index: 20; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 430px); display: grid; grid-template-columns: repeat(4, 1fr); padding: 9px 12px max(9px, env(safe-area-inset-bottom)); border-top: 1px solid var(--sage-200); background: rgba(251, 252, 248, .96); backdrop-filter: blur(18px); }
-.bottom-nav__item { border: 0; border-radius: 14px; background: transparent; color: var(--muted); display: grid; place-items: center; gap: 3px; font-size: 11px; font-weight: 700; cursor: pointer; }
-.bottom-nav__item span:first-child { font-size: 18px; line-height: 1; }
-.bottom-nav__item.is-active { color: var(--forest-700); background: var(--sage-100); }
+.app-main--learning { padding-bottom: 24px; }
+.bottom-nav { position: fixed; z-index: 20; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 430px); display: grid; grid-template-columns: repeat(4, 1fr); padding: 9px 12px max(9px, env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-surface) 96%, transparent); backdrop-filter: blur(18px); }
+.bottom-nav__item { min-height: 44px; border: 0; border-radius: 14px; background: transparent; color: var(--color-text-muted); display: grid; place-items: center; gap: 3px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.bottom-nav__icon { width: 19px; height: 19px; }
+.bottom-nav__item.is-active { color: var(--color-brand); background: var(--color-surface-subtle); }
+.app-shell--learning .reader-action { bottom: max(20px, env(safe-area-inset-bottom)); }
+.destination-placeholder { display: grid; align-content: center; min-height: calc(100dvh - 120px); text-align: center; }
+.destination-placeholder h1 { margin: 8px 0 10px; letter-spacing: -.04em; }
+.destination-placeholder p:last-child { margin: 0; color: var(--color-text-muted); line-height: 1.6; }
 .button { border: 0; border-radius: 16px; padding: 13px 18px; font-weight: 850; cursor: pointer; transition: transform 180ms ease, background 180ms ease; }
 .button:active { transform: scale(.98); }
 .button--primary { background: var(--lime-300); color: var(--forest-950); box-shadow: 0 5px 0 #a6c944; }
@@ -129,3 +144,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .article-hero--reader.article-hero--fallback .article-hero__content { color: var(--forest-950); text-shadow: none; }
 .article-hero__credit { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 7px; color: var(--muted); font-size: 9px; line-height: 1.4; }
 .article-hero__credit a { color: var(--forest-700); text-decoration: underline; text-underline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

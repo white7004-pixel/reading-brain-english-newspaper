@@ -1,12 +1,12 @@
-.knowledge-roadmap { --map-accent: var(--forest-700); }
+.knowledge-roadmap { --map-accent: var(--color-brand); }
 .roadmap-grade-heading { display: inline-flex; margin: 20px 0 12px; border-radius: 999px; padding: 8px 13px; background: var(--forest-950); color: white; font-size: 14px; }
-.knowledge-growth-map { position: relative; overflow: hidden; border: 1px solid var(--sage-200); border-radius: 26px; padding: 16px; background: linear-gradient(180deg, #f8faef 0%, #fff 38%, #f4f8f3 100%); box-shadow: 0 14px 35px rgba(23,63,52,.08); }
+.knowledge-growth-map { position: relative; overflow: hidden; border: 1px solid var(--color-border); border-radius: 26px; padding: 16px; background: linear-gradient(180deg, #f8faef 0%, #fff 38%, #f4f8f3 100%); box-shadow: 0 14px 35px rgba(23,63,52,.08); }
 .knowledge-growth-map::before { content: ""; position: absolute; top: 0; right: -56px; width: 170px; height: 170px; border-radius: 50%; background: rgba(220,248,139,.28); filter: blur(2px); }
 .ar-stage-row { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
-.ar-stage { min-width: 0; border: 1px solid var(--sage-200); border-radius: 16px; padding: 11px 12px; background: rgba(255,255,255,.9); }
+.ar-stage { min-width: 0; border: 1px solid var(--color-border); border-radius: 16px; padding: 11px 12px; background: rgba(255,255,255,.9); }
 .ar-stage span, .ar-stage strong { display: block; }
-.ar-stage span { color: var(--muted); font-size: 10px; font-weight: 850; }
-.ar-stage strong { margin-top: 5px; color: var(--forest-800); font-size: 13px; }
+.ar-stage span { color: var(--color-text-muted); font-size: 10px; font-weight: 850; }
+.ar-stage strong { margin-top: 5px; color: var(--color-brand-strong); font-size: 13px; }
 .ar-stage--challenge { border-color: #bdd760; background: #f1f9d6; }
 .roadmap-lanes { position: relative; z-index: 1; display: grid; gap: 14px; }
 .roadmap-lane { --lane-color: #5c8f7d; border: 1px solid color-mix(in srgb, var(--lane-color) 30%, white); border-radius: 20px; padding: 13px; background: rgba(255,255,255,.84); }
