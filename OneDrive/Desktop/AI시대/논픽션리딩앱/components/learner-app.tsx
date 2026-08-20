@@ -10,6 +10,7 @@ import { ExploreScreen } from "./explore-screen";
 import { ProfileScreen } from "./profile-screen";
 import { getPublishedArticles } from "@/lib/content";
 import { recordAttempt, saveLearnerState, updateLearnerLevel, type LearnerLevel, type LearnerState } from "@/lib/learner-store";
+import { advanceActiveQuest, clearActiveQuest, setActiveQuest } from "@/lib/quest-progress";
 import type { Article } from "@/lib/types";
 import { createDefaultLearnerState } from "@/lib/learner-store";
 
@@ -19,28 +20,60 @@ const localDate = () => { const now = new Date(); return `${now.getFullYear()}-$
 
 export function LearnerApp({ initialState, storage }: { initialState: LearnerState; storage: Storage }) {
   const [state, setState] = useState(initialState);
-  const [session, setSession] = useState<Session>({ screen: "home", events: [] });
   const articles = getPublishedArticles(storage);
+  const [session, setSession] = useState<Session>(() => {
+    const activeQuest = initialState.activeQuest;
+    if (activeQuest && articles.some((article) => article.id === activeQuest.articleId)) {
+      return { screen: "learn", articleId: activeQuest.articleId, phase: activeQuest.phase, events: [], startedAt: Date.now() };
+    }
+    return { screen: "home", events: [] };
+  });
   const destination: Destination = session.screen === "learn" ? "learn" : session.screen;
   const article = session.articleId ? articles.find((item) => item.id === session.articleId) : undefined;
   const connectedArticle = article?.connectedArticleId
     ? articles.find((item) => item.id === article.connectedArticleId)
     : undefined;
-  const start = (next: Article) => setSession({ screen: "learn", articleId: next.id, phase: "reader", events: [], startedAt: Date.now() });
+  const start = (next: Article) => {
+    const activeQuest = state.activeQuest;
+    if (activeQuest && articles.some((article) => article.id === activeQuest.articleId)) {
+      setSession({ screen: "learn", articleId: activeQuest.articleId, phase: activeQuest.phase, events: [], startedAt: Date.now() });
+      return;
+    }
+    const nextState = setActiveQuest(state, next.id);
+    saveLearnerState(storage, nextState);
+    setState(nextState);
+    setSession({ screen: "learn", articleId: next.id, phase: "reader", events: [], startedAt: Date.now() });
+  };
   const navigate = (next: Destination) => setSession({ screen: next, events: [] });
+  const exitQuest = () => {
+    const next = clearActiveQuest(state);
+    saveLearnerState(storage, next);
+    setState(next);
+    setSession({ screen: "home", events: [] });
+  };
 
   const completeQuiz = (result: QuizResult) => {
     if (!article) return;
     const now = new Date();
     const xp = result.correct === result.total ? 35 : 25;
-    const next = recordAttempt(state, { id: `${article.id}-${now.toISOString()}`, articleId: article.id, articleTitle: article.title, articleVersion: article.version, completedAt: now.toISOString(), localDate: localDate(), correct: result.correct, total: result.total, hintsUsed: session.events.filter((event) => event.type === "word_open").length, durationSeconds: Math.max(1, Math.round((Date.now() - (session.startedAt ?? Date.now())) / 1000)), xpAwarded: xp });
+    const recorded = recordAttempt(state, { id: `${article.id}-${now.toISOString()}`, articleId: article.id, articleTitle: article.title, articleVersion: article.version, completedAt: now.toISOString(), localDate: localDate(), correct: result.correct, total: result.total, hintsUsed: session.events.filter((event) => event.type === "word_open").length, durationSeconds: Math.max(1, Math.round((Date.now() - (session.startedAt ?? Date.now())) / 1000)), xpAwarded: xp });
+    const next = clearActiveQuest(recorded);
     saveLearnerState(storage, next); setState(next); setSession((current) => ({ ...current, phase: "completion", result }));
   };
 
   return <AppShell active={destination} onNavigate={navigate}>
     {session.screen === "home" && <HomeScreen state={state} articles={articles} onStart={start} onExplore={() => setSession({ screen: "explore", events: [] })} />}
-    {session.screen === "learn" && article && session.phase === "reader" && <ReaderScreen article={article} onBack={() => navigate("home")} onFinish={() => setSession((current) => ({ ...current, phase: "quiz" }))} onEvent={(event) => setSession((current) => ({ ...current, events: [...current.events, event] }))} />}
-    {session.screen === "learn" && article && session.phase === "quiz" && <QuizScreen questions={article.quiz} onExit={() => navigate("home")} onComplete={completeQuiz} />}
+    {session.screen === "learn" && article && session.phase === "reader" && <ReaderScreen article={article} initialPageIndex={state.activeQuest?.articleId === article.id ? state.activeQuest.pageIndex : 0} onBack={exitQuest} onFinish={() => {
+      const next = advanceActiveQuest(state, { articleId: article.id, phase: "quiz", pageIndex: article.pages.length - 1 });
+      saveLearnerState(storage, next);
+      setState(next);
+      setSession((current) => ({ ...current, phase: "quiz" }));
+    }} onEvent={(event) => setSession((current) => ({ ...current, events: [...current.events, event] }))} onPageChange={(pageIndex) => {
+      const next = advanceActiveQuest(state, { articleId: article.id, phase: "reader", pageIndex });
+      saveLearnerState(storage, next);
+      setState(next);
+    }} />}
+    {session.screen === "learn" && article && session.phase === "quiz" && <QuizScreen questions={article.quiz} onExit={exitQuest} onComplete={completeQuiz} />}
     {session.screen === "learn" && article && session.phase === "completion" && session.result && <CompletionScreen article={article} result={session.result} state={state} onHome={() => navigate("home")} onNext={connectedArticle ? () => start(connectedArticle) : undefined} />}
     {session.screen === "explore" && <ExploreScreen articles={articles} initialDomain={null} onOpen={start} />}
     {session.screen === "profile" && <ProfileScreen

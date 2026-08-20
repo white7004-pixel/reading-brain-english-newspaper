@@ -50,11 +50,28 @@ it("migrates old attempts without inventing missing article snapshots", () => {
 
   const loaded = loadLearnerState(localStorage);
 
-  expect(loaded.schemaVersion).toBe(2);
+  expect(loaded.schemaVersion).toBe(3);
+  expect(loaded.activeQuest).toBeNull();
   expect(loaded.attempts[0]).toMatchObject({
     articleId: "stars-shine",
     articleTitle: undefined,
     articleVersion: undefined,
+  });
+});
+
+it("migrates a v2 learner without losing its saved progress", () => {
+  const v2 = createDefaultLearnerState() as unknown as Record<string, unknown>;
+  v2.schemaVersion = 2;
+  delete v2.activeQuest;
+  v2.completedArticleIds = ["stars-shine"];
+  v2.savedWords = [{ articleId: "stars-shine", word: "energy" }];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(v2));
+
+  expect(loadLearnerState(localStorage)).toMatchObject({
+    schemaVersion: 3,
+    activeQuest: null,
+    completedArticleIds: ["stars-shine"],
+    savedWords: [{ articleId: "stars-shine", word: "energy" }],
   });
 });
 

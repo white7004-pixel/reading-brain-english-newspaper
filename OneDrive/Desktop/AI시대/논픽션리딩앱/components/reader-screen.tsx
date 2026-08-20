@@ -9,8 +9,9 @@ import { ArticleHeroPhoto } from "./article-hero-photo";
 
 export type ReaderEvent = { type: "page_view" | "word_open" | "audio_play" | "reader_complete"; articleId: string; at: string; detail?: string };
 
-export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: Article; onFinish: () => void; onBack: () => void; onEvent: (event: ReaderEvent) => void }) {
-  const [pageIndex, setPageIndex] = useState(0);
+export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, onEvent, onPageChange }: { article: Article; initialPageIndex?: number; onFinish: () => void; onBack: () => void; onEvent: (event: ReaderEvent) => void; onPageChange?: (pageIndex: number) => void }) {
+  const [pageIndex, setPageIndex] = useState(() => Math.max(0, Math.min(initialPageIndex, Math.max(article.pages.length - 1, 0))));
+  const readerArticleIdRef = useRef(article.id);
   const [word, setWord] = useState<VocabularyItem | null>(null);
   const [audioError, setAudioError] = useState(false);
   const [finderOpen, setFinderOpen] = useState(false);
@@ -26,8 +27,15 @@ export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: 
   const keySentenceCorrect = selectedSentence?.trim() === article.keySentence.trim();
 
   useEffect(() => {
-    setPageIndex((current) => Math.min(current, Math.max(article.pages.length - 1, 0)));
-  }, [article.pages.length]);
+    const maximum = Math.max(article.pages.length - 1, 0);
+    setPageIndex((current) => {
+      if (readerArticleIdRef.current !== article.id) {
+        readerArticleIdRef.current = article.id;
+        return Math.max(0, Math.min(initialPageIndex, maximum));
+      }
+      return Math.max(0, Math.min(current, maximum));
+    });
+  }, [article.id, article.pages.length, initialPageIndex]);
 
   const emit = (type: ReaderEvent["type"], detail?: string) => onEvent({ type, articleId: article.id, at: new Date().toISOString(), detail });
   const openWord = (item: VocabularyItem, button: HTMLButtonElement) => { triggerRef.current = button; setWord(item); emit("word_open", item.word); };
@@ -93,7 +101,7 @@ export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: 
       {lastPage && <details className="source-drawer"><summary>출처와 검수 정보</summary><ul>{article.sources.map((item) => <li key={item.url}><a href={item.url} target="_blank" rel="noreferrer">{item.publisher}: {item.title}</a></li>)}</ul><p>{article.review.approvedBy} · {article.review.approvedAt} 승인</p></details>}
       <div className="reader-action"><Button fullWidth onClick={() => {
         if (lastPage) { emit("reader_complete"); onFinish(); }
-        else { const next = safePageIndex + 1; setPageIndex(next); setFinderOpen(false); resetFinder(); emit("page_view", String(next)); }
+        else { const next = safePageIndex + 1; setPageIndex(next); onPageChange?.(next); setFinderOpen(false); resetFinder(); emit("page_view", String(next)); }
       }}>{lastPage ? "이해 퀴즈 시작" : "다음 페이지"}</Button></div>
       {word && <div className="dialog-backdrop" onMouseDown={closeWord}><div role="dialog" aria-modal="true" aria-label={word.word} className="word-dialog" onMouseDown={(event) => event.stopPropagation()}><button type="button" className="icon-button word-dialog__close" aria-label="단어 설명 닫기" onClick={closeWord}>×</button><h2>{word.word}</h2><p className="pronunciation">{word.pronunciation}</p><p>{word.definitionEn}</p><strong>{word.meaningKo}</strong></div></div>}
     </section>
