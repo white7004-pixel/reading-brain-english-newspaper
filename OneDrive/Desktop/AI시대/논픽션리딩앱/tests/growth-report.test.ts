@@ -79,6 +79,24 @@ describe("buildWeeklyGrowth", () => {
     expect(growth).toMatchObject({ activeDays: 1, questCount: 1, totalMinutes: 1, quizAccuracyPercent: 100 });
   });
 
+  it("normalizes a midweek reference date to its complete Monday-through-Sunday week", () => {
+    const growth = buildWeeklyGrowth([
+      attempt({ id: "monday", localDate: "2026-08-17", durationSeconds: 60 }),
+      attempt({ id: "wednesday", localDate: "2026-08-19", durationSeconds: 60 }),
+      attempt({ id: "sunday", localDate: "2026-08-23", durationSeconds: 60 }),
+      attempt({ id: "next-monday", localDate: "2026-08-24", durationSeconds: 600 }),
+    ], "2026-08-19");
+
+    expect(growth).toMatchObject({
+      startLocalDate: "2026-08-17",
+      endLocalDate: "2026-08-23",
+      activeDays: 3,
+      questCount: 3,
+      totalMinutes: 3,
+    });
+    expect(growth.dailyMinutes.at(-1)).toEqual({ localDate: "2026-08-23", minutes: 1 });
+  });
+
   it("ignores legacy missing domain and key-finder fields while avoiding zero-total division", () => {
     const growth = buildWeeklyGrowth([
       attempt({ id: "legacy", localDate: "2026-08-21", correct: 0, total: 0, durationSeconds: 30, domain: undefined, keyFinderCorrect: undefined }),

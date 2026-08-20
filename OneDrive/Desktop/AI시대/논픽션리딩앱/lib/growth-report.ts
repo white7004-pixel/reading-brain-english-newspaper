@@ -13,8 +13,9 @@ export type WeeklyGrowth = {
   dailyMinutes: Array<{ localDate: string; minutes: number }>;
 };
 
-export function buildWeeklyGrowth(attempts: LearningAttempt[], endLocalDate: string): WeeklyGrowth {
-  const startLocalDate = startOfLocalWeek(endLocalDate);
+export function buildWeeklyGrowth(attempts: LearningAttempt[], referenceLocalDate: string): WeeklyGrowth {
+  const startLocalDate = startOfLocalWeek(referenceLocalDate);
+  const endLocalDate = endOfLocalWeek(referenceLocalDate);
   const weekAttempts = attempts.filter((attempt) => attempt.localDate >= startLocalDate && attempt.localDate <= endLocalDate);
   const totalDurationSeconds = weekAttempts.reduce((sum, attempt) => sum + attempt.durationSeconds, 0);
   const totalQuestions = weekAttempts.reduce((sum, attempt) => sum + attempt.total, 0);
@@ -48,6 +49,12 @@ export function buildWeeklyGrowth(attempts: LearningAttempt[], endLocalDate: str
 function startOfLocalWeek(localDate: string): string {
   const date = parseLocalDate(localDate);
   date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+  return formatLocalDate(date);
+}
+
+function endOfLocalWeek(localDate: string): string {
+  const date = parseLocalDate(localDate);
+  date.setUTCDate(date.getUTCDate() + ((7 - date.getUTCDay()) % 7));
   return formatLocalDate(date);
 }
 
