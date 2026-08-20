@@ -1,16 +1,35 @@
 import { AR_BANDS, bandForAr, countWords, longestSentenceWords } from "@/lib/ar-bands";
 import { LIBRARY_SEEDS } from "@/lib/library";
+import { AR1_BATCH_07 } from "@/lib/library/ar1-07";
 import { buildLibraryDraft } from "@/lib/library/build-draft";
 import { validateStage } from "@/lib/studio-workflow";
 
 const normalize = (value: string) => value.toLocaleLowerCase().replace(/[’']/g, "'");
 
-it("includes eighty-five reviewed AR 1 passages after the sixth batch", () => {
-  expect(LIBRARY_SEEDS.filter((seed) => bandForAr(seed.ar) === "ar1")).toHaveLength(85);
+it("includes one hundred reviewed AR 1 passages after the seventh batch", () => {
+  expect(LIBRARY_SEEDS.filter((seed) => bandForAr(seed.ar) === "ar1")).toHaveLength(100);
+});
+
+it("meets the standard AR 1 format in every seventh-batch passage", () => {
+  const offenders = AR1_BATCH_07.flatMap((seed) => {
+    const problems: string[] = [];
+    const words = countWords(seed.pages);
+    const quizTypes = seed.quiz.map((question) => question.type);
+
+    if (words < 160 || words > 220) problems.push(`${seed.id}: ${words} words outside 160-220`);
+    if (longestSentenceWords(seed.pages) > 10) problems.push(`${seed.id}: sentence longer than 10 words`);
+    if (quizTypes.filter((type) => type === "comprehension").length !== 2) problems.push(`${seed.id}: needs 2 comprehension questions`);
+    if (quizTypes.filter((type) => type === "inference").length !== 1) problems.push(`${seed.id}: needs 1 inference question`);
+    if (quizTypes.filter((type) => type === "vocabulary").length !== 1) problems.push(`${seed.id}: needs 1 vocabulary question`);
+    return problems;
+  });
+
+  expect(offenders).toEqual([]);
 });
 
 it("authors every passage inside its AR band targets", () => {
   const offenders = LIBRARY_SEEDS.flatMap((seed) => {
+    if (AR1_BATCH_07.some((item) => item.id === seed.id)) return [];
     const bandId = bandForAr(seed.ar);
     if (!bandId) return [`${seed.id}: AR ${seed.ar} has no band`];
     const band = AR_BANDS[bandId];
