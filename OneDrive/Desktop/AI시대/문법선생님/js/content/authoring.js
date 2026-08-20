@@ -35,9 +35,42 @@ function guideFor(title, chapterTitle) {
   ];
 }
 
+const contexts = [
+  'after art class', 'before lunch', 'at the school festival', 'during soccer practice',
+  'on Monday morning', 'at the library', 'after the science club', 'before the concert',
+  'during the class trip', 'at the bus stop', 'after dinner', 'on a rainy afternoon',
+  'before the final match', 'during music class'
+];
+
+const places = ['studio', 'gym', 'garden', 'cafeteria', 'hall', 'workshop', 'library'];
+
+function authoredExamples(unit, example) {
+  const index = ALL_UNITS.findIndex(item => item.id === unit.id);
+  const context = contexts[index % contexts.length];
+  const place = places[Math.floor(index / contexts.length) % places.length];
+  const first = example.replace(/\.$/, ` ${context} in the ${place}.`);
+  return [
+    { en: first, ko: `${unit.title}의 핵심 형태가 쓰인 생활 문장입니다.`, focus: `${unit.title}의 표시와 주변 단어를 함께 보세요.` },
+    { en: `Our class [[reviews]] the pattern in the ${place} ${context}.`, ko: `우리 반은 ${context} ${place}에서 이 문형을 복습한다.`, focus: `${unit.title}이 문장에서 맡은 역할을 확인하세요.` }
+  ];
+}
+
+function visualFor(text) {
+  const routes = [
+    [/완료/, 'completion-result'], [/가정법|wish|as if/, 'conditional-split'],
+    [/관계/, 'relative-link'], [/접속사|and|but|or/, 'conjunction-bridge'],
+    [/비교|원급|최상급/, 'comparison'], [/분사/, 'participle-emotion'],
+    [/부정사|동명사/, 'infinitive-gerund'], [/수동태/, 'passive-focus'],
+    [/조동사|can|may|must|should|will/, 'modal-signs'], [/시제|현재|과거|미래|진행/, 'timeline'],
+    [/문장|SVC|SVOO|SVOC|강조|도치|생략|화법|일치/, 'sentence-stage']
+  ];
+  return routes.find(([pattern]) => pattern.test(text))?.[1] ?? 'state-action';
+}
+
 export function createMasterLesson(unit) {
   const [summary, example, caution] = guideFor(unit.title, unit.chapterTitle);
   const cleanExample = example.replaceAll('[[', '').replaceAll(']]', '');
+  const visualKey = visualFor(`${unit.chapterTitle} ${unit.title}`);
   return {
     id: unit.id,
     book: unit.book,
@@ -45,19 +78,16 @@ export function createMasterLesson(unit) {
     title: unit.title,
     pageReference: unit.pageReference,
     hook: summary,
-    analogy: `${unit.title}은 문장에서 알맞은 자리를 찾는 표지판과 같아요. 뜻과 형태를 함께 보면 길을 잃지 않아요.`,
-    formula: `${unit.title} → 뜻 확인 → 형태 확인 → 문장 속 역할 확인`,
-    examples: [
-      { en: example.replace('.', ` (${unit.id}).`), ko: `${unit.title}의 핵심 형태를 보여 주는 문장입니다.`, focus: caution },
-      { en: `We [[practice]] ${unit.id} carefully.`, ko: '우리는 이 문법 형태를 주의 깊게 연습한다.', focus: `${unit.title}의 쓰임을 문장 안에서 확인하세요.` }
-    ],
+    analogy: `${unit.title}은 교실 자리표처럼 각 표현이 앉을 위치를 알려 줘요. 뜻을 먼저 잡고 자리를 보면 형태가 선명해집니다.`,
+    formula: `${unit.title} = 의미 신호 + 핵심 형태 + 문장 속 자리`,
+    examples: authoredExamples(unit, example),
     trap: {
       wrong: `${unit.title}: 뜻을 보지 않고 형태만 고르기`,
       correct: `${unit.title}: 뜻·형태·역할을 함께 확인하기`,
       reason: caution
     },
     memory: `뜻 → 형태 → 역할, 이 순서로 ${unit.title}을 확인하세요.`,
-    visualKey: 'sentence-stage',
+    visualKey,
     steps: [
       { label: '도입', heading: `${unit.title}, 왜 배울까요?`, lines: [summary], narration: `${unit.title}은 문장의 뜻을 정확히 전달하는 데 꼭 필요한 표현이에요. 오늘은 형태와 쓰임을 차근차근 확인해 봐요.` },
       { label: '핵심', heading: '한 줄 핵심', lines: [summary, caution], narration: `${summary} ${caution}` },

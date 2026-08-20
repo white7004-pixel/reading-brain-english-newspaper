@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { validateLesson } from '../js/domain.js';
 import { ALL_UNITS } from '../js/curriculum.js';
 import { LESSONS } from '../js/lessons.js';
+import { BOOK1_LESSONS } from '../js/content/book1.js';
+import { BOOK2_LESSONS } from '../js/content/book2.js';
+import { BOOK3_LESSONS } from '../js/content/book3.js';
 
 test('validateLesson reports every missing masterclass field', () => {
   const errors = validateLesson({ id: 'x', examples: [], quiz: [] });
@@ -31,4 +34,20 @@ test('each book contributes its complete curriculum subset', () => {
       ALL_UNITS.filter(unit => unit.book === book).length
     );
   }
+});
+
+for (const [book, registry] of [[1, BOOK1_LESSONS], [2, BOOK2_LESSONS], [3, BOOK3_LESSONS]]) {
+  test(`book ${book} authored IDs exactly match its curriculum`, () => {
+    const expected = ALL_UNITS.filter(unit => unit.book === book).map(unit => unit.id).sort();
+    assert.deepEqual(Object.keys(registry).sort(), expected);
+  });
+}
+
+test('authored examples never expose internal unit IDs', () => {
+  const text = Object.values(LESSONS).flatMap(lesson => lesson.examples.map(example => example.en)).join('\n');
+  assert.doesNotMatch(text, /\bb[123]-c\d+-u\d+\b/);
+});
+
+test('grammar families use a varied visual vocabulary', () => {
+  assert.ok(new Set(Object.values(LESSONS).map(lesson => lesson.visualKey)).size >= 10);
 });
