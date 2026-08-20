@@ -17,6 +17,7 @@ await page.selectOption('#chapter-select', { index: 0 });
 await page.selectOption('#unit-select', { index: 0 });
 await page.click('#start-button');
 assert.equal(await page.locator('#lesson-stage').isVisible(), true);
+assert.ok(await page.locator('.teacher img').evaluate(image => image.complete && image.naturalWidth > 500));
 assert.equal(await page.locator('#home-view').isVisible(), false);
 assert.ok((await page.locator('.skip-link').boundingBox()).y < 0);
 assert.match(await page.locator('#unit-title').innerText(), /be동사/);

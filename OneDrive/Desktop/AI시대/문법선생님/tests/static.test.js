@@ -37,3 +37,11 @@ test('voice tools use browser capabilities without network calls', () => {
   assert.match(html, /id="speech-status"/);
   assert.match(html, /id="record-status"/);
 });
+
+test('premium navy theme uses the local 3D teacher asset', () => {
+  const html = fs.readFileSync('index.html', 'utf8');
+  const css = fs.readFileSync('styles.css', 'utf8');
+  assert.match(html, /assets\/teacher-3d-navy\.png/);
+  assert.match(css, /--navy:/);
+  assert.match(css, /--gold:/);
+});
