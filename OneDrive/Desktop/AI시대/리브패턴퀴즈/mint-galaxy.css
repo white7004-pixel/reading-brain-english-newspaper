@@ -268,7 +268,7 @@
   text-align: center;
 }
 
-.quest-card-english {
+#studyView .quest-card .quest-card-english {
   width: min(100%, 22ch);
   margin-inline: auto;
   color: var(--mg-ink);
@@ -278,7 +278,7 @@
   overflow-wrap: anywhere;
 }
 
-.quest-card-meaning {
+#studyView .quest-card .quest-card-meaning {
   width: min(100%, 32ch);
   margin-inline: auto;
   color: var(--mg-ink);
@@ -400,11 +400,11 @@
     padding: 18px 14px;
   }
 
-  .quest-card-english {
+  #studyView .quest-card .quest-card-english {
     font-size: clamp(24px, 8vw, 36px);
   }
 
-  .quest-card-meaning {
+  #studyView .quest-card .quest-card-meaning {
     font-size: clamp(18px, 5.5vw, 24px);
   }
 
@@ -415,12 +415,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .answer-card {
+  #quizView #quizOptions .answer-card {
     transition: none;
   }
 
-  .answer-card:hover:not(:disabled),
-  .answer-card:active:not(:disabled) {
+  #quizView #quizOptions .answer-card:hover:not(:disabled),
+  #quizView #quizOptions .answer-card:active:not(:disabled) {
     transform: none;
   }
 }

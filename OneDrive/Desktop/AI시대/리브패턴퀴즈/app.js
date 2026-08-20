@@ -22,7 +22,6 @@ const state = {
   navOpenGroups: { basic: true, training: false },
   daily: null,
   cleared: new Set(),
-  flowProgress: JSON.parse(localStorage.getItem("rb-flow-progress") || "{}"),
   interpret: null,
   interpretShowingResult: false,
   quizItem: null,
@@ -337,14 +336,10 @@ function gameItems(items = filteredItems()) {
   return uniqueItems.length ? uniqueItems : items;
 }
 
-function currentStudyCards() {
-  return filteredItems().slice(0, 3);
-}
-
 function currentItem() {
-  const cards = currentStudyCards();
-  state.index = ((state.index % cards.length) + cards.length) % cards.length;
-  return cards[state.index];
+  const items = filteredItems();
+  state.index = ((state.index % items.length) + items.length) % items.length;
+  return items[state.index];
 }
 
 function dashboardSnapshot() {
@@ -423,7 +418,6 @@ function renderRoutineInto(host, steps) {
 
 const DAILY_GOAL = { cards: 20, correct: 10 };
 const UNIT_SIZE = 6;
-const SECTION_QUIZ_TARGET = 5;
 const HUB_STATUS_LABEL = { new: "시작 전", learning: "학습 중", done: "완료" };
 const PATH_STATUS_LABEL = {
   locked: "잠김",
@@ -508,17 +502,6 @@ function markSectionCleared(key) {
   if (!key || state.cleared.has(key)) return;
   state.cleared.add(key);
   saveCleared();
-}
-
-function sectionFlow(key = state.category) {
-  if (!key || key === "all") return {};
-  return state.flowProgress[key] || {};
-}
-
-function completeFlowStep(mode, key = state.category) {
-  if (!key || key === "all") return;
-  state.flowProgress[key] = { ...sectionFlow(key), [mode]: true };
-  localStorage.setItem("rb-flow-progress", JSON.stringify(state.flowProgress));
 }
 
 // 경로 상태(잠김 / 진행 / 클리어)까지 입힌 섹션 목록.
@@ -1272,11 +1255,11 @@ function renderNewWords(item) {
 
 function renderStudy() {
   const item = currentItem();
-  const cards = currentStudyCards();
+  const items = filteredItems();
   elements.flashcard.classList.remove("flipped");
   elements.cardMeta.textContent = `${item.category}`;
   const indexEl = $("#cardIndexDisplay");
-  if (indexEl) indexEl.textContent = `${state.index + 1} / ${cards.length}`;
+  if (indexEl) indexEl.textContent = `${state.index + 1} / ${items.length}`;
   renderNewWords(item);
   elements.cardEnglish.textContent = item.english;
   elements.cardKorean.textContent = item.korean;
@@ -1285,17 +1268,27 @@ function renderStudy() {
 }
 
 function moveCard(step = 1) {
-  const cards = currentStudyCards();
+  const items = filteredItems();
   const newIndex = state.index + step;
   if (newIndex < 0) return;
   if (step > 0) bumpDaily("cards");
   // 섹션 마지막 카드를 넘기면 다음 섹션으로 이어간다. 다만 학습 경로에서
   // 아직 잠긴 섹션으로는 넘어가지 않고 마지막 카드에 머문다 —
   // 그 자리에서 통역 테스트 안내 배너가 뜬다.
-  if (step > 0 && newIndex >= cards.length) {
-    state.index = cards.length - 1;
+  if (step > 0 && newIndex >= items.length && state.category !== "all") {
+    const sections = patternSections();
+    const next = patternHub.findNextSection
+      ? patternHub.findNextSection(sections, state.category)
+      : null;
+    if (next && next.unlocked !== false) {
+      state.category = next.key;
+      state.index = 0;
+      elements.categorySelect.value = state.category;
+      renderStudy();
+      return;
+    }
+    state.index = items.length - 1;
     renderStudy();
-    renderPatternSurfaces();
     return;
   }
   state.index = newIndex;
@@ -1315,13 +1308,6 @@ function markKnown(known) {
   }
   saveState();
   window.ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong");
-  if (known && currentStudyCards().every((entry) => state.mastered.has(entry.id))) {
-    completeFlowStep("study");
-    renderStudy();
-    renderPatternSurfaces();
-    window.ReadingBrainGameUI?.setMascot?.("complete");
-    return;
-  }
   moveCard(1);
 }
 
@@ -1820,12 +1806,6 @@ function checkQuiz(button, id) {
   saveState();
   updateStats();
   window.ReadingBrainGameUI?.setMascot?.(id === state.quizAnswer ? "correct" : "wrong");
-  if ((!state.quizType || state.quizType === "section") && state.quizCount >= SECTION_QUIZ_TARGET) {
-    elements.quizFeedback.textContent += " 5문제를 완료했습니다!";
-    completeFlowStep("quiz");
-    window.ReadingBrainGameUI?.setMascot?.("complete");
-    return;
-  }
   state.quizCount += 1;
   setTimeout(newQuiz, 950);
 }
