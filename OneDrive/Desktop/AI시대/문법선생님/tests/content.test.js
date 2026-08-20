@@ -6,6 +6,8 @@ import { LESSONS } from '../js/lessons.js';
 import { BOOK1_LESSONS } from '../js/content/book1.js';
 import { BOOK2_LESSONS } from '../js/content/book2.js';
 import { BOOK3_LESSONS } from '../js/content/book3.js';
+import fs from 'node:fs';
+import { VISUALS, getVisual } from '../js/visuals.js';
 
 test('validateLesson reports every missing masterclass field', () => {
   const errors = validateLesson({ id: 'x', examples: [], quiz: [] });
@@ -50,4 +52,14 @@ test('authored examples never expose internal unit IDs', () => {
 
 test('grammar families use a varied visual vocabulary', () => {
   assert.ok(new Set(Object.values(LESSONS).map(lesson => lesson.visualKey)).size >= 10);
+});
+
+test('all lesson visual keys resolve to 12 local accessible assets', () => {
+  for (const lesson of Object.values(LESSONS)) {
+    const visual = getVisual(lesson.visualKey);
+    assert.ok(visual, lesson.visualKey);
+    assert.ok(visual.alt.length >= 12, `${lesson.visualKey} alt`);
+    assert.ok(fs.existsSync(new URL(`../${visual.src}`, import.meta.url)), visual.src);
+  }
+  assert.equal(Object.keys(VISUALS).length, 12);
 });
