@@ -1,8 +1,25 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ExploreScreen } from "@/components/explore-screen";
+import { ExploreScreen, filterArticles } from "@/components/explore-screen";
 import { getPublishedArticles } from "@/lib/content";
 import { AR1_BATCH_07_IMAGES } from "@/lib/library/ar1-07-images";
+import type { Article } from "@/lib/types";
+
+const collectionQuest = (): Article => ({
+  ...getPublishedArticles()[0],
+  id: "quest-owl",
+  title: "Owl collection quest",
+  status: "published",
+  difficulty: { value: 1.8, method: "nonfiction-lab-estimate", label: "AR 1.8" },
+  quest: {
+    curiosityQuestionKo: "부엉이는 어떻게 조용히 날까요?",
+    knowledgeTakeawayKo: "부드러운 깃털이 소리를 줄입니다.",
+    collectionId: "living-world",
+    mapOrder: 1,
+    prerequisiteArticleIds: [],
+    nextArticleIds: [],
+  },
+});
 
 it("filters reviewed articles by domain and difficulty", async () => {
   const user = userEvent.setup();
@@ -35,4 +52,23 @@ it("places the grade roadmap before the existing knowledge library", () => {
   const roadmap = screen.getByRole("heading", { name: "학년별 논픽션 지식" });
   const library = screen.getByRole("heading", { name: "무엇이 궁금한가요?" });
   expect(roadmap.compareDocumentPosition(library) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+it("combines query, domain, AR range, and collection filters for published quests", () => {
+  const quest = collectionQuest();
+  const anotherCollection = { ...quest, id: "other-owl", quest: { ...quest.quest!, collectionId: "earth-and-sky" } };
+  const draft = { ...quest, id: "draft-owl", status: "draft" as const };
+
+  expect(filterArticles([quest, anotherCollection, draft], "owl", "science", "0-2", "living-world")).toEqual([quest]);
+});
+
+it("keeps published articles without quest metadata under the legacy library", () => {
+  const quest = collectionQuest();
+  const legacy = { ...getPublishedArticles()[1], id: "legacy-library", status: "published" as const };
+
+  render(<ExploreScreen articles={[quest, legacy]} onOpen={() => {}} initialDomain={null} />);
+
+  expect(screen.getByRole("heading", { name: "지식 퀘스트" })).toBeVisible();
+  expect(screen.getByRole("heading", { name: "기존 라이브러리" })).toBeVisible();
+  expect(screen.getByText(legacy.title)).toBeVisible();
 });

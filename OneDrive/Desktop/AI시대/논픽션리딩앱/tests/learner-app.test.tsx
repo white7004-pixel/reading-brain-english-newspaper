@@ -13,6 +13,7 @@ it("uses Today as the default destination and keeps the four learner destination
   render(<LearnerApp initialState={state} storage={localStorage} />);
 
   expect(screen.getByRole("button", { name: "오늘" })).toHaveAttribute("aria-current", "page");
+  expect(screen.getByRole("button", { name: "오늘의 발견 시작하기" })).toBeVisible();
   await user.click(screen.getByRole("button", { name: "지식지도" }));
   expect(screen.getByRole("heading", { name: "지식지도" })).toBeVisible();
   await user.click(screen.getByRole("button", { name: "탐험" }));

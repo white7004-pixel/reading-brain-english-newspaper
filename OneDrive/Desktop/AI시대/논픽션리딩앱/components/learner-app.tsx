@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AppShell, type Destination } from "./app-shell";
-import { HomeScreen } from "./home-screen";
+import { TodayScreen } from "./today-screen";
 import { ReaderScreen, type ReaderEvent } from "./reader-screen";
 import { QuizScreen, type QuizResult } from "./quiz-screen";
 import { CompletionScreen } from "./completion-screen";
@@ -89,7 +89,7 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
 
   return (
     <AppShell active={session.screen} onNavigate={navigate}>
-      {session.screen === "today" && <HomeScreen state={state} articles={articles} onStart={start} onExplore={() => navigate("explore")} />}
+      {session.screen === "today" && <TodayScreen state={state} articles={articles} onStart={start} onOpenMap={() => navigate("map")} onExplore={() => navigate("explore")} />}
       {session.screen === "map" && <section className="destination-placeholder"><p className="eyebrow">KNOWLEDGE QUEST</p><h1>지식지도</h1><p>완료한 퀘스트와 다음 연결을 한눈에 볼 수 있도록 준비하고 있어요.</p></section>}
       {session.screen === "learn" && article && session.phase === "reader" && <ReaderScreen article={article} initialPageIndex={state.activeQuest?.articleId === article.id ? state.activeQuest.pageIndex : 0} onBack={exitQuest} onFinish={() => {
         const next = advanceActiveQuest(state, { articleId: article.id, phase: "quiz", pageIndex: article.pages.length - 1 });

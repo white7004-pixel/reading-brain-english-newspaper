@@ -80,7 +80,7 @@ test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async (
 async function completeLearnerOnboarding(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByRole("button", { name: "가장 쉬운 단계부터" }).click();
-  await expect(page.getByRole("button", { name: "오늘의 지식 시작하기" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "오늘의 발견 시작하기" })).toBeVisible();
 }
 
 async function fillValidThreeMinuteArticle(page: Page, { title }: { title: string }): Promise<void> {

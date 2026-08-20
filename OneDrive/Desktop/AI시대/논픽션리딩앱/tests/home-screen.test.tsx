@@ -10,9 +10,9 @@ it("presents one clear daily lesson action and learner metrics", () => {
   state.profile.onboardingComplete = true;
   state.profile.estimatedDifficulty = 1.8;
   render(<HomeScreen state={state} articles={getPublishedArticles()} onStart={vi.fn()} onExplore={vi.fn()} />);
-  expect(screen.getByRole("button", { name: "오늘의 지식 시작하기" })).toBeVisible();
-  expect(screen.getByText("논픽션랩 추정 난이도 1.8")).toBeVisible();
-  expect(screen.getByText(/관심 분야 탐험/)).toBeVisible();
+  expect(screen.getByRole("button", { name: "오늘의 발견 시작하기" })).toBeVisible();
+  expect(screen.getByText("AR 1.8")).toBeVisible();
+  expect(screen.getByText("지식 지도 0% 완성")).toBeVisible();
 });
 
 it("shows the daily article photo when the article has one", () => {

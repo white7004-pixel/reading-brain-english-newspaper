@@ -13,7 +13,7 @@ it("records one attempt and shows score, XP, streak, and next topic", async () =
   state.profile.estimatedDifficulty = 1.8;
   render(<LearnerApp initialState={state} storage={localStorage} />);
 
-  await user.click(screen.getByRole("button", { name: "오늘의 지식 시작하기" }));
+  await user.click(screen.getByRole("button", { name: "오늘의 발견 시작하기" }));
   await user.click(screen.getByRole("button", { name: "다음 페이지" }));
   await user.click(screen.getByRole("button", { name: "다음 페이지" }));
   await user.click(screen.getByRole("button", { name: "이해 퀴즈 시작" }));
@@ -50,7 +50,7 @@ it("persists reader and quiz progress across a remount, then clears it on exit",
   const article = getPublishedArticles()[0];
   const view = render(<LearnerApp initialState={state} storage={localStorage} />);
 
-  await user.click(screen.getByRole("button", { name: "\uC624\uB298\uC758 \uC9C0\uC2DD \uC2DC\uC791\uD558\uAE30" }));
+  await user.click(screen.getByRole("button", { name: "오늘의 발견 시작하기" }));
   await user.click(screen.getByRole("button", { name: "\uB2E4\uC74C \uD398\uC774\uC9C0" }));
   expect(loadLearnerState(localStorage).activeQuest).toEqual({ articleId: article.id, phase: "reader", pageIndex: 1 });
 
@@ -77,7 +77,7 @@ it("keeps an unfinished quest focused without persistent navigation", async () =
   const article = getPublishedArticles()[0];
   render(<LearnerApp initialState={state} storage={localStorage} />);
 
-  await user.click(screen.getByRole("button", { name: "\uC624\uB298\uC758 \uC9C0\uC2DD \uC2DC\uC791\uD558\uAE30" }));
+  await user.click(screen.getByRole("button", { name: "오늘의 발견 시작하기" }));
   await user.click(screen.getByRole("button", { name: "\uB2E4\uC74C \uD398\uC774\uC9C0" }));
 
   expect(loadLearnerState(localStorage).activeQuest).toEqual({ articleId: article.id, phase: "reader", pageIndex: 1 });
