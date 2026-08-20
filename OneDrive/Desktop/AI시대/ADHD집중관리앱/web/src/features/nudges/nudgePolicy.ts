@@ -1,4 +1,5 @@
 import type { Task } from '../../core/model/task'
+import { completeMission } from '../missions/missionState'
 import { selectCurrentMission, selectNowTask } from '../today/selectNowTask'
 import type { TaskCheckInResponse } from './taskCheckIn'
 
@@ -33,10 +34,9 @@ export function selectNudgeTask(tasks: Task[], now: Date, latestResponse: TaskCh
   if (latestResponse?.action === 'later' && latestResponse.remindAt) {
     const delayed = open.find((task) => task.id === latestResponse.taskId)
     if (new Date(latestResponse.remindAt) > now) {
-      if (delayed?.required) return null
-      return selectNowTask(open.filter((task) => task.id !== latestResponse.taskId), now)
+      const withoutDelayed = open.filter((task) => task.id !== latestResponse.taskId)
+      return selectCurrentMission(withoutDelayed, now) ?? (delayed?.required ? null : selectNowTask(withoutDelayed, now))
     }
-    if (delayed?.required) return delayed
   }
   return selectCurrentMission(open, now) ?? selectNowTask(open, now)
 }
@@ -50,7 +50,11 @@ export function applyCheckInResponse(tasks: Task[], response: TaskCheckInRespons
   const updatedAt = now.toISOString()
   const nextTasks = tasks.map((task) => {
     if (task.id !== response.taskId) return task
-    if (response.action === 'done') return { ...task, status: 'completed' as const, updatedAt }
+    if (response.action === 'done') {
+      return task.required
+        ? completeMission(task, now)
+        : { ...task, status: 'completed' as const, completedAt: updatedAt, updatedAt }
+    }
     if (response.action === 'in_progress') return { ...task, status: 'active' as const, updatedAt }
     return task
   })

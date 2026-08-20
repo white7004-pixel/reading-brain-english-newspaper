@@ -26,7 +26,20 @@ struct MonggleEntry: TimelineEntry {
         self.escalationLevel = escalationLevel
     }
 
-    var isExtended: Bool { escalationLevel == "widget" }
+    static func seoulDay(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
+
+    var isExtended: Bool {
+        if escalationLevel == "widget" { return true }
+        guard let commitmentDay, !commitmentDay.isEmpty else { return false }
+        return commitmentDay < Self.seoulDay(for: date)
+    }
 
     var orderedTasks: [WidgetTask] {
         guard let currentMissionId,

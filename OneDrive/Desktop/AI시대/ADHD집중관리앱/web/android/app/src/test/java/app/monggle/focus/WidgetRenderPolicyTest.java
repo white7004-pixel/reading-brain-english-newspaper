@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import org.junit.Test;
 
@@ -86,5 +87,22 @@ public class WidgetRenderPolicyTest {
         assertEquals("몽글이와 한 가지씩 해봐요", result.titleLine);
         assertEquals("", result.firstActionLine);
         assertFalse(result.extended);
+    }
+
+    @Test
+    public void preMidnightSnapshotRendersExtendedAfterSeoulMidnightWithoutAppLaunch() {
+        WidgetRenderPolicy.Snapshot preMidnightSnapshot = new WidgetRenderPolicy.Snapshot(
+            Arrays.asList(new WidgetRenderPolicy.Task("required", "Read")),
+            "One at a time", "required", "2026-08-21", "Open the book", "push"
+        );
+
+        WidgetRenderPolicy.Result result = WidgetRenderPolicy.render(
+            preMidnightSnapshot,
+            WidgetRenderPolicy.Size.SMALL,
+            LocalDate.of(2026, 8, 22)
+        );
+
+        assertTrue(result.extended);
+        assertTrue(result.titleLine.contains("2026-08-21"));
     }
 }

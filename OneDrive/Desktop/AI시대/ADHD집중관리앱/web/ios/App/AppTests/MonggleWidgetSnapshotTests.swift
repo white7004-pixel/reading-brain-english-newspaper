@@ -42,4 +42,22 @@ final class MonggleWidgetSnapshotTests: XCTestCase {
         XCTAssertNil(entry.firstActionLine)
         XCTAssertFalse(entry.isExtended)
     }
+
+    func testPreMidnightSnapshotRendersExtendedAfterSeoulMidnightWithoutAppLaunch() throws {
+        let snapshot: [String: Any] = [
+            "generatedAt": "2026-08-21T14:59:00.000Z",
+            "tasks": [["id": "required", "title": "Read"]],
+            "nudgeLine": "One at a time",
+            "currentMissionId": "required",
+            "commitmentDay": "2026-08-21",
+            "firstAction": "Open the book",
+            "escalationLevel": "push"
+        ]
+        let afterMidnight = ISO8601DateFormatter().date(from: "2026-08-21T15:01:00Z")!
+
+        let entry = MonggleSnapshotDecoder.entry(from: snapshot, date: afterMidnight)
+
+        XCTAssertTrue(entry.isExtended)
+        XCTAssertTrue(entry.titleLine.contains("2026-08-21"))
+    }
 }

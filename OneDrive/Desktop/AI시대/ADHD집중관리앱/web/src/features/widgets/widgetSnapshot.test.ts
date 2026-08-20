@@ -35,3 +35,30 @@ it('puts the shared current mission first with extension metadata for widget emp
   })
   expect(snapshot.tasks[0]).toMatchObject({ id: 'required' })
 })
+
+it('uses active-then-oldest commitment precedence and labels only the selected mission', () => {
+  const prior = {
+    ...task, id: 'prior', required: true, priority: 1 as const,
+    commitmentDay: '2026-08-19', firstAction: 'continue prior', dueAt: undefined,
+  }
+  const currentDue = {
+    ...task, id: 'current-due', required: true, commitmentDay: '2026-08-20',
+    firstAction: 'start current', dueAt: '2026-08-20T09:00:00+09:00',
+  }
+  const priorSnapshot = buildWidgetSnapshot([currentDue, prior], '', now)
+  expect(priorSnapshot).toMatchObject({
+    currentMissionId: 'prior',
+    commitmentDay: '2026-08-19',
+    escalationLevel: 'widget',
+  })
+  expect(priorSnapshot.tasks[0]).toMatchObject({ id: 'prior' })
+
+  const active = { ...currentDue, id: 'active', status: 'active' as const }
+  const activeSnapshot = buildWidgetSnapshot([prior, active], '', now)
+  expect(activeSnapshot).toMatchObject({
+    currentMissionId: 'active',
+    commitmentDay: '2026-08-20',
+    escalationLevel: 'push',
+  })
+  expect(activeSnapshot.tasks[0]).toMatchObject({ id: 'active' })
+})

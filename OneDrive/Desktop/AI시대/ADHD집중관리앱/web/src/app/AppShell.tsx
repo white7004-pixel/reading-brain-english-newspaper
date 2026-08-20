@@ -17,7 +17,7 @@ import { nativeWidgetBridge } from '../features/widgets/nativeWidgetBridge'
 import { mergeWidgetEvents } from '../features/widgets/mergeWidgetEvents'
 import { buildWidgetSnapshot } from '../features/widgets/widgetSnapshot'
 import { applyMasteryEvent, masteryMessage, masteryTone, taskMasteryRepository, type MasteryTone, type TaskMasteryState } from '../features/nudges/taskMastery'
-import { dayInSeoul, missionMode } from '../features/missions/extendedDay'
+import { dayInSeoul, missionModeForMission } from '../features/missions/extendedDay'
 import { selectCurrentMission } from '../features/today/selectNowTask'
 import { appNow } from '../core/time/appClock'
 
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [])
   const now = new Date(clockTick)
   const currentMission = selectCurrentMission(todayTasks, now)
-  const activeMissionMode = missionMode(todayTasks, now)
+  const activeMissionMode = missionModeForMission(currentMission, now)
   const nudgeTask = settings.nudgeIntervalMinutes === 0 || isQuietTime(now, settings.quietHoursStart, settings.quietHoursEnd)
     ? null
     : selectNudgeTask(todayTasks, now, latestCheckIn)

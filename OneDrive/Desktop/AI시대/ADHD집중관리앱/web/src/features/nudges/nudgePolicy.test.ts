@@ -19,8 +19,8 @@ describe('supportive nudge policy', () => {
   })
 
   it('asks about one task and advances after 했어', () => {
-    const result = applyCheckInResponse([task('task-1'), task('task-2')], { taskId: 'task-1', action: 'done', respondedAt: now.toISOString() }, now)
-    expect(result.tasks[0].status).toBe('completed')
+    const result = applyCheckInResponse([task('task-1', { required: true }), task('task-2')], { taskId: 'task-1', action: 'done', respondedAt: now.toISOString() }, now)
+    expect(result.tasks[0]).toMatchObject({ status: 'completed', completedAt: now.toISOString(), updatedAt: now.toISOString() })
     expect(result.nextTaskId).toBe('task-2')
   })
 
@@ -55,6 +55,33 @@ describe('supportive nudge policy', () => {
     const required = task('task-1', { required: true, priority: 1, commitmentDay: '2026-08-19' })
 
     expect(selectNudgeTask([optional, required], now)?.id).toBe('task-1')
+  })
+
+  it('skips a future-deferred required mission until tomorrow while allowing another nudge', () => {
+    const deferred = task('task-1', {
+      required: true,
+      status: 'deferred',
+      day: '2026-08-21',
+      commitmentDay: '2026-08-19',
+      scheduledStart: '2026-08-20T15:00:00.000Z',
+    })
+    const optional = task('task-2')
+
+    expect(selectNudgeTask([deferred, optional], new Date('2026-08-20T23:59:00+09:00'))?.id).toBe('task-2')
+  })
+
+  it('uses the shared active-then-oldest commitment precedence for nudges', () => {
+    const prior = task('prior', { required: true, commitmentDay: '2026-08-19', priority: 1 })
+    const currentDue = task('current-due', {
+      required: true,
+      commitmentDay: '2026-08-20',
+      dueAt: '2026-08-20T09:00:00+09:00',
+      priority: 3,
+    })
+    expect(selectNudgeTask([currentDue, prior], now)?.id).toBe('prior')
+
+    const active = task('active', { required: true, commitmentDay: '2026-08-20', status: 'active' })
+    expect(selectNudgeTask([prior, active], now)?.id).toBe('active')
   })
 
   it('uses a supportive one-action question', () => {

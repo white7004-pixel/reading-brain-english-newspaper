@@ -93,3 +93,28 @@ it('prioritizes the same unfinished mission on app entry after midnight', async 
   expect(mode).toHaveTextContent('독서')
   await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('독서'))
 })
+
+it('labels the app from the selected active mission when commitment days are mixed', async () => {
+  await taskRepository.putMany([
+    {
+      id: 'prior-required', title: 'prior', day: '2026-08-20', status: 'open', priority: 1,
+      estimateMinutes: 20, category: 'study', source: 'manual', required: true,
+      commitmentDay: '2026-08-20', firstAction: 'continue prior',
+      createdAt: '2026-08-20T09:00:00+09:00', updatedAt: '2026-08-20T09:00:00+09:00',
+    },
+    {
+      id: 'current-active', title: 'active', day: '2026-08-21', status: 'active', priority: 2,
+      estimateMinutes: 20, category: 'study', source: 'manual', required: true,
+      commitmentDay: '2026-08-21', firstAction: 'keep working',
+      createdAt: '2026-08-21T09:00:00+09:00', updatedAt: '2026-08-21T09:00:00+09:00',
+    },
+  ])
+  settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00', determinedMonggle: false })
+  window.history.replaceState({}, '', '/?now=2026-08-21T10%3A00%3A00%2B09%3A00')
+
+  render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
+
+  await waitFor(() => expect(screen.getByRole('region', { name: '현재 필수 미션' })).toHaveTextContent('active'))
+  expect(screen.queryByRole('region', { name: '오늘 연장 완료 모드' })).not.toBeInTheDocument()
+  expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('active')
+})

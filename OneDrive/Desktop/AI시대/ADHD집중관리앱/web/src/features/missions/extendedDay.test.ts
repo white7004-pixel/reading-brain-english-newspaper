@@ -24,4 +24,11 @@ describe('required mission day extension', () => {
     expect(missionMode([requiredTask()], new Date('2026-08-21T23:59:00+09:00'))).toBe('normal')
     expect(missionMode([requiredTask({ status: 'completed' })], new Date('2026-08-22T00:10:00+09:00'))).toBe('normal')
   })
+
+  it('derives the label from the selected active mission rather than another prior-day mission', () => {
+    const prior = requiredTask({ id: 'prior', commitmentDay: '2026-08-20' })
+    const currentActive = requiredTask({ id: 'active', commitmentDay: '2026-08-21', status: 'active' })
+
+    expect(missionMode([prior, currentActive], new Date('2026-08-21T10:00:00+09:00'))).toBe('normal')
+  })
 })

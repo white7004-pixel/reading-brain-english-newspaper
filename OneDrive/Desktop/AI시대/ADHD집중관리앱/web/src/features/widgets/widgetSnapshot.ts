@@ -1,6 +1,6 @@
 import type { Task } from '../../core/model/task'
-import { missionMode, type MissionEscalationLevel } from '../missions/extendedDay'
-import { selectCurrentMission } from '../today/selectNowTask'
+import { missionModeForMission, type MissionEscalationLevel } from '../missions/extendedDay'
+import { isTaskEligible, selectCurrentMission } from '../today/selectNowTask'
 
 export interface WidgetTask {
   id: string
@@ -22,7 +22,7 @@ export interface WidgetSnapshot {
 }
 
 export function buildWidgetSnapshot(tasks: Task[], nudgeLine: string, now = new Date()): WidgetSnapshot {
-  const remaining = tasks.filter((task) => !['completed', 'canceled'].includes(task.status))
+  const remaining = tasks.filter((task) => isTaskEligible(task, now))
   const currentMission = selectCurrentMission(remaining, now)
   const ordered = currentMission
     ? [currentMission, ...remaining.filter((task) => task.id !== currentMission.id)]
@@ -41,6 +41,6 @@ export function buildWidgetSnapshot(tasks: Task[], nudgeLine: string, now = new 
     currentMissionId: currentMission?.id,
     commitmentDay: currentMission?.commitmentDay,
     firstAction: currentMission?.firstAction,
-    escalationLevel: currentMission && missionMode(remaining, now) === 'extended' ? 'widget' : 'push',
+    escalationLevel: missionModeForMission(currentMission, now) === 'extended' ? 'widget' : 'push',
   }
 }
