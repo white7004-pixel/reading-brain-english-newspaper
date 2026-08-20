@@ -1,5 +1,6 @@
 /* Mint Galaxy design tokens and reusable 3D-friendly primitives. */
 :root {
+  --bottom-nav-height: 72px;
   --mg-ink: #24345B;
   --mg-mint: #35C6A8;
   --mg-sky: #4DB8FF;
