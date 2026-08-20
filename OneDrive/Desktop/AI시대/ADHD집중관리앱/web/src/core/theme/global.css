@@ -56,6 +56,8 @@ button, select, a { min-height: var(--tap-min); }
 .mission-commitment-list article { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px; border: 1px solid var(--color-line); border-radius: 16px; background: color-mix(in srgb, var(--color-surface) 86%, transparent); }
 .mission-commitment-list article > strong { align-self: end; }
 .mission-commitment-list article > small { align-self: end; color: var(--color-muted); }
+.mission-commitment-list .mission-select { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; color: var(--color-text); }
+.mission-commitment-list .mission-select input { min-height: auto; }
 .mission-commitment-list label { display: grid; gap: 6px; color: var(--color-muted); font-size: 12px; font-weight: 700; }
 .mission-commitment-list input:not([type='checkbox']) { min-height: 44px; width: 100%; padding: 0 10px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--color-bg); color: var(--color-text); }
 .mission-commitment-list .check-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; color: var(--color-text); }
@@ -67,6 +69,9 @@ button, select, a { min-height: var(--tap-min); }
 .current-mission-card small { color: var(--color-muted); }
 .current-mission-card > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .current-mission-card button { border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-surface); color: var(--color-text); padding: 0 14px; }
+.mission-reschedule { margin-top: 14px; padding: 22px; border: 1px solid var(--color-glass-line); border-radius: var(--radius-card); background: var(--color-glass); box-shadow: var(--shadow-card-3d); backdrop-filter: blur(18px); }
+.mission-reschedule h2 { margin: 0; font-size: 22px; }
+.mission-reschedule p { color: var(--color-muted); }
 .task-draft-list { display: grid; gap: 12px; }
 .task-draft-list article { display: grid; grid-template-columns: auto 2fr 1fr 1fr; gap: 10px; align-items: end; padding: 14px; border: 1px solid var(--color-line); border-radius: 16px; background: color-mix(in srgb, var(--color-surface) 86%, transparent); }
 .task-draft-list article > strong { align-self: center; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--color-accent-soft); color: var(--color-accent); }

@@ -64,13 +64,16 @@ export function AppShell({ children }: { children: ReactNode }) {
       }
     }
     const refreshSettings = () => setSettings(settingsRepository.load())
+    const refreshCheckIn = () => setLatestCheckIn(taskCheckInRepository.load())
     void refreshTasks()
     window.addEventListener('monggle:tasks-changed', refreshTasks)
     window.addEventListener('monggle:settings-changed', refreshSettings)
+    window.addEventListener('monggle:task-check-in-changed', refreshCheckIn)
     return () => {
       active = false
       window.removeEventListener('monggle:tasks-changed', refreshTasks)
       window.removeEventListener('monggle:settings-changed', refreshSettings)
+      window.removeEventListener('monggle:task-check-in-changed', refreshCheckIn)
     }
   }, [])
   useEffect(() => {

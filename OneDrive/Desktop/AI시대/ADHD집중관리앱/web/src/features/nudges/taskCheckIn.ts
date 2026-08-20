@@ -16,6 +16,7 @@ export const taskCheckInRepository = {
   },
   save(response: TaskCheckInResponse) {
     localStorage.setItem(storageKey, JSON.stringify(response))
+    window.dispatchEvent(new Event('monggle:task-check-in-changed'))
   },
   clear() {
     localStorage.removeItem(storageKey)

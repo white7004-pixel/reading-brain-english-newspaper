@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import { TodayScreen, type TodayDependencies } from './TodayScreen'
 import { DEFAULT_CATEGORIES } from '../../core/model/category'
+import { taskCheckInRepository } from '../nudges/taskCheckIn'
+import type { Task } from '../../core/model/task'
 
 function dependencies(): TodayDependencies {
   return {
@@ -50,4 +52,47 @@ it('loads all tasks into a category-filtered priority list', async () => {
   await userEvent.click(screen.getByRole('button', { name: '운동' }))
   expect(within(prioritySection).getByText('달리기')).toBeInTheDocument()
   expect(within(prioritySection).queryByText('보고서 작성')).not.toBeInTheDocument()
+})
+
+const requiredTask: Task = {
+  id: 'required', title: '독서', day: '2026-08-21', status: 'open', priority: 2,
+  estimateMinutes: 20, category: 'study', source: 'manual', required: true, firstAction: '책 펼치기',
+  createdAt: '2026-08-21T09:00:00+09:00', updatedAt: '2026-08-21T09:00:00+09:00',
+}
+
+it('starts a required mission in a real three-minute focus session', async () => {
+  const deps = dependencies()
+  deps.listRequiredOpen = vi.fn().mockResolvedValue([requiredTask])
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '3분만 시작' }))
+
+  expect(await screen.findByLabelText('집중 세션')).toBeVisible()
+  expect(screen.getByText('03:00')).toBeVisible()
+  expect(deps.saveMany).toHaveBeenCalledWith([expect.objectContaining({ id: 'required', status: 'active' })])
+})
+
+it('persists a five-minute mission delay for the existing quiet-hour-aware nudge flow', async () => {
+  taskCheckInRepository.clear()
+  const deps = dependencies()
+  deps.listRequiredOpen = vi.fn().mockResolvedValue([requiredTask])
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '5분 후 다시 알림' }))
+
+  const delayed = taskCheckInRepository.load()
+  expect(delayed).toMatchObject({ taskId: 'required', action: 'later' })
+  expect(new Date(delayed!.remindAt!).getTime() - new Date(delayed!.respondedAt).getTime()).toBe(5 * 60_000)
+  taskCheckInRepository.clear()
+})
+
+it('opens a reschedule path and persists the selected recovery action', async () => {
+  const deps = dependencies()
+  deps.listRequiredOpen = vi.fn().mockResolvedValue([requiredTask])
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '일정 다시 잡기' }))
+  await userEvent.click(screen.getByRole('button', { name: '5분으로 줄이기' }))
+
+  expect(deps.saveMany).toHaveBeenCalledWith([expect.objectContaining({ id: 'required', estimateMinutes: 5, required: true })])
 })

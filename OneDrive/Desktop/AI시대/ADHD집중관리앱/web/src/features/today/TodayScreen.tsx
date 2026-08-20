@@ -19,6 +19,9 @@ import { PriorityTaskList } from './PriorityTaskList'
 import { MissionCommitmentReview } from '../missions/MissionCommitmentReview'
 import { CurrentMissionCard } from '../missions/CurrentMissionCard'
 import { completeMission } from '../missions/missionState'
+import { FocusScreen } from '../focus/FocusScreen'
+import { taskCheckInRepository } from '../nudges/taskCheckIn'
+import { reschedulePlan, type RescueDecision } from '../rescue/reschedulePlan'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -56,6 +59,8 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [energy, setEnergy] = useState<Energy>('medium')
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES)
   const [selectedCategoryId, setSelectedCategoryId] = useState('all')
+  const [focusMission, setFocusMission] = useState<Task | null>(null)
+  const [reschedulingMission, setReschedulingMission] = useState<Task | null>(null)
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy), [tasks, energy])
   const currentMission = useMemo(() => selectCurrentMission(tasks), [tasks])
 
@@ -101,13 +106,27 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   const startMission = (task: Task) => {
     void saveTasks([{ ...task, status: 'active', updatedAt: new Date().toISOString() }])
+    setFocusMission(task)
+  }
+
+  const delayMission = (task: Task) => {
+    const now = new Date()
+    taskCheckInRepository.save({ taskId: task.id, action: 'later', respondedAt: now.toISOString(), remindAt: new Date(now.getTime() + 5 * 60_000).toISOString() })
   }
 
   const completeCurrentMission = (task: Task) => {
     void saveTasks([completeMission(task, new Date())])
   }
 
+  const rescheduleMission = (task: Task, decision: RescueDecision) => {
+    const next = reschedulePlan([task], { [task.id]: decision }, new Date()).items[0]
+    void saveTasks([next])
+    setReschedulingMission(null)
+  }
+
   const reviewableTasks = tasks.filter((task) => !task.required && task.status !== 'completed' && task.status !== 'canceled')
+
+  if (focusMission) return <FocusScreen title={focusMission.title} taskId={focusMission.id} minutes={3} autoStart onComplete={() => { completeCurrentMission(focusMission); setFocusMission(null) }} onExit={() => setFocusMission(null)} />
 
   return <>
     <div className="energy"><span>지금 에너지는?</span>{(['low', 'medium', 'high'] as const).map((value, index) => <button aria-pressed={energy === value} key={value} onClick={() => setEnergy(value)}>{['낮음', '보통', '높음'][index]}</button>)}</div>
@@ -119,7 +138,17 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       return category
     }} onChange={setDrafts} onSave={(reviewed) => void saveDrafts(reviewed)} onCancel={() => setDrafts([])} />}
     {reviewableTasks.length > 0 && <MissionCommitmentReview tasks={reviewableTasks} onConfirm={(committed) => void saveTasks(committed)} />}
-    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => undefined} onReschedule={() => undefined} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
+    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
+    {reschedulingMission && <section className="mission-reschedule" aria-label="미션 일정 다시 잡기">
+      <h2>{reschedulingMission.title}을 어떻게 다시 잡을까요?</h2>
+      <p>필수 미션은 완료하거나 명시적으로 해제하기 전까지 유지돼요.</p>
+      <div className="capture-actions">
+        <button type="button" onClick={() => rescheduleMission(reschedulingMission, 'five_minute')}>5분으로 줄이기</button>
+        <button type="button" onClick={() => rescheduleMission(reschedulingMission, 'tomorrow')}>내일로 미루기</button>
+        <button type="button" onClick={() => rescheduleMission(reschedulingMission, 'cancel')}>미션 취소</button>
+        <button type="button" onClick={() => setReschedulingMission(null)}>돌아가기</button>
+      </div>
+    </section>}
     <PriorityTaskList tasks={tasks} categories={categories} activeTaskId={nowTask?.id} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
     <Timeline items={buildTimeline(tasks, [])} />
   </>

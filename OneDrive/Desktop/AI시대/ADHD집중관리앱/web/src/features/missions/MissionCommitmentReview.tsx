@@ -22,9 +22,17 @@ export function MissionCommitmentReview({ tasks, onConfirm, now = new Date() }: 
   now?: Date
 }) {
   const [drafts, setDrafts] = useState(() => new Map(tasks.map((task) => [task.id, initialDraft(task)])))
+  const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const update = (task: Task, patch: Partial<CommitmentDraft>) => {
     setDrafts((current) => new Map(current).set(task.id, { ...current.get(task.id)!, ...patch }))
   }
+  const toggle = (taskId: string) => setSelected((current) => {
+    const next = new Set(current)
+    next.has(taskId) ? next.delete(taskId) : next.add(taskId)
+    return next
+  })
+  const selectedTasks = tasks.filter((task) => selected.has(task.id))
+  const canConfirm = selectedTasks.length > 0 && selectedTasks.every((task) => (drafts.get(task.id)?.firstAction ?? '').trim().length > 0)
 
   return <section className="mission-commitment-review" aria-label="필수 미션 검토">
     <div className="section-heading"><div><span>오늘의 약속</span><h2>필수 미션을 정해요</h2></div></div>
@@ -34,11 +42,12 @@ export function MissionCommitmentReview({ tasks, onConfirm, now = new Date() }: 
       return <article key={task.id}>
         <strong>{task.title}</strong>
         <small>예상 {task.estimateMinutes}분</small>
+        <label className="mission-select"><input type="checkbox" aria-label={`${task.title} 선택`} checked={selected.has(task.id)} onChange={() => toggle(task.id)} />이 미션 선택</label>
         <label>첫 행동<input value={draft.firstAction} onChange={(event) => update(task, { firstAction: event.target.value })} /></label>
         <label>희망 시간<input type="datetime-local" value={draft.scheduledStart ?? ''} onChange={(event) => update(task, { scheduledStart: event.target.value || undefined })} /></label>
         <label className="check-row"><input type="checkbox" checked={draft.timeLocked} onChange={(event) => update(task, { timeLocked: event.target.checked })} />시간 고정</label>
       </article>
     })}</div>
-    <div className="capture-actions"><button className="primary" type="button" onClick={() => onConfirm(tasks.map((task) => commitMission(task, drafts.get(task.id) ?? initialDraft(task), now)))}>필수 미션 확정</button></div>
+    <div className="capture-actions"><button className="primary" type="button" disabled={!canConfirm} onClick={() => onConfirm(selectedTasks.map((task) => commitMission(task, drafts.get(task.id) ?? initialDraft(task), now)))}>필수 미션 확정</button></div>
   </section>
 }

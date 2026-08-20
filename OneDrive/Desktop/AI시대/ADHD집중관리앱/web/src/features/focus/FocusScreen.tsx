@@ -1,24 +1,54 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { breakIntoSteps } from './taskBreakdown'
 import { emitCompanionEvent } from '../companion/companionEvents'
+import { extendTimer, remainingSeconds, startTimer, type FocusTimerState } from './focusTimer'
 
 function clock(seconds: number) {
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
 }
 
-export function FocusScreen({ title, minutes }: { title: string; minutes: number }) {
+export function FocusScreen({ title, minutes, taskId, autoStart = false, onComplete, onExit }: {
+  title: string
+  minutes: number
+  taskId?: string
+  autoStart?: boolean
+  onComplete?: () => void
+  onExit?: () => void
+}) {
   const [seconds, setSeconds] = useState(minutes * 60)
-  const [running, setRunning] = useState(false)
+  const [timer, setTimer] = useState<FocusTimerState | null>(() => autoStart ? startTimer(taskId ?? title, minutes) : null)
   const steps = useMemo(() => breakIntoSteps(title), [title])
-  return <section className="focus-screen">
+  useEffect(() => {
+    if (!timer) return
+    const tick = () => {
+      const remaining = remainingSeconds(timer)
+      setSeconds(remaining)
+      if (remaining === 0) setTimer(null)
+    }
+    tick()
+    const interval = window.setInterval(tick, 1_000)
+    return () => window.clearInterval(interval)
+  }, [timer])
+  const start = () => {
+    if (timer) {
+      setTimer(null)
+      return
+    }
+    if (seconds === 0) setSeconds(minutes * 60)
+    const duration = seconds === 0 ? minutes : seconds / 60
+    setTimer(startTimer(taskId ?? title, duration))
+    emitCompanionEvent('focus_started')
+  }
+  return <section className="focus-screen" aria-label="집중 세션">
     <span>이 목표를 완료로 바꾸기</span>
     <h2>{title}</h2>
     <div className="focus-clock" aria-label="남은 시간">{clock(seconds)}</div>
     <ol>{steps.map((step) => <li key={step.id}><input type="checkbox" aria-label={step.title} /> <span>{step.title}</span><small>{step.minutes}분</small></li>)}</ol>
     <div className="focus-actions">
-      <button className="primary" onClick={() => { if (!running) emitCompanionEvent('focus_started'); setRunning(!running) }}>{running ? '일시정지' : '시작'}</button>
-      <button onClick={() => setSeconds((value) => value + 300)}>5분 추가</button>
-      <button onClick={() => { setRunning(false); emitCompanionEvent('task_completed') }}>완료</button>
+      <button className="primary" onClick={start}>{timer ? '일시정지' : '시작'}</button>
+      <button onClick={() => timer ? setTimer(extendTimer(timer, 5)) : setSeconds((value) => value + 300)}>5분 추가</button>
+      <button onClick={() => { setTimer(null); emitCompanionEvent('task_completed'); onComplete?.() }}>완료</button>
+      {onExit && <button onClick={onExit}>집중 나가기</button>}
     </div>
   </section>
 }
