@@ -4,6 +4,7 @@ import { scoreQuiz, calculateProgress } from './domain.js';
 import { createStore } from './storage.js';
 import { createSpeechController } from './speech.js';
 import { createRecorder } from './recorder.js';
+import { getVisual } from './visuals.js';
 
 const $ = id => document.getElementById(id);
 const store = createStore(localStorage);
@@ -15,6 +16,15 @@ const state = { mode: 'home', lesson: null, step: 0, answers: [], quizIndex: 0, 
 
 const escapeHtml = text => String(text).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const highlight = text => escapeHtml(text).replace(/\[\[(.*?)\]\]/g, '<mark>$1</mark>');
+const lessonSteps = lesson => [
+  { label: '10초 핵심', heading: lesson.hook, narration: `${lesson.hook} 먼저 뜻을 잡으면 형태는 자연스럽게 따라옵니다.` },
+  { label: '실생활 비유', heading: '눈앞의 장면으로 이해해요', narration: lesson.analogy },
+  { label: '형태 공식', heading: '이 구조만 잡아요', narration: `${lesson.formula}. 핵심 자리를 손가락으로 짚듯 확인하세요.` },
+  { label: '대표 예문', heading: '문장에서 바로 확인해요', narration: lesson.examples.map(example => `${example.en.replaceAll('[[','').replaceAll(']]','')}. ${example.focus}`).join(' ') },
+  { label: '시험 함정', heading: '틀린 이유까지 알아야 실력이 돼요', narration: `${lesson.trap.wrong}. 이렇게 쓰면 틀립니다. ${lesson.trap.correct}. ${lesson.trap.reason}` },
+  { label: '기억 공식', heading: '시험 직전, 이 한 줄', narration: lesson.memory },
+  { label: '확인 문제', heading: '이제 직접 고르면 내 것이 됩니다', narration: '세 문제를 풀고 해설로 마지막 빈틈까지 확인해요.' }
+];
 
 function fillBooks() {
   $('book-select').innerHTML = CURRICULUM.map(book => `<option value="${book.book}">${book.title}</option>`).join('');
@@ -52,20 +62,32 @@ function openLesson(unitId) {
 }
 function renderLesson() {
   const { lesson, step } = state;
-  const item = lesson.steps[step];
+  const steps = lessonSteps(lesson);
+  const item = steps[step];
+  const visual = getVisual(lesson.visualKey);
   $('book-label').textContent = `GRAMMAR ${lesson.book} · ${lesson.chapter.toUpperCase()}`;
   $('unit-title').textContent = lesson.title;
   $('page-reference').textContent = lesson.pageReference;
-  $('lesson-stage').innerHTML = `<span class="label">${escapeHtml(item.label)}</span><h2>${escapeHtml(item.heading)}</h2>${item.lines.map(line=>`<p class="lesson-line">${highlight(line)}</p>`).join('')}`;
+  $('lesson-visual').src = visual.src;
+  $('lesson-visual').alt = visual.alt;
+  $('lesson-hook').textContent = lesson.hook;
+  $('analogy-card').querySelector('p').textContent = lesson.analogy;
+  $('formula-card').querySelector('p').textContent = lesson.formula;
+  $('examples-card').querySelector('.example-list').innerHTML = lesson.examples.map(example => `<article class="example-row"><p class="example-en">${highlight(example.en)}</p><p class="example-ko">${escapeHtml(example.ko)}</p><small>${escapeHtml(example.focus)}</small></article>`).join('');
+  $('trap-card').querySelector('.wrong').innerHTML = `<strong>✕ 이렇게 쓰면 안 돼요</strong><p>${escapeHtml(lesson.trap.wrong)}</p>`;
+  $('trap-card').querySelector('.correct').innerHTML = `<strong>✓ 이렇게 고쳐요</strong><p>${escapeHtml(lesson.trap.correct)}</p>`;
+  $('trap-card').querySelector('.trap-reason').textContent = lesson.trap.reason;
+  $('memory-card').querySelector('p').textContent = lesson.memory;
+  document.querySelectorAll('.master-panel').forEach(panel => { panel.hidden = Number(panel.dataset.panel) !== step; });
   $('teacher-bubble').textContent = saved.settings.subtitles ? item.narration : '';
-  $('step-pins').innerHTML = lesson.steps.map((_,index)=>`<button type="button" data-step="${index}" class="${index===step?'current':index<step?'done':''}" aria-label="${index+1}단계">${index+1}</button>`).join('');
-  $('lesson-flow').innerHTML = lesson.steps.map((part,index)=>`<li class="${index===step?'current':index<step?'done':''}"><button type="button" data-step="${index}">${index+1}. ${escapeHtml(part.label)} · ${escapeHtml(part.heading)}</button></li>`).join('') + `<li><button type="button" data-quiz="true">✓ 확인 문제</button></li>`;
-  $('print-content').innerHTML = `<header><p>문법 AI 선생님 · GRAMMAR ${lesson.book}</p><h1>${escapeHtml(lesson.title)}</h1><small>${escapeHtml(lesson.pageReference)}</small></header>${lesson.steps.map((part,index)=>`<article class="print-step"><h2>${index+1}. ${escapeHtml(part.label)} · ${escapeHtml(part.heading)}</h2>${part.lines.map(line=>`<p>${highlight(line)}</p>`).join('')}<p class="print-note">선생님 설명: ${escapeHtml(part.narration)}</p></article>`).join('')}<section><h2>확인 문제</h2>${lesson.quiz.map((question,index)=>`<article class="print-question"><p><strong>${index+1}. ${escapeHtml(question.question)}</strong></p><p>${question.options.map((option,optionIndex)=>`${String.fromCharCode(65+optionIndex)}. ${escapeHtml(option)}`).join('　')}</p><p class="print-answer">정답 ${String.fromCharCode(65+question.answer)} · ${escapeHtml(question.explanation)}</p></article>`).join('')}</section>`;
+  $('step-pins').innerHTML = steps.map((_,index)=>`<button type="button" data-step="${index}" class="${index===step?'current':index<step?'done':''}" aria-label="${index+1}단계">${index+1}</button>`).join('');
+  $('lesson-flow').innerHTML = steps.map((part,index)=>`<li class="${index===step?'current':index<step?'done':''}"><button type="button" data-step="${index}">${index+1}. ${escapeHtml(part.label)} · ${escapeHtml(part.heading)}</button></li>`).join('');
+  $('print-content').innerHTML = `<header><p>문법 AI 선생님 · GRAMMAR ${lesson.book}</p><h1>${escapeHtml(lesson.title)}</h1><small>${escapeHtml(lesson.pageReference)}</small></header><article class="print-step"><h2>10초 핵심</h2><p>${escapeHtml(lesson.hook)}</p><h2>실생활 비유</h2><p>${escapeHtml(lesson.analogy)}</p><h2>형태 공식</h2><p>${escapeHtml(lesson.formula)}</p></article><article class="print-step"><h2>대표 예문</h2>${lesson.examples.map(example=>`<p>${highlight(example.en)} — ${escapeHtml(example.ko)}</p>`).join('')}<h2>시험 함정</h2><p>${escapeHtml(lesson.trap.wrong)} → ${escapeHtml(lesson.trap.correct)}</p><p>${escapeHtml(lesson.trap.reason)}</p><h2>기억 공식</h2><p>${escapeHtml(lesson.memory)}</p></article><section><h2>확인 문제</h2>${lesson.quiz.map((question,index)=>`<article class="print-question"><p><strong>${index+1}. ${escapeHtml(question.question)}</strong></p><p>${question.options.map((option,optionIndex)=>`${String.fromCharCode(65+optionIndex)}. ${escapeHtml(option)}`).join('　')}</p><p class="print-answer">정답 ${String.fromCharCode(65+question.answer)} · ${escapeHtml(question.explanation)}</p></article>`).join('')}</section>`;
   $('prev-button').disabled = step === 0;
-  $('next-button').textContent = step === lesson.steps.length-1 ? '문제 풀기 →' : '다음 →';
+  $('next-button').textContent = step === steps.length-1 ? '문제 풀기 →' : '다음 →';
 }
 function goStep(index) {
-  if (index >= state.lesson.steps.length) return showQuiz();
+  if (index >= lessonSteps(state.lesson).length) return showQuiz();
   state.step = Math.max(0,index); renderLesson();
 }
 function showQuiz() {
@@ -85,10 +107,10 @@ function finishQuiz() {
   renderProgress();
 }
 function showHome(){stopAuto();$('class-view').hidden=true;$('home-view').hidden=false;state.mode='home';renderProgress();window.scrollTo({top:0,behavior:'smooth'})}
-function startAuto(){if(state.autoTimer)return stopAuto();$('play-button').textContent='Ⅱ 일시정지';state.autoTimer=setInterval(()=>{if(state.step<state.lesson.steps.length-1)goStep(state.step+1);else{stopAuto();showQuiz()}},4500)}
+function startAuto(){if(state.autoTimer)return stopAuto();$('play-button').textContent='Ⅱ 일시정지';state.autoTimer=setInterval(()=>{if(state.step<lessonSteps(state.lesson).length-1)goStep(state.step+1);else{stopAuto();showQuiz()}},4500)}
 function stopAuto(){clearInterval(state.autoTimer);state.autoTimer=null;if($('play-button'))$('play-button').textContent='▶ 자동 수업'}
 function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
-function downloadScript(){const text=[state.lesson.title,'',...state.lesson.steps.flatMap((s,i)=>[`[${i+1}] ${s.label} · ${s.heading}`,...s.lines.map(l=>l.replaceAll('[[','').replaceAll(']]','')),`선생님: ${s.narration}`,''])].join('\n');const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`${state.lesson.title}_수업대본.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function downloadScript(){const text=[state.lesson.title,'',...lessonSteps(state.lesson).flatMap((s,i)=>[`[${i+1}] ${s.label} · ${s.heading}`,`선생님: ${s.narration}`,''])].join('\n');const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`${state.lesson.title}_수업대본.txt`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 
 $('book-select').addEventListener('change',fillChapters);$('chapter-select').addEventListener('change',fillUnits);
 $('lesson-picker').addEventListener('submit',event=>{event.preventDefault();openLesson($('unit-select').value)});
@@ -109,8 +131,8 @@ $('speech-rate').addEventListener('input', event => {
 });
 $('speak-button').addEventListener('click', () => {
   if (!speech.supported) return toast('이 브라우저에서는 음성 읽기를 지원하지 않아요.');
-  const step = state.lesson?.steps[state.step];
-  if (step) speech.speak(`${step.heading}. ${step.lines.join(' ')}. ${step.narration}`, { rate: Number($('speech-rate').value) });
+  const step = state.lesson ? lessonSteps(state.lesson)[state.step] : null;
+  if (step) speech.speak(`${step.heading}. ${step.narration}`, { rate: Number($('speech-rate').value) });
 });
 $('record-button').addEventListener('click', async () => {
   try {

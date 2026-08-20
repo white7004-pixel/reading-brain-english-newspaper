@@ -21,10 +21,18 @@ assert.ok(await page.locator('.teacher img').evaluate(image => image.complete &&
 assert.equal(await page.locator('#home-view').isVisible(), false);
 assert.ok((await page.locator('.skip-link').boundingBox()).y < 0);
 assert.match(await page.locator('#unit-title').innerText(), /be동사/);
+assert.equal(await page.locator('#lesson-visual').evaluate(image => image.complete && image.naturalWidth > 1000), true);
+assert.ok((await page.locator('#lesson-hook').innerText()).length > 10);
+assert.equal(await page.locator('#step-pins button').count(), 7);
 await page.waitForTimeout(500);
 await page.screenshot({ path: 'tmp/browser/mobile-lesson.png', fullPage: true });
 
-for (let step = 0; step < 5; step += 1) await page.click('#next-button');
+await page.click('[data-step="3"]');
+assert.equal(await page.locator('#examples-card .example-row').count(), 2);
+await page.click('[data-step="4"]');
+assert.equal(await page.locator('#trap-card .wrong').count(), 1);
+assert.equal(await page.locator('#trap-card .correct').count(), 1);
+for (let step = 4; step < 7; step += 1) await page.click('#next-button');
 assert.equal(await page.locator('#quiz-panel').isVisible(), true);
 for (let question = 0; question < 3; question += 1) {
   await page.click(`[data-question="${question}"][data-answer="0"]`);
@@ -39,6 +47,26 @@ assert.match(await page.locator('#progress-text').innerText(), /1 \/ 98 단원/)
 assert.equal(await page.locator('#recent-button').isVisible(), true);
 assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
 
+async function openUnit(targetPage, unitId) {
+  const [, book, chapter] = unitId.match(/^b(\d+)-c(\d+)-u\d+$/);
+  if (await targetPage.locator('#class-view').isVisible()) await targetPage.click('#home-button');
+  await targetPage.selectOption('#book-select', book);
+  await targetPage.selectOption('#chapter-select', `b${book}-c${chapter}`);
+  await targetPage.selectOption('#unit-select', unitId);
+  await targetPage.click('#start-button');
+  await targetPage.locator('#lesson-visual').waitFor({ state: 'visible' });
+  await targetPage.locator('#lesson-visual').evaluate(image => image.decode());
+}
+
+for (const unitId of ['b1-c1-u1', 'b2-c4-u1', 'b3-c10-u1']) {
+  await openUnit(page, unitId);
+  assert.equal(await page.locator('#lesson-visual').evaluate(image => image.complete && image.naturalWidth > 1000), true);
+  assert.equal(await page.locator('#step-pins button').count(), 7);
+  await page.click('[data-step="3"]');
+  assert.equal(await page.locator('#examples-card .example-row').count() >= 2, true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+}
+
 const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 desktop.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 desktop.on('pageerror', error => errors.push(error.message));
@@ -49,9 +77,9 @@ await desktop.click('#start-button');
 await desktop.emulateMedia({ media: 'print' });
 assert.equal(await desktop.locator('.class-layout').evaluate(element => getComputedStyle(element).display), 'none');
 assert.equal(await desktop.locator('#print-content').evaluate(element => getComputedStyle(element).display), 'block');
-assert.equal(await desktop.locator('#print-content .print-step').count(), 5);
+assert.equal(await desktop.locator('#print-content .print-step').count(), 2);
 assert.equal(await desktop.locator('#print-content .print-question').count(), 3);
 await desktop.screenshot({ path: 'tmp/browser/print-preview.png', fullPage: true });
 assert.deepEqual(errors, []);
 await browser.close();
-console.log('Browser flow passed: mobile lesson, quiz, persistence, desktop layout');
+console.log('Browser flow passed: all-book lessons, mobile quiz, persistence, desktop print');
