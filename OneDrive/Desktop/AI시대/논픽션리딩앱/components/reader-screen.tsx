@@ -7,7 +7,7 @@ import type { Article, VocabularyItem } from "@/lib/types";
 import { isSafePublicMedia } from "@/lib/public-article-schema";
 import { ArticleHeroPhoto } from "./article-hero-photo";
 
-export type ReaderEvent = { type: "page_view" | "word_open" | "audio_play" | "reader_complete"; articleId: string; at: string; detail?: string };
+export type ReaderEvent = { type: "page_view" | "word_open" | "audio_play" | "reader_complete" | "key_finder_check"; articleId: string; at: string; detail?: string; keyFinderSelections?: string[] };
 
 export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, onEvent, onPageChange }: { article: Article; initialPageIndex?: number; onFinish: () => void; onBack: () => void; onEvent: (event: ReaderEvent) => void; onPageChange?: (pageIndex: number) => void }) {
   const [pageIndex, setPageIndex] = useState(() => Math.max(0, Math.min(initialPageIndex, Math.max(article.pages.length - 1, 0))));
@@ -37,7 +37,16 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
     });
   }, [article.id, article.pages.length, initialPageIndex]);
 
-  const emit = (type: ReaderEvent["type"], detail?: string) => onEvent({ type, articleId: article.id, at: new Date().toISOString(), detail });
+  const emit = (type: ReaderEvent["type"], detail?: string, keyFinderSelections?: string[]) => onEvent({
+    type,
+    articleId: article.id,
+    at: new Date().toISOString(),
+    detail,
+    ...(keyFinderSelections ? { keyFinderSelections: [...keyFinderSelections] } : {}),
+  });
+  useEffect(() => {
+    if (finderChecked) emit("key_finder_check", keySentenceCorrect ? "correct" : "incorrect", selectedWords);
+  }, [finderChecked]);
   const openWord = (item: VocabularyItem, button: HTMLButtonElement) => { triggerRef.current = button; setWord(item); emit("word_open", item.word); };
   const closeWord = () => { setWord(null); requestAnimationFrame(() => triggerRef.current?.focus()); };
   const toggleSelectedWord = (selectedWord: string) => {

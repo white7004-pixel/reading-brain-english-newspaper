@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AppShell, type Destination } from "./app-shell";
 import { TodayScreen } from "./today-screen";
 import { ReaderScreen, type ReaderEvent } from "./reader-screen";
 import { QuizScreen, type QuizResult } from "./quiz-screen";
-import { CompletionScreen } from "./completion-screen";
+import { QuestResultScreen } from "./quest-result-screen";
 import { ExploreScreen } from "./explore-screen";
 import { ProfileScreen } from "./profile-screen";
 import { getPublishedArticles } from "@/lib/content";
 import { createDefaultLearnerState, recordAttempt, saveLearnerState, updateLearnerLevel, type LearnerLevel, type LearnerState } from "@/lib/learner-store";
 import { advanceActiveQuest, clearActiveQuest, setActiveQuest } from "@/lib/quest-progress";
+import { calculateQuestReward, type QuestReward } from "@/lib/quest-rewards";
 import type { Article } from "@/lib/types";
 
 type Session = {
@@ -19,6 +20,7 @@ type Session = {
   phase?: "reader" | "quiz" | "completion";
   events: ReaderEvent[];
   result?: QuizResult;
+  reward?: QuestReward;
   startedAt?: number;
 };
 
@@ -30,6 +32,7 @@ const localDate = () => {
 export function LearnerApp({ initialState, storage }: { initialState: LearnerState; storage: Storage }) {
   const [state, setState] = useState(initialState);
   const articles = getPublishedArticles(storage);
+  const completedArticleIdRef = useRef<string | null>(null);
   const [session, setSession] = useState<Session>(() => {
     const activeQuest = initialState.activeQuest;
     if (activeQuest && articles.some((article) => article.id === activeQuest.articleId)) {
@@ -39,9 +42,6 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
   });
 
   const article = session.articleId ? articles.find((item) => item.id === session.articleId) : undefined;
-  const connectedArticle = article?.connectedArticleId
-    ? articles.find((item) => item.id === article.connectedArticleId)
-    : undefined;
 
   const start = (next: Article) => {
     const activeQuest = state.activeQuest;
@@ -49,7 +49,7 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
       setSession({ screen: "learn", articleId: activeQuest.articleId, phase: activeQuest.phase, events: [], startedAt: Date.now() });
       return;
     }
-
+    completedArticleIdRef.current = null;
     const nextState = setActiveQuest(state, next.id);
     saveLearnerState(storage, nextState);
     setState(nextState);
@@ -58,6 +58,7 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
 
   const navigate = (next: Destination) => setSession({ screen: next, events: [] });
   const exitQuest = () => {
+    completedArticleIdRef.current = null;
     const next = clearActiveQuest(state);
     saveLearnerState(storage, next);
     setState(next);
@@ -65,9 +66,12 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
   };
 
   const completeQuiz = (result: QuizResult) => {
-    if (!article) return;
+    if (!article || completedArticleIdRef.current === article.id) return;
+    completedArticleIdRef.current = article.id;
     const now = new Date();
-    const xp = result.correct === result.total ? 35 : 25;
+    const keyFinderEvent = [...session.events].reverse().find((event) => event.type === "key_finder_check");
+    const keyFinderCorrect = keyFinderEvent?.detail === "correct";
+    const reward = calculateQuestReward({ correct: result.correct, total: result.total, keyFinderCorrect });
     const recorded = recordAttempt(state, {
       id: `${article.id}-${now.toISOString()}`,
       articleId: article.id,
@@ -79,12 +83,15 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
       total: result.total,
       hintsUsed: session.events.filter((event) => event.type === "word_open").length,
       durationSeconds: Math.max(1, Math.round((Date.now() - (session.startedAt ?? Date.now())) / 1000)),
-      xpAwarded: xp,
+      xpAwarded: reward.xp,
+      domain: article.domain,
+      keyFinderCorrect,
+      keyFinderSelections: keyFinderEvent?.keyFinderSelections ?? [],
     });
     const next = clearActiveQuest(recorded);
     saveLearnerState(storage, next);
     setState(next);
-    setSession((current) => ({ ...current, phase: "completion", result }));
+    setSession((current) => ({ ...current, phase: "completion", result, reward }));
   };
 
   return (
@@ -102,7 +109,7 @@ export function LearnerApp({ initialState, storage }: { initialState: LearnerSta
         setState(next);
       }} />}
       {session.screen === "learn" && article && session.phase === "quiz" && <QuizScreen questions={article.quiz} onExit={exitQuest} onComplete={completeQuiz} />}
-      {session.screen === "learn" && article && session.phase === "completion" && session.result && <CompletionScreen article={article} result={session.result} state={state} onHome={() => navigate("today")} onNext={connectedArticle ? () => start(connectedArticle) : undefined} />}
+      {session.screen === "learn" && article && session.phase === "completion" && session.reward && <QuestResultScreen article={article} reward={session.reward} state={state} onOpenMap={() => navigate("map")} onHome={() => navigate("today")} />}
       {session.screen === "explore" && <ExploreScreen articles={articles} initialDomain={null} onOpen={start} />}
       {session.screen === "profile" && <ProfileScreen
         state={state}

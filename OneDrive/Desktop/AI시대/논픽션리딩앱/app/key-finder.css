@@ -13,3 +13,4 @@
 .key-finder__result { margin-top: 12px; border-radius: 13px; padding: 13px; background: #fff0ed; color: var(--danger); font-size: 11px; line-height: 1.55; }
 .key-finder__result.is-correct { background: #edf7d6; color: var(--forest-800); }
 .key-finder__result p { margin: 6px 0 0; }
+.key-finder__result[role="status"] { border: 1px solid currentColor; }
