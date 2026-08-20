@@ -72,3 +72,11 @@ it("keeps published articles without quest metadata under the legacy library", (
   expect(screen.getByRole("heading", { name: "기존 라이브러리" })).toBeVisible();
   expect(screen.getByText(legacy.title)).toBeVisible();
 });
+
+it("only offers reading-time options represented by published articles", () => {
+  render(<ExploreScreen articles={getPublishedArticles()} onOpen={() => {}} initialDomain={null} />);
+
+  expect(screen.getByRole("option", { name: "3분 이하" })).toBeVisible();
+  expect(screen.queryByRole("option", { name: "4–5분" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("option", { name: "6분 이상" })).not.toBeInTheDocument();
+});

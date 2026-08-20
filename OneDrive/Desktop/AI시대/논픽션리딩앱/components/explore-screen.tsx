@@ -11,6 +11,11 @@ type DifficultyRange = "all" | "0-2" | "2-4" | "4-6" | "6-20";
 type ReadingTime = "all" | "3" | "4-5" | "6";
 type Readiness = "all" | "ready" | "needs-review" | "legacy";
 const domains = Object.keys(DOMAIN_LABELS) as KnowledgeDomain[];
+const readingTimeOptions: Array<{ value: Exclude<ReadingTime, "all">; label: string; matches: (article: Article) => boolean }> = [
+  { value: "3", label: "3분 이하", matches: (article) => article.estimatedMinutes <= 3 },
+  { value: "4-5", label: "4–5분", matches: (article) => article.estimatedMinutes >= 4 && article.estimatedMinutes <= 5 },
+  { value: "6", label: "6분 이상", matches: (article) => article.estimatedMinutes >= 6 },
+];
 
 export function filterArticles(
   articles: Article[],
@@ -58,6 +63,7 @@ export function ExploreScreen({ articles, onOpen, initialDomain }: { articles: A
   const [readiness, setReadiness] = useState<Readiness>("all");
   const publishedArticles = articles.filter((article) => article.status === "published");
   const collections = [...new Set(publishedArticles.flatMap((article) => article.quest ? [article.quest.collectionId] : []))].sort();
+  const availableReadingTimeOptions = readingTimeOptions.filter((option) => publishedArticles.some(option.matches));
   const results = filterArticles(publishedArticles, query, domain, range, collectionId, readingTime, readiness);
   const questResults = results.filter((article) => article.quest);
   const legacyResults = results.filter((article) => !article.quest);
@@ -79,7 +85,7 @@ export function ExploreScreen({ articles, onOpen, initialDomain }: { articles: A
       <div className="explore-selects">
         <label className="select-label">읽기 난이도<select value={range} onChange={(event) => setRange(event.target.value as DifficultyRange)}><option value="all">전체 수준</option><option value="0-2">0.1–2.0</option><option value="2-4">2.0–4.0</option><option value="4-6">4.0–6.0</option><option value="6-20">6.0 이상</option></select></label>
         <label className="select-label">컬렉션<select aria-label="컬렉션" value={collectionId} onChange={(event) => setCollectionId(event.target.value)}><option value="all">모든 컬렉션</option>{collections.map((collection) => <option key={collection} value={collection}>{collection}</option>)}</select></label>
-        <label className="select-label">읽기 시간<select aria-label="읽기 시간" value={readingTime} onChange={(event) => setReadingTime(event.target.value as ReadingTime)}><option value="all">모든 시간</option><option value="3">3분 이하</option><option value="4-5">4–5분</option><option value="6">6분 이상</option></select></label>
+        <label className="select-label">읽기 시간<select aria-label="읽기 시간" value={readingTime} onChange={(event) => setReadingTime(event.target.value as ReadingTime)}><option value="all">모든 시간</option>{availableReadingTimeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         <label className="select-label">퀘스트 상태<select aria-label="퀘스트 상태" value={readiness} onChange={(event) => setReadiness(event.target.value as Readiness)}><option value="all">모든 콘텐츠</option><option value="ready">준비된 퀘스트</option><option value="needs-review">준비 중인 퀘스트</option><option value="legacy">기존 라이브러리</option></select></label>
       </div>
       {questResults.length > 0 && <section className="explore-group" aria-labelledby="quest-library-heading"><h2 id="quest-library-heading">지식 퀘스트</h2><ArticleCards articles={questResults} onOpen={onOpen} /></section>}

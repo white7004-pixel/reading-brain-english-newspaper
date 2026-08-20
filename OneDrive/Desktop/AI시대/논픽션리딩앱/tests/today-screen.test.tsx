@@ -41,7 +41,7 @@ it("starts the daily discovery and reports map completion", async () => {
 
   await user.click(screen.getByRole("button", { name: "오늘의 발견 시작하기" }));
   expect(onStart).toHaveBeenCalledWith(article);
-  expect(screen.getByText("지식 지도 0% 완성")).toBeVisible();
+  expect(screen.getByText("지식지도 0% 완성")).toBeVisible();
   expect(screen.getByRole("img", { name: "날개를 펼쳐 조용히 나는 부엉이" })).toBeVisible();
   await user.click(screen.getByRole("button", { name: "지식 지도 열기" }));
   expect(onOpenMap).toHaveBeenCalledOnce();

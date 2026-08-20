@@ -20,7 +20,7 @@ type TodayScreenProps = {
 function mapCompletionLabel(articles: Article[], completedArticleIds: string[]): string {
   const nodes = buildKnowledgeMap(articles, completedArticleIds);
   const percent = nodes.length === 0 ? 0 : Math.round((nodes.filter((node) => node.state === "completed").length / nodes.length) * 100);
-  return `지식 지도 ${percent}% 완성`;
+  return `지식지도 ${percent}% 완성`;
 }
 
 export function TodayScreen({ state, articles, onStart, onOpenMap, onExplore }: TodayScreenProps) {
