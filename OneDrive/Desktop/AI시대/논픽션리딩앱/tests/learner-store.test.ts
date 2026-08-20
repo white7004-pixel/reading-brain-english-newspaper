@@ -75,6 +75,27 @@ it("migrates a v2 learner without losing its saved progress", () => {
   });
 });
 
+it("preserves optional growth-history fields when loading v1, v2, and v3 learner data", () => {
+  for (const schemaVersion of [1, 2, 3]) {
+    const legacy = createDefaultLearnerState() as unknown as Record<string, unknown>;
+    legacy.schemaVersion = schemaVersion;
+    if (schemaVersion < 3) delete legacy.activeQuest;
+    legacy.attempts = [{
+      ...attempt,
+      domain: "science",
+      keyFinderCorrect: true,
+      keyFinderSelections: ["core-word", "key-sentence"],
+    }];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+
+    expect(loadLearnerState(localStorage).attempts[0]).toMatchObject({
+      domain: "science",
+      keyFinderCorrect: true,
+      keyFinderSelections: ["core-word", "key-sentence"],
+    });
+  }
+});
+
 it("rejects new attempts without a complete immutable article snapshot", () => {
   expect(() => recordAttempt(createDefaultLearnerState(), { ...attempt, articleTitle: "   " })).toThrow(
     "Article snapshot",

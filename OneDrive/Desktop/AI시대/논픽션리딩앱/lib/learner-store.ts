@@ -27,6 +27,9 @@ export type LearningAttempt = {
   hintsUsed: number;
   durationSeconds: number;
   xpAwarded: number;
+  domain?: KnowledgeDomain;
+  keyFinderCorrect?: boolean;
+  keyFinderSelections?: string[];
 };
 
 export type NewLearningAttempt = Omit<LearningAttempt, "articleTitle" | "articleVersion"> & {
