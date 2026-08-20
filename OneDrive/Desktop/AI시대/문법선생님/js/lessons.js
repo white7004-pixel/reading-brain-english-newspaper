@@ -44,6 +44,20 @@ function createLesson(unit) {
     chapter: unit.chapter,
     title: unit.title,
     pageReference: unit.pageReference,
+    hook: summary,
+    analogy: `${unit.title}은 문장에서 알맞은 자리를 찾는 표지판과 같아요. 뜻과 형태를 함께 보면 길을 잃지 않아요.`,
+    formula: `${unit.title} → 뜻 확인 → 형태 확인 → 문장 속 역할 확인`,
+    examples: [
+      { en: example, ko: `${unit.title}의 핵심 형태를 보여 주는 문장입니다.`, focus: caution },
+      { en: `We [[practice]] ${unit.id} carefully.`, ko: '우리는 이 문법 형태를 주의 깊게 연습한다.', focus: `${unit.title}의 쓰임을 문장 안에서 확인하세요.` }
+    ],
+    trap: {
+      wrong: `${unit.title}: 뜻을 보지 않고 형태만 고르기`,
+      correct: `${unit.title}: 뜻·형태·역할을 함께 확인하기`,
+      reason: caution
+    },
+    memory: `뜻 → 형태 → 역할, 이 순서로 ${unit.title}을 확인하세요.`,
+    visualKey: 'sentence-stage',
     steps: [
       { label: '도입', heading: `${unit.title}, 왜 배울까요?`, lines: [summary], narration: `${unit.title}은 문장의 뜻을 정확히 전달하는 데 꼭 필요한 표현이에요. 오늘은 형태와 쓰임을 차근차근 확인해 봐요.` },
       { label: '핵심', heading: '한 줄 핵심', lines: [summary, caution], narration: `${summary} ${caution}` },

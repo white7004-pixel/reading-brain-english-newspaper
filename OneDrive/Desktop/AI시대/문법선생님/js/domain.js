@@ -3,17 +3,21 @@ const isText = value => typeof value === 'string' && value.trim().length > 0;
 export function validateLesson(lesson) {
   const errors = [];
   if (!lesson || typeof lesson !== 'object') return ['lesson must be an object'];
-  for (const field of ['id', 'chapter', 'title', 'pageReference']) {
+  for (const field of ['id', 'chapter', 'title', 'pageReference', 'hook', 'analogy', 'formula', 'memory', 'visualKey']) {
     if (!isText(lesson[field])) errors.push(`${field} must be a non-empty string`);
   }
   if (![1, 2, 3].includes(lesson.book)) errors.push('book must be 1, 2, or 3');
-  if (!Array.isArray(lesson.steps) || lesson.steps.length < 4 || lesson.steps.length > 7) {
-    errors.push('steps must contain 4 to 7 items');
+  if (!Array.isArray(lesson.examples) || lesson.examples.length < 2) {
+    errors.push('examples must contain at least 2 items');
   } else {
-    lesson.steps.forEach((step, index) => {
-      if (![step.label, step.heading, step.narration].every(isText)) errors.push(`steps[${index}] has empty text`);
-      if (!Array.isArray(step.lines) || !step.lines.length || !step.lines.every(isText)) errors.push(`steps[${index}].lines is invalid`);
+    lesson.examples.forEach((example, index) => {
+      for (const field of ['en', 'ko', 'focus']) {
+        if (!isText(example?.[field])) errors.push(`examples[${index}].${field} is required`);
+      }
     });
+  }
+  for (const field of ['wrong', 'correct', 'reason']) {
+    if (!isText(lesson.trap?.[field])) errors.push(`trap.${field} is required`);
   }
   if (!Array.isArray(lesson.quiz) || lesson.quiz.length < 3) {
     errors.push('quiz must contain at least 3 items');
