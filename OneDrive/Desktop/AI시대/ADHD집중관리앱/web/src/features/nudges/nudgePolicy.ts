@@ -30,8 +30,10 @@ export function isQuietTime(now: Date, quietStart: string, quietEnd: string) {
 
 export function selectNudgeTask(tasks: Task[], now: Date, latestResponse: TaskCheckInResponse | null = null) {
   const open = tasks.filter((task) => !['completed', 'canceled'].includes(task.status))
-  if (latestResponse?.action === 'later' && latestResponse.remindAt && new Date(latestResponse.remindAt) > now) {
-    return selectNowTask(open.filter((task) => task.id !== latestResponse.taskId), now)
+  if (latestResponse?.action === 'later' && latestResponse.remindAt) {
+    const delayed = open.find((task) => task.id === latestResponse.taskId)
+    if (new Date(latestResponse.remindAt) > now) return selectNowTask(open.filter((task) => task.id !== latestResponse.taskId), now)
+    if (delayed?.required) return delayed
   }
   return selectNowTask(open, now)
 }

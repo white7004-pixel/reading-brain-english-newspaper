@@ -1,7 +1,27 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { expect, it } from 'vitest'
+import { afterEach, beforeEach, expect, it } from 'vitest'
 import { App } from './App'
+import { AppShell } from './AppShell'
+import { TodayScreen } from '../features/today/TodayScreen'
+import { createDatabase } from '../core/storage/database'
+import { createTaskRepository } from '../core/storage/taskRepository'
+import { taskCheckInRepository } from '../features/nudges/taskCheckIn'
+import { MemoryRouter } from 'react-router-dom'
+import { settingsRepository } from '../features/settings/settingsRepository'
+
+const database = createDatabase()
+const taskRepository = createTaskRepository(database)
+
+beforeEach(async () => {
+  await database.tasks.clear()
+  localStorage.clear()
+})
+
+afterEach(async () => {
+  taskCheckInRepository.clear()
+  await database.tasks.clear()
+})
 
 it('keeps the five tabs in the approved order', () => {
   render(<App />)
@@ -19,4 +39,37 @@ it('does not change navigation when profile type changes', async () => {
   const before = screen.getAllByRole('link').map((link) => link.getAttribute('href'))
   await userEvent.selectOptions(screen.getByLabelText('사용자 유형'), 'worker')
   expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual(before)
+})
+
+it('keeps a prior-day required mission delayed through quiet time and returns that same mission after the delay', async () => {
+  await taskRepository.put({
+    id: 'prior-required', title: '지난 미션', day: '2020-01-01', status: 'open', priority: 1,
+    estimateMinutes: 20, category: 'study', source: 'manual', required: true, firstAction: '책 펼치기',
+    createdAt: '2020-01-01T09:00:00+09:00', updatedAt: '2020-01-01T09:00:00+09:00',
+  })
+  settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00', determinedMonggle: false })
+  const user = userEvent.setup()
+  render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
+
+  const mission = await screen.findByRole('region', { name: '현재 필수 미션' })
+  await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('지난 미션'))
+
+  await user.click(within(mission).getByRole('button', { name: '5분 후 다시 알림' }))
+  await waitFor(() => expect(screen.queryByTestId('persistent-now-task')).not.toBeInTheDocument())
+
+  const now = new Date()
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(now)
+  const hour = Number(parts.find((part) => part.type === 'hour')!.value)
+  const minute = Number(parts.find((part) => part.type === 'minute')!.value)
+  const quietStart = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+  const quietEnd = `${String((hour + (minute === 59 ? 1 : 0)) % 24).padStart(2, '0')}:${String((minute + 1) % 60).padStart(2, '0')}`
+  settingsRepository.save({ quietHoursStart: quietStart, quietHoursEnd: quietEnd })
+  window.dispatchEvent(new Event('monggle:settings-changed'))
+  const delayed = taskCheckInRepository.load()!
+  taskCheckInRepository.save({ ...delayed, remindAt: new Date(now.getTime() - 1_000).toISOString() })
+  expect(screen.queryByTestId('persistent-now-task')).not.toBeInTheDocument()
+
+  settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00' })
+  window.dispatchEvent(new Event('monggle:settings-changed'))
+  await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('지난 미션'))
 })

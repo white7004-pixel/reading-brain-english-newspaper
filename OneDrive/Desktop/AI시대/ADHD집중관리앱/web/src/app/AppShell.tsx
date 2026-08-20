@@ -50,7 +50,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
     const refreshTasks = async () => {
-      let saved = await shellTaskRepository.listForDay(todayInSeoul())
+      const [forToday, required] = await Promise.all([
+        shellTaskRepository.listForDay(todayInSeoul()),
+        shellTaskRepository.listRequiredOpen(),
+      ])
+      let saved = [...forToday, ...required.filter((task) => !forToday.some(({ id }) => id === task.id))]
       const nativeEvents = await nativeWidgetBridge.getCompletionEvents()
       if (nativeEvents.available && nativeEvents.events.length > 0) {
         const merged = mergeWidgetEvents(saved, nativeEvents.events)
