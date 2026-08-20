@@ -27,5 +27,13 @@ assert.match(css, /\.mg-bottom-nav[\s\S]*?\.mobile-bottom-item[\s\S]*?min-height
 assert.match(css, /@media \(max-width:\s*760px\)[\s\S]*?\.mg-sidebar[\s\S]*?transform:\s*translateX\(-100%\)/);
 assert.match(css, /@media \(max-width:\s*760px\)[\s\S]*?main[\s\S]*?env\(safe-area-inset-bottom\)/);
 assert.match(app, /window\.ReadingBrainGameUI\?\.setMode\?\.\(mode\)/);
+assert.match(
+  app,
+  /function syncMobileBottomNav\(mode\)[\s\S]*?button\.classList\.toggle\("active", button\.dataset\.mobileMode === mode\)[\s\S]*?button\.setAttribute\("aria-current", button\.dataset\.mobileMode === mode \? "page" : "false"\)/,
+);
+assert.match(
+  app,
+  /function bindMobileNavEvents\(\)[\s\S]*?\$\$\("\[data-mobile-mode\]"\)\.forEach[\s\S]*?button\.addEventListener\("click"[\s\S]*?mode === "menu"[\s\S]*?setNavOpen\(true\)[\s\S]*?setMode\(mode\)/,
+);
 
 console.log("mint galaxy shell tests passed");

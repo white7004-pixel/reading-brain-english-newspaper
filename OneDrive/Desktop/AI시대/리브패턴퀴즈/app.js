@@ -2267,6 +2267,13 @@ async function renderLeaderboard() {
 
 const PATTERN_MODES = ["hub", "study", "quiz", "match", "blast", "review", "leaderboard", "interpret"];
 
+function syncMobileBottomNav(mode) {
+  $$("[data-mobile-mode]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.mobileMode === mode);
+    button.setAttribute("aria-current", button.dataset.mobileMode === mode ? "page" : "false");
+  });
+}
+
 function setMode(mode) {
   if (mode === "wordgames" || !$(`#${mode}View`)) mode = "study";
   state.mode = mode;
@@ -2295,6 +2302,7 @@ function setMode(mode) {
   }[mode];
   const mobileTitle = $("#mobileTitle");
   if (mobileTitle) mobileTitle.textContent = elements.screenTitle.textContent;
+  syncMobileBottomNav(mode);
   setNavOpen(false);
   window.ReadingBrainGameUI?.setMode?.(mode);
 
@@ -2429,6 +2437,18 @@ function bindMobileNavEvents() {
 
   const scrim = $("#navScrim");
   if (scrim) scrim.addEventListener("click", () => setNavOpen(false));
+
+  $$("[data-mobile-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const mode = button.dataset.mobileMode;
+      if (mode === "menu") {
+        setNavOpen(true);
+        return;
+      }
+      setNavOpen(false);
+      setMode(mode);
+    });
+  });
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") setNavOpen(false);
