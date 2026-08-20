@@ -47,6 +47,26 @@ assert.match(await page.locator('#progress-text').innerText(), /1 \/ 98 단원/)
 assert.equal(await page.locator('#recent-button').isVisible(), true);
 assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
 
+async function openUnit(targetPage, unitId) {
+  const [, book, chapter] = unitId.match(/^b(\d+)-c(\d+)-u\d+$/);
+  if (await targetPage.locator('#class-view').isVisible()) await targetPage.click('#home-button');
+  await targetPage.selectOption('#book-select', book);
+  await targetPage.selectOption('#chapter-select', `b${book}-c${chapter}`);
+  await targetPage.selectOption('#unit-select', unitId);
+  await targetPage.click('#start-button');
+  await targetPage.locator('#lesson-visual').waitFor({ state: 'visible' });
+  await targetPage.waitForFunction(() => document.querySelector('#lesson-visual')?.naturalWidth > 1000);
+}
+
+for (const unitId of ['b1-c1-u1', 'b2-c4-u1', 'b3-c10-u1']) {
+  await openUnit(page, unitId);
+  assert.equal(await page.locator('#lesson-visual').evaluate(image => image.complete && image.naturalWidth > 1000), true);
+  assert.equal(await page.locator('#step-pins button').count(), 7);
+  await page.click('[data-step="3"]');
+  assert.equal(await page.locator('#examples-card .example-row').count() >= 2, true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+}
+
 const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 desktop.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 desktop.on('pageerror', error => errors.push(error.message));
@@ -62,4 +82,4 @@ assert.equal(await desktop.locator('#print-content .print-question').count(), 3)
 await desktop.screenshot({ path: 'tmp/browser/print-preview.png', fullPage: true });
 assert.deepEqual(errors, []);
 await browser.close();
-console.log('Browser flow passed: mobile lesson, quiz, persistence, desktop layout');
+console.log('Browser flow passed: all-book lessons, mobile quiz, persistence, desktop print');
