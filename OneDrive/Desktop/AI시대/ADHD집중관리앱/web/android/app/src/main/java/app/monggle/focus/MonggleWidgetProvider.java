@@ -7,10 +7,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,14 +49,35 @@ public class MonggleWidgetProvider extends AppWidgetProvider {
         try {
             JSONObject snapshot = new JSONObject(store.getString(MonggleWidgetPlugin.SNAPSHOT_KEY, "{}"));
             JSONArray tasks = snapshot.optJSONArray("tasks");
-            int count = tasks == null ? 0 : tasks.length();
-            views.setTextViewText(R.id.widget_title, snapshot.optString("nudgeLine", "몽글이와 한 가지씩 해봐요"));
-            setTask(views, R.id.widget_task_1, tasks, 0);
-            if (medium) {
-                setTask(views, R.id.widget_task_2, tasks, 1);
-                setTask(views, R.id.widget_task_3, tasks, 2);
+            List<WidgetRenderPolicy.Task> parsedTasks = new ArrayList<>();
+            if (tasks != null) {
+                for (int index = 0; index < tasks.length(); index++) {
+                    JSONObject task = tasks.optJSONObject(index);
+                    if (task != null) parsedTasks.add(new WidgetRenderPolicy.Task(task.optString("id"), task.optString("title")));
+                }
             }
-            String taskId = count > 0 ? tasks.optJSONObject(0).optString("id") : "";
+            WidgetRenderPolicy.Result result = WidgetRenderPolicy.render(
+                new WidgetRenderPolicy.Snapshot(
+                    parsedTasks,
+                    snapshot.optString("nudgeLine", "몽글이와 한 가지씩 해봐요"),
+                    snapshot.optString("currentMissionId", null),
+                    snapshot.optString("commitmentDay", null),
+                    snapshot.optString("firstAction", null),
+                    snapshot.optString("escalationLevel", null)
+                ),
+                medium ? WidgetRenderPolicy.Size.MEDIUM : WidgetRenderPolicy.Size.SMALL
+            );
+            views.setTextViewText(R.id.widget_title, result.titleLine);
+            views.setTextColor(R.id.widget_title, Color.parseColor(result.extended ? "#FFE08A" : "#E9DEFF"));
+            views.setInt(R.id.widget_root, "setBackgroundResource", result.extended ? R.drawable.monggle_widget_extended_background : R.drawable.monggle_widget_background);
+            views.setTextViewText(R.id.widget_first_action, result.firstActionLine);
+            views.setViewVisibility(R.id.widget_first_action, result.firstActionLine.isEmpty() ? View.GONE : View.VISIBLE);
+            setTask(views, R.id.widget_task_1, result.visibleTasks, 0);
+            if (medium) {
+                setTask(views, R.id.widget_task_2, result.visibleTasks, 1);
+                setTask(views, R.id.widget_task_3, result.visibleTasks, 2);
+            }
+            String taskId = result.visibleTasks.isEmpty() ? "" : result.visibleTasks.get(0).id;
             bindAction(context, views, R.id.widget_done, "done", taskId, 1);
             bindAction(context, views, R.id.widget_working, "working", taskId, 2);
             bindAction(context, views, R.id.widget_later, "later", taskId, 3);
@@ -65,10 +89,10 @@ public class MonggleWidgetProvider extends AppWidgetProvider {
         manager.updateAppWidget(id, views);
     }
 
-    private static void setTask(RemoteViews views, int viewId, JSONArray tasks, int index) {
-        JSONObject task = tasks == null ? null : tasks.optJSONObject(index);
+    private static void setTask(RemoteViews views, int viewId, List<WidgetRenderPolicy.Task> tasks, int index) {
+        WidgetRenderPolicy.Task task = index < tasks.size() ? tasks.get(index) : null;
         views.setViewVisibility(viewId, task == null ? View.GONE : View.VISIBLE);
-        if (task != null) views.setTextViewText(viewId, task.optString("title"));
+        if (task != null) views.setTextViewText(viewId, task.title);
     }
 
     private static void bindAction(Context context, RemoteViews views, int viewId, String response, String taskId, int requestCode) {
