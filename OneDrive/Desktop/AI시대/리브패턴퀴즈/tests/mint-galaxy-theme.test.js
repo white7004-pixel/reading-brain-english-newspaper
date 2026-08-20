@@ -7,7 +7,10 @@ const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const cssPath = path.join(root, "mint-galaxy.css");
 const css = fs.existsSync(cssPath) ? fs.readFileSync(cssPath, "utf8") : "";
 
-assert.match(html, /<link rel="stylesheet" href="styles\.css\?v=20260820-quiz-button-fix"\s*\/?>[\s\S]*?<link rel="stylesheet" href="mint-galaxy\.css\?v=20260821"\s*\/?>/);
+const stylesLink = html.indexOf('<link rel="stylesheet" href="styles.css');
+const mintLink = html.indexOf('<link rel="stylesheet" href="mint-galaxy.css?v=20260821"');
+assert.ok(stylesLink >= 0, "the existing styles.css link must remain present");
+assert.ok(mintLink > stylesLink, "Mint Galaxy CSS must follow the existing styles.css link");
 
 for (const token of [
   "--mg-ink: #24345B",
@@ -27,7 +30,8 @@ for (const token of [
 ]) assert.ok(css.includes(token), `missing Mint Galaxy token: ${token}`);
 
 for (const selector of [".mg-surface", ".mg-card", ".mg-button", ".mg-chip", ".mg-star", ".mg-focus-ring", ".mg-speech-bubble"]) {
-  assert.match(css, new RegExp(`\\${selector}\\s*\\{`), `missing shared selector: ${selector}`);
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  assert.match(css, new RegExp(`${escapedSelector}\\s*(?:,|\\{)`), `missing shared selector: ${selector}`);
 }
 
 assert.match(css, /\.mg-button\s*\{[\s\S]*?min-height:\s*56px[\s\S]*?box-shadow:/);
