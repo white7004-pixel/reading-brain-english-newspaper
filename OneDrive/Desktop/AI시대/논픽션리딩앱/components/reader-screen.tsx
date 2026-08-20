@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { ProgressBar } from "./ui/progress-bar";
 import type { Article, VocabularyItem } from "@/lib/types";
 import { isSafePublicMedia } from "@/lib/public-article-schema";
+import { ArticleHeroPhoto } from "./article-hero-photo";
 
 export type ReaderEvent = { type: "page_view" | "word_open" | "audio_play" | "reader_complete"; articleId: string; at: string; detail?: string };
 
@@ -62,7 +63,7 @@ export function ReaderScreen({ article, onFinish, onBack, onEvent }: { article: 
     <section className="reader-screen">
       <header className="reader-top"><button type="button" className="icon-button" aria-label="읽기 종료" onClick={onBack}>←</button><span>{safePageIndex + 1} / {article.pages.length}</span><button type="button" className="icon-button" aria-label="글 저장">♡</button></header>
       <ProgressBar value={safePageIndex + 1} max={article.pages.length} label="읽기 진행률" />
-      <div className={`article-visual article-visual--${article.visualTheme}`}><span>{article.domain.toUpperCase()} · 오늘의 질문</span></div>
+      <ArticleHeroPhoto heroImage={article.heroImage} visualTheme={article.visualTheme} variant="reader"><span>{article.domain.toUpperCase()} · 오늘의 질문</span></ArticleHeroPhoto>
       {safeMedia.length > 0 && <div className="reader-media">
         {safeMedia.map((item) => item.kind === "image"
           ? <img key={`image-${item.url}`} className="reader-media__asset" src={item.url} alt={item.alt} loading="lazy" referrerPolicy="no-referrer" />

@@ -6,6 +6,7 @@ import { DOMAIN_LABELS } from "@/lib/sample-content";
 import { rankArticles } from "@/lib/recommendation";
 import type { LearnerState } from "@/lib/learner-store";
 import type { Article, KnowledgeDomain } from "@/lib/types";
+import { ArticleHeroPhoto } from "./article-hero-photo";
 
 const domainIcons: Record<KnowledgeDomain, string> = { science: "✦", history: "⌛", arts: "◒", philosophy: "?", "self-development": "↗", "world-culture": "◎" };
 
@@ -23,10 +24,10 @@ export function HomeScreen({ state, articles, onStart, onExplore }: { state: Lea
       <p className="home-hello">좋은 하루예요, {state.profile.name}!</p>
       <h1>오늘도 세상을<br />하나 더 알아볼까요?</h1>
       <div className="metric-row"><Chip>🔥 {state.profile.streak}일 연속</Chip><Chip>{levelLabel}</Chip><Chip>⚡ {state.profile.xp} XP</Chip></div>
-      <article className={`daily-card daily-card--${daily.visualTheme}`}>
+      <ArticleHeroPhoto heroImage={daily.heroImage} visualTheme={daily.visualTheme} variant="home">
         <p>TODAY&apos;S 3-MIN READ</p><div className="daily-card__spark" aria-hidden="true">✦</div>
         <h2>{daily.title}</h2><span>{DOMAIN_LABELS[daily.domain]} · {daily.difficulty.value.toFixed(1)} · 약 3분</span>
-      </article>
+      </ArticleHeroPhoto>
       <Button fullWidth onClick={() => onStart(daily)}>오늘의 지식 시작하기</Button>
       <div className="section-heading"><h2>관심 분야 탐험</h2><button type="button" onClick={() => onExplore()}>전체보기</button></div>
       <div className="domain-grid">{state.profile.interests.slice(0, 4).map((domain) => <button key={domain} type="button" onClick={() => onExplore(domain)}><span aria-hidden="true">{domainIcons[domain]}</span>{DOMAIN_LABELS[domain]}</button>)}</div>

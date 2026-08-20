@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ExploreScreen } from "@/components/explore-screen";
 import { getPublishedArticles } from "@/lib/content";
+import { AR1_BATCH_07_IMAGES } from "@/lib/library/ar1-07-images";
 
 it("filters reviewed articles by domain and difficulty", async () => {
   const user = userEvent.setup();
@@ -10,6 +11,14 @@ it("filters reviewed articles by domain and difficulty", async () => {
   await user.selectOptions(screen.getByLabelText("읽기 난이도"), "4-6");
   expect(screen.getAllByTestId("article-card")).toHaveLength(1);
   expect(screen.getByText("What Can We Control?")).toBeVisible();
+});
+
+it("uses an article photo in the library thumbnail", () => {
+  const article = { ...getPublishedArticles()[0], heroImage: AR1_BATCH_07_IMAGES["ar1-owl-flight"] };
+
+  render(<ExploreScreen articles={[article]} onOpen={() => {}} initialDomain={null} />);
+
+  expect(screen.getByRole("img", { name: "날개를 펼쳐 날고 있는 올빼미" })).toBeVisible();
 });
 
 it("offers a reset action when filters have no result", async () => {

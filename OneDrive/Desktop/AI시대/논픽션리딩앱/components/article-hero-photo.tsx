@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { ArticleHeroImage } from "@/lib/types";
 
 type ArticleHeroPhotoProps = {
@@ -13,7 +13,6 @@ type ArticleHeroPhotoProps = {
 
 export function ArticleHeroPhoto({ heroImage, visualTheme, variant, children }: ArticleHeroPhotoProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  useEffect(() => setFailedSrc(null), [heroImage?.src]);
   const showPhoto = Boolean(heroImage && failedSrc !== heroImage.src);
   const className = [
     "article-hero",
