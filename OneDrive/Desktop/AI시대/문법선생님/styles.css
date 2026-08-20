@@ -40,3 +40,16 @@ body{background:#eef0f5;background-image:radial-gradient(circle at 15% 5%,rgba(2
 .teacher img{transform:scale(1.22);transform-origin:center bottom}
 .home-teacher{opacity:.22}
 @media(max-width:580px){.teacher img{transform:scale(1.34)}}
+
+/* Masterclass lesson panels */
+.masterclass-card{top:10%;min-height:70%;padding:clamp(18px,2.7vw,34px);transform:none;overflow:auto}
+.master-panel[hidden]{display:none}
+.lesson-visual{display:block;width:100%;height:clamp(170px,27vh,245px);object-fit:cover;object-position:center;border-radius:14px;margin-bottom:18px;box-shadow:0 14px 30px rgba(7,26,51,.2)}
+.master-panel h2{margin:12px 0 18px}
+.master-panel>p{font-size:clamp(17px,2vw,23px);line-height:1.65}
+.analogy-card,.formula-card,.memory-card,.ready-card{padding:clamp(16px,2vw,28px);border-radius:16px;background:linear-gradient(145deg,#fff,#f4eddd)}
+.formula-card>p,.memory-card>p{padding:22px;border:2px solid var(--gold);border-radius:14px;background:#fffaf0;color:var(--navy);font-size:clamp(20px,2.5vw,30px);font-weight:900;text-align:center}
+.example-list{display:grid;gap:12px}.example-row{padding:14px 17px;border:1px solid #dfd5be;border-radius:13px;background:#fff}.example-row p{margin:2px 0}.example-en{font-size:clamp(17px,2vw,22px);font-weight:800}.example-en mark{background:linear-gradient(transparent 55%,var(--gold2) 0);color:inherit}.example-ko{color:var(--muted)}.example-row small{display:block;margin-top:6px;color:#795b26}
+.trap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.trap-grid>div{padding:18px;border-radius:13px}.trap-grid strong{display:block;margin-bottom:8px}.trap-grid p{margin:0}.trap-grid .wrong{background:#fff0ef;border:1px solid #d99;color:#7e2930}.trap-grid .correct{background:#fff8e4;border:1px solid var(--gold);color:var(--navy)}.trap-reason{padding:12px 15px;border-left:4px solid var(--gold);background:#fff;margin-top:14px}
+@media(max-width:900px){.masterclass-card{left:6%;right:4%;top:9%;min-height:72%}.lesson-visual{height:220px}}
+@media(max-width:580px){.board{min-height:680px}.masterclass-card{top:8%;left:4%;right:4%;min-height:74%;max-height:510px;padding:18px 16px}.lesson-visual{height:190px}.trap-grid{grid-template-columns:1fr}.teacher{opacity:.82}.teacher-bubble{max-height:90px;overflow:auto}}

@@ -21,6 +21,9 @@ test('app shell exposes the complete accessible learning flow', () => {
   for (const id of ['book-select','chapter-select','unit-select','start-button','lesson-stage','teacher-bubble','prev-button','next-button','quiz-panel','progress-summary']) {
     assert.match(html, new RegExp(`id="${id}"`), id);
   }
+  for (const id of ['lesson-visual','lesson-hook','analogy-card','formula-card','examples-card','trap-card','memory-card']) {
+    assert.match(html, new RegExp(`id="${id}"`), id);
+  }
   assert.match(html, /type="module" src="\.\/js\/app\.js"/);
   assert.doesNotMatch(html, /<script[^>]+https?:\/\//);
 });

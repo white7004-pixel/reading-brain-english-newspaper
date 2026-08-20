@@ -59,7 +59,18 @@
           <div class="board">
             <div id="step-pins" class="step-pins" aria-label="수업 단계"></div>
             <div class="teacher" aria-hidden="true"><img src="./assets/teacher-3d-navy.png" alt=""></div>
-            <article id="lesson-stage" class="lesson-card" tabindex="-1"></article>
+            <article id="lesson-stage" class="lesson-card masterclass-card" tabindex="-1">
+              <section class="master-panel" data-panel="0">
+                <img id="lesson-visual" class="lesson-visual" src="" alt="" decoding="async">
+                <span class="label">10초 핵심</span><h2 id="lesson-hook"></h2>
+              </section>
+              <section id="analogy-card" class="master-panel analogy-card" data-panel="1" hidden><span class="label">실생활 비유</span><h2>눈앞의 장면으로 이해해요</h2><p></p></section>
+              <section id="formula-card" class="master-panel formula-card" data-panel="2" hidden><span class="label">형태 공식</span><h2>이 구조만 잡아요</h2><p></p></section>
+              <section id="examples-card" class="master-panel examples-card" data-panel="3" hidden><span class="label">대표 예문</span><h2>문장에서 바로 확인해요</h2><div class="example-list"></div></section>
+              <section id="trap-card" class="master-panel trap-card" data-panel="4" hidden><span class="label">시험 함정</span><h2>틀린 이유까지 알아야 실력이 돼요</h2><div class="trap-grid"><div class="wrong"></div><div class="correct"></div></div><p class="trap-reason"></p></section>
+              <section id="memory-card" class="master-panel memory-card" data-panel="5" hidden><span class="label">기억 공식</span><h2>시험 직전, 이 한 줄</h2><p></p></section>
+              <section class="master-panel ready-card" data-panel="6" hidden><span class="label">확인 문제</span><h2>이제 직접 고르면 내 것이 됩니다</h2><p>세 문제를 풀고 해설로 마지막 빈틈까지 확인해요.</p></section>
+            </article>
             <div id="teacher-bubble" class="teacher-bubble"></div>
           </div>
           <div class="chalk-tray">

@@ -21,10 +21,18 @@ assert.ok(await page.locator('.teacher img').evaluate(image => image.complete &&
 assert.equal(await page.locator('#home-view').isVisible(), false);
 assert.ok((await page.locator('.skip-link').boundingBox()).y < 0);
 assert.match(await page.locator('#unit-title').innerText(), /be동사/);
+assert.equal(await page.locator('#lesson-visual').evaluate(image => image.complete && image.naturalWidth > 1000), true);
+assert.ok((await page.locator('#lesson-hook').innerText()).length > 10);
+assert.equal(await page.locator('#step-pins button').count(), 7);
 await page.waitForTimeout(500);
 await page.screenshot({ path: 'tmp/browser/mobile-lesson.png', fullPage: true });
 
-for (let step = 0; step < 5; step += 1) await page.click('#next-button');
+await page.click('[data-step="3"]');
+assert.equal(await page.locator('#examples-card .example-row').count(), 2);
+await page.click('[data-step="4"]');
+assert.equal(await page.locator('#trap-card .wrong').count(), 1);
+assert.equal(await page.locator('#trap-card .correct').count(), 1);
+for (let step = 4; step < 7; step += 1) await page.click('#next-button');
 assert.equal(await page.locator('#quiz-panel').isVisible(), true);
 for (let question = 0; question < 3; question += 1) {
   await page.click(`[data-question="${question}"][data-answer="0"]`);
@@ -49,7 +57,7 @@ await desktop.click('#start-button');
 await desktop.emulateMedia({ media: 'print' });
 assert.equal(await desktop.locator('.class-layout').evaluate(element => getComputedStyle(element).display), 'none');
 assert.equal(await desktop.locator('#print-content').evaluate(element => getComputedStyle(element).display), 'block');
-assert.equal(await desktop.locator('#print-content .print-step').count(), 5);
+assert.equal(await desktop.locator('#print-content .print-step').count(), 2);
 assert.equal(await desktop.locator('#print-content .print-question').count(), 3);
 await desktop.screenshot({ path: 'tmp/browser/print-preview.png', fullPage: true });
 assert.deepEqual(errors, []);
