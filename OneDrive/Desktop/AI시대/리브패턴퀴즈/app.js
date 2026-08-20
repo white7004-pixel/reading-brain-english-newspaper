@@ -724,6 +724,22 @@ function renderHub(sections) {
 
 const INTERPRET_COUNTDOWN = 3;
 const INTERPRET_LISTEN_MS = 8000;
+const INTERPRET_CONSOLE_PHASES = ["idle", "countdown", "listening", "verdict", "pass", "fail", "complete"];
+const INTERPRET_MASCOT_STATES = Object.freeze({
+  listening: "listening",
+  pass: "correct",
+  fail: "wrong",
+  complete: "complete",
+});
+
+function setInterpretConsoleState(phase) {
+  const consoleEl = $("#interpretView .communication-console");
+  if (!consoleEl || !INTERPRET_CONSOLE_PHASES.includes(phase)) return;
+  INTERPRET_CONSOLE_PHASES.forEach((name) => consoleEl.classList.toggle(`is-${name}`, name === phase));
+  consoleEl.dataset.interpretPhase = phase;
+  const mascotState = INTERPRET_MASCOT_STATES[phase];
+  if (mascotState) window.ReadingBrainGameUI?.setMascot?.(mascotState);
+}
 
 function speechRecognitionCtor() {
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -794,6 +810,7 @@ function renderInterpretEntry(sections) {
   if (state.mode !== "interpret") return;
   if (state.interpret) return; // 진행 중에는 화면을 갈아끼우지 않는다
   if (state.interpretShowingResult) return; // 결과 화면을 덮지 않는다
+  setInterpretConsoleState("idle");
 
   if (!unlocked) {
     showInterpretPane("interpretLocked");
@@ -881,7 +898,7 @@ function beginInterpretQuestion() {
   $("#interpretHeard").textContent = "";
   $("#interpretVerdict").classList.add("hidden");
   $("#interpretSelf").classList.add("hidden");
-  $("#interpretStatus").className = "interpret-status";
+  $("#interpretStatus").className = "interpret-status communication-mic";
   renderInterpretProgress();
 
   const tick = () => {
@@ -893,6 +910,7 @@ function beginInterpretQuestion() {
         String(active.countdown),
       );
       active.countdown -= 1;
+      setInterpretConsoleState("countdown");
       interpretLater(tick, 700);
       return;
     }
@@ -910,13 +928,15 @@ function listenInterpretAnswer() {
   if (!Recognizer) {
     run.selfScored = true;
     setInterpretStatus("지금 말해 보세요", "");
-    $("#interpretStatus").className = "interpret-status listening";
+    $("#interpretStatus").className = "interpret-status communication-mic listening";
+    setInterpretConsoleState("listening");
     interpretLater(() => revealSelfScoring(), 4000);
     return;
   }
 
   setInterpretStatus("듣고 있어요", "");
-  $("#interpretStatus").className = "interpret-status listening";
+  $("#interpretStatus").className = "interpret-status communication-mic listening";
+  setInterpretConsoleState("listening");
 
   let settled = false;
   const recognizer = new Recognizer();
@@ -979,8 +999,9 @@ function revealSelfScoring() {
   if (!run) return;
   run.phase = "verdict";
   const item = run.items[run.index];
-  $("#interpretStatus").className = "interpret-status";
+  $("#interpretStatus").className = "interpret-status communication-mic";
   setInterpretStatus("정답을 보고 스스로 채점하세요", "");
+  setInterpretConsoleState("verdict");
   $("#interpretAnswer").textContent = item.english;
   $("#interpretVerdictLabel").textContent = "정답";
   $("#interpretVerdict").classList.remove("hidden");
@@ -1002,8 +1023,9 @@ function judgeInterpretAnswer(transcript) {
   // 재도전은 문장당 한 번만 준다.
   if (score.verdict === "retry" && run.attempt === 0) {
     run.attempt = 1;
-    $("#interpretStatus").className = "interpret-status retry";
+    $("#interpretStatus").className = "interpret-status communication-mic retry";
     setInterpretStatus("거의 맞았어요 — 한 번 더!", "");
+    setInterpretConsoleState("verdict");
     interpretLater(beginInterpretQuestion, 1400);
     return;
   }
@@ -1027,7 +1049,7 @@ function finishInterpretQuestion(verdict, item) {
   $("#interpretVerdictLabel").textContent = verdict === "pass" ? "통과" : "다시 연습";
   $("#interpretAnswer").textContent = item.english;
   $("#interpretSelf").classList.add("hidden");
-  $("#interpretStatus").className = `interpret-status ${verdict}`;
+  $("#interpretStatus").className = `interpret-status communication-mic ${verdict}`;
   setInterpretStatus(verdict === "pass" ? "좋아요!" : "정답을 확인하세요", "");
 
   if (verdict === "pass") {
@@ -1040,6 +1062,7 @@ function finishInterpretQuestion(verdict, item) {
   saveState();
   updateStats();
   renderInterpretProgress();
+  setInterpretConsoleState(verdict);
 
   speakExpression(item, 1);
   interpretLater(advanceInterpret, verdict === "pass" ? 1100 : 1900);
@@ -1104,6 +1127,7 @@ function finishInterpretRun() {
 
   saveState();
   updateStats();
+  setInterpretConsoleState("complete");
 }
 
 function renderStudyContext(sections) {

@@ -275,7 +275,7 @@
         </section>
 
         <section id="interpretView" class="view">
-          <div class="interpret-shell">
+          <div class="interpret-shell communication-console is-idle" data-interpret-phase="idle">
             <div class="interpret-locked hidden" id="interpretLocked">
               <span class="interpret-eyebrow">Locked</span>
               <h2>아직 잠겨 있어요</h2>
@@ -308,7 +308,8 @@
 
               <div class="interpret-stage">
                 <p class="interpret-korean" id="interpretKorean">한국어 문장</p>
-                <div class="interpret-status" id="interpretStatus">
+                <div class="interpret-status communication-mic" id="interpretStatus" role="status" aria-live="polite" aria-label="통역 마이크 상태">
+                  <svg class="communication-mic-icon" aria-hidden="true"><use href="#ico-speak" /></svg>
                   <span class="interpret-count" id="interpretCount">3</span>
                   <span class="interpret-status-text" id="interpretStatusText">준비하세요</span>
                 </div>
