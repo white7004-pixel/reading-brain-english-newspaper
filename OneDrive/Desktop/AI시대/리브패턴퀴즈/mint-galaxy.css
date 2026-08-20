@@ -1,0 +1,130 @@
+/* Mint Galaxy design tokens and reusable 3D-friendly primitives. */
+:root {
+  --mg-ink: #24345B;
+  --mg-mint: #35C6A8;
+  --mg-sky: #4DB8FF;
+  --mg-star: #FFC857;
+  --mg-coral: #FF6B6B;
+  --mg-bg: #F5F8FC;
+  --mg-surface: #FFFFFF;
+  --mg-line: #DDE5EF;
+  --mg-radius-sm: 16px;
+  --mg-radius-md: 20px;
+  --mg-radius-lg: 28px;
+  --mg-depth-sm: 4px;
+  --mg-depth-md: 6px;
+  --mg-depth-lg: 8px;
+  --mg-shadow-sm: 0 var(--mg-depth-sm) 0 rgba(36, 52, 91, 0.12);
+  --mg-shadow-md: 0 var(--mg-depth-md) 0 rgba(36, 52, 91, 0.14);
+  --mg-shadow-lg: 0 var(--mg-depth-lg) 0 rgba(36, 52, 91, 0.16);
+  --mg-motion: 160ms ease;
+}
+
+.mg-surface,
+.mg-card {
+  color: var(--mg-ink);
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-line);
+  border-radius: var(--mg-radius-md);
+}
+
+.mg-surface {
+  box-shadow: var(--mg-shadow-sm);
+}
+
+.mg-card {
+  padding: 24px;
+  box-shadow: var(--mg-shadow-md);
+}
+
+.mg-button {
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  color: var(--mg-surface);
+  background: var(--mg-mint);
+  border: 2px solid transparent;
+  border-radius: var(--mg-radius-sm);
+  box-shadow: var(--mg-shadow-md);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: transform var(--mg-motion), box-shadow var(--mg-motion), filter var(--mg-motion);
+}
+
+.mg-button:hover {
+  filter: brightness(0.96);
+  transform: translateY(-2px);
+}
+
+.mg-button:active {
+  transform: translateY( var(--mg-depth-sm) );
+  box-shadow: 0 2px 0 rgba(36, 52, 91, 0.14);
+}
+
+.mg-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 14px;
+  color: var(--mg-ink);
+  background: rgba(77, 184, 255, 0.18);
+  border: 2px solid var(--mg-sky);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.mg-star {
+  color: var(--mg-star);
+  filter: drop-shadow(0 2px 0 rgba(36, 52, 91, 0.16));
+}
+
+.mg-focus-ring {
+  outline: 4px solid transparent;
+  outline-offset: 3px;
+}
+
+.mg-focus-ring:focus-visible,
+.mg-button:focus-visible {
+  outline: 4px solid var(--mg-star);
+  outline-offset: 3px;
+}
+
+.mg-speech-bubble {
+  position: relative;
+  padding: 18px 20px;
+  color: var(--mg-ink);
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-line);
+  border-radius: var(--mg-radius-lg);
+  box-shadow: var(--mg-shadow-sm);
+}
+
+.mg-speech-bubble::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  bottom: -12px;
+  width: 20px;
+  height: 20px;
+  background: var(--mg-surface);
+  border-right: 2px solid var(--mg-line);
+  border-bottom: 2px solid var(--mg-line);
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-button {
+    --mg-motion: 0ms;
+    transition: none;
+  }
+
+  .mg-button:hover,
+  .mg-button:active {
+    transform: none;
+  }
+}
