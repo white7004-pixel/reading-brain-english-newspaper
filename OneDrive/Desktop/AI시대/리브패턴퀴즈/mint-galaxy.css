@@ -241,3 +241,186 @@
   .planet-button { transition: none; }
   .planet-button:hover:not(:disabled), .planet-button:active:not(:disabled) { transform: none; }
 }
+
+/* Core learning cards and quiz choices. */
+#studyView .mg-surface,
+#quizView .mg-surface {
+  width: min(100%, 920px);
+  margin-inline: auto;
+  padding: clamp(18px, 4vw, 32px);
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-line);
+  border-radius: var(--mg-radius-lg);
+  box-shadow: var(--mg-shadow-lg);
+}
+
+.quest-card {
+  color: var(--mg-ink);
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-line);
+  border-radius: var(--mg-radius-lg);
+  box-shadow: var(--mg-shadow-md);
+}
+
+.quest-card .card-face {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.quest-card-english {
+  width: min(100%, 22ch);
+  margin-inline: auto;
+  color: var(--mg-ink);
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.25;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.quest-card-meaning {
+  width: min(100%, 32ch);
+  margin-inline: auto;
+  color: var(--mg-ink);
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.45;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+#quizQuestion.quest-card {
+  width: min(100%, 28ch);
+  margin-inline: auto;
+  padding: clamp(20px, 4vw, 30px);
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.answer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+#quizView #quizOptions .answer-card {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 18px;
+  color: var(--mg-ink);
+  background: var(--mg-surface);
+  border: 2px solid var(--mg-line);
+  border-radius: var(--mg-radius-sm);
+  box-shadow: var(--mg-shadow-sm);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+  transition: transform var(--mg-motion), box-shadow var(--mg-motion), filter var(--mg-motion);
+}
+
+#quizView #quizOptions .answer-card:hover:not(:disabled) {
+  filter: brightness(0.98);
+  transform: translateY(-2px);
+}
+
+#quizView #quizOptions .answer-card:active:not(:disabled) {
+  box-shadow: 0 2px 0 rgba(36, 52, 91, 0.14);
+  transform: translateY(var(--mg-depth-sm));
+}
+
+#quizView #quizOptions .answer-card:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.action-know {
+  min-height: 56px;
+  color: var(--mg-ink);
+  background: var(--mg-mint);
+  border-color: #21977f;
+  box-shadow: 0 var(--mg-depth-md) 0 #21977f;
+}
+
+.action-review {
+  min-height: 56px;
+  color: var(--mg-ink);
+  background: var(--mg-coral);
+  border-color: #d84d4d;
+  box-shadow: 0 var(--mg-depth-md) 0 #d84d4d;
+}
+
+#speakButton {
+  min-height: 56px;
+  color: var(--mg-ink);
+  background: var(--mg-sky);
+  border-color: #258bc7;
+  box-shadow: 0 var(--mg-depth-md) 0 #258bc7;
+}
+
+#quizView #quizOptions .answer-card.correct {
+  color: var(--mg-ink);
+  background: var(--mg-mint);
+  border-color: #21977f;
+  box-shadow: 0 var(--mg-depth-sm) 0 #21977f;
+}
+
+#quizView #quizOptions .answer-card.wrong {
+  color: var(--mg-ink);
+  background: var(--mg-coral);
+  border-color: #d84d4d;
+  box-shadow: 0 var(--mg-depth-sm) 0 #d84d4d;
+}
+
+#studyView :is(.study-actions button, .action-know, .action-review) {
+  min-height: 56px;
+}
+
+#studyView :is(.nav-buttons button, #sectionDoneBtn),
+#quizView #newQuizButton {
+  min-height: 48px;
+}
+
+#studyView button:focus-visible,
+#studyView [role="button"]:focus-visible,
+#quizView button:focus-visible {
+  outline: 4px solid var(--mg-ink);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  #studyView .mg-surface,
+  #quizView .mg-surface {
+    padding: 18px 14px;
+  }
+
+  .quest-card-english {
+    font-size: clamp(24px, 8vw, 36px);
+  }
+
+  .quest-card-meaning {
+    font-size: clamp(18px, 5.5vw, 24px);
+  }
+
+  .answer-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .answer-card {
+    transition: none;
+  }
+
+  .answer-card:hover:not(:disabled),
+  .answer-card:active:not(:disabled) {
+    transform: none;
+  }
+}
