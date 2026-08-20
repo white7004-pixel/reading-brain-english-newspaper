@@ -655,12 +655,38 @@
       </main>
     </div>
 
+    <aside id="livGuide" class="liv-guide" data-state="default" aria-live="polite" aria-label="책 요정 리브 안내">
+      <svg class="liv-mascot" viewBox="0 0 180 180" aria-hidden="true">
+        <ellipse cx="90" cy="158" rx="58" ry="13" fill="#24345B" opacity=".16" />
+        <path d="M32 50Q63 35 88 55v88Q61 124 32 139Z" fill="#35C6A8" stroke="#24345B" stroke-width="5" />
+        <path d="M148 50Q117 35 92 55v88q27-19 56-4Z" fill="#4DB8FF" stroke="#24345B" stroke-width="5" />
+        <path d="M90 56v87" stroke="#fff" stroke-width="5" opacity=".75" />
+        <circle class="liv-eye" cx="66" cy="83" r="7" fill="#24345B" /><circle class="liv-eye" cx="115" cy="83" r="7" fill="#24345B" />
+        <path class="liv-mouth" d="M77 101q13 14 27 0" fill="none" stroke="#24345B" stroke-width="5" stroke-linecap="round" />
+        <path d="M31 91 14 78M149 91l17-13" stroke="#24345B" stroke-width="7" stroke-linecap="round" />
+        <path d="m52 45 8-18 12 17M108 44l12-17 8 19" fill="#FFC857" stroke="#C9901C" stroke-width="4" />
+      </svg>
+      <p id="livMessage">함께 시작해 볼까요?</p>
+    </aside>
+    <style>
+      .liv-guide { position: fixed; right: 18px; bottom: 82px; z-index: 12; display: flex; align-items: center; gap: 10px; max-width: min(320px, calc(100vw - 36px)); padding: 10px 14px 10px 10px; color: var(--mg-ink); background: var(--mg-surface); border: 2px solid var(--mg-line); border-radius: var(--mg-radius-md); box-shadow: var(--mg-shadow-md); }
+      .liv-mascot { width: 54px; flex: 0 0 54px; filter: drop-shadow(0 3px 0 rgba(36, 52, 91, .12)); }
+      .liv-guide p { margin: 0; font-weight: 800; line-height: 1.35; }
+      .liv-guide[data-state="guide"], .liv-guide[data-state="listening"] { border-color: var(--mg-sky); }
+      .liv-guide[data-state="correct"] { border-color: var(--mg-mint); }
+      .liv-guide[data-state="wrong"] { border-color: var(--mg-coral); }
+      .liv-guide[data-state="complete"] { border-color: var(--mg-star); }
+      @media (max-width: 640px) { .liv-guide { right: 12px; bottom: 70px; } }
+    </style>
+
     <script src="data/expressions.js"></script>
     <script src="data/verbs.js"></script>
     <script src="data/bookquiz.js"></script>
     <script src="learning-dashboard-model.js?v=20260627-dashboard"></script>
     <script src="pattern-hub-model.js?v=20260818-path"></script>
     <script src="interpretation-model.js?v=20260818-path"></script>
+    <script src="game-ui-model.js?v=20260821"></script>
+    <script src="game-ui.js?v=20260821"></script>
     <script src="app.js?v=20260818-calm"></script>
   </body>
 </html>
