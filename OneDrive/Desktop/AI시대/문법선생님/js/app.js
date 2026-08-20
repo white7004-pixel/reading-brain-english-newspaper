@@ -47,6 +47,7 @@ function openLesson(unitId) {
   $('class-view').hidden = false;
   $('quiz-panel').hidden = true;
   renderLesson();
+  $('lesson-stage').focus({ preventScroll: true });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function renderLesson() {
@@ -59,6 +60,7 @@ function renderLesson() {
   $('teacher-bubble').textContent = saved.settings.subtitles ? item.narration : '';
   $('step-pins').innerHTML = lesson.steps.map((_,index)=>`<button type="button" data-step="${index}" class="${index===step?'current':index<step?'done':''}" aria-label="${index+1}단계">${index+1}</button>`).join('');
   $('lesson-flow').innerHTML = lesson.steps.map((part,index)=>`<li class="${index===step?'current':index<step?'done':''}"><button type="button" data-step="${index}">${index+1}. ${escapeHtml(part.label)} · ${escapeHtml(part.heading)}</button></li>`).join('') + `<li><button type="button" data-quiz="true">✓ 확인 문제</button></li>`;
+  $('print-content').innerHTML = `<header><p>문법 AI 선생님 · GRAMMAR ${lesson.book}</p><h1>${escapeHtml(lesson.title)}</h1><small>${escapeHtml(lesson.pageReference)}</small></header>${lesson.steps.map((part,index)=>`<article class="print-step"><h2>${index+1}. ${escapeHtml(part.label)} · ${escapeHtml(part.heading)}</h2>${part.lines.map(line=>`<p>${highlight(line)}</p>`).join('')}<p class="print-note">선생님 설명: ${escapeHtml(part.narration)}</p></article>`).join('')}<section><h2>확인 문제</h2>${lesson.quiz.map((question,index)=>`<article class="print-question"><p><strong>${index+1}. ${escapeHtml(question.question)}</strong></p><p>${question.options.map((option,optionIndex)=>`${String.fromCharCode(65+optionIndex)}. ${escapeHtml(option)}`).join('　')}</p><p class="print-answer">정답 ${String.fromCharCode(65+question.answer)} · ${escapeHtml(question.explanation)}</p></article>`).join('')}</section>`;
   $('prev-button').disabled = step === 0;
   $('next-button').textContent = step === lesson.steps.length-1 ? '문제 풀기 →' : '다음 →';
 }
