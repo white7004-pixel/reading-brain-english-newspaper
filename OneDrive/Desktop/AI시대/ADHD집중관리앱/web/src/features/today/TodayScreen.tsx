@@ -6,7 +6,7 @@ import { buildTimeline } from './buildTimeline'
 import { NowCard } from './NowCard'
 import { parseTaskDrafts } from './parseTaskDrafts'
 import { QuickCapture } from './QuickCapture'
-import { recommendForEnergy, type Energy } from './selectNowTask'
+import { recommendForEnergy, selectCurrentMission, type Energy } from './selectNowTask'
 import { TaskDraftReview } from './TaskDraftReview'
 import type { TaskDraft } from './taskDraft'
 import { Timeline } from './Timeline'
@@ -16,11 +16,15 @@ import type { Category } from '../../core/model/category'
 import { DEFAULT_CATEGORIES } from '../../core/model/category'
 import { createCategoryRepository } from '../../core/storage/categoryRepository'
 import { PriorityTaskList } from './PriorityTaskList'
+import { MissionCommitmentReview } from '../missions/MissionCommitmentReview'
+import { CurrentMissionCard } from '../missions/CurrentMissionCard'
+import { completeMission } from '../missions/missionState'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
   saveMany(tasks: Task[]): Promise<unknown>
   listForDay?(day: string): Promise<Task[]>
+  listRequiredOpen?(): Promise<Task[]>
   updateWidget(snapshot: WidgetSnapshot): Promise<unknown>
   listCategories?(): Promise<Category[]>
   addCategory?(input: { name: string; color: string }): Promise<Category>
@@ -33,6 +37,7 @@ const defaultDependencies: TodayDependencies = {
   parse: parseTaskDrafts,
   saveMany: taskRepository.putMany,
   listForDay: taskRepository.listForDay,
+  listRequiredOpen: taskRepository.listRequiredOpen,
   updateWidget: (snapshot) => nativeWidgetBridge.update(snapshot),
   listCategories: async () => {
     await categoryRepository.ensureDefaults()
@@ -52,10 +57,17 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES)
   const [selectedCategoryId, setSelectedCategoryId] = useState('all')
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy), [tasks, energy])
+  const currentMission = useMemo(() => selectCurrentMission(tasks), [tasks])
 
   useEffect(() => {
     let active = true
-    if (dependencies.listForDay) void dependencies.listForDay(dayFor(new Date())).then((saved) => { if (active) setTasks(saved) })
+    if (dependencies.listForDay || dependencies.listRequiredOpen) void Promise.all([
+      dependencies.listForDay ? dependencies.listForDay(dayFor(new Date())) : Promise.resolve([]),
+      dependencies.listRequiredOpen ? dependencies.listRequiredOpen() : Promise.resolve([]),
+    ]).then(([forToday, required]) => {
+      if (!active) return
+      setTasks([...forToday, ...required.filter((task) => !forToday.some(({ id }) => id === task.id))])
+    })
     if (dependencies.listCategories) void dependencies.listCategories().then((saved) => { if (active) setCategories(saved) })
     return () => { active = false }
   }, [dependencies])
@@ -87,6 +99,16 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     setDrafts([])
   }
 
+  const startMission = (task: Task) => {
+    void saveTasks([{ ...task, status: 'active', updatedAt: new Date().toISOString() }])
+  }
+
+  const completeCurrentMission = (task: Task) => {
+    void saveTasks([completeMission(task, new Date())])
+  }
+
+  const reviewableTasks = tasks.filter((task) => !task.required && task.status !== 'completed' && task.status !== 'canceled')
+
   return <>
     <div className="energy"><span>지금 에너지는?</span>{(['low', 'medium', 'high'] as const).map((value, index) => <button aria-pressed={energy === value} key={value} onClick={() => setEnergy(value)}>{['낮음', '보통', '높음'][index]}</button>)}</div>
     <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, new Date()))} onSingleTask={addSingleTask} />
@@ -96,7 +118,8 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       setCategories((current) => [...current, category])
       return category
     }} onChange={setDrafts} onSave={(reviewed) => void saveDrafts(reviewed)} onCancel={() => setDrafts([])} />}
-    <NowCard task={nowTask} />
+    {reviewableTasks.length > 0 && <MissionCommitmentReview tasks={reviewableTasks} onConfirm={(committed) => void saveTasks(committed)} />}
+    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => undefined} onReschedule={() => undefined} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
     <PriorityTaskList tasks={tasks} categories={categories} activeTaskId={nowTask?.id} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
     <Timeline items={buildTimeline(tasks, [])} />
   </>

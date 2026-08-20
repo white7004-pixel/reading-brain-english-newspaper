@@ -19,6 +19,10 @@ export function selectNowTask(tasks: Task[], now = new Date()): Task | null {
   })[0] ?? null
 }
 
+export function selectCurrentMission(tasks: Task[], now = new Date()): Task | null {
+  return selectNowTask(tasks.filter((task) => task.required && task.status !== 'completed' && task.status !== 'canceled'), now)
+}
+
 export function recommendForEnergy(tasks: Task[], energy: Energy, now = new Date()): Task | null {
   const locked = tasks.filter((task) => task.status === 'active' || (task.dueAt && new Date(task.dueAt) < now))
   if (locked.length) return selectNowTask(locked, now)

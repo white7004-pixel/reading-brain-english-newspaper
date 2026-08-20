@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Task } from '../../core/model/task'
-import { recommendForEnergy, selectNowTask } from './selectNowTask'
+import { recommendForEnergy, selectCurrentMission, selectNowTask } from './selectNowTask'
 
 const now = new Date('2026-08-20T09:00:00+09:00')
 const makeTask = (id: string, overrides: Partial<Task> = {}): Task => ({
@@ -11,6 +11,15 @@ const makeTask = (id: string, overrides: Partial<Task> = {}): Task => ({
 })
 
 describe('Now One Thing selection', () => {
+  it('selects only unfinished required missions', () => {
+    const required = makeTask('required', { required: true, priority: 1 })
+    const optional = makeTask('optional', { priority: 3 })
+    const completed = makeTask('completed', { required: true, status: 'completed' })
+    const canceled = makeTask('canceled', { required: true, status: 'canceled' })
+
+    expect(selectCurrentMission([optional, completed, canceled, required], now)?.id).toBe('required')
+  })
+
   it('selects active, overdue, nearest due, then highest priority', () => {
     const active = makeTask('active', { status: 'active' })
     const overdue = makeTask('overdue', { dueAt: '2026-08-20T08:00:00+09:00', priority: 1 })
