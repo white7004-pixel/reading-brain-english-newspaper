@@ -10,6 +10,7 @@ import {
 } from "@/lib/studio-workflow";
 import { completeAttestedStage, makeStudioArticle } from "@/tests/studio-fixtures";
 import type { ArticleEditPatch, ReviewStage, StudioArticle } from "@/lib/studio-types";
+import type { QuestMetadata } from "@/lib/quest-types";
 
 const heroImage = {
   src: "/article-images/ar1-batch-07/owl-flight.jpg",
@@ -22,12 +23,24 @@ const heroImage = {
   isModified: false as const,
 };
 
+const quest: QuestMetadata = {
+  curiosityQuestionKo: "열대우림은 왜 중요할까?", knowledgeTakeawayKo: "열대우림은 기후와 생명을 돕는다.",
+  collectionId: "ar1-living-world", mapOrder: 1, prerequisiteArticleIds: [], nextArticleIds: ["ar1-ocean-tides"],
+};
+
 describe("content review workflow", () => {
   it("publishes the attributed hero photograph into the learner snapshot", () => {
     const published = publishReviewedArticle(makeStudioArticle({ heroImage }));
 
     expect(published.versionHistory[0].snapshot.heroImage).toEqual(heroImage);
     expect(published.versionHistory[0].snapshot.heroImage).not.toBe(heroImage);
+  });
+  it("publishes cloned quest relationships only after the existing approval workflow", () => {
+    const published = publishReviewedArticle(makeStudioArticle({ quest }));
+
+    expect(published.versionHistory[0].snapshot.quest).toEqual(quest);
+    expect(published.versionHistory[0].snapshot.quest?.nextArticleIds).not.toBe(quest.nextArticleIds);
+    expect(published.versionHistory[0].snapshot.mobilePreviewAcknowledged).toBe(true);
   });
   it("requires a source before facts review can complete", () => {
     const article = makeStudioArticle({ sources: [] });
@@ -329,6 +342,23 @@ describe("content review workflow", () => {
     expect(() => publishArticle({ ...approved, previewReview: null }, "2026-08-17T07:00:00.000Z")).toThrow("모바일 미리보기를 확인해 주세요.");
   });
 
+  it("does not let quest readiness bypass the existing review and approval workflow", () => {
+    const readyLookingDraft = makeStudioArticle({
+      workflowStatus: "draft",
+      quest: {
+        curiosityQuestionKo: "왜 그럴까요?",
+        knowledgeTakeawayKo: "관찰하면 원인을 찾을 수 있어요.",
+        collectionId: "science-path",
+        mapOrder: 1,
+        prerequisiteArticleIds: [],
+        nextArticleIds: [],
+      },
+      previewReview: { actor: "editor-1", reviewedAt: "2026-08-17T00:00:00.000Z", workingVersion: 1 },
+    });
+
+    expect(() => publishArticle(readyLookingDraft, "2026-08-17T05:00:00.000Z")).toThrow("최종 승인 후 발행할 수 있습니다.");
+  });
+
   it("invalidates preview acknowledgement only for learner-facing edits", () => {
     const article = makeStudioArticle();
     expect(applyArticleEdit(article, { title: "Visible edit" }, "2026-08-17T01:00:00.000Z").previewReview).toBeNull();
@@ -337,7 +367,7 @@ describe("content review workflow", () => {
 
   it.each([
     ["title", "facts"], ["titleKo", "facts"], ["summaryEn", "facts"], ["summaryKo", "facts"], ["domain", "facts"], ["subtopic", "facts"],
-    ["sources", "facts"], ["sourceNotes", "facts"], ["reconstructionConfirmed", "facts"], ["rightsNotes", "facts"], ["media", "facts"], ["connectedArticleId", "facts"], ["visualTheme", "facts"],
+    ["sources", "facts"], ["sourceNotes", "facts"], ["reconstructionConfirmed", "facts"], ["rightsNotes", "facts"], ["media", "facts"], ["connectedArticleId", "facts"], ["visualTheme", "facts"], ["quest", "facts"],
     ["difficulty", "language"], ["estimatedReadingSeconds", "language"], ["wordCount", "language"], ["pages", "language"], ["vocabulary", "language"], ["quiz", "language"], ["keySentence", "language"], ["audioUrl", "language"],
     ["interestBand", "age"], ["minAge", "age"], ["maxAge", "age"], ["safetyFlags", "age"], ["safetyReviewed", "age"], ["learningGoal", "age"], ["keyConcept", "age"],
   ] as Array<[keyof ArticleEditPatch, ReviewStage]>)('invalidates %s from the %s stage', (field, stage) => {

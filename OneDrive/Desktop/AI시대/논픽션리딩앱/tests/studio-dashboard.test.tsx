@@ -87,6 +87,13 @@ it("keeps incomplete reviews, approval pending, and publication-ready items in t
   expect(screen.getByText("공개 중 1")).toBeInTheDocument();
 });
 
+it("shows quest readiness progress without replacing workflow status", () => {
+  render(<StudioDashboard articles={[makeStudioArticle({ title: "Quest draft" })]} onCreate={() => {}} onOpen={() => {}} />);
+
+  expect(screen.getByText(/퀘스트 준비 \d\/8/)).toBeVisible();
+  expect(screen.getByText("초안", { selector: ".studio-status" })).toBeVisible();
+});
+
 it("shows each non-terminal item with its next required action and opens it from the queue", async () => {
   const user = userEvent.setup();
   const onOpen = vi.fn();

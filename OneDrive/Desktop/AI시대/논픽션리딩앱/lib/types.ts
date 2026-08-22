@@ -1,3 +1,5 @@
+import type { QuestMetadata } from "./quest-types";
+
 export type KnowledgeDomain = "science" | "history" | "arts" | "philosophy" | "self-development" | "world-culture";
 export type InterestBand = "lower-elementary" | "upper-elementary" | "teen" | "adult" | "all-ages";
 export type ContentStatus = "draft" | "review" | "published" | "withdrawn";
@@ -32,6 +34,7 @@ export type VocabularyItem = {
 
 export type QuizQuestion = {
   id: string;
+  type?: "comprehension" | "inference" | "vocabulary";
   prompt: string;
   options: string[];
   correctIndex: number;
@@ -87,4 +90,6 @@ export type Article = {
   heroImage?: ArticleHeroImage;
   media: ArticleMedia[];
   audioUrl?: string;
+  quest?: QuestMetadata;
+  mobilePreviewAcknowledged?: boolean;
 };

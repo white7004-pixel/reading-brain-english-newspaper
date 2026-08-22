@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { formatAgeRange, matchesDifficultyBand, type DifficultyBandId } from "@/lib/content-taxonomy";
 import type { KnowledgeDomain } from "@/lib/types";
 import type { StudioArticle, WorkflowStatus } from "@/lib/studio-types";
+import { evaluateQuestReadiness } from "@/lib/quest-readiness";
+import { projectWorkingArticle } from "@/components/studio/studio-preview";
 
 const WORKFLOW_META: Record<WorkflowStatus, { label: string; icon: string }> = {
   draft: { label: "초안", icon: "✎" },
@@ -201,10 +203,12 @@ function FilterSelect({ label, value, onChange, children }: { label: string; val
 
 function ArticleRow({ article, onOpen }: { article: StudioArticle; onOpen: (article: StudioArticle) => void }) {
   const workflow = WORKFLOW_META[article.workflowStatus];
+  const readiness = evaluateQuestReadiness(projectWorkingArticle(article));
   return (
     <article className="studio-article-row" role="listitem">
       <div className="studio-article-row__main">
         <span className="studio-status" data-status={article.workflowStatus}><span aria-hidden="true">{workflow.icon}</span> {workflow.label}</span>
+        <span className="studio-status" data-readiness={readiness.ready ? "ready" : "pending"}>퀘스트 준비 {readiness.passed}/{readiness.total}</span>
         {article.activePublicationVersion !== null ? (
           <span className="studio-status" data-publication-status="live">
             공개 버전 {article.activePublicationVersion} 유지 중

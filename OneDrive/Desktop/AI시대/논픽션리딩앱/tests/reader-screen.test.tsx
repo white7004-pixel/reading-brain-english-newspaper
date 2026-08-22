@@ -21,6 +21,18 @@ it("opens vocabulary help and completes every reading page", async () => {
   expect(onFinish).toHaveBeenCalledTimes(1);
 });
 
+it("remounts at the saved page and reports a new page", async () => {
+  const user = userEvent.setup();
+  const onPageChange = vi.fn();
+  const article = getPublishedArticles()[0];
+  render(<ReaderScreen article={article} initialPageIndex={1} onFinish={() => {}} onBack={() => {}} onEvent={() => {}} onPageChange={onPageChange} />);
+
+  expect(screen.getByText(`2 / ${article.pages.length}`)).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "\uB2E4\uC74C \uD398\uC774\uC9C0" }));
+
+  expect(onPageChange).toHaveBeenCalledWith(2);
+});
+
 it("shows the article photo and full credit in the reader", () => {
   const article = { ...getPublishedArticles()[0], heroImage: AR1_BATCH_07_IMAGES["ar1-owl-flight"] };
 

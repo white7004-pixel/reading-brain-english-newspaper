@@ -50,12 +50,50 @@ it("migrates old attempts without inventing missing article snapshots", () => {
 
   const loaded = loadLearnerState(localStorage);
 
-  expect(loaded.schemaVersion).toBe(2);
+  expect(loaded.schemaVersion).toBe(3);
+  expect(loaded.activeQuest).toBeNull();
   expect(loaded.attempts[0]).toMatchObject({
     articleId: "stars-shine",
     articleTitle: undefined,
     articleVersion: undefined,
   });
+});
+
+it("migrates a v2 learner without losing its saved progress", () => {
+  const v2 = createDefaultLearnerState() as unknown as Record<string, unknown>;
+  v2.schemaVersion = 2;
+  delete v2.activeQuest;
+  v2.completedArticleIds = ["stars-shine"];
+  v2.savedWords = [{ articleId: "stars-shine", word: "energy" }];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(v2));
+
+  expect(loadLearnerState(localStorage)).toMatchObject({
+    schemaVersion: 3,
+    activeQuest: null,
+    completedArticleIds: ["stars-shine"],
+    savedWords: [{ articleId: "stars-shine", word: "energy" }],
+  });
+});
+
+it("preserves optional growth-history fields when loading v1, v2, and v3 learner data", () => {
+  for (const schemaVersion of [1, 2, 3]) {
+    const legacy = createDefaultLearnerState() as unknown as Record<string, unknown>;
+    legacy.schemaVersion = schemaVersion;
+    if (schemaVersion < 3) delete legacy.activeQuest;
+    legacy.attempts = [{
+      ...attempt,
+      domain: "science",
+      keyFinderCorrect: true,
+      keyFinderSelections: ["core-word", "key-sentence"],
+    }];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+
+    expect(loadLearnerState(localStorage).attempts[0]).toMatchObject({
+      domain: "science",
+      keyFinderCorrect: true,
+      keyFinderSelections: ["core-word", "key-sentence"],
+    });
+  }
 });
 
 it("rejects new attempts without a complete immutable article snapshot", () => {

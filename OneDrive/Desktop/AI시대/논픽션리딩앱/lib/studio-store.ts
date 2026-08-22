@@ -2,6 +2,7 @@ import { ageBoundsForInterestBand } from "./content-taxonomy";
 import { clonePublicArticle, deepFreeze, isArticleHeroImage, parsePublicArticle } from "./public-article-schema";
 import { createSeedStudioState } from "./studio-seed";
 import { getActivePublication } from "./studio-workflow";
+import { cloneQuestMetadata, isQuestMetadata } from "./quest-types";
 import type {
   ApprovalRecord,
   AuditHistoryEntry,
@@ -215,6 +216,7 @@ function migrateLegacyArticle(value: unknown): StudioArticle {
     visualTheme: asString(value.visualTheme),
     ...(isArticleHeroImage(value.heroImage) ? { heroImage: { ...value.heroImage } } : {}),
     ...(isString(value.audioUrl) ? { audioUrl: value.audioUrl } : {}),
+    ...(isQuestMetadata(value.quest) ? { quest: cloneQuestMetadata(value.quest) } : {}),
     workingVersion,
     workflowStatus: wasPublished && publicationMatchesWorking ? "published" : wasWithdrawn && publicationMatchesWorking ? "withdrawn" : "draft",
     reviewRecords: currentReviewRecords,
@@ -264,6 +266,7 @@ function hydrateStudioState(value: unknown): StudioState {
     schemaVersion: 3,
     articles: value.articles.map((article) => ({
       ...article,
+      ...(article.quest ? { quest: cloneQuestMetadata(article.quest) } : {}),
       versionHistory: deepFreeze(article.versionHistory.map((entry) => {
         const parsed = parsePublicArticle(entry.snapshot);
         if (!parsed.ok) throw new Error("Invalid public snapshot");
@@ -344,6 +347,7 @@ function isStudioArticle(value: unknown): value is StudioArticle {
     || !isString(value.visualTheme)
     || (value.heroImage !== undefined && !isArticleHeroImage(value.heroImage))
     || (value.audioUrl !== undefined && !isString(value.audioUrl))
+    || (value.quest !== undefined && !isQuestMetadata(value.quest))
     || !isPositiveInteger(value.workingVersion)
     || !WORKFLOW_STATUSES.has(value.workflowStatus as string)
     || !isReviewRecords(value.reviewRecords)

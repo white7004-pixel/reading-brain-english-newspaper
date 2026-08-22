@@ -1,4 +1,5 @@
 import type { Article, ArticleHeroImage, ArticleMedia } from "./types";
+import { cloneQuestMetadata, isQuestMetadata } from "./quest-types";
 
 export type PublicArticleIssue = { field: string; code: string };
 export type PublicArticleParseResult =
@@ -47,6 +48,10 @@ export function parsePublicArticle(value: unknown): PublicArticleParseResult {
   }
   if (!Array.isArray(value.media) || !value.media.every(isSafePublicMedia)) {
     issues.push({ field: "media", code: "media_invalid" });
+  }
+  if (value.quest !== undefined && !isQuestMetadata(value.quest)) issues.push({ field: "quest", code: "quest_invalid" });
+  if (value.mobilePreviewAcknowledged !== undefined && typeof value.mobilePreviewAcknowledged !== "boolean") {
+    issues.push({ field: "mobilePreviewAcknowledged", code: "mobile_preview_invalid" });
   }
 
   if (issues.length > 0) return { ok: false, issues };
@@ -108,6 +113,7 @@ export function clonePublicArticle(article: Readonly<Article>): Article {
     })),
     quiz: article.quiz.map((question) => ({
       id: question.id,
+      ...(question.type !== undefined ? { type: question.type } : {}),
       prompt: question.prompt,
       options: [...question.options],
       correctIndex: question.correctIndex,
@@ -133,6 +139,8 @@ export function clonePublicArticle(article: Readonly<Article>): Article {
       ? { kind: "image", url: item.url, alt: item.alt }
       : { kind: "video", provider: item.provider, embedUrl: item.embedUrl, alt: item.alt }),
     ...(article.audioUrl !== undefined ? { audioUrl: article.audioUrl } : {}),
+    ...(article.quest ? { quest: cloneQuestMetadata(article.quest) } : {}),
+    ...(article.mobilePreviewAcknowledged !== undefined ? { mobilePreviewAcknowledged: article.mobilePreviewAcknowledged } : {}),
   };
 }
 
@@ -163,6 +171,7 @@ function isVocabulary(value: unknown): boolean {
 function isQuiz(value: unknown): boolean {
   return Array.isArray(value) && value.every((question) => isRecord(question)
     && isNonEmptyString(question.id)
+    && (question.type === undefined || question.type === "comprehension" || question.type === "inference" || question.type === "vocabulary")
     && isNonEmptyString(question.prompt)
     && isStringArray(question.options)
     && question.options.length >= 2

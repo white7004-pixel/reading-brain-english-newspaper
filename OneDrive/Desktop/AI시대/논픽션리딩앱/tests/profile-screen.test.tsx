@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProfileScreen } from "@/components/profile-screen";
 import { createDefaultLearnerState } from "@/lib/learner-store";
+import { buildWeeklyGrowth } from "@/lib/growth-report";
 
 it("shows entered AR and app-estimated difficulty as separate values", () => {
   const state = createDefaultLearnerState();
@@ -42,4 +43,25 @@ it("returns to the profile when the level check is cancelled", async () => {
 
   expect(screen.getByText("나의 읽기 수준")).toBeVisible();
   expect(onLevelChange).not.toHaveBeenCalled();
+});
+
+it("keeps the weekly growth report above the existing level and reset controls", () => {
+  const state = createDefaultLearnerState();
+  const growth = buildWeeklyGrowth([], "2026-08-21");
+  render(<ProfileScreen state={state} growth={growth} onReset={() => {}} onLevelChange={() => {}} />);
+
+  const report = screen.getByRole("heading", { name: "이번 주 성장" });
+  const level = screen.getByRole("heading", { name: "나의 읽기 수준" });
+  const reset = screen.getByRole("heading", { name: "학습 데이터" });
+  expect(report.compareDocumentPosition(level) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(level.compareDocumentPosition(reset) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+it("derives the current AR level for growth while not inventing unavailable history", () => {
+  const state = createDefaultLearnerState();
+  state.profile.enteredAr = 2.4;
+  state.profile.estimatedDifficulty = 2.7;
+  render(<ProfileScreen state={state} growth={buildWeeklyGrowth([], "2026-08-21")} onReset={() => {}} onLevelChange={() => {}} />);
+
+  expect(screen.getByText("AR 수준: 현재 AR 2.7. 이전 AR 기록이 없어 변화는 알 수 없어요.")).toBeVisible();
 });

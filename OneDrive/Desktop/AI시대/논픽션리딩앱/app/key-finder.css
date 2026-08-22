@@ -1,11 +1,11 @@
-.key-finder__toggle { width: 100%; min-height: 48px; margin-top: 14px; border: 1px solid var(--forest-700); border-radius: 14px; background: white; color: var(--forest-700); font-weight: 900; }
-.key-finder { margin: 16px 0 24px; border: 1px solid var(--sage-200); border-radius: 20px; padding: 16px; background: var(--sage-100); }
+.key-finder__toggle { width: 100%; min-height: 48px; margin-top: 14px; border: 1px solid var(--color-brand); border-radius: 14px; background: white; color: var(--color-brand); font-weight: 900; }
+.key-finder { margin: 16px 0 24px; border: 1px solid var(--color-border); border-radius: 20px; padding: 16px; background: var(--color-surface-subtle); }
 .key-finder h2 { margin: 0; font-size: 18px; }
-.key-finder > p { color: var(--muted); font-size: 11px; line-height: 1.55; }
-.key-finder__word.is-selected { outline: 2px solid var(--forest-700); background: #fff0a8; }
+.key-finder > p { color: var(--color-text-muted); font-size: 11px; line-height: 1.55; }
+.key-finder__word.is-selected { outline: 2px solid var(--color-brand); background: #fff0a8; }
 .key-finder__sentences { display: grid; gap: 8px; }
-.key-finder__sentence { min-height: 48px; border: 1px solid var(--sage-200); border-radius: 13px; padding: 11px 12px; background: white; color: var(--ink); text-align: left; line-height: 1.45; }
-.key-finder__sentence.is-selected { border: 2px solid var(--forest-700); background: #edf7d6; }
+.key-finder__sentence { min-height: 48px; border: 1px solid var(--color-border); border-radius: 13px; padding: 11px 12px; background: white; color: var(--color-text); text-align: left; line-height: 1.45; }
+.key-finder__sentence.is-selected { border: 2px solid var(--color-brand); background: #edf7d6; }
 .key-finder__toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .key-finder__toolbar button { min-height: 44px; border: 0; border-radius: 12px; background: var(--forest-800); color: white; font-weight: 850; }
 .key-finder__toolbar button:disabled { opacity: .45; }
@@ -13,3 +13,4 @@
 .key-finder__result { margin-top: 12px; border-radius: 13px; padding: 13px; background: #fff0ed; color: var(--danger); font-size: 11px; line-height: 1.55; }
 .key-finder__result.is-correct { background: #edf7d6; color: var(--forest-800); }
 .key-finder__result p { margin: 6px 0 0; }
+.key-finder__result[role="status"] { border: 1px solid currentColor; }

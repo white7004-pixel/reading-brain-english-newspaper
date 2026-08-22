@@ -1,5 +1,6 @@
 import { parsePublicArticle } from "@/lib/public-article-schema";
 import { getPublishedArticles } from "@/lib/content";
+import type { QuestMetadata } from "@/lib/quest-types";
 
 const heroImage = {
   src: "/article-images/ar1-batch-07/owl-flight.jpg",
@@ -10,6 +11,13 @@ const heroImage = {
   licenseName: "CC BY-SA 4.0",
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
   isModified: false,
+};
+
+const quest: QuestMetadata = {
+  curiosityQuestionKo: "올빼미는 어떻게 조용히 날까?",
+  knowledgeTakeawayKo: "부드러운 깃털 가장자리가 공기 소리를 줄인다.",
+  collectionId: "ar1-living-world", mapOrder: 1,
+  prerequisiteArticleIds: [], nextArticleIds: ["ar1-ocean-tides"],
 };
 
 describe("shared public article schema", () => {
@@ -79,6 +87,16 @@ describe("shared public article schema", () => {
     if (!parsed.ok) return;
     expect(parsed.value.heroImage).toEqual(heroImage);
     expect(parsed.value.heroImage).not.toBe(heroImage);
+  });
+
+  it("round-trips optional quest metadata without sharing its relationship arrays", () => {
+    const parsed = parsePublicArticle({ ...getPublishedArticles()[0], quest, mobilePreviewAcknowledged: true });
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.quest).toEqual(quest);
+    expect(parsed.value.mobilePreviewAcknowledged).toBe(true);
+    expect(parsed.value.quest?.nextArticleIds).not.toBe(quest.nextArticleIds);
   });
 
   it.each([

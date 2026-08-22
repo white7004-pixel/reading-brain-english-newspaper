@@ -43,7 +43,7 @@ test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async (
   await page.getByRole("button", { name: "이해 퀴즈 시작" }).click();
   await page.locator(".quiz-options button").first().click();
   await page.getByRole("button", { name: "결과 보기" }).click();
-  await expect(page.getByText("새로운 지식 발견!")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "새로운 지식을 발견했어요!" })).toBeVisible();
   await expect(page.getByRole("button", { name: "다음 지식 탐험하기" })).toHaveCount(0);
 
   await page.goto("/studio");
@@ -80,7 +80,7 @@ test("편집자가 검수한 콘텐츠만 학습자에게 발행한다", async (
 async function completeLearnerOnboarding(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByRole("button", { name: "가장 쉬운 단계부터" }).click();
-  await expect(page.getByRole("button", { name: "오늘의 지식 시작하기" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "오늘의 발견 시작하기" })).toBeVisible();
 }
 
 async function fillValidThreeMinuteArticle(page: Page, { title }: { title: string }): Promise<void> {

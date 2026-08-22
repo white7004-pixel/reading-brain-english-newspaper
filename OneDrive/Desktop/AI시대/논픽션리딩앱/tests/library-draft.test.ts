@@ -1,6 +1,7 @@
 import { AR_BANDS } from "@/lib/ar-bands";
 import { buildLibraryDraft, type LibrarySeed } from "@/lib/library/build-draft";
 import { validateStage } from "@/lib/studio-workflow";
+import type { QuestMetadata } from "@/lib/quest-types";
 
 const seed: LibrarySeed = {
   id: "ar1-honey-bees",
@@ -99,4 +100,17 @@ it("preserves an attributed hero photograph in the studio draft", () => {
 
   expect(draft.heroImage).toEqual(heroImage);
   expect(draft.heroImage).not.toBe(heroImage);
+});
+
+it("clones optional quest metadata into the studio draft", () => {
+  const quest: QuestMetadata = {
+    curiosityQuestionKo: "꿀벌은 왜 춤출까?", knowledgeTakeawayKo: "춤은 꽃의 위치를 알린다.",
+    collectionId: "ar1-living-world", mapOrder: 1, prerequisiteArticleIds: [], nextArticleIds: ["ar1-owl-flight"],
+  };
+
+  const draft = buildLibraryDraft({ ...seed, quest });
+  draft.quest?.nextArticleIds.push("ar1-ocean-tides");
+
+  expect(draft.quest).toEqual({ ...quest, nextArticleIds: ["ar1-owl-flight", "ar1-ocean-tides"] });
+  expect(quest.nextArticleIds).toEqual(["ar1-owl-flight"]);
 });

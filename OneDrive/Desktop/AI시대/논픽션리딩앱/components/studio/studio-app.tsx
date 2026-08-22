@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArticleEditor, type ArticleEditorHandle } from "@/components/studio/article-editor";
+import { ContentReadiness } from "@/components/studio/content-readiness";
 import { ReviewPanel } from "@/components/studio/review-panel";
 import { StudioDashboard } from "@/components/studio/studio-dashboard";
-import { StudioPreview } from "@/components/studio/studio-preview";
+import { projectWorkingArticle, StudioPreview } from "@/components/studio/studio-preview";
 import { loadStudioState, saveStudioState, upsertStudioArticle, type StudioLoadResult, type StudioState } from "@/lib/studio-store";
 import { studioControlId } from "@/lib/studio-validation-ui";
 import type { ArticlePersistenceResult, StudioArticle, ValidationIssue } from "@/lib/studio-types";
@@ -118,6 +119,7 @@ export function StudioApp({ storage }: { storage?: Storage }) {
           </div>
           <div className="studio-workspace__rail">
             <div role={mobile ? "tabpanel" : undefined} id="studio-panel-review" aria-label={mobile ? "검수" : undefined} aria-labelledby={mobile ? "studio-tab-review" : undefined} hidden={mobile && activeTab !== "review"}>
+              <ContentReadiness article={projectWorkingArticle(activeArticle)} />
               <ReviewPanel article={activeArticle} onArticleChange={persistWorkflowArticle} onIssuesChange={setDisplayedIssues} onNavigateToField={(field) => navigateToControl("edit", studioControlId(field))} onNavigateToPreview={() => navigateToControl("preview", "studio-preview-acknowledge")} persistenceSuccessToken={persistenceSuccessToken} />
             </div>
             <div role={mobile ? "tabpanel" : undefined} id="studio-panel-preview" aria-label={mobile ? "미리보기" : undefined} aria-labelledby={mobile ? "studio-tab-preview" : undefined} hidden={mobile && activeTab !== "preview"}>

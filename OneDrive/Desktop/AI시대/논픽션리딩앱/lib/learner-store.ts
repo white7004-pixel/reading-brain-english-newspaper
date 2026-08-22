@@ -1,5 +1,6 @@
 import { isValidArEntry } from "./placement-test";
 import type { KnowledgeDomain } from "./types";
+import type { ActiveQuestProgress } from "./quest-progress";
 
 export const STORAGE_KEY = "nonfiction-lab:learner:v1";
 
@@ -26,6 +27,9 @@ export type LearningAttempt = {
   hintsUsed: number;
   durationSeconds: number;
   xpAwarded: number;
+  domain?: KnowledgeDomain;
+  keyFinderCorrect?: boolean;
+  keyFinderSelections?: string[];
 };
 
 export type NewLearningAttempt = Omit<LearningAttempt, "articleTitle" | "articleVersion"> & {
@@ -39,16 +43,17 @@ export type LearnerLevel = {
 };
 
 export type LearnerState = {
-  schemaVersion: 2;
+  schemaVersion: 3;
   profile: LearnerProfile;
   attempts: LearningAttempt[];
   completedArticleIds: string[];
   savedWords: Array<{ articleId: string; word: string }>;
+  activeQuest: ActiveQuestProgress | null;
 };
 
 export function createDefaultLearnerState(): LearnerState {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     profile: {
       name: "탐험가",
       onboardingComplete: false,
@@ -62,10 +67,12 @@ export function createDefaultLearnerState(): LearnerState {
     attempts: [],
     completedArticleIds: [],
     savedWords: [],
+    activeQuest: null,
   };
 }
 
-type LegacyLearnerState = Omit<LearnerState, "schemaVersion"> & { schemaVersion: 1 };
+type LearnerStateV2 = Omit<LearnerState, "schemaVersion" | "activeQuest"> & { schemaVersion: 2 };
+type LegacyLearnerState = Omit<LearnerStateV2, "schemaVersion"> & { schemaVersion: 1 };
 
 function hasLearnerStateShape(value: unknown): value is Omit<LearnerState, "schemaVersion"> & { schemaVersion: number } {
   if (!value || typeof value !== "object") return false;
@@ -78,14 +85,30 @@ function hasLearnerStateShape(value: unknown): value is Omit<LearnerState, "sche
 }
 
 function isLearnerState(value: unknown): value is LearnerState {
-  return hasLearnerStateShape(value) && value.schemaVersion === 2;
+  if (!hasLearnerStateShape(value) || value.schemaVersion !== 3) return false;
+  const activeQuest = (value as Partial<LearnerState>).activeQuest;
+  return activeQuest === null || isActiveQuestProgress(activeQuest);
 }
 
 function isLegacyLearnerState(value: unknown): value is LegacyLearnerState {
   return hasLearnerStateShape(value) && value.schemaVersion === 1;
 }
 
-function migrateLegacyLearnerState(state: LegacyLearnerState): LearnerState {
+function isLearnerStateV2(value: unknown): value is LearnerStateV2 {
+  return hasLearnerStateShape(value) && value.schemaVersion === 2;
+}
+
+function isActiveQuestProgress(value: unknown): value is ActiveQuestProgress {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<ActiveQuestProgress>;
+  return typeof candidate.articleId === "string"
+    && (candidate.phase === "reader" || candidate.phase === "quiz")
+    && typeof candidate.pageIndex === "number"
+    && Number.isInteger(candidate.pageIndex)
+    && candidate.pageIndex >= 0;
+}
+
+function migrateV1ToV2(state: LegacyLearnerState): LearnerStateV2 {
   return {
     ...state,
     schemaVersion: 2,
@@ -97,13 +120,18 @@ function migrateLegacyLearnerState(state: LegacyLearnerState): LearnerState {
   };
 }
 
+function migrateV2ToV3(state: LearnerStateV2): LearnerState {
+  return { ...state, schemaVersion: 3, activeQuest: null };
+}
+
 export function loadLearnerState(storage: Pick<Storage, "getItem">): LearnerState {
   try {
     const raw = storage.getItem(STORAGE_KEY);
     if (!raw) return createDefaultLearnerState();
     const parsed: unknown = JSON.parse(raw);
     if (isLearnerState(parsed)) return parsed;
-    if (isLegacyLearnerState(parsed)) return migrateLegacyLearnerState(parsed);
+    if (isLearnerStateV2(parsed)) return migrateV2ToV3(parsed);
+    if (isLegacyLearnerState(parsed)) return migrateV2ToV3(migrateV1ToV2(parsed));
     return createDefaultLearnerState();
   } catch {
     return createDefaultLearnerState();

@@ -1,6 +1,8 @@
 import { AR_BANDS, bandForAr, countWords } from "../ar-bands";
 import type { QuizType, SourceMaterialType, StudioArticle } from "../studio-types";
 import type { ArticleHeroImage, KnowledgeDomain } from "../types";
+import { cloneQuestMetadata } from "../quest-types";
+import type { QuestMetadata } from "../quest-types";
 
 /** word, pronunciation, Korean meaning, plain-English definition, sentence from the passage */
 export type SeedWord = [string, string, string, string, string];
@@ -35,6 +37,7 @@ export type LibrarySeed = {
   quiz: SeedQuiz[];
   sources: SeedSource[];
   safetyFlags?: string[];
+  quest?: QuestMetadata;
 };
 
 const SEED_EDITOR = "논픽션랩 콘텐츠팀";
@@ -99,6 +102,7 @@ export function buildLibraryDraft(seed: LibrarySeed): StudioArticle {
     })),
     visualTheme: seed.visualTheme,
     ...(seed.heroImage ? { heroImage: { ...seed.heroImage } } : {}),
+    ...(seed.quest ? { quest: cloneQuestMetadata(seed.quest) } : {}),
     workingVersion: 1,
     workflowStatus: "draft",
     reviewRecords: {},
