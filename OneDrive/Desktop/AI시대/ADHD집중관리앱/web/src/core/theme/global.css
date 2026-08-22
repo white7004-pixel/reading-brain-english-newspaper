@@ -290,21 +290,35 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Today task cockpit */
 .inline-quick-add {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px;
   margin: 10px 0 14px;
-  padding: 7px 7px 7px 15px;
+  padding: 5px 12px;
   border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
   border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--surface) 96%, var(--accent));
   box-shadow: var(--shadow-card);
 }
 
-.inline-quick-add > span {
+.inline-quick-add form {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+}
+
+.inline-quick-add form + form {
+  border-top: 1px solid var(--border);
+}
+
+.inline-quick-add form > span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
+  border-radius: 50%;
   color: var(--accent);
-  font-size: 1.35rem;
+  font-size: .75rem;
   font-weight: 700;
 }
 
@@ -322,14 +336,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline: none;
 }
 
-.inline-quick-add:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+.inline-quick-add form:focus-within {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
 }
 
 .inline-quick-add button {
-  min-height: 44px;
-  padding-inline: 16px;
+  min-height: 36px;
+  padding-inline: 12px;
+  opacity: 1;
+  transition: opacity .15s ease;
 }
 
 .inline-quick-add button:disabled {

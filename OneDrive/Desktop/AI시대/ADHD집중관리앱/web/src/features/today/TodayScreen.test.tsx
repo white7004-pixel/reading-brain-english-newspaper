@@ -20,11 +20,21 @@ function dependencies(): TodayDependencies {
   }
 }
 
-it('adds a task from the always-visible input with Enter and resets it for the next task', async () => {
+it('shows five example task slots and adds from any slot with Enter', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
 
-  const input = screen.getByRole('textbox', { name: '빠른 할 일 추가' })
+  const slots = screen.getAllByRole('textbox', { name: /빠른 할 일 추가/ })
+  expect(slots).toHaveLength(5)
+  expect(slots.map((slot) => slot.getAttribute('placeholder'))).toEqual([
+    '예: 오늘 꼭 끝낼 일',
+    '예: 10분 안에 할 수 있는 일',
+    '예: 연락하거나 예약할 일',
+    '예: 건강을 위해 할 일',
+    '예: 미뤄둔 작은 일',
+  ])
+
+  const input = slots[2]
   await userEvent.type(input, '우유 사기{Enter}')
 
   await waitFor(() => expect(deps.saveMany).toHaveBeenCalledWith([
@@ -79,7 +89,7 @@ it('keeps quick add accessible before the work board', async () => {
   }])
   render(<TodayScreen dependencies={deps} />)
   const board = await screen.findByRole('region', { name: '오늘 할 일' })
-  const capture = screen.getByRole('textbox', { name: '빠른 할 일 추가' })
+  const capture = screen.getAllByRole('textbox', { name: /빠른 할 일 추가/ })[0]
   expect(capture.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
 })
 
