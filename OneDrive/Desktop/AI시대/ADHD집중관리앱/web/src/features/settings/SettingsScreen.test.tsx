@@ -23,3 +23,16 @@ it('saves the selected Monggle check-in interval', async () => {
   await userEvent.selectOptions(screen.getByLabelText('몽글이 확인 간격'), '30')
   expect(settingsRepository.load().nudgeIntervalMinutes).toBe(30)
 })
+
+it('organizes settings into four professional groups', () => {
+  render(<SettingsScreen />)
+  expect(screen.getAllByRole('group').map((group) => group.getAttribute('aria-label'))).toEqual([
+    '프로필', '집중 환경', '화면', '연결',
+  ])
+})
+
+it('keeps advanced category editing collapsed initially', () => {
+  render(<SettingsScreen />)
+  expect(screen.queryByLabelText('카테고리 관리')).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /카테고리 관리/ })).toBeVisible()
+})
