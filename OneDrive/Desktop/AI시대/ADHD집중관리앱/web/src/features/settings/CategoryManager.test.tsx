@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { DEFAULT_CATEGORIES } from '../../core/model/category'
-import { CategoryManager, type CategoryManagerRepository } from './CategoryManager'
+import { CategoryManager, loadCategories, type CategoryManagerRepository } from './CategoryManager'
 
 const custom = { ...DEFAULT_CATEGORIES[0], id: 'custom', name: '프로젝트', isDefault: false }
 
@@ -16,6 +16,11 @@ function repository(overrides: Partial<CategoryManagerRepository> = {}): Categor
 }
 
 describe('CategoryManager', () => {
+  it('discards a category load when its screen is no longer active', async () => {
+    const loaded = await loadCategories(repository(), () => false)
+    expect(loaded).toBeUndefined()
+  })
+
   it('protects defaults and lets a custom category be renamed', async () => {
     const repo = repository()
     render(<CategoryManager repository={repo} />)

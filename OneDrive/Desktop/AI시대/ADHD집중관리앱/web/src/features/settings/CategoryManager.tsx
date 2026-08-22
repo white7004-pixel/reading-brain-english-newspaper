@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_COLORS, type Category } from '../../core/model/category'
 import { createCategoryRepository } from '../../core/storage/categoryRepository'
 import { createDatabase } from '../../core/storage/database'
@@ -16,12 +16,25 @@ const defaultRepository: CategoryManagerRepository = {
   remove: storedCategories.remove,
 }
 
+export async function loadCategories(repository: CategoryManagerRepository, isActive: () => boolean) {
+  const categories = await repository.list()
+  return isActive() ? categories.map((category) => ({ ...category })) : undefined
+}
+
 export function CategoryManager({ repository = defaultRepository }: { repository?: CategoryManagerRepository }) {
   const [categories, setCategories] = useState<Category[]>([])
   const [error, setError] = useState('')
+  const active = useRef(true)
 
-  const refresh = async () => setCategories((await repository.list()).map((category) => ({ ...category })))
-  useEffect(() => { void refresh() }, [repository])
+  const refresh = async () => {
+    const loaded = await loadCategories(repository, () => active.current)
+    if (loaded) setCategories(loaded)
+  }
+  useEffect(() => {
+    active.current = true
+    void refresh()
+    return () => { active.current = false }
+  }, [repository])
 
   const save = async (category: Category) => {
     setError('')
