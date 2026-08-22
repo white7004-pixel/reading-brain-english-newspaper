@@ -30,7 +30,7 @@ export interface PetGameState {
 
 export const initialPetGameState: PetGameState = {
   key: 'primary',
-  petName: '紐쎄???',
+  petName: '몽글이',
   level: 1,
   xp: 0,
   coins: 0,
