@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { PetGameState } from './model'
 import { PetAvatar } from './PetAvatar'
 import './pet.css'
@@ -8,14 +9,15 @@ interface PetHeroProps {
 
 export function PetHero({ state }: PetHeroProps) {
   const levelProgress = Math.max(0, state.xp % 100)
+  const headingId = useId()
 
-  return <section className="pet-hero" aria-labelledby="pet-hero-name">
+  return <section className="pet-hero" aria-labelledby={headingId}>
     <div className="pet-hero__portrait">
       <PetAvatar level={state.level} mood="happy" label={`기분 좋은 ${state.petName}`} />
     </div>
     <div className="pet-hero__status">
       <p className="pet-hero__eyebrow">오늘도 같이 한 걸음</p>
-      <h2 id="pet-hero-name">{state.petName}</h2>
+      <h2 id={headingId}>{state.petName}</h2>
       <div className="pet-hero__summary">
         <strong>레벨 {state.level}</strong>
         <span>오늘의 하트 {state.dailyHearts}개</span>
@@ -27,7 +29,7 @@ export function PetHero({ state }: PetHeroProps) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={levelProgress}
-        aria-valuetext={`다음 레벨까지 ${levelProgress}%`}
+        aria-valuetext={`성장 진행률 ${levelProgress}%`}
       >
         <span style={{ transform: `scaleX(${levelProgress / 100})` }} />
       </div>

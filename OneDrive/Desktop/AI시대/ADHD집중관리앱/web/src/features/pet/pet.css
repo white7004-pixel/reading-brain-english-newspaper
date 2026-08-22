@@ -79,7 +79,7 @@
 .reward-burst__rewards span { color: var(--color-muted); font-size: 12px; font-weight: 750; }
 .reward-burst__rewards strong { color: var(--reward-gold); font-size: 18px; }
 .reward-burst__continue { width: 100%; min-height: 50px; border: 0; border-radius: 15px; background: var(--pet-action); color: #fff; font-weight: 850; box-shadow: 0 8px 20px color-mix(in srgb, var(--pet-action) 26%, transparent); }
-.reward-burst button:focus-visible { outline: 3px solid color-mix(in srgb, var(--pet-lilac) 58%, transparent); outline-offset: 3px; }
+.reward-burst button:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }
 .reward-burst__confetti { position: absolute; pointer-events: none; inset: 0; }
 .reward-burst__confetti i { position: absolute; top: 24%; left: 50%; width: 8px; height: 13px; border-radius: 3px; background: var(--reward-gold); opacity: 0; animation: confetti-pop 1.1s ease-out both; }
 .reward-burst__confetti i:nth-child(3n) { background: var(--pet-pink); }
