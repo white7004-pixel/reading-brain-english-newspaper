@@ -25,22 +25,17 @@ afterEach(async () => {
   window.history.replaceState({}, '', '/')
 })
 
-it('keeps the five tabs in the approved order', () => {
+it('exposes four icon-and-label primary destinations', () => {
   render(<App />)
-  expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual([
-    '오늘',
-    '집중',
-    '메시지',
-    '루틴',
-    '설정',
-  ])
+  const nav = screen.getByRole('navigation', { name: '주요 메뉴' })
+  const links = within(nav).getAllByRole('link')
+  expect(links.map((link) => link.textContent)).toEqual(['오늘', '계획', '집중', '나'])
+  links.forEach((link) => expect(link.querySelector('svg')).not.toBeNull())
 })
 
-it('does not change navigation when profile type changes', async () => {
+it('does not render the profile selector in the global header', () => {
   render(<App />)
-  const before = screen.getAllByRole('link').map((link) => link.getAttribute('href'))
-  await userEvent.selectOptions(screen.getByLabelText('사용자 유형'), 'worker')
-  expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual(before)
+  expect(screen.queryByLabelText('사용자 유형')).not.toBeInTheDocument()
 })
 
 it('keeps a prior-day required mission delayed through quiet time and returns that same mission after the delay', async () => {

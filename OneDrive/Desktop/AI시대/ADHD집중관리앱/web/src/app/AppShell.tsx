@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import type { ProfileType } from '../core/model/settings'
 import { BottomNav } from './BottomNav'
 import { MonggleCompanion } from '../features/companion/MonggleCompanion'
 import { settingsRepository } from '../features/settings/settingsRepository'
@@ -25,7 +24,6 @@ const appearanceRepository = createAppearanceRepository(createDatabase())
 const shellTaskRepository = createTaskRepository(createDatabase())
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<ProfileType>('high_school')
   const [settings, setSettings] = useState(() => settingsRepository.load())
   const [companionEvent, setCompanionEvent] = useState<CompanionEvent | null>(null)
   const [appearance, setAppearance] = useState<AppearanceSettings>(defaultAppearanceSettings)
@@ -165,16 +163,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="app-shell studio-surface">
       <AppBackground settings={appearance} assetUrl={backgroundUrl} />
       <header className="app-header">
-        <h1>몽글</h1>
-        <label className="profile-select">
-          사용자 유형
-          <select value={profile} onChange={(event) => setProfile(event.target.value as ProfileType)}>
-            <option value="middle_school">중학생</option>
-            <option value="high_school">고등학생</option>
-            <option value="university">대학생</option>
-            <option value="worker">성인·직장인</option>
-          </select>
-        </label>
+        <div><h1>몽글</h1><span>오늘의 한 가지에 집중해요</span></div>
+        <time dateTime={dayInSeoul(now)}>{new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'long', day: 'numeric', weekday: 'short' }).format(now)}</time>
       </header>
       {activeMissionMode === 'extended' && currentMission && <section className="extended-mission-entry" aria-label="오늘 연장 완료 모드" data-escalation-level="app-entry">
         <span>오늘 연장 완료 모드</span>

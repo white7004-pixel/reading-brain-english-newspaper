@@ -17,6 +17,8 @@ export function App() {
           <Route path="/messages" element={<MessagesScreen />} />
           <Route path="/routines" element={<RoutinesScreen />} />
           <Route path="/settings" element={<SettingsScreen />} />
+          <Route path="/plan" element={<RoutinesScreen />} />
+          <Route path="/me" element={<SettingsScreen />} />
         </Routes>
       </AppShell>
     </BrowserRouter>
