@@ -289,6 +289,53 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* Today task cockpit */
+.inline-quick-add {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 14px;
+  padding: 7px 7px 7px 15px;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--surface) 96%, var(--accent));
+  box-shadow: var(--shadow-card);
+}
+
+.inline-quick-add > span {
+  color: var(--accent);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.inline-quick-add input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 1rem;
+}
+
+.inline-quick-add input:focus {
+  outline: none;
+}
+
+.inline-quick-add:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.inline-quick-add button {
+  min-height: 44px;
+  padding-inline: 16px;
+}
+
+.inline-quick-add button:disabled {
+  opacity: .42;
+}
+
 .today-header { grid-template-columns: 1fr auto; margin-top: 20px; padding: 0 2px; }
 .today-header > div:first-child time { color: var(--color-muted); font-size: 12px; font-weight: 650; }
 .today-header > div:first-child h2 { margin: 1px 0 0; font-size: 28px; }

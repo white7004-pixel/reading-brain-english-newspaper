@@ -26,6 +26,7 @@ import { appNow } from '../../core/time/appClock'
 import { TodayHeader } from './TodayHeader'
 import { UpcomingPreview } from './UpcomingPreview'
 import { TodayTaskBoard } from './TodayTaskBoard'
+import { InlineQuickAdd } from './InlineQuickAdd'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -137,6 +138,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   return <>
     <TodayHeader date={appNow()} energy={energy} total={dashboardTasks.length} completed={completedCount} onEnergyChange={setEnergy} onAdd={() => setCaptureExpanded((current) => !current)} />
+    <InlineQuickAdd onAdd={addSingleTask} />
     {captureExpanded && <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={addSingleTask} />}
     <TodayTaskBoard tasks={dashboardTasks} recommendedTaskId={nowTask?.id} onStart={startMission} onComplete={completeCurrentMission} />
     {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : nowTask ? <NowCard task={nowTask} onStart={startMission} /> : null}

@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import { TodayScreen, type TodayDependencies } from './TodayScreen'
@@ -19,10 +20,24 @@ function dependencies(): TodayDependencies {
   }
 }
 
+it('adds a task from the always-visible input with Enter and resets it for the next task', async () => {
+  const deps = dependencies()
+  render(<TodayScreen dependencies={deps} />)
+
+  const input = screen.getByRole('textbox', { name: '빠른 할 일 추가' })
+  await userEvent.type(input, '우유 사기{Enter}')
+
+  await waitFor(() => expect(deps.saveMany).toHaveBeenCalledWith([
+    expect.objectContaining({ title: '우유 사기', status: 'open' }),
+  ]))
+  expect(input).toHaveValue('')
+  expect(within(screen.getByRole('region', { name: '오늘 할 일' })).getByText('우유 사기')).toBeVisible()
+})
+
 it('organizes input but does not save before review confirmation', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
-  await userEvent.click(screen.getByRole('button', { name: /추가/ }))
+  await userEvent.click(screen.getByRole('button', { name: '여러 할 일 한 번에 입력' }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 3시에 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   expect(screen.getAllByLabelText('할 일 제목')).toHaveLength(2)
@@ -32,7 +47,7 @@ it('organizes input but does not save before review confirmation', async () => {
 it('saves reviewed tasks and shows the first focus action', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
-  await userEvent.click(screen.getByRole('button', { name: /추가/ }))
+  await userEvent.click(screen.getByRole('button', { name: '여러 할 일 한 번에 입력' }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   await userEvent.click(screen.getByRole('button', { name: '모두 저장' }))
@@ -64,7 +79,7 @@ it('keeps quick add accessible before the work board', async () => {
   }])
   render(<TodayScreen dependencies={deps} />)
   const board = await screen.findByRole('region', { name: '오늘 할 일' })
-  const capture = screen.getByRole('button', { name: /추가/ })
+  const capture = screen.getByRole('textbox', { name: '빠른 할 일 추가' })
   expect(capture.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
 })
 
