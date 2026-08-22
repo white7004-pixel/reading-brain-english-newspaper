@@ -15,3 +15,9 @@ it('falls back to light when system media information is unavailable', () => {
   expect(() => applyTheme('system')).not.toThrow()
   expect(document.documentElement.dataset.theme).toBe('light')
 })
+
+it('exposes the professional mobile layout tokens', () => {
+  for (const token of ['--space-page', '--tap-min', '--radius-card', '--nav-clearance']) {
+    expect(studioThemeTokens).toContain(token)
+  }
+})

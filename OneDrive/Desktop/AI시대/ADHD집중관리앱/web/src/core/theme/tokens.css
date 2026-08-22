@@ -1,21 +1,22 @@
 :root {
-  --color-bg: #f8f7fc;
+  --color-bg: #f7f7fa;
   --color-surface: #ffffff;
-  --color-sunken: #efedf7;
+  --color-sunken: #f0eff4;
   --color-text: #24222d;
   --color-muted: #6d6878;
-  --color-accent: #7567d8;
-  --color-accent-soft: #e8e3ff;
-  --color-line: #ded9ec;
-  --color-glass: rgb(255 255 255 / 72%);
-  --color-glass-line: rgb(255 255 255 / 88%);
-  --shadow-card-3d: 0 24px 55px rgb(58 42 92 / 15%), inset 0 1px 0 rgb(255 255 255 / 88%);
-  --shadow-control-3d: 0 10px 24px rgb(92 70 155 / 20%), inset 0 1px 0 rgb(255 255 255 / 45%);
+  --color-accent: #6758d1;
+  --color-accent-soft: #eeebff;
+  --color-line: #e4e2ea;
+  --color-glass: rgb(255 255 255 / 96%);
+  --color-glass-line: #e8e6ed;
+  --shadow-card-3d: 0 8px 24px rgb(41 35 65 / 7%);
+  --shadow-control-3d: 0 4px 12px rgb(69 54 126 / 12%);
   --glow-lavender: radial-gradient(circle, rgb(191 172 255 / 42%), transparent 68%);
-  --radius-card: 24px;
-  --radius-control: 16px;
-  --space-page: 20px;
-  --tap-min: 44px;
+  --radius-card: 18px;
+  --radius-control: 14px;
+  --space-page: 16px;
+  --tap-min: 48px;
+  --nav-clearance: 112px;
   color-scheme: light;
 }
 

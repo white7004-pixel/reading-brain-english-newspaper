@@ -224,3 +224,66 @@ button, select, a { min-height: var(--tap-min); }
   .task-draft-list article { grid-template-columns: auto 1fr; }
   .task-draft-list article > label, .task-draft-list small { grid-column: 2; }
 }
+
+/* Calm Mission OS presentation layer */
+body { background: var(--color-bg); font-weight: 500; }
+.app-shell { width: min(100%, 680px); padding: 18px var(--space-page) calc(var(--nav-clearance) + 72px); }
+.studio-surface::before { display: none; }
+.app-header { min-height: 56px; }
+.app-header h1 { font-size: 26px; letter-spacing: -.045em; }
+.app-header h1 + span { display: block; margin-top: 2px; color: var(--color-muted); font-size: 12px; }
+.app-header time { color: var(--color-muted); font-size: 13px; font-weight: 650; }
+.today-header { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin-top: 28px; }
+.today-header > div:first-child span { color: var(--color-muted); font-size: 13px; }
+.today-header h2 { margin: 3px 0 0; font-size: clamp(24px, 7vw, 30px); letter-spacing: -.04em; }
+.today-header > time { align-self: end; color: var(--color-muted); font-size: 12px; }
+.today-header .energy { grid-column: 1 / -1; margin: 16px 0 0; padding: 4px; border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-surface); }
+.energy > span { margin: 0 6px; font-size: 12px; font-weight: 700; }
+.energy button { flex: 1; min-height: 40px; border: 0; border-radius: 10px; background: transparent; padding: 0 10px; }
+.capture-card, .now-card, .timeline, .current-mission-card, .mission-commitment-review, .task-draft-review, .priority-task-section, .routine-card, .connector-card { padding: 18px; border: 1px solid var(--color-line); background: var(--color-surface); box-shadow: var(--shadow-card-3d); backdrop-filter: none; }
+.now-card, .current-mission-card { margin-top: 14px; border-color: color-mix(in srgb, var(--color-accent) 20%, var(--color-line)); background: linear-gradient(145deg, var(--color-surface), color-mix(in srgb, var(--color-accent-soft) 58%, var(--color-surface))); }
+.now-card h2, .current-mission-card h2 { margin: 8px 0 4px; font-size: clamp(22px, 6vw, 28px); }
+.now-card p, .current-mission-card p { color: var(--color-muted); }
+.now-card .primary, .current-mission-card .primary { min-height: 52px; padding-inline: 20px; }
+.upcoming-preview { margin-top: 14px; padding: 16px 18px; border: 1px solid var(--color-line); border-radius: var(--radius-card); background: var(--color-surface); }
+.upcoming-preview .section-heading { align-items: center; }
+.upcoming-preview h2 { margin: 0; font-size: 18px; }
+.upcoming-preview .section-heading > span { color: var(--color-muted); font-size: 12px; }
+.upcoming-preview ol { margin: 10px 0 0; padding: 0; list-style: none; }
+.upcoming-preview li { display: grid; grid-template-columns: 56px 1fr auto; gap: 10px; align-items: center; min-height: 44px; border-top: 1px solid var(--color-line); }
+.upcoming-preview li time, .upcoming-preview li span, .upcoming-preview > p { color: var(--color-muted); font-size: 12px; }
+.quick-capture-trigger { width: 100%; margin-top: 12px; border: 1px dashed color-mix(in srgb, var(--color-accent) 45%, var(--color-line)); border-radius: 14px; background: var(--color-surface); color: var(--color-accent); font-weight: 750; }
+.today-details { margin-top: 12px; }
+.today-details > summary { min-height: 48px; display: flex; align-items: center; padding: 0 14px; border-radius: 14px; color: var(--color-muted); cursor: pointer; font-weight: 700; }
+.today-details > summary::after { content: '⌄'; margin-left: auto; }
+.screen-intro { margin: -10px 0 22px; color: var(--color-muted); font-size: 14px; line-height: 1.55; }
+.settings-section { margin-top: 20px; }
+.settings-section > h3 { margin: 0 0 8px 4px; color: var(--color-muted); font-size: 13px; }
+.settings-section__body { overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-card); background: var(--color-surface); }
+.settings-row { min-height: 64px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--color-line); }
+.settings-row:first-child { border-top: 0; }
+.settings-row > div:first-child { display: grid; gap: 3px; }
+.settings-row strong { font-size: 15px; }
+.settings-row small { color: var(--color-muted); font-size: 12px; line-height: 1.35; }
+.settings-row__control { display: flex; justify-content: flex-end; }
+.control-only { font-size: 0; }
+.control-only select, .settings-row input[type='time'] { min-height: 40px; max-width: 132px; border: 1px solid var(--color-line); border-radius: 10px; background: var(--color-bg); color: var(--color-text); padding: 0 9px; font-size: 13px; }
+.switch { display: flex; align-items: center; }
+.switch span { width: 0; overflow: hidden; font-size: 0; }
+.switch input { width: 20px; height: 20px; accent-color: var(--color-accent); }
+.time-pair { display: flex; gap: 6px; }
+.time-pair label { display: grid; gap: 2px; color: var(--color-muted); font-size: 10px; }
+.row-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.settings-link { min-height: 40px; display: inline-flex; align-items: center; color: var(--color-accent); text-decoration: none; font-weight: 700; }
+.settings-section .category-manager, .settings-section .calendar-settings { margin: 0; border-width: 1px 0 0; border-radius: 0; box-shadow: none; }
+.bottom-nav { bottom: max(10px, env(safe-area-inset-bottom)); width: min(calc(100% - 20px), 640px); grid-template-columns: repeat(4, 1fr); padding: 6px; border-radius: 20px; box-shadow: 0 10px 32px rgb(30 25 50 / 12%); }
+.bottom-nav a { min-height: 58px; grid-template-rows: 24px 16px; gap: 3px; border-radius: 14px; font-size: 11px; }
+.bottom-nav svg { width: 23px; height: 23px; }
+.bottom-nav a[aria-current='page'] { background: var(--color-accent-soft); color: var(--color-accent); }
+.persistent-now-task { bottom: calc(env(safe-area-inset-bottom) + 88px); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-accent) 48%, transparent); outline-offset: 2px; }
+@media (max-width: 420px) {
+  .app-header h1 + span { display: none; }
+  .settings-row { grid-template-columns: minmax(0, 1fr) auto; padding-inline: 12px; }
+  .row-actions { max-width: 140px; }
+}
