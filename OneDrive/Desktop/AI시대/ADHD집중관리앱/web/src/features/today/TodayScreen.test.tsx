@@ -1,11 +1,12 @@
 import { render, screen, within } from '@testing-library/react'
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { expect, it, vi } from 'vitest'
+import { afterEach, expect, it, vi } from 'vitest'
 import { TodayScreen, type TodayDependencies } from './TodayScreen'
 import { DEFAULT_CATEGORIES } from '../../core/model/category'
 import { taskCheckInRepository } from '../nudges/taskCheckIn'
 import type { Task } from '../../core/model/task'
+import { initialPetGameState, type PetGameState } from '../pet/model'
 
 function dependencies(): TodayDependencies {
   return {
@@ -17,31 +18,121 @@ function dependencies(): TodayDependencies {
     updateWidget: vi.fn().mockResolvedValue(undefined),
     listCategories: vi.fn().mockResolvedValue(DEFAULT_CATEGORIES),
     addCategory: vi.fn(),
+    loadPetState: vi.fn().mockResolvedValue({ ...initialPetGameState }),
+    recordReward: vi.fn().mockResolvedValue(undefined),
+    settleReward: vi.fn().mockResolvedValue({ ...initialPetGameState }),
+    recoverRewards: vi.fn().mockResolvedValue({ ...initialPetGameState }),
   }
 }
 
-it('shows five example task slots and adds from any slot with Enter', async () => {
+function openTask(id: string, title: string): Task {
+  return {
+    id, title, day: '2026-08-23', status: 'open', priority: 2, estimateMinutes: 15,
+    category: 'life', categoryId: 'personal', source: 'manual',
+    createdAt: '2026-08-23T00:00:00.000Z', updatedAt: '2026-08-23T00:00:00.000Z',
+  }
+}
+
+afterEach(() => {
+  window.history.replaceState({}, '', '/')
+})
+
+it('shows one quick-add row and rotates its example after submission', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
 
   const slots = screen.getAllByRole('textbox', { name: /빠른 할 일 추가/ })
-  expect(slots).toHaveLength(5)
-  expect(slots.map((slot) => slot.getAttribute('placeholder'))).toEqual([
-    '예: 오늘 꼭 끝낼 일',
-    '예: 10분 안에 할 수 있는 일',
-    '예: 연락하거나 예약할 일',
-    '예: 건강을 위해 할 일',
-    '예: 미뤄둔 작은 일',
-  ])
+  expect(slots).toHaveLength(1)
+  expect(slots[0]).toHaveAttribute('placeholder', '예: 오늘 꼭 끝낼 일')
 
-  const input = slots[2]
+  const input = slots[0]
   await userEvent.type(input, '우유 사기{Enter}')
 
   await waitFor(() => expect(deps.saveMany).toHaveBeenCalledWith([
     expect.objectContaining({ title: '우유 사기', status: 'open' }),
   ]))
   expect(input).toHaveValue('')
+  expect(input).toHaveAttribute('placeholder', '예: 10분 안에 할 수 있는 일')
   expect(within(screen.getByRole('region', { name: '오늘 할 일' })).getByText('우유 사기')).toBeVisible()
+})
+
+it('moves from recommended quest to one-time pet reward after persisting the task', async () => {
+  window.history.replaceState({}, '', '/?now=2026-08-23T01:00:00.000Z')
+  const deps = dependencies()
+  deps.settleReward = vi.fn().mockResolvedValue({ ...initialPetGameState, xp: 10, coins: 5 })
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 한 통 답장하기')])
+
+  render(<TodayScreen dependencies={deps} />)
+
+  expect(await screen.findByRole('heading', { name: '메일 한 통 답장하기' })).toBeVisible()
+  expect(screen.getByRole('button', { name: '3분만 시작' })).toBeVisible()
+  await userEvent.click(screen.getByRole('button', { name: '메일 한 통 답장하기 완료' }))
+
+  expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toHaveTextContent('경험치 +10')
+  expect(deps.recordReward).toHaveBeenCalledWith(expect.objectContaining({
+    id: 'mail@2026-08-23T01:00:00.000Z',
+    taskId: 'mail',
+    completedAt: '2026-08-23T01:00:00.000Z',
+    grant: expect.objectContaining({ xp: 10, coins: 5 }),
+  }))
+  expect(deps.settleReward).toHaveBeenCalledOnce()
+  expect(vi.mocked(deps.saveMany).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.recordReward).mock.invocationCallOrder[0])
+  expect(vi.mocked(deps.recordReward).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.settleReward).mock.invocationCallOrder[0])
+})
+
+it('does not increase visible totals when the same completion ID is rendered again', async () => {
+  window.history.replaceState({}, '', '/?now=2026-08-23T01:00:00.000Z')
+  const deps = dependencies()
+  let petState = { ...initialPetGameState }
+  const settledIds = new Set<string>()
+  deps.recoverRewards = vi.fn(async () => petState)
+  deps.settleReward = vi.fn(async (eventId) => {
+    if (!settledIds.has(eventId)) {
+      settledIds.add(eventId)
+      petState = { ...petState, xp: petState.xp + 10, coins: petState.coins + 5 }
+    }
+    return petState
+  })
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 한 통 답장하기')])
+  const view = render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' }))
+  expect(await screen.findByText('경험치 10')).toBeVisible()
+  expect(screen.getByText('코인 5')).toBeVisible()
+
+  view.rerender(<TodayScreen key="same-completion" dependencies={deps} />)
+  await userEvent.click(await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' }))
+
+  expect(await screen.findByText('경험치 10')).toBeVisible()
+  expect(screen.getByText('코인 5')).toBeVisible()
+  expect(new Set(vi.mocked(deps.recordReward).mock.calls.map(([event]) => event.id))).toEqual(new Set(['mail@2026-08-23T01:00:00.000Z']))
+})
+
+it('recovers pending rewards before showing current pet totals', async () => {
+  let resolveRecovery!: (state: PetGameState) => void
+  const deps = dependencies()
+  deps.recoverRewards = vi.fn(() => new Promise<PetGameState>((resolve) => { resolveRecovery = resolve }))
+
+  render(<TodayScreen dependencies={deps} />)
+
+  expect(screen.queryByText(/경험치 \d+/)).not.toBeInTheDocument()
+  resolveRecovery({ ...initialPetGameState, xp: 25, coins: 12 })
+  expect(await screen.findByText('경험치 25')).toBeVisible()
+  expect(screen.getByText('코인 12')).toBeVisible()
+  expect(deps.recoverRewards).toHaveBeenCalledOnce()
+})
+
+it('keeps a completed task and explains that a recorded reward will recover later', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 한 통 답장하기')])
+  deps.settleReward = vi.fn().mockRejectedValue(new Error('transaction interrupted'))
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' }))
+
+  expect(await screen.findByRole('status')).toHaveTextContent('보상은 다음 실행에서 다시 받을 수 있어요')
+  expect(screen.getByRole('button', { name: '메일 한 통 답장하기 완료됨' })).toBePressed()
+  expect(deps.recordReward).toHaveBeenCalledOnce()
 })
 
 it('organizes input but does not save before review confirmation', async () => {
@@ -73,6 +164,7 @@ it('loads all tasks into a category-filtered priority list', async () => {
     { id: 'run', title: '달리기', day: '2026-08-20', status: 'open', priority: 2, estimateMinutes: 20, category: 'exercise', categoryId: 'exercise', source: 'manual', createdAt: '2026-08-20T09:00:00Z', updatedAt: '2026-08-20T09:00:00Z' },
   ])
   render(<TodayScreen dependencies={deps} />)
+  await userEvent.click(screen.getByText('계획 도구'))
   const priorityHeading = await screen.findByRole('heading', { name: '오늘의 우선순위' })
   const prioritySection = priorityHeading.closest('section')!
   expect(within(prioritySection).getByText('보고서 작성')).toBeInTheDocument()
@@ -101,21 +193,27 @@ it('shows no more than two upcoming scheduled tasks', async () => {
     source: 'manual' as const, createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z',
   })))
   render(<TodayScreen dependencies={deps} />)
+  await userEvent.click(screen.getByText('계획 도구'))
   expect(await screen.findAllByTestId('upcoming-item')).toHaveLength(2)
 })
 
-it('shows progress and the actionable task list before the focus recommendation', async () => {
+it('puts the pet and recommended quest before quick add and the quest list', async () => {
   const deps = dependencies()
   deps.listForDay = vi.fn().mockResolvedValue([
     { id: 'open', title: '수학 숙제', day: '2026-08-20', status: 'open', priority: 1, estimateMinutes: 20, category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z' },
     { id: 'done', title: '물 마시기', day: '2026-08-20', status: 'completed', priority: 2, estimateMinutes: 5, category: 'life', source: 'manual', createdAt: '2026-08-20T07:00:00Z', updatedAt: '2026-08-20T07:10:00Z' },
   ])
   render(<TodayScreen dependencies={deps} />)
-  const board = await screen.findByRole('region', { name: '오늘 할 일' })
-  const focus = screen.getByRole('region', { name: '지금 할 일' })
+  const pet = await screen.findByRole('region', { name: '몽글이' })
+  const featured = screen.getByRole('region', { name: '추천 퀘스트' })
+  const capture = screen.getByRole('region', { name: '빠른 할 일 입력' })
+  const list = screen.getByRole('region', { name: '오늘 할 일' })
   expect(screen.getByText('1개 완료 · 2개 중')).toBeVisible()
-  expect(within(board).getByRole('button', { name: '수학 숙제 지금 하기' })).toBeVisible()
-  expect(board.compareDocumentPosition(focus) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(within(list).getByRole('button', { name: '수학 숙제 지금 하기' })).toBeVisible()
+  expect(pet.compareDocumentPosition(featured) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(featured.compareDocumentPosition(capture) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(capture.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(screen.queryByRole('heading', { name: '오늘의 우선순위' })).not.toBeInTheDocument()
 })
 
 it('does not reserve a large upcoming section when there are no scheduled tasks', async () => {
@@ -153,6 +251,7 @@ it('persists a five-minute mission delay for the existing quiet-hour-aware nudge
   deps.listRequiredOpen = vi.fn().mockResolvedValue([requiredTask])
   render(<TodayScreen dependencies={deps} />)
 
+  await userEvent.click(screen.getByText('계획 도구'))
   await userEvent.click(await screen.findByRole('button', { name: '5분 후 다시 알림' }))
 
   const delayed = taskCheckInRepository.load()
@@ -166,6 +265,7 @@ it('opens a reschedule path and persists the selected recovery action', async ()
   deps.listRequiredOpen = vi.fn().mockResolvedValue([requiredTask])
   render(<TodayScreen dependencies={deps} />)
 
+  await userEvent.click(screen.getByText('계획 도구'))
   await userEvent.click(await screen.findByRole('button', { name: '일정 다시 잡기' }))
   await userEvent.click(screen.getByRole('button', { name: '5분으로 줄이기' }))
 

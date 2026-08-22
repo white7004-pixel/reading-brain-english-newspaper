@@ -53,6 +53,7 @@ it('keeps a prior-day required mission delayed through quiet time and returns th
   const user = userEvent.setup()
   render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
 
+  await user.click(screen.getByText('계획 도구'))
   const mission = await screen.findByRole('region', { name: '현재 필수 미션' })
   await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('지난 미션'))
 
@@ -114,7 +115,7 @@ it('labels the app from the selected active mission when commitment days are mix
 
   render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
 
-  await waitFor(() => expect(screen.getByRole('region', { name: '현재 필수 미션' })).toHaveTextContent('active'))
+  await waitFor(() => expect(screen.getByRole('region', { name: '추천 퀘스트' })).toHaveTextContent('active'))
   expect(screen.queryByRole('region', { name: '오늘 연장 완료 모드' })).not.toBeInTheDocument()
   expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('active')
 })
