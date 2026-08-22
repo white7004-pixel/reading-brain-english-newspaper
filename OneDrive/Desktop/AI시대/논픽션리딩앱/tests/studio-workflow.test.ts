@@ -342,6 +342,23 @@ describe("content review workflow", () => {
     expect(() => publishArticle({ ...approved, previewReview: null }, "2026-08-17T07:00:00.000Z")).toThrow("모바일 미리보기를 확인해 주세요.");
   });
 
+  it("does not let quest readiness bypass the existing review and approval workflow", () => {
+    const readyLookingDraft = makeStudioArticle({
+      workflowStatus: "draft",
+      quest: {
+        curiosityQuestionKo: "왜 그럴까요?",
+        knowledgeTakeawayKo: "관찰하면 원인을 찾을 수 있어요.",
+        collectionId: "science-path",
+        mapOrder: 1,
+        prerequisiteArticleIds: [],
+        nextArticleIds: [],
+      },
+      previewReview: { actor: "editor-1", reviewedAt: "2026-08-17T00:00:00.000Z", workingVersion: 1 },
+    });
+
+    expect(() => publishArticle(readyLookingDraft, "2026-08-17T05:00:00.000Z")).toThrow("최종 승인 후 발행할 수 있습니다.");
+  });
+
   it("invalidates preview acknowledgement only for learner-facing edits", () => {
     const article = makeStudioArticle();
     expect(applyArticleEdit(article, { title: "Visible edit" }, "2026-08-17T01:00:00.000Z").previewReview).toBeNull();

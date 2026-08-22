@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import { applyArticleEdit } from "@/lib/studio-workflow";
 import { studioControlId, studioIssueId } from "@/lib/studio-validation-ui";
 import type { ArticleEditPatch, ArticlePersistenceResult, StudioArticle, StudioMedia, StudioQuizQuestion, StudioSourceRef, StudioVocabularyItem, ValidationIssue } from "@/lib/studio-types";
+import type { QuestMetadata } from "@/lib/quest-types";
 
 type Props = {
   article: StudioArticle;
@@ -124,6 +125,16 @@ export const ArticleEditor = forwardRef<ArticleEditorHandle, Props>(function Art
       <Field label="비주얼 테마"><input {...attrs("visualTheme")} value={article.visualTheme} onChange={(e) => commit({ visualTheme: e.target.value })} /></Field>
     </Section>
 
+    <Section id="quest-metadata" title="지식 퀘스트">
+      <Field label="호기심 질문" wide><textarea {...attrs("quest.curiosityQuestionKo")} value={article.quest?.curiosityQuestionKo ?? ""} onChange={(e) => commit({ quest: updateQuest(article.quest, { curiosityQuestionKo: e.target.value }) })} /></Field>
+      <Field label="지식 한 줄" wide><textarea {...attrs("quest.knowledgeTakeawayKo")} value={article.quest?.knowledgeTakeawayKo ?? ""} onChange={(e) => commit({ quest: updateQuest(article.quest, { knowledgeTakeawayKo: e.target.value }) })} /></Field>
+      <Field label="컬렉션 ID"><input {...attrs("quest.collectionId")} value={article.quest?.collectionId ?? ""} onChange={(e) => commit({ quest: updateQuest(article.quest, { collectionId: e.target.value }) })} /></Field>
+      <Field label="지도 순서"><input {...attrs("quest.mapOrder")} type="number" min="1" value={article.quest?.mapOrder ?? 1} onChange={(e) => commit({ quest: updateQuest(article.quest, { mapOrder: Number(e.target.value) || 1 }) })} /></Field>
+      <Field label="선행 퀘스트" wide><select {...attrs("quest.prerequisiteArticleIds")} multiple value={article.quest?.prerequisiteArticleIds ?? []} onChange={(e) => commit({ quest: updateQuest(article.quest, { prerequisiteArticleIds: selectedValues(e.currentTarget) }) })}>{connectionOptions?.map((option) => <option key={option.id} value={option.id}>{option.title}</option>)}</select></Field>
+      <Field label="다음 퀘스트" wide><select {...attrs("quest.nextArticleIds")} multiple value={article.quest?.nextArticleIds ?? []} onChange={(e) => commit({ quest: updateQuest(article.quest, { nextArticleIds: selectedValues(e.currentTarget) }) })}>{connectionOptions?.map((option) => <option key={option.id} value={option.id}>{option.title}</option>)}</select></Field>
+      <div className="studio-field studio-field--wide studio-photo-readonly" id={studioControlId("heroImage")} tabIndex={-1}><span>사진·출처 정보</span>{article.heroImage ? <p><strong>{article.heroImage.title}</strong> · {article.heroImage.creator} · {article.heroImage.licenseName}</p> : <p>대표 사진과 출처 정보가 없습니다.</p>}<small>이 단계에서는 시드 사진의 출처 정보를 읽기 전용으로 확인합니다.</small></div>
+    </Section>
+
     <Section id="difficulty-age" title="난이도·연령">
       <Field label="액셀러레이터 추정 AR"><input {...attrs("difficulty.value")} type="number" min="0" value={article.difficulty.value} onChange={(e) => commit({ difficulty: { ...article.difficulty, value: Number(e.target.value) || 0 } })} /></Field>
       <Field label="난이도 산정 방식"><select value={article.difficulty.method} onChange={(e) => commit({ difficulty: { ...article.difficulty, method: e.target.value as StudioArticle["difficulty"]["method"] } })}><option value="nonfiction-lab-estimate">액셀러레이터 추정</option><option value="external-user-entry">외부 입력</option></select></Field>
@@ -172,6 +183,11 @@ export const ArticleEditor = forwardRef<ArticleEditorHandle, Props>(function Art
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) { const headingId = `${id}-heading`; return <section className="studio-editor-section" id={id} aria-labelledby={headingId}><h2 id={headingId}>{title}</h2><div className="studio-field-grid">{children}</div></section>; }
 function Field({ label, wide = false, children }: { label: string; wide?: boolean; children: React.ReactElement }) { return <label className={`studio-field ${wide ? "studio-field--wide" : ""}`}><span>{label}</span>{children}</label>; }
 function ArrayEditor<T>({ field, invalid, label, items, addLabel, onAdd, onRemove, renderItem }: { field: string; invalid: ReturnType<Attrs>; label: string; items: T[]; addLabel: string; onAdd: () => void; onRemove: (i: number) => void; renderItem: (item: T, i: number) => React.ReactNode }) { return <div className="studio-array studio-field--wide"><div className="studio-array__heading"><h3>{label}</h3><button {...invalid} id={studioControlId(field)} type="button" className="button button--ghost" onClick={onAdd}>{addLabel}</button></div>{items.length === 0 ? <p className="studio-array__empty">등록된 {label} 항목이 없습니다.</p> : items.map((item, i) => <fieldset className="studio-array__item" key={i}><legend>{label} {i + 1}</legend>{renderItem(item, i)}<button type="button" className="studio-remove" aria-label={`${label} ${i + 1} 제거`} onClick={() => onRemove(i)}>제거</button></fieldset>)}</div>; }
+
+function updateQuest(current: QuestMetadata | undefined, patch: Partial<QuestMetadata>): QuestMetadata {
+  return { curiosityQuestionKo: "", knowledgeTakeawayKo: "", collectionId: "", mapOrder: 1, prerequisiteArticleIds: [], nextArticleIds: [], ...current, ...patch };
+}
+function selectedValues(select: HTMLSelectElement): string[] { return Array.from(select.selectedOptions, (option) => option.value); }
 
 function VocabularyFields({ item, index, onChange, attrs }: { item: StudioVocabularyItem; index: number; onChange: (item: StudioVocabularyItem) => void; attrs: Attrs }) {
   const f = (part: string) => `vocabulary.${index}.${part}`;
