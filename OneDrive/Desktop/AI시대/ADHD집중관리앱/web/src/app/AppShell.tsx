@@ -19,11 +19,13 @@ import { applyMasteryEvent, masteryMessage, masteryTone, taskMasteryRepository, 
 import { dayInSeoul, missionModeForMission } from '../features/missions/extendedDay'
 import { selectCurrentMission } from '../features/today/selectNowTask'
 import { appNow } from '../core/time/appClock'
+import { useLocation } from 'react-router-dom'
 
 const appearanceRepository = createAppearanceRepository(createDatabase())
 const shellTaskRepository = createTaskRepository(createDatabase())
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const location = useLocation()
   const [settings, setSettings] = useState(() => settingsRepository.load())
   const [companionEvent, setCompanionEvent] = useState<CompanionEvent | null>(null)
   const [appearance, setAppearance] = useState<AppearanceSettings>(defaultAppearanceSettings)
@@ -173,7 +175,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </section>}
       <main>{children}</main>
       {nudgeTask && <PersistentNowTask task={nudgeTask} line={settings.determinedMonggle ? masteryMessage(activeTone) : buildNudgeLine(nudgeTask)} tone={activeTone} onRespond={(action, delay) => void respondToTask(action, delay)} />}
-      <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeTone} />
+      {location.pathname === '/' && <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeTone} />}
       <BottomNav />
     </div>
   )

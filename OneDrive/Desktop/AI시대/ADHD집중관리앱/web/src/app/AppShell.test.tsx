@@ -38,6 +38,11 @@ it('does not render the profile selector in the global header', () => {
   expect(screen.queryByLabelText('사용자 유형')).not.toBeInTheDocument()
 })
 
+it('keeps the companion off utility screens so controls stay unobstructed', () => {
+  render(<MemoryRouter initialEntries={['/me']}><AppShell><div>설정 내용</div></AppShell></MemoryRouter>)
+  expect(screen.queryByTestId('monggle-companion')).not.toBeInTheDocument()
+})
+
 it('keeps a prior-day required mission delayed through quiet time and returns that same mission after the delay', async () => {
   await taskRepository.put({
     id: 'prior-required', title: '지난 미션', day: '2020-01-01', status: 'open', priority: 1,

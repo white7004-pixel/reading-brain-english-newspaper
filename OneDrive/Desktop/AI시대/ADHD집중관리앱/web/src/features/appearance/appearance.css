@@ -9,8 +9,10 @@
 }
 
 .appearance-bg--studio-purple {
-  background: radial-gradient(circle at 76% 14%, #eee7ff 0 8%, transparent 30%), linear-gradient(145deg, #f8f5ff, #d8ccf4 52%, #a897d2);
+  background: radial-gradient(circle at 82% 8%, #eeeaff 0 5%, transparent 24%), linear-gradient(160deg, #fbfbfd, #f5f3fb 62%, #eeebf8);
 }
+
+.appearance-bg--studio-purple .appearance-background__overlay { background: linear-gradient(150deg, transparent, rgb(103 88 209 / 8%)); }
 
 .appearance-bg--lavender-glass {
   background: radial-gradient(circle at 20% 22%, rgb(255 255 255 / 88%) 0 8%, transparent 34%), linear-gradient(155deg, #efeaff, #c9bce9 58%, #8d7ab4);
