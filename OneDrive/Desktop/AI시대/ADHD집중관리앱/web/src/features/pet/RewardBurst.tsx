@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useRef, type RefObject } from 'react'
 import type { RewardGrant } from './model'
 import { PetAvatar } from './PetAvatar'
 import './pet.css'
@@ -6,18 +6,23 @@ import './pet.css'
 interface RewardBurstProps {
   grant: RewardGrant
   onDismiss: () => void
+  returnFocusRef?: RefObject<HTMLElement | null>
 }
 
 const confettiPieces = Array.from({ length: 12 }, (_, index) => index)
 
-export function RewardBurst({ grant, onDismiss }: RewardBurstProps) {
+export function RewardBurst({ grant, onDismiss, returnFocusRef }: RewardBurstProps) {
   const titleId = useId()
   const summaryId = useId()
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
   const restoreFocus = () => {
-    if (previouslyFocusedRef.current?.isConnected) previouslyFocusedRef.current.focus()
+    const explicitTarget = returnFocusRef?.current
+    const target = explicitTarget?.isConnected && !explicitTarget.matches(':disabled')
+      ? explicitTarget
+      : previouslyFocusedRef.current
+    if (target?.isConnected && !target.matches(':disabled')) target.focus()
   }
 
   const dismiss = () => {

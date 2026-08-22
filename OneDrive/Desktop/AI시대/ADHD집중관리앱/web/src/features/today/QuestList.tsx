@@ -1,13 +1,16 @@
 import type { Task } from '../../core/model/task'
 
-export function QuestList({ tasks, onStart, onComplete }: {
+const NO_COMPLETING_TASKS: ReadonlySet<string> = new Set()
+
+export function QuestList({ tasks, completingTaskIds = NO_COMPLETING_TASKS, onStart, onComplete }: {
   tasks: Task[]
+  completingTaskIds?: ReadonlySet<string>
   onStart: (task: Task) => void
   onComplete: (task: Task) => void
 }) {
   const visible = tasks
     .filter((task) => task.status !== 'canceled' && task.status !== 'deferred')
-    .sort((a, b) => Number(a.status === 'completed') - Number(b.status === 'completed') || a.priority - b.priority)
+    .sort((a, b) => Number(a.status === 'completed') - Number(b.status === 'completed') || b.priority - a.priority)
 
   return <section className="quest-list" aria-label="오늘 할 일">
     <div className="quest-list__heading">
@@ -16,13 +19,14 @@ export function QuestList({ tasks, onStart, onComplete }: {
     </div>
     {visible.length > 0 ? <ol>{visible.map((task) => {
       const completed = task.status === 'completed'
+      const completing = completingTaskIds.has(task.id)
       return <li key={task.id} className={completed ? 'is-completed' : undefined}>
         <button
           className="task-check"
           type="button"
-          aria-label={`${task.title} ${completed ? '완료됨' : '완료'}`}
+          aria-label={`${task.title} ${completed ? '완료됨' : completing ? '완료 저장 중' : '완료'}`}
           aria-pressed={completed}
-          disabled={completed}
+          disabled={completed || completing}
           onClick={() => onComplete(task)}
         >{completed ? '✓' : ''}</button>
         <div>

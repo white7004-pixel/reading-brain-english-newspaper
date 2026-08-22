@@ -331,7 +331,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .inline-quick-add input {
   min-width: 0;
-  min-height: 44px;
+  min-height: 48px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -348,7 +348,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .inline-quick-add button {
-  min-height: 36px;
+  min-height: 48px;
   padding-inline: 12px;
   opacity: 1;
   transition: opacity .15s ease;
@@ -357,6 +357,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .inline-quick-add button:disabled {
   opacity: .42;
 }
+
+.inline-quick-add__error { margin: 0 36px 8px; color: var(--pet-pink); font-size: 12px; }
+.today-load-error { display: grid; gap: 3px; margin: 8px 4px 0; color: var(--pet-pink); font-size: 12px; }
 
 .pet-home-status { position: relative; }
 .pet-home-status > p {
@@ -388,7 +391,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .featured-quest__copy > span { font-size: 12px; font-weight: 850; opacity: .82; }
 .featured-quest h2 { margin: 5px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: clamp(20px, 5vw, 25px); letter-spacing: -.035em; }
 .featured-quest p { margin: 0; font-size: 12px; opacity: .82; }
-.featured-quest button { min-height: 46px; padding: 0 14px; border: 0; border-radius: 13px; background: white; color: var(--pet-action); font-weight: 850; }
+.featured-quest button { min-height: 48px; padding: 0 14px; border: 0; border-radius: 13px; background: white; color: var(--pet-action); font-weight: 850; }
 
 .quest-list { margin-top: 14px; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-card-3d); }
 .quest-list__heading { min-height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
@@ -427,9 +430,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .today-task-board li > div { min-width: 0; display: grid; gap: 3px; }
 .today-task-board li strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
 .today-task-board li small { color: var(--color-muted); font-size: 11px; }
-.task-check { width: 28px; min-height: 28px; padding: 0; border: 2px solid var(--color-line); border-radius: 50%; background: transparent; color: white; font-size: 15px; font-weight: 850; }
+.task-check { width: 48px; min-height: 48px; padding: 0; border: 2px solid var(--color-line); border-radius: 50%; background: transparent; color: white; font-size: 15px; font-weight: 850; }
 .task-check[aria-pressed='true'] { border-color: var(--color-accent); background: var(--color-accent); }
-.task-start { min-height: 38px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: var(--color-accent); font-size: 12px; font-weight: 750; }
+.task-start { min-height: 48px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: var(--color-accent); font-size: 12px; font-weight: 750; }
 .is-recommended .task-start { background: var(--color-accent); color: white; }
 .task-board-empty { display: grid; gap: 4px; padding: 18px 16px; border-top: 1px solid var(--color-line); }
 .task-board-empty span { color: var(--color-muted); font-size: 12px; }

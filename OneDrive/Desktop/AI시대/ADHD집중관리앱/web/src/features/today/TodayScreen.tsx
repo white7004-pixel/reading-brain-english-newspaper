@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Task } from '../../core/model/task'
 import { createDatabase } from '../../core/storage/database'
 import { createTaskRepository } from '../../core/storage/taskRepository'
@@ -31,6 +31,7 @@ import { calculateReward } from '../pet/rewardPolicy'
 import type { PetGameState, RewardEvent, RewardGrant } from '../pet/model'
 import { FeaturedQuest } from './FeaturedQuest'
 import { QuestList } from './QuestList'
+import { rewardOutbox } from './rewardOutbox'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -44,6 +45,9 @@ export interface TodayDependencies {
   recordReward(event: RewardEvent): Promise<void>
   settleReward(eventId: string): Promise<PetGameState>
   recoverRewards(): Promise<PetGameState>
+  listPendingRewards(): RewardEvent[]
+  savePendingReward(event: RewardEvent): void
+  removePendingReward(eventId: string): void
 }
 
 const database = createDatabase()
@@ -70,6 +74,9 @@ const defaultDependencies: TodayDependencies = {
     for (const event of pending) state = await petRepository.settle(event.id)
     return state
   },
+  listPendingRewards: rewardOutbox.list,
+  savePendingReward: rewardOutbox.put,
+  removePendingReward: rewardOutbox.remove,
 }
 
 function dayFor(date: Date) {
@@ -89,6 +96,12 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [petState, setPetState] = useState<PetGameState | null>(null)
   const [rewardGrant, setRewardGrant] = useState<RewardGrant | null>(null)
   const [rewardStatus, setRewardStatus] = useState('')
+  const [tasksLoading, setTasksLoading] = useState(Boolean(dependencies.listForDay || dependencies.listRequiredOpen))
+  const [taskLoadError, setTaskLoadError] = useState('')
+  const [categoryLoadError, setCategoryLoadError] = useState('')
+  const completionInFlightRef = useRef(new Set<string>())
+  const quickAddInputRef = useRef<HTMLInputElement>(null)
+  const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(new Set())
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy, appNow()), [tasks, energy])
   const currentMission = useMemo(() => selectCurrentMission(tasks, appNow()), [tasks])
   const featuredReward = useMemo(() => nowTask
@@ -97,15 +110,33 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   useEffect(() => {
     let active = true
-    if (dependencies.listForDay || dependencies.listRequiredOpen) void Promise.all([
+    const hasTaskLoaders = Boolean(dependencies.listForDay || dependencies.listRequiredOpen)
+    setTasksLoading(hasTaskLoaders)
+    setTaskLoadError('')
+    setCategoryLoadError('')
+    if (hasTaskLoaders) void Promise.all([
       dependencies.listForDay ? dependencies.listForDay(dayFor(appNow())) : Promise.resolve([]),
       dependencies.listRequiredOpen ? dependencies.listRequiredOpen() : Promise.resolve([]),
-    ]).then(([forToday, required]) => {
-      if (!active) return
-      setTasks([...forToday, ...required.filter((task) => !forToday.some(({ id }) => id === task.id))])
-    })
-    if (dependencies.listCategories) void dependencies.listCategories().then((saved) => { if (active) setCategories(saved) })
-    void dependencies.recoverRewards()
+    ])
+      .then(([forToday, required]) => {
+        if (!active) return
+        setTasks([...forToday, ...required.filter((task) => !forToday.some(({ id }) => id === task.id))])
+      })
+      .catch(() => { if (active) setTaskLoadError('오늘 퀘스트를 불러오지 못했어요') })
+      .finally(() => { if (active) setTasksLoading(false) })
+    if (dependencies.listCategories) void dependencies.listCategories()
+      .then((saved) => { if (active) setCategories(saved) })
+      .catch(() => { if (active) setCategoryLoadError('분류를 불러오지 못했어요') })
+    const recoverAllRewards = async () => {
+      let state = await dependencies.recoverRewards()
+      for (const event of dependencies.listPendingRewards()) {
+        await dependencies.recordReward(event)
+        state = await dependencies.settleReward(event.id)
+        dependencies.removePendingReward(event.id)
+      }
+      return state
+    }
+    void recoverAllRewards()
       .then((state) => { if (active) setPetState(state) })
       .catch(async () => {
         if (!active) return
@@ -124,14 +155,18 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     await dependencies.saveMany(next)
     const merged = [...tasks.filter((task) => !next.some(({ id }) => id === task.id)), ...next]
     setTasks(merged)
-    await dependencies.updateWidget(buildWidgetSnapshot(merged, '', appNow()))
+    try {
+      await dependencies.updateWidget(buildWidgetSnapshot(merged, '', appNow()))
+    } catch {
+      // Widget state is a best-effort projection. A failed projection must not
+      // turn an already-persisted task change into a failed save.
+    }
     window.dispatchEvent(new Event('monggle:tasks-changed'))
   }
 
-  const addSingleTask = (title: string) => {
+  const addSingleTask = async (title: string) => {
     const now = appNow()
-    void saveTasks([{ id: crypto.randomUUID(), title, day: dayFor(now), status: 'open', priority: 2, estimateMinutes: 15, category: 'life', categoryId: 'personal', source: 'manual', createdAt: now.toISOString(), updatedAt: now.toISOString() }])
-      .catch(() => setRewardStatus('할 일을 저장하지 못했어요. 다시 시도해 주세요.'))
+    await saveTasks([{ id: crypto.randomUUID(), title, day: dayFor(now), status: 'open', priority: 2, estimateMinutes: 15, category: 'life', categoryId: 'personal', source: 'manual', createdAt: now.toISOString(), updatedAt: now.toISOString() }])
   }
 
   const saveDrafts = async (reviewed: TaskDraft[]) => {
@@ -160,39 +195,55 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   }
 
   const completeQuest = async (task: Task, focusMinutes = 0) => {
+    if (completionInFlightRef.current.has(task.id)) return
+    completionInFlightRef.current.add(task.id)
+    setCompletingTaskIds(new Set(completionInFlightRef.current))
     const completedAt = appNow().toISOString()
     const completedTask: Task = { ...task, status: 'completed', completedAt, updatedAt: completedAt }
     setRewardStatus('')
 
     try {
-      await saveTasks([completedTask])
-    } catch {
-      setRewardStatus('완료를 저장하지 못했어요. 다시 시도해 주세요.')
-      return
-    }
+      try {
+        await saveTasks([completedTask])
+      } catch {
+        setRewardStatus('완료를 저장하지 못했어요. 다시 시도해 주세요.')
+        return
+      }
 
-    const grant = calculateReward({ taskId: task.id, focusMinutes }, Math.random)
-    const event: RewardEvent = {
-      id: `${task.id}@${completedAt}`,
-      taskId: task.id,
-      completedAt,
-      focusMinutes,
-      grant,
-    }
+      const grant = calculateReward({ taskId: task.id, focusMinutes }, Math.random)
+      const event: RewardEvent = {
+        id: `${completedTask.id}@${completedTask.completedAt}`,
+        taskId: completedTask.id,
+        completedAt: completedTask.completedAt!,
+        focusMinutes,
+        grant,
+      }
 
-    try {
-      await dependencies.recordReward(event)
-    } catch {
-      setRewardStatus('퀘스트는 완료했지만 보상을 저장하지 못했어요')
-      return
-    }
+      try {
+        dependencies.savePendingReward(event)
+      } catch {
+        setRewardStatus('보상 복구 정보를 저장하지 못했어요. 다시 시도해 주세요.')
+        return
+      }
 
-    try {
-      const state = await dependencies.settleReward(event.id)
-      setPetState(state)
-      setRewardGrant(grant)
-    } catch {
-      setRewardStatus('보상은 다음 실행에서 다시 받을 수 있어요')
+      try {
+        await dependencies.recordReward(event)
+      } catch {
+        setRewardStatus('퀘스트는 완료했지만 보상을 저장하지 못했어요')
+        return
+      }
+
+      try {
+        const state = await dependencies.settleReward(event.id)
+        dependencies.removePendingReward(event.id)
+        setPetState(state)
+        setRewardGrant(grant)
+      } catch {
+        setRewardStatus('보상은 다음 실행에서 다시 받을 수 있어요')
+      }
+    } finally {
+      completionInFlightRef.current.delete(task.id)
+      setCompletingTaskIds(new Set(completionInFlightRef.current))
     }
   }
 
@@ -218,13 +269,26 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       <p aria-label="몽글이 보유 보상"><span>경험치 {petState.xp}</span><span>코인 {petState.coins}</span></p>
     </div> : <p className="pet-state-loading">몽글이를 깨우고 있어요…</p>}
     {nowTask && featuredReward && <FeaturedQuest task={nowTask} reward={featuredReward} onStart={startMission} />}
-    <InlineQuickAdd onAdd={addSingleTask} />
-    <QuestList tasks={dashboardTasks} onStart={startMission} onComplete={(task) => { void completeQuest(task) }} />
+    <InlineQuickAdd inputRef={quickAddInputRef} onAdd={addSingleTask} />
+    {tasksLoading || taskLoadError ? <section className="quest-list" aria-label="오늘 할 일">
+      <div className="quest-list__heading"><h2>오늘의 퀘스트</h2></div>
+      <div className="quest-list__empty">
+        {tasksLoading
+          ? <strong role="status" aria-label="오늘 퀘스트 불러오는 중">오늘 퀘스트를 불러오는 중이에요…</strong>
+          : <strong>퀘스트를 표시할 수 없어요</strong>}
+      </div>
+    </section> : <QuestList tasks={dashboardTasks} completingTaskIds={completingTaskIds} onStart={startMission} onComplete={(task) => { void completeQuest(task) }} />}
+    {(taskLoadError || categoryLoadError) && <div className="today-load-error" role="alert">
+      {taskLoadError && <span>{taskLoadError}</span>}
+      {categoryLoadError && <span>{categoryLoadError}</span>}
+    </div>}
     {rewardStatus && <p className="reward-status" role="status">{rewardStatus}</p>}
-    {rewardGrant && <RewardBurst grant={rewardGrant} onDismiss={() => setRewardGrant(null)} />}
+    {rewardGrant && <RewardBurst grant={rewardGrant} returnFocusRef={quickAddInputRef} onDismiss={() => setRewardGrant(null)} />}
     <details className="today-details" open={planningExpanded} onToggle={(event) => setPlanningExpanded(event.currentTarget.open)}><summary>계획 도구</summary>
       {planningExpanded && <>
-      {captureExpanded && <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={addSingleTask} />}
+      {captureExpanded && <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={(title) => {
+        void addSingleTask(title).catch(() => setRewardStatus('할 일을 저장하지 못했어요. 다시 시도해 주세요.'))
+      }} />}
       {currentMission && <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => { void completeQuest(currentMission) }} />}
       <UpcomingPreview tasks={tasks} />
       {drafts.length > 0 && <TaskDraftReview drafts={drafts} categories={categories} onCreateCategory={async (input) => {

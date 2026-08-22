@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -9,6 +9,7 @@ import type { Task } from '../../core/model/task'
 import { initialPetGameState, type PetGameState } from '../pet/model'
 
 function dependencies(): TodayDependencies {
+  const pendingRewards = new Map<string, Parameters<TodayDependencies['savePendingReward']>[0]>()
   return {
     parse: vi.fn().mockReturnValue([
       { id: 'draft-1', title: '수학 숙제', day: '2026-08-20', priority: 2, categoryId: 'personal', estimateMinutes: 20, confidence: 0.9, needsReview: false },
@@ -22,6 +23,9 @@ function dependencies(): TodayDependencies {
     recordReward: vi.fn().mockResolvedValue(undefined),
     settleReward: vi.fn().mockResolvedValue({ ...initialPetGameState }),
     recoverRewards: vi.fn().mockResolvedValue({ ...initialPetGameState }),
+    listPendingRewards: vi.fn(() => [...pendingRewards.values()]),
+    savePendingReward: vi.fn((event) => { pendingRewards.set(event.id, event) }),
+    removePendingReward: vi.fn((eventId) => { pendingRewards.delete(eventId) }),
   }
 }
 
@@ -56,6 +60,29 @@ it('shows one quick-add row and rotates its example after submission', async () 
   expect(within(screen.getByRole('region', { name: '오늘 할 일' })).getByText('우유 사기')).toBeVisible()
 })
 
+it('keeps quick-add text and its suggestion when persistence fails, then allows retry', async () => {
+  const deps = dependencies()
+  deps.saveMany = vi.fn()
+    .mockRejectedValueOnce(new Error('storage unavailable'))
+    .mockResolvedValueOnce(undefined)
+  render(<TodayScreen dependencies={deps} />)
+
+  const quickAdd = screen.getByRole('region', { name: '빠른 할 일 입력' })
+  const input = within(quickAdd).getByRole('textbox', { name: '빠른 할 일 추가' })
+  await userEvent.type(input, '여유 챙기기{Enter}')
+
+  expect(await within(quickAdd).findByRole('status')).toHaveTextContent('할 일을 저장하지 못했어요')
+  expect(input).toHaveValue('여유 챙기기')
+  expect(input).toHaveAttribute('placeholder', '예: 오늘 꼭 끝낼 일')
+  expect(input).toBeEnabled()
+
+  await userEvent.type(input, '{Enter}')
+
+  await waitFor(() => expect(deps.saveMany).toHaveBeenCalledTimes(2))
+  expect(input).toHaveValue('')
+  expect(input).toHaveAttribute('placeholder', '예: 10분 안에 할 수 있는 일')
+})
+
 it('moves from recommended quest to one-time pet reward after persisting the task', async () => {
   window.history.replaceState({}, '', '/?now=2026-08-23T01:00:00.000Z')
   const deps = dependencies()
@@ -78,6 +105,81 @@ it('moves from recommended quest to one-time pet reward after persisting the tas
   expect(deps.settleReward).toHaveBeenCalledOnce()
   expect(vi.mocked(deps.saveMany).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.recordReward).mock.invocationCallOrder[0])
   expect(vi.mocked(deps.recordReward).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.settleReward).mock.invocationCallOrder[0])
+})
+
+it('returns focus to quick add after dismissing a reward from Today', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 답장하기')])
+  render(<TodayScreen dependencies={deps} />)
+
+  const quickAdd = screen.getByRole('textbox', { name: '빠른 할 일 추가' })
+  await userEvent.click(await screen.findByRole('button', { name: '메일 답장하기 완료' }))
+  await userEvent.click(await screen.findByRole('button', { name: '계속하기' }))
+
+  await waitFor(() => expect(quickAdd).toHaveFocus())
+})
+
+it('locks a task immediately while its first completion is being persisted', async () => {
+  let releaseSave!: () => void
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 한 통 답장하기')])
+  deps.saveMany = vi.fn(() => new Promise<void>((resolve) => { releaseSave = resolve }))
+  deps.settleReward = vi.fn().mockResolvedValue({ ...initialPetGameState, xp: 10, coins: 5 })
+  render(<TodayScreen dependencies={deps} />)
+
+  const completion = await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' })
+  fireEvent.click(completion)
+  fireEvent.click(completion)
+
+  expect(completion).toBeDisabled()
+  expect(deps.saveMany).toHaveBeenCalledOnce()
+  releaseSave()
+  expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toBeVisible()
+  expect(deps.recordReward).toHaveBeenCalledOnce()
+  expect(deps.settleReward).toHaveBeenCalledOnce()
+  const [savedTask] = vi.mocked(deps.saveMany).mock.calls[0][0]
+  const [event] = vi.mocked(deps.recordReward).mock.calls[0]
+  expect(event.id).toBe(`${savedTask.id}@${savedTask.completedAt}`)
+})
+
+it('settles the reward when task storage succeeds but widget projection fails', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 한 통 답장하기')])
+  deps.updateWidget = vi.fn().mockRejectedValue(new Error('native bridge unavailable'))
+  deps.settleReward = vi.fn().mockResolvedValue({ ...initialPetGameState, xp: 10, coins: 5 })
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' }))
+
+  expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toBeVisible()
+  expect(deps.saveMany).toHaveBeenCalledOnce()
+  expect(deps.recordReward).toHaveBeenCalledOnce()
+  expect(deps.settleReward).toHaveBeenCalledOnce()
+})
+
+it('recovers a completion reward from the durable outbox when ledger recording initially fails', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 답장하기')])
+  deps.recordReward = vi.fn()
+    .mockRejectedValueOnce(new Error('ledger unavailable'))
+    .mockResolvedValueOnce(undefined)
+  deps.settleReward = vi.fn().mockResolvedValue({ ...initialPetGameState, xp: 10, coins: 5 })
+  const view = render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '메일 답장하기 완료' }))
+
+  expect(await screen.findByRole('status')).toBeVisible()
+  expect(deps.savePendingReward).toHaveBeenCalledOnce()
+  expect(deps.listPendingRewards()).toHaveLength(1)
+  expect(deps.settleReward).not.toHaveBeenCalled()
+
+  view.rerender(<TodayScreen key="recover-outbox" dependencies={deps} />)
+
+  expect(await screen.findByText('경험치 10')).toBeVisible()
+  expect(deps.recordReward).toHaveBeenCalledTimes(2)
+  expect(deps.settleReward).toHaveBeenCalledOnce()
+  expect(deps.removePendingReward).toHaveBeenCalledOnce()
+  expect(deps.listPendingRewards()).toHaveLength(0)
 })
 
 it('does not increase visible totals when the same completion ID is rendered again', async () => {
@@ -120,6 +222,21 @@ it('recovers pending rewards before showing current pet totals', async () => {
   expect(await screen.findByText('경험치 25')).toBeVisible()
   expect(screen.getByText('코인 12')).toBeVisible()
   expect(deps.recoverRewards).toHaveBeenCalledOnce()
+})
+
+it('shows loading instead of an empty quest list and reports loader failures inline', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockRejectedValue(new Error('task database unavailable'))
+  deps.listCategories = vi.fn().mockRejectedValue(new Error('category database unavailable'))
+
+  render(<TodayScreen dependencies={deps} />)
+
+  expect(screen.getByRole('status', { name: '오늘 퀘스트 불러오는 중' })).toBeVisible()
+  expect(screen.queryByText('오늘 퀘스트가 없어요')).not.toBeInTheDocument()
+  const alert = await screen.findByRole('alert')
+  expect(alert).toHaveTextContent('오늘 퀘스트를 불러오지 못했어요')
+  expect(alert).toHaveTextContent('분류를 불러오지 못했어요')
+  expect(screen.queryByText('오늘 퀘스트가 없어요')).not.toBeInTheDocument()
 })
 
 it('keeps a completed task and explains that a recorded reward will recover later', async () => {
