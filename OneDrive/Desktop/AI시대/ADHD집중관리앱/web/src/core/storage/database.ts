@@ -5,6 +5,7 @@ import type { Routine } from '../model/routine'
 import type { MonggleSettings } from '../model/settings'
 import type { Task } from '../model/task'
 import type { Category } from '../model/category'
+import type { AvailabilitySnapshot, CalendarConnection } from '../model/calendarAvailability'
 
 export class MonggleDatabase extends Dexie {
   tasks!: EntityTable<Task, 'id'>
@@ -15,6 +16,8 @@ export class MonggleDatabase extends Dexie {
   characterRenders!: EntityTable<CharacterRender, 'id'>
   appearanceSettings!: EntityTable<AppearanceSettings, 'key'>
   categories!: EntityTable<Category, 'id'>
+  calendarConnections!: EntityTable<CalendarConnection, 'accountId'>
+  availabilitySnapshots!: EntityTable<AvailabilitySnapshot, 'accountId'>
 
   constructor(name = 'monggle') {
     super(name)
@@ -52,6 +55,18 @@ export class MonggleDatabase extends Dexie {
       characterRenders: '&id,sourcePhotoId,preset,createdAt',
       appearanceSettings: '&key',
       categories: '&id,name,isDefault,createdAt',
+    })
+    this.version(5).stores({
+      tasks: '&id,day,status,dueAt,categoryId,required,commitmentDay',
+      messages: '&id,status,scheduledAt,platform',
+      routines: '&id',
+      settings: '&key',
+      photoAssets: '&id,createdAt',
+      characterRenders: '&id,sourcePhotoId,preset,createdAt',
+      appearanceSettings: '&key',
+      categories: '&id,name,isDefault,createdAt',
+      calendarConnections: '&accountId,connectedAt',
+      availabilitySnapshots: '&accountId,fetchedAt,expiresAt',
     })
   }
 }
