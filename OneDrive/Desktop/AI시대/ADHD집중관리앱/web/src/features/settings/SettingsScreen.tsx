@@ -6,6 +6,7 @@ import { AppearanceScreen } from '../appearance/AppearanceScreen'
 import { settingsRepository } from './settingsRepository'
 import { nativeWidgetBridge } from '../widgets/nativeWidgetBridge'
 import { CategoryManager } from './CategoryManager'
+import { CalendarSettings } from '../calendar/CalendarSettings'
 
 export function SettingsScreen() {
   const [settings, setSettings] = useState<MonggleSettings>(() => settingsRepository.load())
@@ -34,6 +35,7 @@ export function SettingsScreen() {
     <div className="connector-card appearance-entry"><strong>배경과 캐릭터</strong><p>사진은 이 기기 안에서만 처리하고 저장해요.</p><div><button type="button" onClick={() => setAppearanceTarget('background')}>배경 꾸미기</button><button type="button" onClick={() => setAppearanceTarget('both')}>내 캐릭터 만들기</button></div></div>
     {appearanceTarget && <AppearanceScreen initialTarget={appearanceTarget} onClose={() => setAppearanceTarget(null)} />}
     <CategoryManager />
+    <CalendarSettings state={{ kind: 'disconnected' }} onConnect={() => { window.location.href = '/oauth/google/start' }} onRefresh={() => undefined} onDisconnect={() => undefined} />
     <div className="connector-card"><strong>메시지 연동</strong><p>Slack · Telegram · KakaoWork 연결 준비됨</p><p>카카오톡은 알림 후 직접 전송</p></div>
   </section>
 }
