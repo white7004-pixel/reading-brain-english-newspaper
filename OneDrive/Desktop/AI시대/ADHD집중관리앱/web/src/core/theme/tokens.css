@@ -12,6 +12,13 @@
   --shadow-card-3d: 0 8px 24px rgb(41 35 65 / 7%);
   --shadow-control-3d: 0 4px 12px rgb(69 54 126 / 12%);
   --glow-lavender: radial-gradient(circle, rgb(191 172 255 / 42%), transparent 68%);
+  --pet-lilac: #9180d7;
+  --pet-pink: #b83f70;
+  --pet-action: #b83f70;
+  --pet-cream: #fff5d6;
+  --pet-ink: #392d49;
+  --pet-shadow: rgb(83 62 116 / 18%);
+  --reward-gold: #8b5a00;
   --radius-card: 18px;
   --radius-control: 14px;
   --space-page: 16px;
@@ -34,5 +41,12 @@
   --shadow-card-3d: 0 26px 60px rgb(4 2 12 / 34%), inset 0 1px 0 rgb(255 255 255 / 12%);
   --shadow-control-3d: 0 10px 26px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 13%);
   --glow-lavender: radial-gradient(circle, rgb(151 126 238 / 27%), transparent 68%);
+  --pet-lilac: #b5a6f5;
+  --pet-pink: #f08eb2;
+  --pet-action: #a12d5f;
+  --pet-cream: #fff0c5;
+  --pet-ink: #392d49;
+  --pet-shadow: rgb(3 1 10 / 38%);
+  --reward-gold: #f2bd55;
   color-scheme: dark;
 }

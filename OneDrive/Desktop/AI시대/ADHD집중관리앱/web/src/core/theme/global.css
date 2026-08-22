@@ -226,7 +226,14 @@ button, select, a { min-height: var(--tap-min); }
 }
 
 /* Calm Mission OS presentation layer */
-body { background: var(--color-bg); font-weight: 500; }
+body {
+  background:
+    radial-gradient(circle at 85% 7%, color-mix(in srgb, var(--pet-pink) 12%, transparent), transparent 22rem),
+    radial-gradient(circle at 8% 42%, color-mix(in srgb, var(--pet-lilac) 15%, transparent), transparent 26rem),
+    var(--color-bg);
+  font-weight: 500;
+}
+::selection { background: color-mix(in srgb, var(--pet-pink) 30%, transparent); color: var(--color-text); }
 .app-shell { width: min(100%, 680px); padding: 18px var(--space-page) calc(var(--nav-clearance) + 72px); }
 .studio-surface::before { display: none; }
 .app-header { min-height: 56px; }
