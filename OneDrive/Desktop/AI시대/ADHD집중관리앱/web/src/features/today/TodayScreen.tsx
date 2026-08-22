@@ -23,6 +23,8 @@ import { FocusScreen } from '../focus/FocusScreen'
 import { taskCheckInRepository } from '../nudges/taskCheckIn'
 import { reschedulePlan, type RescueDecision } from '../rescue/reschedulePlan'
 import { appNow } from '../../core/time/appClock'
+import { TodayHeader } from './TodayHeader'
+import { UpcomingPreview } from './UpcomingPreview'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -62,6 +64,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [selectedCategoryId, setSelectedCategoryId] = useState('all')
   const [focusMission, setFocusMission] = useState<Task | null>(null)
   const [reschedulingMission, setReschedulingMission] = useState<Task | null>(null)
+  const [captureExpanded, setCaptureExpanded] = useState(false)
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy, appNow()), [tasks, energy])
   const currentMission = useMemo(() => selectCurrentMission(tasks, appNow()), [tasks])
 
@@ -130,16 +133,17 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   if (focusMission) return <FocusScreen title={focusMission.title} taskId={focusMission.id} minutes={3} autoStart onComplete={() => { completeCurrentMission(focusMission); setFocusMission(null) }} onExit={() => setFocusMission(null)} />
 
   return <>
-    <div className="energy"><span>지금 에너지는?</span>{(['low', 'medium', 'high'] as const).map((value, index) => <button aria-pressed={energy === value} key={value} onClick={() => setEnergy(value)}>{['낮음', '보통', '높음'][index]}</button>)}</div>
-    <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={addSingleTask} />
+    <TodayHeader date={appNow()} energy={energy} onEnergyChange={setEnergy} />
+    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
+    <UpcomingPreview tasks={tasks} />
+    <button className="quick-capture-trigger" type="button" aria-expanded={captureExpanded} onClick={() => setCaptureExpanded((current) => !current)}>+ 할 일 빠르게 적기</button>
+    {captureExpanded && <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={addSingleTask} />}
     {drafts.length > 0 && <TaskDraftReview drafts={drafts} categories={categories} onCreateCategory={async (input) => {
       if (!dependencies.addCategory) throw new Error('분류를 추가할 수 없어요.')
       const category = await dependencies.addCategory(input)
       setCategories((current) => [...current, category])
       return category
     }} onChange={setDrafts} onSave={(reviewed) => void saveDrafts(reviewed)} onCancel={() => setDrafts([])} />}
-    {reviewableTasks.length > 0 && <MissionCommitmentReview tasks={reviewableTasks} onConfirm={(committed) => void saveTasks(committed)} now={appNow()} />}
-    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
     {reschedulingMission && <section className="mission-reschedule" aria-label="미션 일정 다시 잡기">
       <h2>{reschedulingMission.title}을 어떻게 다시 잡을까요?</h2>
       <p>필수 미션은 완료하거나 명시적으로 해제하기 전까지 유지돼요.</p>
@@ -150,7 +154,10 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
         <button type="button" onClick={() => setReschedulingMission(null)}>돌아가기</button>
       </div>
     </section>}
-    <PriorityTaskList tasks={tasks} categories={categories} activeTaskId={nowTask?.id} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
-    <Timeline items={buildTimeline(tasks, [])} />
+    <details className="today-details"><summary>오늘 전체 계획</summary>
+      {reviewableTasks.length > 0 && <MissionCommitmentReview tasks={reviewableTasks} onConfirm={(committed) => void saveTasks(committed)} now={appNow()} />}
+      <PriorityTaskList tasks={tasks} categories={categories} activeTaskId={nowTask?.id} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
+      <Timeline items={buildTimeline(tasks, [])} />
+    </details>
   </>
 }

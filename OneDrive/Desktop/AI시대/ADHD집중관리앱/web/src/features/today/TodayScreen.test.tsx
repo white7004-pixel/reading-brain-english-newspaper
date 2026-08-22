@@ -22,6 +22,7 @@ function dependencies(): TodayDependencies {
 it('organizes input but does not save before review confirmation', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
+  await userEvent.click(screen.getByRole('button', { name: /할 일 빠르게 적기/ }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 3시에 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   expect(screen.getAllByLabelText('할 일 제목')).toHaveLength(2)
@@ -31,6 +32,7 @@ it('organizes input but does not save before review confirmation', async () => {
 it('saves reviewed tasks and shows the first focus action', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
+  await userEvent.click(screen.getByRole('button', { name: /할 일 빠르게 적기/ }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   await userEvent.click(screen.getByRole('button', { name: '모두 저장' }))
@@ -52,6 +54,29 @@ it('loads all tasks into a category-filtered priority list', async () => {
   await userEvent.click(screen.getByRole('button', { name: '운동' }))
   expect(within(prioritySection).getByText('달리기')).toBeInTheDocument()
   expect(within(prioritySection).queryByText('보고서 작성')).not.toBeInTheDocument()
+})
+
+it('puts the current action before task capture and planning details', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([{
+    id: 'now', title: '영어 단어 10개', day: '2026-08-20', status: 'open', priority: 1,
+    estimateMinutes: 15, category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z',
+  }])
+  render(<TodayScreen dependencies={deps} />)
+  const current = await screen.findByRole('region', { name: '지금 할 일' })
+  const capture = screen.getByRole('button', { name: /할 일 빠르게 적기/ })
+  expect(current.compareDocumentPosition(capture) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+})
+
+it('shows no more than two upcoming scheduled tasks', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([1, 2, 3].map((index) => ({
+    id: `scheduled-${index}`, title: `일정 ${index}`, day: '2026-08-20', dueAt: `2026-08-20T${10 + index}:00:00+09:00`,
+    status: 'open' as const, priority: 2 as const, estimateMinutes: 15, category: 'life' as const,
+    source: 'manual' as const, createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z',
+  })))
+  render(<TodayScreen dependencies={deps} />)
+  expect(await screen.findAllByTestId('upcoming-item')).toHaveLength(2)
 })
 
 const requiredTask: Task = {
