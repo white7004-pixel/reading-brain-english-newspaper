@@ -25,16 +25,19 @@ it("presents the map in stable order with text status for every node", () => {
   expect(screen.getByRole("button", { name: /How Did the Great Wave Travel.*잠김/ })).toBeDisabled();
 });
 
-it("starts an available recommendation without relying on motion", async () => {
+it("starts an available recommendation without relying on motion or a destination link", async () => {
   const user = userEvent.setup();
   const onStart = vi.fn();
+  vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true, addEventListener: () => {}, removeEventListener: () => {} }));
   render(<KnowledgeMapScreen nodes={nodes} onStart={onStart} />);
 
   const recommendation = screen.getByRole("button", { name: /다음 추천.*What Was the Silk Road/ });
   expect(recommendation).toBeEnabled();
+  expect(screen.queryByRole("link")).not.toBeInTheDocument();
   await user.click(recommendation);
 
   expect(onStart).toHaveBeenCalledWith(SAMPLE_ARTICLES[1]);
+  vi.unstubAllGlobals();
 });
 
 it("explains the empty map when published quests are unavailable", () => {

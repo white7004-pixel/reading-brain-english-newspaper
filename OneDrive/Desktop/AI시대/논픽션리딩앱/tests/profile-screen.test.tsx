@@ -56,3 +56,12 @@ it("keeps the weekly growth report above the existing level and reset controls",
   expect(report.compareDocumentPosition(level) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   expect(level.compareDocumentPosition(reset) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
+
+it("derives the current AR level for growth while not inventing unavailable history", () => {
+  const state = createDefaultLearnerState();
+  state.profile.enteredAr = 2.4;
+  state.profile.estimatedDifficulty = 2.7;
+  render(<ProfileScreen state={state} growth={buildWeeklyGrowth([], "2026-08-21")} onReset={() => {}} onLevelChange={() => {}} />);
+
+  expect(screen.getByText("AR 수준: 현재 AR 2.7. 이전 AR 기록이 없어 변화는 알 수 없어요.")).toBeVisible();
+});
