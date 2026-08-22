@@ -25,6 +25,7 @@ import { reschedulePlan, type RescueDecision } from '../rescue/reschedulePlan'
 import { appNow } from '../../core/time/appClock'
 import { TodayHeader } from './TodayHeader'
 import { UpcomingPreview } from './UpcomingPreview'
+import { TodayTaskBoard } from './TodayTaskBoard'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -129,15 +130,17 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   }
 
   const reviewableTasks = tasks.filter((task) => !task.required && task.status !== 'completed' && task.status !== 'canceled')
+  const dashboardTasks = tasks.filter((task) => task.status !== 'canceled' && task.status !== 'deferred')
+  const completedCount = dashboardTasks.filter((task) => task.status === 'completed').length
 
   if (focusMission) return <FocusScreen title={focusMission.title} taskId={focusMission.id} minutes={3} autoStart onComplete={() => { completeCurrentMission(focusMission); setFocusMission(null) }} onExit={() => setFocusMission(null)} />
 
   return <>
-    <TodayHeader date={appNow()} energy={energy} onEnergyChange={setEnergy} />
-    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : <NowCard task={nowTask} />}
-    <UpcomingPreview tasks={tasks} />
-    <button className="quick-capture-trigger" type="button" aria-expanded={captureExpanded} onClick={() => setCaptureExpanded((current) => !current)}>+ 할 일 빠르게 적기</button>
+    <TodayHeader date={appNow()} energy={energy} total={dashboardTasks.length} completed={completedCount} onEnergyChange={setEnergy} onAdd={() => setCaptureExpanded((current) => !current)} />
     {captureExpanded && <QuickCapture onOrganize={(input) => setDrafts(dependencies.parse(input, appNow()))} onSingleTask={addSingleTask} />}
+    <TodayTaskBoard tasks={dashboardTasks} recommendedTaskId={nowTask?.id} onStart={startMission} onComplete={completeCurrentMission} />
+    {currentMission ? <CurrentMissionCard task={currentMission} onStart={() => startMission(currentMission)} onDelay={() => delayMission(currentMission)} onReschedule={() => setReschedulingMission(currentMission)} onComplete={() => completeCurrentMission(currentMission)} /> : nowTask ? <NowCard task={nowTask} onStart={startMission} /> : null}
+    <UpcomingPreview tasks={tasks} />
     {drafts.length > 0 && <TaskDraftReview drafts={drafts} categories={categories} onCreateCategory={async (input) => {
       if (!dependencies.addCategory) throw new Error('분류를 추가할 수 없어요.')
       const category = await dependencies.addCategory(input)

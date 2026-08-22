@@ -22,7 +22,7 @@ function dependencies(): TodayDependencies {
 it('organizes input but does not save before review confirmation', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
-  await userEvent.click(screen.getByRole('button', { name: /할 일 빠르게 적기/ }))
+  await userEvent.click(screen.getByRole('button', { name: /추가/ }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 3시에 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   expect(screen.getAllByLabelText('할 일 제목')).toHaveLength(2)
@@ -32,7 +32,7 @@ it('organizes input but does not save before review confirmation', async () => {
 it('saves reviewed tasks and shows the first focus action', async () => {
   const deps = dependencies()
   render(<TodayScreen dependencies={deps} />)
-  await userEvent.click(screen.getByRole('button', { name: /할 일 빠르게 적기/ }))
+  await userEvent.click(screen.getByRole('button', { name: /추가/ }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
   await userEvent.click(screen.getByRole('button', { name: '모두 저장' }))
@@ -56,16 +56,16 @@ it('loads all tasks into a category-filtered priority list', async () => {
   expect(within(prioritySection).queryByText('보고서 작성')).not.toBeInTheDocument()
 })
 
-it('puts the current action before task capture and planning details', async () => {
+it('keeps quick add accessible before the work board', async () => {
   const deps = dependencies()
   deps.listForDay = vi.fn().mockResolvedValue([{
     id: 'now', title: '영어 단어 10개', day: '2026-08-20', status: 'open', priority: 1,
     estimateMinutes: 15, category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z',
   }])
   render(<TodayScreen dependencies={deps} />)
-  const current = await screen.findByRole('region', { name: '지금 할 일' })
-  const capture = screen.getByRole('button', { name: /할 일 빠르게 적기/ })
-  expect(current.compareDocumentPosition(capture) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  const board = await screen.findByRole('region', { name: '오늘 할 일' })
+  const capture = screen.getByRole('button', { name: /추가/ })
+  expect(capture.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
 })
 
 it('shows no more than two upcoming scheduled tasks', async () => {
@@ -77,6 +77,31 @@ it('shows no more than two upcoming scheduled tasks', async () => {
   })))
   render(<TodayScreen dependencies={deps} />)
   expect(await screen.findAllByTestId('upcoming-item')).toHaveLength(2)
+})
+
+it('shows progress and the actionable task list before the focus recommendation', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([
+    { id: 'open', title: '수학 숙제', day: '2026-08-20', status: 'open', priority: 1, estimateMinutes: 20, category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z' },
+    { id: 'done', title: '물 마시기', day: '2026-08-20', status: 'completed', priority: 2, estimateMinutes: 5, category: 'life', source: 'manual', createdAt: '2026-08-20T07:00:00Z', updatedAt: '2026-08-20T07:10:00Z' },
+  ])
+  render(<TodayScreen dependencies={deps} />)
+  const board = await screen.findByRole('region', { name: '오늘 할 일' })
+  const focus = screen.getByRole('region', { name: '지금 할 일' })
+  expect(screen.getByText('1개 완료 · 2개 중')).toBeVisible()
+  expect(within(board).getByRole('button', { name: '수학 숙제 지금 하기' })).toBeVisible()
+  expect(board.compareDocumentPosition(focus) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+})
+
+it('does not reserve a large upcoming section when there are no scheduled tasks', async () => {
+  const deps = dependencies()
+  deps.listForDay = vi.fn().mockResolvedValue([{
+    id: 'open', title: '책 읽기', day: '2026-08-20', status: 'open', priority: 2, estimateMinutes: 10,
+    category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z',
+  }])
+  render(<TodayScreen dependencies={deps} />)
+  await screen.findByRole('button', { name: '책 읽기 지금 하기' })
+  expect(screen.queryByRole('region', { name: '다음 일정' })).not.toBeInTheDocument()
 })
 
 const requiredTask: Task = {
