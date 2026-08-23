@@ -37,9 +37,10 @@ function seoulInputValue(value?: string) {
   return `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}`
 }
 
-function CandidateRow({ candidate, personas, onAccept, onDismiss }: {
+function CandidateRow({ candidate, personas, accepting, onAccept, onDismiss }: {
   candidate: QuestCandidate
   personas: Persona[]
+  accepting: boolean
   onAccept: (candidate: QuestCandidate) => void | Promise<void>
   onDismiss: (id: string) => void | Promise<void>
 }) {
@@ -57,6 +58,7 @@ function CandidateRow({ candidate, personas, onAccept, onDismiss }: {
     })
   }
   const accept = () => {
+    if (accepting) return
     if (!edited.title.trim()) {
       setError('제목을 입력해 주세요.')
       return
@@ -91,15 +93,16 @@ function CandidateRow({ candidate, personas, onAccept, onDismiss }: {
     </fieldset>
     {error && <p role="alert">{error}</p>}
     <div className="capture-actions">
-      <button className="primary candidate-inbox__tap-target" type="button" onClick={accept}>수락</button>
-      <button className="candidate-inbox__tap-target" type="button" onClick={() => { void onDismiss(edited.id) }}>닫기</button>
+      <button className="primary candidate-inbox__tap-target" type="button" disabled={accepting} onClick={accept}>{accepting ? '수락 중' : '수락'}</button>
+      <button className="candidate-inbox__tap-target" type="button" disabled={accepting} onClick={() => { void onDismiss(edited.id) }}>닫기</button>
     </div>
   </article>
 }
 
-export function CandidateInbox({ candidates, personas, onAccept, onDismiss }: {
+export function CandidateInbox({ candidates, personas, acceptingCandidateIds = new Set(), onAccept, onDismiss }: {
   candidates: QuestCandidate[]
   personas: Persona[]
+  acceptingCandidateIds?: ReadonlySet<string>
   onAccept: (candidate: QuestCandidate) => void | Promise<void>
   onDismiss: (id: string) => void | Promise<void>
 }) {
@@ -116,6 +119,7 @@ export function CandidateInbox({ candidates, personas, onAccept, onDismiss }: {
       key={candidate.id}
       candidate={candidate}
       personas={activePersonas}
+      accepting={acceptingCandidateIds.has(candidate.id)}
       onAccept={onAccept}
       onDismiss={onDismiss}
     />)}

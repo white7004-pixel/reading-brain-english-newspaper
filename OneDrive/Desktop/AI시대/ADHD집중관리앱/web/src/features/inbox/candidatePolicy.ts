@@ -71,7 +71,7 @@ export function acceptCandidate(candidate: QuestCandidate, now: Date): Task {
   const timestamp = now.toISOString()
   const firstAction = candidate.firstAction?.trim()
   return {
-    id: crypto.randomUUID(),
+    id: `candidate:${candidate.source}:${candidate.sourceRef.trim()}`,
     title: candidate.title.trim(),
     day: dayInSeoul(daySource),
     ...(candidate.dueAt ? { dueAt: candidate.dueAt } : {}),

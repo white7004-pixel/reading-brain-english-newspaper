@@ -58,6 +58,7 @@ describe('quest candidate policy', () => {
     }), new Date('2026-08-23T15:30:00.000Z'))
 
     expect(task).toEqual(expect.objectContaining({
+      id: 'candidate:kakaotalk:room-1/message-4',
       title: '상담 일정 확인',
       day: '2026-08-24',
       dueAt: '2026-08-23T16:30:00.000Z',
@@ -73,6 +74,7 @@ describe('quest candidate policy', () => {
       createdAt: '2026-08-23T15:30:00.000Z',
       updatedAt: '2026-08-23T15:30:00.000Z',
     }))
+    expect(acceptCandidate(candidate(), new Date('2026-08-24T15:30:00.000Z')).id).toBe(task.id)
   })
 
   it.each([

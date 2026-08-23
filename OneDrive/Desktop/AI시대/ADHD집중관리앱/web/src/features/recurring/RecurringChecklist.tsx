@@ -23,7 +23,7 @@ export function RecurringChecklist({ day, selectedPersonaId, templates, instance
 
   if (visible.length === 0) return null
 
-  return <section className="recurring-checklist" aria-label="매일 반복 업무">
+  return <section className="recurring-checklist" aria-label="매일 반복업무">
     <div className="today-section-heading">
       <div><span>습관처럼 가볍게</span><h2>매일 반복 업무</h2></div>
       <strong>{visible.filter(({ instance }) => instance.status === 'completed').length}/{visible.length}</strong>

@@ -55,3 +55,84 @@ feat: compose persona-aware today dashboard
 ## Concerns
 
 - The repository root spans multiple unrelated projects and contains pre-existing dirty files; staging is explicitly limited to Task 6 paths.
+
+## Review fix round 1
+
+### Changes
+
+- Nested quick add inside the allowed `남은 퀘스트` region and made the dashboard test assert the complete direct-child labeled-region sequence, including the brief's exact `매일 반복업무` label.
+- Made converted task IDs deterministic from the canonical candidate source and source reference (`candidate:<source>:<sourceRef>`), so a terminal-state retry upserts one task.
+- Added a synchronous per-candidate in-flight guard in TodayScreen and disabled accept/dismiss actions with a textual `수락 중` state while acceptance is pending.
+- Added policy, CandidateInbox, and TodayScreen integration coverage for deterministic identity, failed-terminal retry recovery, and rapid double-click deduplication.
+
+### RED evidence
+
+Command:
+
+```text
+npm test -- --run src/features/today/TodayDashboard.test.tsx src/features/inbox/candidatePolicy.test.ts src/features/inbox/CandidateInbox.test.tsx src/features/today/TodayScreen.test.tsx -t "renders the approved|converts an accepted|disables candidate actions|retries a failed|guards rapid"
+```
+
+Output:
+
+```text
+Test Files  4 failed (4)
+Tests  5 failed | 44 skipped (49)
+```
+
+The failures showed the interleaved `빠른 할 일 입력` direct child, random UUIDs on retry, two rapid persistence calls, and missing in-flight disabled state.
+
+Exact-label RED command:
+
+```text
+npm test -- --run src/features/today/TodayDashboard.test.tsx -t "renders the approved"
+```
+
+Output:
+
+```text
+Test Files  1 failed (1)
+Tests  1 failed | 1 skipped (2)
+Expected "매일 반복업무"; received "매일 반복 업무".
+```
+
+### Final GREEN evidence
+
+Command:
+
+```text
+npm test -- --run src/features/today src/features/recurring/RecurringChecklist.test.tsx src/features/pet/PetHero.test.tsx src/features/inbox/CandidateInbox.test.tsx src/features/inbox/candidatePolicy.test.ts
+```
+
+Output:
+
+```text
+Test Files  15 passed (15)
+Tests  81 passed (81)
+```
+
+Command:
+
+```text
+npm run build
+```
+
+Output:
+
+```text
+> tsc -b && vite build
+✓ 137 modules transformed.
+✓ built in 2.59s
+PWA v1.3.0
+files generated
+  dist/sw.js
+  dist/workbox-2fbc6a65.js
+```
+
+### Review fix commit
+
+`fix: make candidate acceptance idempotent`
+
+### Review concerns
+
+- Candidate task persistence and terminal candidate persistence remain separate operations, but deterministic task identity makes retries idempotent in both storage and Today UI.

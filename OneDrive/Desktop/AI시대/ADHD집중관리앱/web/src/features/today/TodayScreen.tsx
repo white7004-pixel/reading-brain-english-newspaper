@@ -131,8 +131,10 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [taskLoadError, setTaskLoadError] = useState('')
   const [categoryLoadError, setCategoryLoadError] = useState('')
   const completionInFlightRef = useRef(new Set<string>())
+  const candidateAcceptanceInFlightRef = useRef(new Set<string>())
   const quickAddInputRef = useRef<HTMLInputElement>(null)
   const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(new Set())
+  const [acceptingCandidateIds, setAcceptingCandidateIds] = useState<ReadonlySet<string>>(new Set())
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy, appNow()), [tasks, energy])
   const currentMission = useMemo(() => selectCurrentMission(tasks, appNow()), [tasks])
 
@@ -322,6 +324,9 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
 
   const acceptQuestCandidate = async (candidate: QuestCandidate) => {
     if (!dependencies.acceptCandidate) return
+    if (candidateAcceptanceInFlightRef.current.has(candidate.id)) return
+    candidateAcceptanceInFlightRef.current.add(candidate.id)
+    setAcceptingCandidateIds(new Set(candidateAcceptanceInFlightRef.current))
     setDashboardError('')
     try {
       const task = convertCandidateToTask(candidate, appNow())
@@ -330,6 +335,9 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       setPendingCandidates((current) => current.filter((item) => item.id !== candidate.id))
     } catch {
       setDashboardError('후보를 반영하지 못했어요. 내용을 유지했으니 다시 시도해 주세요.')
+    } finally {
+      candidateAcceptanceInFlightRef.current.delete(candidate.id)
+      setAcceptingCandidateIds(new Set(candidateAcceptanceInFlightRef.current))
     }
   }
 
@@ -371,6 +379,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       petState={petState}
       coachLine="지금 할 수 있는 가장 작은 행동부터 시작해 봐요."
       completingTaskIds={completingTaskIds}
+      acceptingCandidateIds={acceptingCandidateIds}
       tasksLoading={tasksLoading}
       taskLoadError={taskLoadError}
       quickAddInputRef={quickAddInputRef}

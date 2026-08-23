@@ -37,12 +37,15 @@ function props() {
 }
 
 it('renders the approved labeled regions in order', () => {
-  render(<TodayDashboard {...props()} />)
-  const expected = ['오늘 요약', '페르소나 선택', '몽글 코치', '메인 퀘스트', '매일 반복 업무', '남은 퀘스트', '외부에서 가져온 할 일']
-  const positions = expected.map((name) => screen.getByRole('region', { name }))
-  positions.slice(1).forEach((current, index) => {
-    expect(positions[index].compareDocumentPosition(current) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-  })
+  const { container } = render(<TodayDashboard {...props()} />)
+  const expected = ['오늘 요약', '페르소나 선택', '몽글 코치', '메인 퀘스트', '매일 반복업무', '남은 퀘스트', '외부에서 가져온 할 일']
+  const dashboard = container.querySelector('.today-dashboard')
+  expect(dashboard).not.toBeNull()
+  const directChildLabels = Array.from(dashboard!.children)
+    .map((element) => element.getAttribute('aria-label'))
+    .filter((label): label is string => Boolean(label))
+
+  expect(directChildLabels).toEqual(expected)
 })
 
 it('filters tasks by persona while retaining a task linked to multiple personas', async () => {

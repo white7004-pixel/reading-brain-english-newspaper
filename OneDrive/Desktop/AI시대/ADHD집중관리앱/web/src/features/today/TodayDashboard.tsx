@@ -29,6 +29,7 @@ export interface TodayDashboardProps {
   petState: PetGameState | null
   coachLine: string
   completingTaskIds?: ReadonlySet<string>
+  acceptingCandidateIds?: ReadonlySet<string>
   tasksLoading?: boolean
   taskLoadError?: string
   quickAddInputRef?: Ref<HTMLInputElement>
@@ -45,7 +46,7 @@ export interface TodayDashboardProps {
 
 export function TodayDashboard({
   date, energy, total, completed, personas, selectedPersonaId, tasks, recurringTemplates, recurringInstances,
-  pendingCandidates, petState, coachLine, completingTaskIds, tasksLoading = false, taskLoadError = '', quickAddInputRef, onEnergyChange, onSelectPersona,
+  pendingCandidates, petState, coachLine, completingTaskIds, acceptingCandidateIds, tasksLoading = false, taskLoadError = '', quickAddInputRef, onEnergyChange, onSelectPersona,
   onCompleteRecurring, onStartQuest, onCompleteQuest, onAcceptCandidate, onDismissCandidate, onAddTask, onOpenTools,
 }: TodayDashboardProps) {
   const visibleTasks = selectedPersonaId === 'all'
@@ -72,7 +73,6 @@ export function TodayDashboard({
       onStart={onStartQuest}
       onComplete={onCompleteQuest}
     />}
-    <InlineQuickAdd inputRef={quickAddInputRef} onAdd={onAddTask} />
     <RecurringChecklist
       day={new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date)}
       selectedPersonaId={selectedPersonaId}
@@ -81,6 +81,7 @@ export function TodayDashboard({
       onComplete={onCompleteRecurring}
     />
     <section className="remaining-quests" aria-label="남은 퀘스트">
+      <InlineQuickAdd inputRef={quickAddInputRef} onAdd={onAddTask} />
       {tasksLoading || taskLoadError ? <section className="quest-list" aria-label="오늘 할 일">
         <div className="quest-list__heading"><h2>오늘의 퀘스트</h2></div>
         <div className="quest-list__empty">
@@ -91,7 +92,7 @@ export function TodayDashboard({
       </section> : <QuestList tasks={remaining} completingTaskIds={completingTaskIds} onStart={onStartQuest} onComplete={onCompleteQuest} />}
     </section>
     {pending.length > 0 && <section className="external-candidates" aria-label="외부에서 가져온 할 일">
-      <CandidateInbox candidates={pending} personas={personas} onAccept={onAcceptCandidate} onDismiss={onDismissCandidate} />
+      <CandidateInbox candidates={pending} personas={personas} acceptingCandidateIds={acceptingCandidateIds} onAccept={onAcceptCandidate} onDismiss={onDismissCandidate} />
     </section>}
   </div>
 }

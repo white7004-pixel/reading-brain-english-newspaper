@@ -499,6 +499,46 @@ it('keeps a candidate visible with an alert when candidate acceptance fails', as
   expect(screen.getByDisplayValue('상담 일정 확인')).toBeVisible()
 })
 
+it('retries a failed terminal candidate update without duplicating the converted task', async () => {
+  const deps = dashboardDependencies()
+  deps.acceptCandidate
+    .mockRejectedValueOnce(new Error('candidate database unavailable'))
+    .mockResolvedValueOnce(undefined)
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '수락' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('후보를 반영하지 못했어요')
+
+  await userEvent.click(screen.getByRole('button', { name: '수락' }))
+  await waitFor(() => expect(deps.acceptCandidate).toHaveBeenCalledTimes(2))
+
+  const savedTasks = vi.mocked(deps.saveMany).mock.calls.flatMap(([batch]) => batch)
+  expect(savedTasks.map((task) => task.id)).toEqual([
+    'candidate:kakaotalk:message-1',
+    'candidate:kakaotalk:message-1',
+  ])
+  expect(new Set(savedTasks.map((task) => task.id)).size).toBe(1)
+  expect(screen.queryByDisplayValue('상담 일정 확인')).not.toBeInTheDocument()
+  expect(screen.getAllByText('상담 일정 확인')).toHaveLength(1)
+})
+
+it('guards rapid candidate acceptance so only one task is persisted and exposed', async () => {
+  const deps = dashboardDependencies()
+  let releaseSave!: () => void
+  vi.mocked(deps.saveMany).mockImplementationOnce(() => new Promise<void>((resolve) => { releaseSave = resolve }))
+  render(<TodayScreen dependencies={deps} />)
+
+  const acceptButton = await screen.findByRole('button', { name: '수락' })
+  fireEvent.click(acceptButton)
+  fireEvent.click(acceptButton)
+
+  expect(deps.saveMany).toHaveBeenCalledTimes(1)
+  releaseSave()
+  await waitFor(() => expect(deps.acceptCandidate).toHaveBeenCalledTimes(1))
+  expect(screen.queryByDisplayValue('상담 일정 확인')).not.toBeInTheDocument()
+  expect(screen.getAllByText('상담 일정 확인')).toHaveLength(1)
+})
+
 it('resets an unavailable selected persona to all', async () => {
   const first = dashboardDependencies()
   const view = render(<TodayScreen dependencies={first} />)

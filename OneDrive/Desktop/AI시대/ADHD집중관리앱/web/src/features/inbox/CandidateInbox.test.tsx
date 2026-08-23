@@ -98,4 +98,18 @@ describe('candidate review inbox', () => {
     expect(screen.getByRole('button', { name: '닫기' })).toHaveClass('candidate-inbox__tap-target')
     expect(screen.getByLabelText('역할 상담 관리자').closest('label')).toHaveClass('candidate-inbox__tap-target')
   })
+
+  it('disables candidate actions while acceptance is in flight', () => {
+    const pending = candidate()
+    render(<CandidateInbox
+      candidates={[pending]}
+      personas={personas}
+      acceptingCandidateIds={new Set([pending.id])}
+      onAccept={vi.fn()}
+      onDismiss={vi.fn()}
+    />)
+
+    expect(screen.getByRole('button', { name: '수락 중' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '닫기' })).toBeDisabled()
+  })
 })
