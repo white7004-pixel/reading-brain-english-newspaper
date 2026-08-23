@@ -48,4 +48,17 @@ describe('persona repository', () => {
       'marketing', 'director', 'counseling', 'education', 'personal',
     ])
   })
+
+  it('places archived personas after reordered active personas when they are restored', async () => {
+    const personas = setup()
+    await personas.ensureDefaults()
+
+    await personas.archive('director')
+    await personas.reorder(['education', 'marketing', 'counseling', 'personal'])
+    await personas.restore('director')
+
+    expect((await personas.listActive()).map((persona) => persona.id)).toEqual([
+      'education', 'marketing', 'counseling', 'personal', 'director',
+    ])
+  })
 })

@@ -64,4 +64,52 @@ describe('PersonaManager', () => {
     await user.click(within(archived).getByRole('button', { name: '브랜드 마케터 복원' }))
     expect(repo.restore).toHaveBeenCalledWith('marketing')
   })
+
+  it('assigns a new persona after the highest active order when an earlier persona is archived', async () => {
+    const user = userEvent.setup()
+    const repo = repository()
+    const marketing = { ...director, id: 'marketing', name: '마케터', icon: '📣', order: 1, classificationKeywords: ['마케팅'] }
+    render(<PersonaManager personas={[director, marketing]} repository={repo} />)
+
+    await user.click(screen.getByRole('button', { name: '원장·경영자 보관' }))
+    await user.type(screen.getByLabelText('페르소나 이름'), '콘텐츠 책임자')
+    await user.click(screen.getByRole('button', { name: '페르소나 만들기' }))
+
+    expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ name: '콘텐츠 책임자', order: 2 }))
+  })
+
+  it('keeps its restored order aligned with repository reorder semantics', async () => {
+    const user = userEvent.setup()
+    const repo = repository()
+    const marketing = { ...director, id: 'marketing', name: '마케터', icon: '📣', order: 1, classificationKeywords: ['마케팅'] }
+    const education = { ...director, id: 'education', name: '교육 기획자', icon: '📚', order: 2, classificationKeywords: ['교육'] }
+    render(<PersonaManager personas={[director, marketing, education]} repository={repo} />)
+
+    await user.click(screen.getByRole('button', { name: '원장·경영자 보관' }))
+    await user.click(screen.getByRole('button', { name: '교육 기획자 위로 이동' }))
+    expect(repo.reorder).toHaveBeenCalledWith(['education', 'marketing'])
+    await user.click(within(screen.getByRole('region', { name: '보관된 페르소나' })).getByRole('button', { name: '원장·경영자 복원' }))
+
+    expect(screen.getAllByRole('button', { name: /수정$/ }).map((button) => button.getAttribute('aria-label'))).toEqual([
+      '교육 기획자 수정', '마케터 수정', '원장·경영자 수정',
+    ])
+  })
+
+  it('synchronizes newly supplied personas while retaining an active edit draft', async () => {
+    const user = userEvent.setup()
+    const repo = repository()
+    const { rerender } = render(<PersonaManager personas={[director]} repository={repo} />)
+    await user.click(screen.getByRole('button', { name: '원장·경영자 수정' }))
+    const editForm = screen.getByRole('region', { name: '원장·경영자 편집' })
+    await user.clear(within(editForm).getByLabelText('페르소나 이름'))
+    await user.type(within(editForm).getByLabelText('페르소나 이름'), '운영 책임자')
+
+    rerender(<PersonaManager personas={[
+      { ...director, name: '원장·운영자' },
+      { ...director, id: 'marketing', name: '마케터', icon: '📣', order: 1, classificationKeywords: ['마케팅'] },
+    ]} repository={repo} />)
+
+    expect(screen.getByRole('button', { name: '마케터 수정' })).toBeInTheDocument()
+    expect(within(screen.getByRole('region', { name: '원장·운영자 편집' })).getByLabelText('페르소나 이름')).toHaveValue('운영 책임자')
+  })
 })

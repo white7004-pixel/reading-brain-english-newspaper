@@ -42,3 +42,17 @@ DONE
 ## Concerns
 
 - The manager receives the complete persona list from its parent because the repository interface intentionally exposes only `listActive`; an integrating screen must retain archived records if it wants them shown in the manager.
+
+## Fix round 1/5
+
+### Findings addressed
+
+- New custom personas now use the highest active order plus one, preventing duplicate active orders after archiving an earlier persona.
+- Local reorder state now applies the same complete ordered sequence as the repository: requested active IDs first, then all unlisted personas in their current order. Restoring an archived persona therefore matches a persistence reload.
+- The manager synchronizes changed `personas` props while retaining the separately held active edit draft.
+
+### Regression evidence
+
+- RED: `npm test -- --run src/core/storage/personaRepository.test.ts src/features/personas/PersonaManager.test.tsx` — expected failures: sparse-order creation saved order `1` instead of `2`; restored order put the archived persona first; rerender did not show the newly supplied marketing persona.
+- GREEN: `npm test -- --run src/core/storage/personaRepository.test.ts src/features/personas/PersonaManager.test.tsx` — PASS: 2 files, 8 tests.
+- Build: `npm run build` — PASS: TypeScript build and Vite production bundle completed.

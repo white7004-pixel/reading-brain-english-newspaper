@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Persona } from '../../core/model/persona'
 
 export interface PersonaManagerRepository {
@@ -50,6 +50,10 @@ export function PersonaManager({ personas, repository }: { personas: Persona[]; 
   const [editing, setEditing] = useState<{ id: string; draft: Draft } | null>(null)
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    setItems([...personas].sort((a, b) => a.order - b.order))
+  }, [personas])
+
   const rejectDuplicate = (name: string, exceptId?: string) => {
     const normalized = normalizeName(name)
     if (!normalized) return '페르소나 이름을 입력해 주세요.'
@@ -65,7 +69,7 @@ export function PersonaManager({ personas, repository }: { personas: Persona[]; 
     if (message) { setError(message); return }
     const persona: Persona = {
       id: crypto.randomUUID(), name: newDraft.name.trim(), icon: newDraft.icon.trim() || '✨', color: newDraft.color,
-      kind: 'custom', status: 'active', order: items.filter((item) => item.status === 'active').length,
+      kind: 'custom', status: 'active', order: Math.max(-1, ...items.filter((item) => item.status === 'active').map((item) => item.order)) + 1,
       classificationKeywords: splitList(newDraft.keywords), masteryLabels: splitList(newDraft.labels),
     }
     await repository.save(persona)
@@ -87,15 +91,17 @@ export function PersonaManager({ personas, repository }: { personas: Persona[]; 
     setEditing(null)
   })
   const move = (id: string, direction: -1 | 1) => void apply(async () => {
-    const active = items.filter((item) => item.status === 'active').sort((a, b) => a.order - b.order)
+    const current = [...items].sort((a, b) => a.order - b.order)
+    const active = current.filter((item) => item.status === 'active')
     const index = active.findIndex((item) => item.id === id)
     const target = index + direction
     if (index < 0 || target < 0 || target >= active.length) return
     ;[active[index], active[target]] = [active[target], active[index]]
     const ids = active.map((item) => item.id)
     await repository.reorder(ids)
-    const order = new Map(ids.map((item, position) => [item, position]))
-    setItems((all) => all.map((item) => item.status === 'active' ? { ...item, order: order.get(item.id) ?? item.order } : item))
+    const unlisted = current.filter((item) => !ids.includes(item.id))
+    const order = new Map([...active, ...unlisted].map((item, position) => [item.id, position]))
+    setItems((all) => all.map((item) => ({ ...item, order: order.get(item.id) ?? item.order })))
   })
   const archive = (id: string) => void apply(async () => {
     await repository.archive(id)
