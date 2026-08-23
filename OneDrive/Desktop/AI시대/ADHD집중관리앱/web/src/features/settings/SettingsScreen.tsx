@@ -4,6 +4,7 @@ import type { MonggleSettings, NudgeIntervalMinutes, ProfileType, ThemeMode } fr
 import { applyTheme } from '../../core/theme/theme'
 import { AppearanceScreen } from '../appearance/AppearanceScreen'
 import { CalendarSettings } from '../calendar/CalendarSettings'
+import { PremiumPreview } from '../premium/PremiumPreview'
 import { nativeWidgetBridge } from '../widgets/nativeWidgetBridge'
 import { CategoryManager } from './CategoryManager'
 import { settingsRepository } from './settingsRepository'
@@ -57,6 +58,9 @@ export function SettingsScreen() {
       <SettingsRow title="Google Calendar" description="일정 내용이 아닌 바쁜 시간만 확인해요"><button type="button" aria-expanded={expandedConnection === 'calendar'} onClick={() => setExpandedConnection((current) => current === 'calendar' ? null : 'calendar')}>연결 설정 ›</button></SettingsRow>
       {expandedConnection === 'calendar' && <CalendarSettings state={{ kind: 'disconnected' }} onConnect={() => { window.location.href = '/oauth/google/start' }} onRefresh={() => undefined} onDisconnect={() => undefined} />}
       <SettingsRow title="메시지 연결" description="Slack · Telegram · KakaoWork"><a className="settings-link" href="/messages">관리 ›</a></SettingsRow>
+    </SettingsSection>
+    <SettingsSection title="몽글 플러스">
+      <PremiumPreview features={['새로운 펫', '별빛 방', '특별한 방 꾸미기']} />
     </SettingsSection>
   </section>
 }

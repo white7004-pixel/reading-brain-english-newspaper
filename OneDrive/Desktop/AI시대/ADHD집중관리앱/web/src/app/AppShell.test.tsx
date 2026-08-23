@@ -29,7 +29,7 @@ it('exposes four icon-and-label primary destinations', () => {
   render(<App />)
   const nav = screen.getByRole('navigation', { name: '주요 메뉴' })
   const links = within(nav).getAllByRole('link')
-  expect(links.map((link) => link.textContent)).toEqual(['오늘', '계획', '집중', '나'])
+  expect(links.map((link) => link.textContent)).toEqual(['오늘', '펫', '집중', '나'])
   links.forEach((link) => expect(link.querySelector('svg')).not.toBeNull())
 })
 

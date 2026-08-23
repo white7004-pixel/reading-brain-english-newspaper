@@ -24,11 +24,13 @@ it('saves the selected Monggle check-in interval', async () => {
   expect(settingsRepository.load().nudgeIntervalMinutes).toBe(30)
 })
 
-it('organizes settings into four professional groups', () => {
+it('organizes settings into stable groups including an honest Monggle Plus preview', () => {
   render(<SettingsScreen />)
   expect(screen.getAllByRole('group').map((group) => group.getAttribute('aria-label'))).toEqual([
-    '프로필', '집중 환경', '화면', '연결',
+    '프로필', '집중 환경', '화면', '연결', '몽글 플러스',
   ])
+  expect(screen.getByText('출시 준비 중')).toBeVisible()
+  expect(screen.queryByRole('button', { name: /구매|구독|결제/ })).not.toBeInTheDocument()
 })
 
 it('keeps advanced category editing collapsed initially', () => {
