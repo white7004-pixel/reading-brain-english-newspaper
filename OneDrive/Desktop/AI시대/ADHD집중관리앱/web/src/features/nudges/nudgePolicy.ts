@@ -15,6 +15,17 @@ export function remindFiveAt(now: Date) {
   return new Date(now.getTime() + 5 * 60_000)
 }
 
+export function coachPromptDueAt(lastPromptAt: string | undefined, now: Date, determinedMode: boolean) {
+  const intervalMinutes = determinedMode ? 30 : 60
+  const parsed = lastPromptAt ? new Date(lastPromptAt).getTime() : Number.NaN
+  const anchor = Number.isFinite(parsed) ? parsed : now.getTime()
+  return new Date(anchor + intervalMinutes * 60_000)
+}
+
+export function isCoachPromptDue(lastPromptAt: string | undefined, now: Date, determinedMode: boolean) {
+  return !lastPromptAt || now.getTime() >= coachPromptDueAt(lastPromptAt, now, determinedMode).getTime()
+}
+
 function stageFor(unansweredPrompts: number): CoachStage {
   if (unansweredPrompts >= 2) return 'decision'
   if (unansweredPrompts === 1) return 'direct'
@@ -29,8 +40,8 @@ const actionsByStage: Record<CoachStage, CoachAction[]> = {
 
 function lineFor({ task, focusActive }: CoachContext, stage: CoachStage) {
   if (focusActive) return `${task.title}에 집중하고 있어요. 지금 흐름을 편안하게 이어가요.`
-  if (stage === 'decision') return `${task.title}을 지금 어떻게 이어갈지 함께 정해요.`
-  if (stage === 'direct') return `하기로 한 ${task.title}을 기억하고 있어요. 가능한 첫 행동부터 이어가 볼까요?`
+  if (stage === 'decision') return `“${task.title}” 작업을 지금 어떻게 이어갈지 함께 정해요.`
+  if (stage === 'direct') return `우리가 하기로 한 일, “${task.title}”. 가능한 첫 행동부터 이어가 볼까요?`
   return `${task.title}, ${task.firstAction ?? '가장 작은 첫 행동'}부터 가볍게 시작해 볼까요?`
 }
 
@@ -41,7 +52,7 @@ export function buildCoachDecision(context: CoachContext): CoachDecision {
     : [...actionsByStage[stage]]
   const nextPromptAt = context.quiet || context.calendarBusy
     ? null
-    : nextNudgeAt(context.now, context.determinedMode ? 30 : 60)
+    : coachPromptDueAt(context.lastPromptAt, context.now, context.determinedMode)
 
   return { stage, line: lineFor(context, stage), actions, nextPromptAt }
 }

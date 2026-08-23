@@ -16,7 +16,7 @@ it('announces the textual stage and coach line politely', () => {
   render(<MonggleCoachPanel state={initialPetGameState} coachLine={decision.line} decision={decision} />)
   const status = screen.getByRole('status')
   expect(status).toHaveAttribute('aria-live', 'polite')
-  expect(status).toHaveTextContent('한번 다시 보기')
+  expect(status).toHaveTextContent('약속 다시 보기')
   expect(status).toHaveTextContent(decision.line)
 })
 

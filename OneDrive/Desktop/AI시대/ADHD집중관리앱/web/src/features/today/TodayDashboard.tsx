@@ -14,6 +14,7 @@ import { MonggleCoachPanel } from './MonggleCoachPanel'
 import { QuestList } from './QuestList'
 import { recommendForEnergy, type Energy } from './selectNowTask'
 import { TodayHeader } from './TodayHeader'
+import type { CoachAction, CoachDecision } from '../nudges/taskMastery'
 
 export interface TodayDashboardProps {
   date: Date
@@ -28,6 +29,8 @@ export interface TodayDashboardProps {
   pendingCandidates: QuestCandidate[]
   petState: PetGameState | null
   coachLine: string
+  coachDecision?: CoachDecision | null
+  coachSuppressed?: boolean
   completingTaskIds?: ReadonlySet<string>
   acceptingCandidateIds?: ReadonlySet<string>
   tasksLoading?: boolean
@@ -42,12 +45,16 @@ export interface TodayDashboardProps {
   onDismissCandidate: (id: string) => void | Promise<void>
   onAddTask: (title: string) => Promise<void>
   onOpenTools: () => void
+  onCoachRespond?: (action: CoachAction, delayMinutes?: number) => void
+  onCoachReschedule?: () => void
+  onCoachCancel?: () => void
 }
 
 export function TodayDashboard({
   date, energy, total, completed, personas, selectedPersonaId, tasks, recurringTemplates, recurringInstances,
-  pendingCandidates, petState, coachLine, completingTaskIds, acceptingCandidateIds, tasksLoading = false, taskLoadError = '', quickAddInputRef, onEnergyChange, onSelectPersona,
+  pendingCandidates, petState, coachLine, coachDecision, coachSuppressed = false, completingTaskIds, acceptingCandidateIds, tasksLoading = false, taskLoadError = '', quickAddInputRef, onEnergyChange, onSelectPersona,
   onCompleteRecurring, onStartQuest, onCompleteQuest, onAcceptCandidate, onDismissCandidate, onAddTask, onOpenTools,
+  onCoachRespond, onCoachReschedule, onCoachCancel,
 }: TodayDashboardProps) {
   const visibleTasks = selectedPersonaId === 'all'
     ? tasks
@@ -64,7 +71,15 @@ export function TodayDashboard({
     <section className="today-persona-picker" aria-label="페르소나 선택">
       <PersonaTabs personas={personas} selectedId={selectedPersonaId} onChange={onSelectPersona} onAdd={onOpenTools} />
     </section>
-    {petState && <MonggleCoachPanel state={petState} coachLine={coachLine} />}
+    {petState && <MonggleCoachPanel
+      state={petState}
+      coachLine={coachLine}
+      decision={coachDecision ?? undefined}
+      suppressed={coachSuppressed}
+      onRespond={onCoachRespond}
+      onReschedule={onCoachReschedule}
+      onCancel={onCoachCancel}
+    />}
     {featured && <FeaturedQuest
       task={featured}
       reward={calculateReward({ taskId: featured.id, focusMinutes: 0 }, () => 1)}

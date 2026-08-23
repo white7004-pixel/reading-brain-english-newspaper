@@ -2,7 +2,7 @@
 
 ## Status
 
-Complete. The punitive tone model is replaced by a persistent, humane three-stage coach with exact stage actions, quiet/calendar suppression, active-focus support, determined-mode cadence, exact five-minute reminders, safe legacy check-in reads, and accessible 48px actions.
+Complete. The punitive tone model is replaced by a persistent, humane three-stage coach with exact stage actions, runtime quiet/calendar suppression, persisted prompt-relative cadence, active-focus support, determined-mode cadence, exact five-minute reminders, safe legacy check-in reads, and accessible 48px actions in both persistent and shipped Today-dashboard surfaces.
 
 ## Files
 
@@ -16,6 +16,12 @@ Complete. The punitive tone model is replaced by a persistent, humane three-stag
 - `web/src/features/nudges/PersistentNowTask.test.tsx`
 - `web/src/features/today/MonggleCoachPanel.tsx`
 - `web/src/features/today/MonggleCoachPanel.test.tsx`
+- `web/src/features/nudges/CoachRuntime.tsx`
+- `web/src/features/today/TodayDashboard.tsx`
+- `web/src/features/today/TodayDashboard.test.tsx`
+- `web/src/features/today/TodayScreen.tsx`
+- `web/src/features/calendar/availabilityPlanner.ts`
+- `web/src/features/calendar/availabilityPlanner.test.ts`
 - `web/src/app/AppShell.tsx`
 - `web/src/app/AppShell.test.tsx`
 - `web/src/features/companion/MonggleCompanion.tsx`
@@ -33,12 +39,12 @@ Complete. The punitive tone model is replaced by a persistent, humane three-stag
 
 ## Decisions
 
-- The visible Korean stage labels are `부드럽게 시작`, `한번 다시 보기`, and `지금 결정하기`.
+- The visible Korean stage labels are exactly `부드러운 시작`, `약속 다시 보기`, and `지금 결정하기`.
 - Active focus replaces the competing `start` action with `done` and uses continuation copy.
 - Quiet/calendar suppression keeps the coach content visible while changing the live region to `aria-live="off"` and removing `role="status"`.
 - `reschedule` and `cancel` call explicit parent callbacks; neither component mutates a task.
 - Legacy `done | in_progress | later` records remain readable while new records support all coach actions.
-- Shell cadence uses 60 minutes normally and 30 minutes in determined mode; `remind_5` always uses a dedicated exact five-minute calculation.
+- Shell cadence is anchored to the persisted actual `lastPromptAt`: 60 minutes normally and 30 minutes in determined mode; `remind_5` always uses a dedicated exact five-minute calculation.
 
 ## Commit
 
@@ -55,4 +61,25 @@ Complete. The punitive tone model is replaced by a persistent, humane three-stag
 
 - The unrelated existing `AppShell.test.tsx` assertion for `추천 퀘스트` does not match the current `FeaturedQuest` accessible label `메인 퀘스트`; it was not changed as part of Task 7.
 - The unrelated existing `studioTheme.test.ts` pet-hero guard rejects the Task 6 `.monggle-coach-panel .pet-hero` layout rule; Task 7's updated stage-selector assertions pass within that file.
-- Calendar-busy state is represented and tested at the policy contract boundary; the current shell has no calendar-busy source to wire yet.
+
+## Review fix round 1
+
+### Findings addressed
+
+- Replaced epoch-aligned wall-clock buckets with persisted `lastPromptAt + interval` due-time checks. A 10:59 prompt is not due at 11:00 and is due exactly at 11:59; determined mode is due exactly at 11:29.
+- AppShell now reads the existing calendar connection and availability snapshot, refreshes it with the minute clock, and suppresses prompting and announcements only for a fresh busy block intersecting the current instant. Missing, stale, or failed availability reads are handled safely.
+- Quiet/calendar suppression now disables live announcements in the persistent prompt, Today coach panel, and companion while retaining visible task/stage context.
+- Corrected the three exact Korean labels and changed direct/decision copy to particle-neutral wording, with a vowel-ending `독서` regression.
+- Added an AppShell-owned coach runtime context so the shipped TodayScreen/TodayDashboard receives the current decision and explicit start, remind-five, reschedule, and cancel callbacks. Reschedule/cancel remain callback-only at component boundaries.
+
+### RED evidence
+
+- Focused RED run: 10 intended failures across cadence helpers, calendar busy intersection, companion suppression, exact labels/copy, and shipped dashboard wiring before implementation.
+- Isolated companion RED: suppressed escalated companion still exposed `role="status"` before the fix.
+
+### GREEN and build evidence
+
+- `npm test -- --run src/features/nudges src/features/today/MonggleCoachPanel.test.tsx src/features/today/TodayDashboard.test.tsx src/features/today/TodayScreen.test.tsx src/features/companion/MonggleCompanion.test.tsx src/features/calendar/availabilityPlanner.test.ts` — 9 files passed, 94 tests passed.
+- `npm test -- --run src/app/AppShell.test.tsx -t "calendar conflict|wires the current coach decision"` — 1 file passed, 2 tests passed, 6 unrelated tests skipped.
+- `npm run build` — TypeScript and Vite/PWA production build passed; 140 modules transformed.
+- `git diff --check` on all Task 7 follow-up files — passed (line-ending notices only).

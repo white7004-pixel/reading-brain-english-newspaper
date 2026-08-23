@@ -4,6 +4,8 @@ import {
   applyCheckInResponse,
   buildCoachDecision,
   buildNudgeLine,
+  coachPromptDueAt,
+  isCoachPromptDue,
   isQuietTime,
   nextNudgeAt,
   remindFiveAt,
@@ -64,6 +66,25 @@ describe('supportive nudge policy', () => {
   it('uses a 60 minute interval normally and 30 minutes in determined mode', () => {
     expect(buildCoachDecision(coachBase).nextPromptAt?.toISOString()).toBe(nextNudgeAt(now, 60).toISOString())
     expect(buildCoachDecision({ ...coachBase, determinedMode: true }).nextPromptAt?.toISOString()).toBe(nextNudgeAt(now, 30).toISOString())
+  })
+
+  it('anchors the next normal prompt to the actual previous prompt instead of a wall-clock bucket', () => {
+    const promptedAt = '2026-08-20T10:59:00+09:00'
+    expect(coachPromptDueAt(promptedAt, now, false).toISOString()).toBe('2026-08-20T02:59:00.000Z')
+    expect(isCoachPromptDue(promptedAt, new Date('2026-08-20T11:00:00+09:00'), false)).toBe(false)
+    expect(isCoachPromptDue(promptedAt, new Date('2026-08-20T11:59:00+09:00'), false)).toBe(true)
+  })
+
+  it('anchors the determined prompt exactly 30 minutes after the actual previous prompt', () => {
+    const promptedAt = '2026-08-20T10:59:00+09:00'
+    expect(isCoachPromptDue(promptedAt, new Date('2026-08-20T11:28:59+09:00'), true)).toBe(false)
+    expect(isCoachPromptDue(promptedAt, new Date('2026-08-20T11:29:00+09:00'), true)).toBe(true)
+  })
+
+  it('uses particle-neutral copy for a vowel-ending task title', () => {
+    const decision = buildCoachDecision({ ...coachBase, task: task('reading', { title: '독서' }), unansweredPrompts: 2 })
+    expect(decision.line).toContain('독서')
+    expect(decision.line).not.toContain('독서을')
   })
 
   it('schedules a five-minute reminder exactly five minutes later', () => {

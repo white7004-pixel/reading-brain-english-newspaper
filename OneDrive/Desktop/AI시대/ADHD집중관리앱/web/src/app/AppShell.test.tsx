@@ -9,12 +9,16 @@ import { createTaskRepository } from '../core/storage/taskRepository'
 import { taskCheckInRepository } from '../features/nudges/taskCheckIn'
 import { MemoryRouter } from 'react-router-dom'
 import { settingsRepository } from '../features/settings/settingsRepository'
+import { GOOGLE_FREE_BUSY_SCOPE } from '../core/model/calendarAvailability'
+import { taskMasteryRepository } from '../features/nudges/taskMastery'
 
 const database = createDatabase()
 const taskRepository = createTaskRepository(database)
 
 beforeEach(async () => {
   await database.tasks.clear()
+  await database.calendarConnections.clear()
+  await database.availabilitySnapshots.clear()
   localStorage.clear()
   window.history.replaceState({}, '', '/')
 })
@@ -22,6 +26,8 @@ beforeEach(async () => {
 afterEach(async () => {
   taskCheckInRepository.clear()
   await database.tasks.clear()
+  await database.calendarConnections.clear()
+  await database.availabilitySnapshots.clear()
   window.history.replaceState({}, '', '/')
 })
 
@@ -95,6 +101,54 @@ it('prioritizes the same unfinished mission on app entry after midnight', async 
   expect(mode).toHaveAttribute('data-escalation-level', 'app-entry')
   expect(mode).toHaveTextContent('독서')
   await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('독서'))
+})
+
+it('keeps companion and persistent coaching visible but silent during a fresh calendar conflict', async () => {
+  const now = '2026-08-23T10:30:00+09:00'
+  await taskRepository.put({
+    id: 'calendar-task', title: '상담 준비', day: '2026-08-23', status: 'open', priority: 2,
+    estimateMinutes: 20, category: 'work', source: 'manual', firstAction: '자료 열기',
+    createdAt: now, updatedAt: now,
+  })
+  await database.calendarConnections.put({
+    accountId: 'account-1', displayName: '업무', connectedAt: '2026-08-23T08:00:00+09:00', scope: GOOGLE_FREE_BUSY_SCOPE,
+  })
+  await database.availabilitySnapshots.put({
+    accountId: 'account-1', timeZone: 'Asia/Seoul', rangeStart: '2026-08-23T09:00:00+09:00', rangeEnd: '2026-08-23T18:00:00+09:00',
+    fetchedAt: '2026-08-23T10:25:00+09:00', expiresAt: '2026-08-23T10:45:00+09:00',
+    busy: [{ start: '2026-08-23T10:00:00+09:00', end: '2026-08-23T11:00:00+09:00' }],
+  })
+  taskMasteryRepository.save({ taskId: 'calendar-task', misses: 1, lastPromptAt: '2026-08-23T09:30:00+09:00' })
+  settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00', determinedMonggle: false })
+  window.history.replaceState({}, '', `/?now=${encodeURIComponent(now)}`)
+
+  render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
+
+  const prompt = await screen.findByTestId('persistent-now-task')
+  expect(prompt).toHaveTextContent('상담 준비')
+  expect(within(prompt).queryByRole('status')).not.toBeInTheDocument()
+  await waitFor(() => expect(document.querySelector('.monggle-companion__message')).toHaveAttribute('aria-live', 'off'))
+  expect(taskMasteryRepository.load('calendar-task').misses).toBe(1)
+})
+
+it('wires the current coach decision and actions into the shipped Today dashboard', async () => {
+  const now = '2026-08-23T10:30:00+09:00'
+  await taskRepository.put({
+    id: 'dashboard-task', title: '독서', day: '2026-08-23', status: 'open', priority: 2,
+    estimateMinutes: 20, category: 'study', source: 'manual', firstAction: '책 펼치기',
+    createdAt: now, updatedAt: now,
+  })
+  taskMasteryRepository.save({ taskId: 'dashboard-task', misses: 1, lastPromptAt: '2026-08-23T10:00:00+09:00' })
+  settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00', determinedMonggle: false })
+  window.history.replaceState({}, '', `/?now=${encodeURIComponent(now)}`)
+
+  render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
+
+  const coach = await screen.findByRole('region', { name: '몽글 코치' })
+  await waitFor(() => expect(within(coach).getByRole('status')).toHaveTextContent('약속 다시 보기'))
+  expect(within(coach).getByRole('button', { name: '지금 시작' })).toBeVisible()
+  expect(within(coach).getByRole('button', { name: '5분 뒤 알림' })).toBeVisible()
+  expect(within(coach).getByRole('button', { name: '일정 다시 잡기' })).toBeVisible()
 })
 
 it('labels the app from the selected active mission when commitment days are mixed', async () => {

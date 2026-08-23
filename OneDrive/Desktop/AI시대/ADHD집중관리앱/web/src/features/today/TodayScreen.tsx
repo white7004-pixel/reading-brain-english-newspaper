@@ -35,6 +35,7 @@ import type { PetGameState, RewardEvent, RewardGrant } from '../pet/model'
 import { rewardOutbox } from './rewardOutbox'
 import { TodayDashboard } from './TodayDashboard'
 import { acceptCandidate as convertCandidateToTask } from '../inbox/candidatePolicy'
+import { useCoachRuntime } from '../nudges/CoachRuntime'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -109,6 +110,7 @@ function dayFor(date: Date) {
 }
 
 export function TodayScreen({ dependencies = defaultDependencies }: { dependencies?: TodayDependencies }) {
+  const coachRuntime = useCoachRuntime()
   const [tasks, setTasks] = useState<Task[]>([])
   const [drafts, setDrafts] = useState<TaskDraft[]>([])
   const [energy, setEnergy] = useState<Energy>('medium')
@@ -378,6 +380,11 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       pendingCandidates={pendingCandidates}
       petState={petState}
       coachLine="지금 할 수 있는 가장 작은 행동부터 시작해 봐요."
+      coachDecision={coachRuntime?.decision}
+      coachSuppressed={coachRuntime?.suppressed}
+      onCoachRespond={coachRuntime?.onRespond}
+      onCoachReschedule={coachRuntime?.onReschedule}
+      onCoachCancel={coachRuntime?.onCancel}
       completingTaskIds={completingTaskIds}
       acceptingCandidateIds={acceptingCandidateIds}
       tasksLoading={tasksLoading}

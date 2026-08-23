@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { AvailabilitySnapshot } from '../../core/model/calendarAvailability'
 import type { Task } from '../../core/model/task'
-import { applyMissionMoves, planMissionMoves, undoMissionMoves } from './availabilityPlanner'
+import { applyMissionMoves, isBusyAt, planMissionMoves, undoMissionMoves } from './availabilityPlanner'
 
 const now = new Date('2026-08-22T09:00:00+09:00')
 
@@ -41,6 +41,12 @@ function snapshot(overrides: Partial<AvailabilitySnapshot> = {}): AvailabilitySn
 }
 
 describe('calendar availability planner', () => {
+  it('reports a current conflict only from a fresh intersecting busy block', () => {
+    expect(isBusyAt(snapshot({ expiresAt: '2026-08-22T12:00:00+09:00' }), new Date('2026-08-22T10:30:00+09:00'))).toBe(true)
+    expect(isBusyAt(snapshot({ expiresAt: '2026-08-22T12:00:00+09:00' }), new Date('2026-08-22T11:00:00+09:00'))).toBe(false)
+    expect(isBusyAt(snapshot({ expiresAt: '2026-08-22T10:15:00+09:00' }), new Date('2026-08-22T10:30:00+09:00'))).toBe(false)
+    expect(isBusyAt(undefined, new Date('2026-08-22T10:30:00+09:00'))).toBe(false)
+  })
   it('rejects stale availability for automatic proposals', () => {
     const result = planMissionMoves(
       [mission('unlocked')],

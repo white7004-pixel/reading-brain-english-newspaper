@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, it, vi } from 'vitest'
 import type { Persona } from '../../core/model/persona'
@@ -6,6 +6,7 @@ import type { QuestCandidate } from '../../core/model/questCandidate'
 import type { RecurringTaskInstance, RecurringTaskTemplate } from '../../core/model/recurrence'
 import type { Task } from '../../core/model/task'
 import { initialPetGameState } from '../pet/model'
+import type { CoachDecision } from '../nudges/taskMastery'
 import { TodayDashboard } from './TodayDashboard'
 
 const personas: Persona[] = [
@@ -26,11 +27,19 @@ const candidates: QuestCandidate[] = [
   { id: 'kakaotalk:1', source: 'kakaotalk', sourceRef: '1', title: '상담 일정 확인', personaIds: ['director'], category: 'counseling', estimateMinutes: 15, status: 'pending_review' },
 ]
 
+const coachDecision: CoachDecision = {
+  stage: 'direct',
+  line: '우리가 하기로 한 일, “공동 계획 세우기”. 가능한 첫 행동부터 이어가 볼까요?',
+  actions: ['start', 'remind_5', 'reschedule', 'cancel'],
+  nextPromptAt: new Date('2026-08-23T02:00:00.000Z'),
+}
+
 function props() {
   return {
     date: new Date('2026-08-23T01:00:00.000Z'), energy: 'medium' as const, total: 2, completed: 0,
     personas, selectedPersonaId: 'all' as const, tasks, recurringTemplates: templates, recurringInstances: instances,
-    pendingCandidates: candidates, petState: initialPetGameState, coachLine: '가장 작은 첫 행동부터 시작해 봐요.',
+    pendingCandidates: candidates, petState: initialPetGameState, coachLine: '가장 작은 첫 행동부터 시작해 봐요.', coachDecision,
+    coachSuppressed: false, onCoachRespond: vi.fn(), onCoachReschedule: vi.fn(), onCoachCancel: vi.fn(),
     onEnergyChange: vi.fn(), onSelectPersona: vi.fn(), onCompleteRecurring: vi.fn(), onStartQuest: vi.fn(), onCompleteQuest: vi.fn(),
     onAcceptCandidate: vi.fn(), onDismissCandidate: vi.fn(), onAddTask: vi.fn().mockResolvedValue(undefined), onOpenTools: vi.fn(),
   }
@@ -46,6 +55,23 @@ it('renders the approved labeled regions in order', () => {
     .filter((label): label is string => Boolean(label))
 
   expect(directChildLabels).toEqual(expected)
+})
+
+it('ships the current coach stage and action callbacks in the real dashboard panel', async () => {
+  const dashboardProps = props()
+  render(<TodayDashboard {...dashboardProps} />)
+  const coach = screen.getByRole('region', { name: '몽글 코치' })
+
+  expect(within(coach).getByRole('status')).toHaveTextContent('약속 다시 보기')
+  await userEvent.click(within(coach).getByRole('button', { name: '지금 시작' }))
+  await userEvent.click(within(coach).getByRole('button', { name: '5분 뒤 알림' }))
+  await userEvent.click(within(coach).getByRole('button', { name: '일정 다시 잡기' }))
+  await userEvent.click(within(coach).getByRole('button', { name: '할 일 취소' }))
+
+  expect(dashboardProps.onCoachRespond).toHaveBeenNthCalledWith(1, 'start')
+  expect(dashboardProps.onCoachRespond).toHaveBeenNthCalledWith(2, 'remind_5', 5)
+  expect(dashboardProps.onCoachReschedule).toHaveBeenCalledOnce()
+  expect(dashboardProps.onCoachCancel).toHaveBeenCalledOnce()
 })
 
 it('filters tasks by persona while retaining a task linked to multiple personas', async () => {

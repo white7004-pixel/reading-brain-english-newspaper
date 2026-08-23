@@ -14,9 +14,10 @@ interface MonggleCompanionProps {
   event: CompanionReaction | null
   sourceUrl?: string | null
   intensity?: CoachStage
+  suppressed?: boolean
 }
 
-export function MonggleCompanion({ reducedMotion, mascotVisible, event, sourceUrl = null, intensity = 'gentle' }: MonggleCompanionProps) {
+export function MonggleCompanion({ reducedMotion, mascotVisible, event, sourceUrl = null, intensity = 'gentle', suppressed = false }: MonggleCompanionProps) {
   const [systemReducedMotion, setSystemReducedMotion] = useState(() => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const mode = deriveCompanionMode(mascotVisible, reducedMotion || systemReducedMotion, event !== null)
   const [point, setPoint] = useState<SafePoint>('bottom-right')
@@ -41,6 +42,11 @@ export function MonggleCompanion({ reducedMotion, mascotVisible, event, sourceUr
       <span className="monggle-aura" />
       <img src={sourceUrl ?? '/assets/mascot/monggle-3d-approved-v1.png'} alt="" />
     </div>
-    {intensity !== 'gentle' && <div className="monggle-companion__message" data-intensity={intensity} role="status">{masteryMessage(intensity)}</div>}
+    {intensity !== 'gentle' && <div
+      className="monggle-companion__message"
+      data-intensity={intensity}
+      role={suppressed ? undefined : 'status'}
+      aria-live={suppressed ? 'off' : 'polite'}
+    >{masteryMessage(intensity)}</div>}
   </>
 }

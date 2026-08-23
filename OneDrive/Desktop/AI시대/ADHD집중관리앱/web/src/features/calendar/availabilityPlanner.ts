@@ -3,6 +3,15 @@ import type { Task } from '../../core/model/task'
 
 const toMillis = (value: string) => new Date(value).getTime()
 
+export function isBusyAt(snapshot: AvailabilitySnapshot | undefined, now = new Date()) {
+  if (!snapshot || toMillis(snapshot.expiresAt) <= now.getTime()) return false
+  return snapshot.busy.some((block) => {
+    const start = toMillis(block.start)
+    const end = toMillis(block.end)
+    return Number.isFinite(start) && Number.isFinite(end) && start <= now.getTime() && now.getTime() < end
+  })
+}
+
 function mergedBusy(blocks: BusyBlock[]) {
   const sorted = blocks
     .map((block) => ({ start: toMillis(block.start), end: toMillis(block.end) }))

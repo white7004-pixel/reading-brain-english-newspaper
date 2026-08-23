@@ -25,6 +25,15 @@ it('shows a polite live decision with accessible 48px actions', () => {
   for (const button of screen.getAllByRole('button')) expect(button).toHaveClass('coach-action')
 })
 
+it.each([
+  ['gentle', '부드러운 시작'],
+  ['direct', '약속 다시 보기'],
+  ['decision', '지금 결정하기'],
+] as const)('shows the exact %s stage label', (stage, label) => {
+  render(<PersistentNowTask task={task} decision={{ ...decision, stage }} onRespond={vi.fn()} />)
+  expect(screen.getByRole('status')).toHaveTextContent(label)
+})
+
 it('dispatches start and exact five-minute reminder actions', async () => {
   const onRespond = vi.fn()
   render(<PersistentNowTask task={task} decision={decision} onRespond={onRespond} onReschedule={vi.fn()} onCancel={vi.fn()} />)

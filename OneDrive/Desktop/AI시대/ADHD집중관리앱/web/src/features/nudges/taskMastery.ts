@@ -11,6 +11,7 @@ export interface CoachContext {
   calendarBusy: boolean
   focusActive: boolean
   determinedMode: boolean
+  lastPromptAt?: string
 }
 
 export interface CoachDecision {
@@ -21,8 +22,8 @@ export interface CoachDecision {
 }
 
 export const coachStageLabels: Record<CoachStage, string> = {
-  gentle: '부드럽게 시작',
-  direct: '한번 다시 보기',
+  gentle: '부드러운 시작',
+  direct: '약속 다시 보기',
   decision: '지금 결정하기',
 }
 
