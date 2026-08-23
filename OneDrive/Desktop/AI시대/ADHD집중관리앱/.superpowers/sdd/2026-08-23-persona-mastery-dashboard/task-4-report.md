@@ -92,3 +92,39 @@ Complete. The active dashboard uses the mature color, typography, card, and five
 ### Concerns
 
 - None. Unrelated workspace changes remain excluded.
+
+## Fix round 2
+
+### Status
+
+- Removed the blanket 48 px height override from all inputs.
+- Text-like inputs retain the 48 px control contract; checkbox, radio, file, and color controls retain intrinsic sizing.
+- Checkbox/radio labels and known focus/mission/settings control rows now provide a minimum 48 px surrounding hit area.
+
+### RED evidence
+
+- `npm test -- --run src/core/theme/studioTheme.test.ts`
+  - Initial RED: 3 of 12 tests failed as intended because text-like selectors were absent, `.app-shell input` still forced every input to 48 px, and checkbox/radio wrappers had no explicit 48 px hit-area contract.
+  - Focus-row RED: 1 of 12 tests failed as intended because the direct focus-step checkbox row had no 48 px minimum.
+
+### GREEN and build evidence
+
+- `npm test -- --run src/app src/core/theme/studioTheme.test.ts src/features/monthly/MonthlyScreen.test.tsx`
+  - 4 test files passed; 23 tests passed; 0 failed.
+- `npm run build`
+  - `tsc -b && vite build` passed; 125 modules transformed; production bundle completed in 5.46 s; PWA service worker generation completed.
+
+### Decisions and self-review
+
+- Used an explicit positive list of text-like input types rather than a negative selector, preventing hidden/range/native picker controls from inheriting the text-field height contract.
+- Added explicit `min-height: auto !important` guards for checkbox, radio, file, and color inputs so later CSS cannot recreate the round-2 regression.
+- Kept intrinsic checkbox/radio visuals while assigning 48 px minimums to `label:has(...)`, `.switch`, mission selection/check rows, and focus-step rows.
+- Regression tests assert the blanket selector is absent, intrinsic types are restored, every text-like selector stays 48 px, and wrapper hit areas remain 48 px.
+
+### Commit
+
+- `fix: preserve intrinsic form control sizing`
+
+### Concerns
+
+- None. Unrelated workspace changes remain excluded.

@@ -512,10 +512,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* Primary-route accessibility and surface guardrails */
 .app-shell button,
 .app-shell a,
-.app-shell input,
 .app-shell select,
 .app-shell textarea,
 .app-shell summary,
+.app-shell input:not([type]),
+.app-shell input[type='text'],
+.app-shell input[type='search'],
+.app-shell input[type='email'],
+.app-shell input[type='password'],
+.app-shell input[type='url'],
+.app-shell input[type='tel'],
+.app-shell input[type='number'],
+.app-shell input[type='date'],
+.app-shell input[type='datetime-local'],
+.app-shell input[type='month'],
+.app-shell input[type='week'],
+.app-shell input[type='time'],
 .persistent-now-task__actions button,
 .control-only select,
 .settings-row input[type='time'],
@@ -524,6 +536,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .energy button,
 .today-progress-copy select {
   min-height: var(--tap-min) !important;
+}
+
+.app-shell input[type='checkbox'],
+.app-shell input[type='radio'],
+.app-shell input[type='file'],
+.app-shell input[type='color'] {
+  min-height: auto !important;
+}
+
+.app-shell label:has(input[type='checkbox']),
+.app-shell label:has(input[type='radio']),
+.switch,
+.mission-select,
+.check-row,
+.focus-screen li {
+  min-height: var(--tap-min);
 }
 
 .extended-mission-entry,

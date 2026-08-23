@@ -85,8 +85,46 @@ it('keeps every known undersized primary-route control at the 48px tap target', 
   for (const selector of selectors) {
     expect(lastDeclaration(selector, 'min-height'), selector).toBe('var(--tap-min) !important')
   }
-  for (const control of ['button', 'a', 'input', 'select', 'textarea', 'summary']) {
+  for (const control of ['button', 'a', 'select', 'textarea', 'summary']) {
     expect(lastDeclaration(`.app-shell ${control}`, 'min-height'), control).toBe('var(--tap-min) !important')
+  }
+  for (const input of [
+    ".app-shell input:not([type])",
+    ".app-shell input[type='text']",
+    ".app-shell input[type='search']",
+    ".app-shell input[type='email']",
+    ".app-shell input[type='password']",
+    ".app-shell input[type='url']",
+    ".app-shell input[type='tel']",
+    ".app-shell input[type='number']",
+    ".app-shell input[type='date']",
+    ".app-shell input[type='datetime-local']",
+    ".app-shell input[type='month']",
+    ".app-shell input[type='week']",
+    ".app-shell input[type='time']",
+  ]) {
+    expect(lastDeclaration(input, 'min-height'), input).toBe('var(--tap-min) !important')
+  }
+})
+
+it('preserves intrinsic checkbox, radio, file, and color input sizing', () => {
+  expect(lastDeclaration('.app-shell input', 'min-height')).toBeUndefined()
+  for (const type of ['checkbox', 'radio', 'file', 'color']) {
+    const selector = `.app-shell input[type='${type}']`
+    expect(lastDeclaration(selector, 'min-height'), selector).toBe('auto !important')
+  }
+})
+
+it('provides a 48px hit area around intrinsic checkbox and radio controls', () => {
+  for (const selector of [
+    ".app-shell label:has(input[type='checkbox'])",
+    ".app-shell label:has(input[type='radio'])",
+    '.switch',
+    '.mission-select',
+    '.check-row',
+    '.focus-screen li',
+  ]) {
+    expect(lastDeclaration(selector, 'min-height'), selector).toBe('var(--tap-min)')
   }
 })
 
