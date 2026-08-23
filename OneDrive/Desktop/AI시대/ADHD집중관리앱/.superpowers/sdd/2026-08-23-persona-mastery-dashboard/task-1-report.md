@@ -38,7 +38,7 @@ DONE
 
 ## Commit
 
-Commit hash: pending
+Implementation commit hash: 9d7cbc332308d52358efd3fd8817b06fd7bd15ce
 
 ## Concerns
 
