@@ -9,6 +9,7 @@ export interface TaskDraft {
   priority: Task['priority']
   categoryId: CategoryId
   estimateMinutes: number
+  personaIds?: string[]
   orderAfterDraftId?: string
   confidence: number
   needsReview: boolean

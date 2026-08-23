@@ -2,10 +2,13 @@ import { useState } from 'react'
 import type { TaskDraft } from './taskDraft'
 import { DEFAULT_CATEGORIES, type Category } from '../../core/model/category'
 import { CategoryPicker } from './CategoryPicker'
+import type { Persona } from '../../core/model/persona'
+import { DEFAULT_PERSONAS } from '../../core/storage/personaRepository'
 
-export function TaskDraftReview({ drafts, categories = DEFAULT_CATEGORIES, onCreateCategory = async () => { throw new Error('분류를 추가할 수 없어요.') }, onChange, onSave, onCancel }: {
+export function TaskDraftReview({ drafts, categories = DEFAULT_CATEGORIES, personas = DEFAULT_PERSONAS, onCreateCategory = async () => { throw new Error('분류를 추가할 수 없어요.') }, onChange, onSave, onCancel }: {
   drafts: TaskDraft[]
   categories?: Category[]
+  personas?: Persona[]
   onCreateCategory?: (input: { name: string; color: string }) => Promise<Category>
   onChange: (drafts: TaskDraft[]) => void
   onSave: (drafts: TaskDraft[]) => void
@@ -16,6 +19,17 @@ export function TaskDraftReview({ drafts, categories = DEFAULT_CATEGORIES, onCre
     const next = current.map((draft) => draft.id === id ? { ...draft, ...patch } : draft)
     setCurrent(next)
     onChange(next)
+  }
+  const activePersonas = personas
+    .filter((persona) => persona.status === 'active')
+    .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
+  const togglePersona = (draft: TaskDraft, personaId: string) => {
+    const selected = draft.personaIds ?? []
+    update(draft.id, {
+      personaIds: selected.includes(personaId)
+        ? selected.filter((id) => id !== personaId)
+        : [...selected, personaId],
+    })
   }
   return <section className="task-draft-review" aria-label="정리된 할 일 확인">
     <div className="section-heading"><div><span>저장 전 확인</span><h2>이렇게 나눠봤어요</h2></div></div>
@@ -28,6 +42,10 @@ export function TaskDraftReview({ drafts, categories = DEFAULT_CATEGORIES, onCre
       <CategoryPicker categories={categories} value={draft.categoryId} onSelect={(categoryId) => update(draft.id, { categoryId })} onCreate={onCreateCategory} />
       <label>중요도<select value={draft.priority} onChange={(event) => update(draft.id, { priority: Number(event.target.value) as TaskDraft['priority'] })}><option value="1">낮음</option><option value="2">보통</option><option value="3">높음</option></select></label>
       <label>예상 시간<input type="number" min="5" max="240" step="5" value={draft.estimateMinutes} onChange={(event) => update(draft.id, { estimateMinutes: Number(event.target.value) })} /></label>
+      <fieldset className="task-draft-personas"><legend>역할</legend>{activePersonas.map((persona) => <label key={persona.id} className="check-row">
+        <input type="checkbox" aria-label={`역할 ${persona.name}`} checked={(draft.personaIds ?? []).includes(persona.id)} onChange={() => togglePersona(draft, persona.id)} />
+        <span aria-hidden="true">{persona.icon}</span>{persona.name}
+      </label>)}</fieldset>
       {draft.needsReview && <small>시간 표현을 한 번 확인해 주세요.</small>}
     </article>)}</div>
     <div className="capture-actions"><button className="primary" type="button" onClick={() => onSave(current)}>모두 저장</button><button type="button" onClick={onCancel}>취소</button></div>

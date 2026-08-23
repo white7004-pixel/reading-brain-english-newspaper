@@ -176,6 +176,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       id: ids.get(draft.id)!, title: draft.title.trim(), day: draft.day, dueAt: draft.dueAt,
       status: 'open', priority: draft.priority, estimateMinutes: draft.estimateMinutes,
       category: draft.categoryId === 'work' ? 'work' : draft.categoryId === 'exercise' ? 'exercise' : draft.categoryId === 'personal' ? 'life' : 'rest', categoryId: draft.categoryId, source: 'local_parser', parseConfidence: draft.confidence,
+      personaIds: draft.personaIds ?? [],
       orderAfterTaskId: draft.orderAfterDraftId ? ids.get(draft.orderAfterDraftId) : undefined,
       createdAt: now.toISOString(), updatedAt: now.toISOString(),
     }))

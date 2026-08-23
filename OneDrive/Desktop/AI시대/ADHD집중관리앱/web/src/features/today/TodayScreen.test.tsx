@@ -268,8 +268,11 @@ it('saves reviewed tasks and shows the first focus action', async () => {
   await userEvent.click(screen.getByRole('button', { name: '여러 할 일 한 번에 입력' }))
   await userEvent.type(screen.getByLabelText('오늘 할 일 한 번에 적기'), '수학 숙제하고 병원')
   await userEvent.click(screen.getByRole('button', { name: '정리하기' }))
+  await userEvent.click(screen.getAllByLabelText('역할 상담 관리자')[0])
   await userEvent.click(screen.getByRole('button', { name: '모두 저장' }))
-  expect(deps.saveMany).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({ title: '수학 숙제', source: 'local_parser' })]))
+  expect(deps.saveMany).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({
+    title: '수학 숙제', source: 'local_parser', personaIds: ['counseling'],
+  })]))
   expect(deps.updateWidget).toHaveBeenCalledWith(expect.objectContaining({ remainingCount: 2 }))
   expect(screen.getByRole('heading', { name: '수학 숙제' })).toBeVisible()
 })

@@ -1,6 +1,6 @@
 export type TaskStatus = 'open' | 'active' | 'completed' | 'deferred' | 'canceled'
 export type TaskCategory = 'study' | 'work' | 'life' | 'exercise' | 'rest'
-export type TaskSource = 'manual' | 'local_parser'
+export type TaskSource = 'manual' | 'local_parser' | 'kakaotalk' | 'kakaowork' | 'google_calendar'
 import type { CategoryId } from './category'
 
 export interface MissionCommitment {
