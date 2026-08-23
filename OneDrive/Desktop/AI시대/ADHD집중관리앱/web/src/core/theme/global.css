@@ -146,10 +146,10 @@ button, select, a { min-height: var(--tap-min); }
 .persistent-now-task span { color: var(--color-accent); font-size: 12px; font-weight: 800; }
 .persistent-now-task strong { overflow-wrap: anywhere; }
 .persistent-now-task__actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.persistent-now-task__actions button { min-height: 36px; padding: 0 10px; border: 1px solid var(--color-line); border-radius: 11px; background: var(--color-surface); color: var(--color-text); font-size: 12px; }
-.persistent-now-task[data-tone='firm'] { border-color: rgb(118 80 191 / 42%); box-shadow: 0 18px 44px rgb(81 56 134 / 22%); }
-.persistent-now-task[data-tone='angry'] { border-color: rgb(187 76 107 / 50%); background: color-mix(in srgb, #fff0f3 84%, var(--color-surface)); box-shadow: 0 18px 48px rgb(139 45 78 / 24%); }
-.persistent-now-task[data-tone='angry'] span { color: #9f294d; }
+.persistent-now-task__actions button { min-height: 48px; padding: 0 10px; border: 1px solid var(--color-line); border-radius: 11px; background: var(--color-surface); color: var(--color-text); font-size: 12px; }
+.persistent-now-task[data-stage='direct'] { border-color: rgb(118 80 191 / 42%); box-shadow: 0 18px 44px rgb(81 56 134 / 22%); }
+.persistent-now-task[data-stage='decision'] { border-color: rgb(118 80 191 / 52%); box-shadow: 0 18px 48px rgb(81 56 134 / 24%); }
+.coach-action { min-height: 48px; }
 .priority-task-section { margin-top: 20px; padding: 22px; border: 1px solid var(--color-glass-line); border-radius: 28px; background: color-mix(in srgb, var(--color-surface) 88%, transparent); box-shadow: var(--shadow-card-3d); backdrop-filter: blur(20px); }
 .priority-task-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
 .priority-task-heading span { color: var(--color-accent); font-size: 12px; font-weight: 800; }
@@ -523,6 +523,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .monggle-coach-panel__copy > span { color: var(--color-accent); font-size: 11px; font-weight: 850; }
 .monggle-coach-panel__copy p { margin: 2px 0; font-size: 13px; font-weight: 720; }
 .monggle-coach-panel__copy small { display: flex; gap: 8px; color: var(--color-muted); font-size: 11px; }
+.monggle-coach-panel__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.monggle-coach-panel__actions button { padding: 0 10px; border: 1px solid var(--color-line); border-radius: 11px; background: var(--color-surface); color: var(--color-text); font-size: 12px; }
 
 .featured-quest { background: #292735; color: #fff; }
 .featured-quest__actions { display: flex; gap: 8px; align-items: stretch; }
@@ -660,8 +662,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .extended-mission-entry,
 .persistent-now-task,
-.persistent-now-task[data-tone='firm'],
-.persistent-now-task[data-tone='angry'],
+.persistent-now-task[data-stage='direct'],
+.persistent-now-task[data-stage='decision'],
 .mission-reschedule {
   border: 1px solid var(--color-line);
   border-radius: var(--radius-card);

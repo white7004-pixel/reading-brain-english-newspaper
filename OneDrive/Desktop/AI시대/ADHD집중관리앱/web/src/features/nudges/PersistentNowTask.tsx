@@ -1,29 +1,73 @@
-import { useState } from 'react'
 import type { Task } from '../../core/model/task'
-import type { TaskCheckInAction } from './taskCheckIn'
-import type { MasteryTone } from './taskMastery'
 import type { MissionEscalationLevel } from '../missions/extendedDay'
+import {
+  coachActionLabels,
+  coachStageLabels,
+  type CoachAction,
+  type CoachDecision,
+  type CoachStage,
+} from './taskMastery'
 
-export function PersistentNowTask({ task, line, onRespond, tone = 'supportive', escalationLevel = 'push' }: {
+export interface PersistentNowTaskProps {
   task: Task
-  line: string
-  tone?: MasteryTone
+  decision?: CoachDecision
+  line?: string
+  stage?: CoachStage
+  suppressed?: boolean
   escalationLevel?: MissionEscalationLevel
-  onRespond: (action: TaskCheckInAction, delayMinutes?: number) => void
-}) {
-  const [choosingDelay, setChoosingDelay] = useState(false)
-  return <aside className="persistent-now-task" data-testid="persistent-now-task" data-tone={tone} data-escalation-level={escalationLevel} aria-label="몽글이의 지금 할 일 확인">
+  onRespond: (action: CoachAction, delayMinutes?: number) => void
+  onReschedule?: () => void
+  onCancel?: () => void
+}
+
+export function PersistentNowTask({
+  task,
+  decision,
+  line,
+  stage = 'gentle',
+  suppressed = false,
+  escalationLevel = 'push',
+  onRespond,
+  onReschedule,
+  onCancel,
+}: PersistentNowTaskProps) {
+  const activeDecision: CoachDecision = decision ?? {
+    stage,
+    line: line ?? `${task.title}, 작은 첫 행동부터 시작해 볼까요?`,
+    actions: ['start', 'remind_5'],
+    nextPromptAt: new Date(),
+  }
+  const announcementSuppressed = suppressed || activeDecision.nextPromptAt === null
+
+  const respond = (action: CoachAction) => {
+    if (action === 'reschedule') return onReschedule?.()
+    if (action === 'cancel') return onCancel?.()
+    if (action === 'remind_5') return onRespond(action, 5)
+    onRespond(action)
+  }
+
+  return <aside
+    className="persistent-now-task"
+    data-testid="persistent-now-task"
+    data-stage={activeDecision.stage}
+    data-escalation-level={escalationLevel}
+    aria-label="몽글이의 지금 할 일 확인"
+  >
     <img src="/assets/mascot/monggle-3d-approved-v1.png" alt="" />
-    <div><span>몽글이가 물어봐요</span><strong>{line}</strong>
-      {!choosingDelay ? <div className="persistent-now-task__actions">
-        <button type="button" onClick={() => onRespond('done')}>했어</button>
-        <button type="button" onClick={() => onRespond('in_progress')}>하는 중</button>
-        <button type="button" onClick={() => setChoosingDelay(true)}>나중에</button>
-      </div> : <div className="persistent-now-task__actions" aria-label="다시 물을 시간">
-        <button type="button" onClick={() => onRespond('later', 30)}>30분 뒤</button>
-        <button type="button" onClick={() => onRespond('later', 60)}>1시간 뒤</button>
-        <button type="button" onClick={() => onRespond('later', 480)}>오늘 저녁</button>
-      </div>}
+    <div>
+      <span aria-hidden="true">몽글 코치</span>
+      <div role={announcementSuppressed ? undefined : 'status'} aria-live={announcementSuppressed ? 'off' : 'polite'}>
+        <span className="persistent-now-task__stage">{coachStageLabels[activeDecision.stage]}</span>
+        <strong>{activeDecision.line}</strong>
+      </div>
+      <div className="persistent-now-task__actions" aria-label="코칭 행동">
+        {activeDecision.actions.map((action) => <button
+          className="coach-action"
+          key={action}
+          type="button"
+          onClick={() => respond(action)}
+        >{coachActionLabels[action]}</button>)}
+      </div>
     </div>
   </aside>
 }

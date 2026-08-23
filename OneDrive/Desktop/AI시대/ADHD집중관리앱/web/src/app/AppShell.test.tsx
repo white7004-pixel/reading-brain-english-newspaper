@@ -71,7 +71,8 @@ it('keeps a prior-day required mission delayed through quiet time and returns th
   window.dispatchEvent(new Event('monggle:settings-changed'))
   const delayed = taskCheckInRepository.load()!
   taskCheckInRepository.save({ ...delayed, remindAt: new Date(now.getTime() - 1_000).toISOString() })
-  expect(screen.queryByTestId('persistent-now-task')).not.toBeInTheDocument()
+  await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('지난 미션'))
+  expect(within(screen.getByTestId('persistent-now-task')).queryByRole('status')).not.toBeInTheDocument()
 
   settingsRepository.save({ quietHoursStart: '00:00', quietHoursEnd: '00:00' })
   window.dispatchEvent(new Event('monggle:settings-changed'))

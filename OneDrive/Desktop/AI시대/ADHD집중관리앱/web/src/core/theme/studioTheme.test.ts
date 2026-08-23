@@ -132,8 +132,8 @@ it('normalizes every reachable prompt and mission surface to the mature card con
   const selectors = [
     '.extended-mission-entry',
     '.persistent-now-task',
-    ".persistent-now-task[data-tone='firm']",
-    ".persistent-now-task[data-tone='angry']",
+    ".persistent-now-task[data-stage='direct']",
+    ".persistent-now-task[data-stage='decision']",
     '.mission-reschedule',
   ]
 

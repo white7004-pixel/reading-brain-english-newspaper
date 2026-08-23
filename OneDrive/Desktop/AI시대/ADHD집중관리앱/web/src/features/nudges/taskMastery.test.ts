@@ -1,26 +1,36 @@
 import { beforeEach, expect, it } from 'vitest'
-import { applyMasteryEvent, masteryTone, taskMasteryRepository, type TaskMasteryState } from './taskMastery'
+import { applyMasteryEvent, masteryStage, taskMasteryRepository, type TaskMasteryState } from './taskMastery'
 
 const initial: TaskMasteryState = { taskId: 'task-1', misses: 0 }
 
 beforeEach(() => localStorage.clear())
 
-it('becomes angry on the third later response', () => {
+it('moves through humane coaching stages after explicit later responses', () => {
   const once = applyMasteryEvent(initial, { type: 'later', at: '2026-08-20T01:00:00.000Z' })
   const twice = applyMasteryEvent(once, { type: 'later', at: '2026-08-20T02:00:00.000Z' })
   const threeTimes = applyMasteryEvent(twice, { type: 'later', at: '2026-08-20T03:00:00.000Z' })
 
-  expect([masteryTone(once), masteryTone(twice), masteryTone(threeTimes)]).toEqual(['supportive', 'firm', 'angry'])
+  expect([masteryStage(once), masteryStage(twice), masteryStage(threeTimes)]).toEqual(['direct', 'decision', 'decision'])
 })
 
 it('resets misses when the task is completed', () => {
-  const angry: TaskMasteryState = { taskId: 'task-1', misses: 4, lastPromptAt: '2026-08-20T03:00:00.000Z' }
-  expect(applyMasteryEvent(angry, { type: 'done', at: '2026-08-20T03:05:00.000Z' })).toEqual({ taskId: 'task-1', misses: 0, answeredAt: '2026-08-20T03:05:00.000Z' })
+  const escalated: TaskMasteryState = { taskId: 'task-1', misses: 4, lastPromptAt: '2026-08-20T03:00:00.000Z' }
+  expect(applyMasteryEvent(escalated, { type: 'done', at: '2026-08-20T03:05:00.000Z' })).toEqual({ taskId: 'task-1', misses: 0, answeredAt: '2026-08-20T03:05:00.000Z' })
 })
 
 it('keeps the miss count while the user is working', () => {
   const current: TaskMasteryState = { taskId: 'task-1', misses: 2 }
   expect(applyMasteryEvent(current, { type: 'working', at: '2026-08-20T02:05:00.000Z' }).misses).toBe(2)
+})
+
+it('keeps the miss count when the user starts through the new coach action', () => {
+  const current: TaskMasteryState = { taskId: 'task-1', misses: 2 }
+  expect(applyMasteryEvent(current, { type: 'start', at: '2026-08-20T02:05:00.000Z' }).misses).toBe(2)
+})
+
+it('increments exactly once for an explicit five minute reminder', () => {
+  const current: TaskMasteryState = { taskId: 'task-1', misses: 1 }
+  expect(applyMasteryEvent(current, { type: 'remind_5', at: '2026-08-20T02:05:00.000Z' }).misses).toBe(2)
 })
 
 it('counts an unanswered previous prompt when a new prompt is shown', () => {

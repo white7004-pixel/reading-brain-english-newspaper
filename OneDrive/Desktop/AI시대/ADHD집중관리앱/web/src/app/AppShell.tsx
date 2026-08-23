@@ -9,13 +9,13 @@ import { createDatabase } from '../core/storage/database'
 import type { AppearanceSettings } from '../core/model/appearance'
 import type { Task } from '../core/model/task'
 import { createTaskRepository } from '../core/storage/taskRepository'
-import { applyCheckInResponse, buildNudgeLine, isQuietTime, selectNudgeTask } from '../features/nudges/nudgePolicy'
+import { applyCheckInResponse, buildCoachDecision, buildNudgeLine, isQuietTime, remindFiveAt, selectNudgeTask } from '../features/nudges/nudgePolicy'
 import { PersistentNowTask } from '../features/nudges/PersistentNowTask'
-import { taskCheckInRepository, type TaskCheckInAction } from '../features/nudges/taskCheckIn'
+import { taskCheckInRepository } from '../features/nudges/taskCheckIn'
 import { nativeWidgetBridge } from '../features/widgets/nativeWidgetBridge'
 import { mergeWidgetEvents } from '../features/widgets/mergeWidgetEvents'
 import { buildWidgetSnapshot } from '../features/widgets/widgetSnapshot'
-import { applyMasteryEvent, masteryMessage, masteryTone, taskMasteryRepository, type MasteryTone, type TaskMasteryState } from '../features/nudges/taskMastery'
+import { applyMasteryEvent, masteryStage, taskMasteryRepository, type CoachAction, type CoachStage, type TaskMasteryState } from '../features/nudges/taskMastery'
 import { dayInSeoul, missionModeForMission } from '../features/missions/extendedDay'
 import { selectCurrentMission } from '../features/today/selectNowTask'
 import { appNow } from '../core/time/appClock'
@@ -85,17 +85,23 @@ export function AppShell({ children }: { children: ReactNode }) {
   const now = new Date(clockTick)
   const currentMission = selectCurrentMission(todayTasks, now)
   const activeMissionMode = missionModeForMission(currentMission, now)
-  const nudgeTask = settings.nudgeIntervalMinutes === 0 || isQuietTime(now, settings.quietHoursStart, settings.quietHoursEnd)
+  const quiet = isQuietTime(now, settings.quietHoursStart, settings.quietHoursEnd)
+  const coachIntervalMinutes = settings.determinedMonggle ? 30 : 60
+  const nudgeTask = settings.nudgeIntervalMinutes === 0
     ? null
     : selectNudgeTask(todayTasks, now, latestCheckIn)
-  const nudgeBucket = settings.nudgeIntervalMinutes === 0 ? 0 : Math.floor(clockTick / (settings.nudgeIntervalMinutes * 60_000))
+  const nudgeBucket = settings.nudgeIntervalMinutes === 0 ? 0 : Math.floor(clockTick / (coachIntervalMinutes * 60_000))
   useEffect(() => {
-    if (!nudgeTask || !settings.determinedMonggle || settings.nudgeIntervalMinutes === 0) {
+    if (!nudgeTask || settings.nudgeIntervalMinutes === 0) {
       setMastery(null)
       return
     }
     const current = taskMasteryRepository.load(nudgeTask.id)
-    const promptAt = new Date(nudgeBucket * settings.nudgeIntervalMinutes * 60_000).toISOString()
+    if (quiet) {
+      setMastery(current)
+      return
+    }
+    const promptAt = new Date(nudgeBucket * coachIntervalMinutes * 60_000).toISOString()
     if (current.lastPromptAt === promptAt) {
       setMastery(current)
       return
@@ -103,21 +109,31 @@ export function AppShell({ children }: { children: ReactNode }) {
     const next = applyMasteryEvent(current, { type: 'prompt', at: promptAt })
     taskMasteryRepository.save(next)
     setMastery(next)
-  }, [nudgeTask?.id, nudgeBucket, settings.determinedMonggle, settings.nudgeIntervalMinutes])
-  const activeTone: MasteryTone = settings.determinedMonggle && mastery && mastery.taskId === nudgeTask?.id ? masteryTone(mastery) : 'supportive'
-  const respondToTask = async (action: TaskCheckInAction, delayMinutes?: number) => {
+  }, [nudgeTask?.id, nudgeBucket, quiet, coachIntervalMinutes, settings.nudgeIntervalMinutes])
+  const activeStage: CoachStage = mastery && mastery.taskId === nudgeTask?.id ? masteryStage(mastery) : 'gentle'
+  const coachDecision = nudgeTask ? buildCoachDecision({
+    task: nudgeTask,
+    unansweredPrompts: mastery?.taskId === nudgeTask.id ? mastery.misses : 0,
+    now,
+    quiet,
+    calendarBusy: false,
+    focusActive: nudgeTask.status === 'active',
+    determinedMode: settings.determinedMonggle,
+  }) : null
+  const respondToTask = async (action: CoachAction, delayMinutes?: number) => {
     if (!nudgeTask) return
     const respondedAt = appNow()
     const response = {
       taskId: nudgeTask.id, action, respondedAt: respondedAt.toISOString(),
-      remindAt: action === 'later' && delayMinutes ? new Date(respondedAt.getTime() + delayMinutes * 60_000).toISOString() : undefined,
+      remindAt: action === 'remind_5'
+        ? remindFiveAt(respondedAt).toISOString()
+        : delayMinutes ? new Date(respondedAt.getTime() + delayMinutes * 60_000).toISOString() : undefined,
     }
     const result = applyCheckInResponse(todayTasks, response, respondedAt)
     await shellTaskRepository.putMany(result.tasks)
     await nativeWidgetBridge.update(buildWidgetSnapshot(result.tasks, buildNudgeLine(result.tasks.find((task) => task.id === result.nextTaskId) ?? nudgeTask), respondedAt))
     taskCheckInRepository.save(response)
-    const masteryAction = action === 'in_progress' ? 'working' : action
-    const nextMastery = applyMasteryEvent(taskMasteryRepository.load(nudgeTask.id), { type: masteryAction, at: respondedAt.toISOString() })
+    const nextMastery = applyMasteryEvent(taskMasteryRepository.load(nudgeTask.id), { type: action, at: respondedAt.toISOString() })
     taskMasteryRepository.save(nextMastery)
     setMastery(nextMastery)
     setTodayTasks(result.tasks)
@@ -174,8 +190,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p>{currentMission.firstAction ?? '첫 행동부터 다시 시작해요.'}</p>
       </section>}
       <main>{children}</main>
-      {nudgeTask && <PersistentNowTask task={nudgeTask} line={settings.determinedMonggle ? masteryMessage(activeTone) : buildNudgeLine(nudgeTask)} tone={activeTone} onRespond={(action, delay) => void respondToTask(action, delay)} />}
-      {location.pathname === '/' && <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeTone} />}
+      {nudgeTask && coachDecision && <PersistentNowTask
+        task={nudgeTask}
+        decision={coachDecision}
+        suppressed={quiet}
+        onRespond={(action, delay) => void respondToTask(action, delay)}
+        onReschedule={() => void respondToTask('reschedule')}
+        onCancel={() => void respondToTask('cancel')}
+      />}
+      {location.pathname === '/' && <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeStage} />}
       <BottomNav />
     </div>
   )

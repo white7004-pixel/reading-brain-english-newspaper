@@ -2,11 +2,48 @@ import type { Task } from '../../core/model/task'
 import { completeMission } from '../missions/missionState'
 import { selectCurrentMission, selectNowTask } from '../today/selectNowTask'
 import type { TaskCheckInResponse } from './taskCheckIn'
+import type { CoachAction, CoachContext, CoachDecision, CoachStage } from './taskMastery'
 
 export type { TaskCheckInResponse } from './taskCheckIn'
+export type { CoachAction, CoachContext, CoachDecision, CoachStage } from './taskMastery'
 
 export function nextNudgeAt(now: Date, intervalMinutes: 30 | 60 | 120) {
   return new Date(now.getTime() + intervalMinutes * 60_000)
+}
+
+export function remindFiveAt(now: Date) {
+  return new Date(now.getTime() + 5 * 60_000)
+}
+
+function stageFor(unansweredPrompts: number): CoachStage {
+  if (unansweredPrompts >= 2) return 'decision'
+  if (unansweredPrompts === 1) return 'direct'
+  return 'gentle'
+}
+
+const actionsByStage: Record<CoachStage, CoachAction[]> = {
+  gentle: ['start', 'remind_5'],
+  direct: ['start', 'remind_5', 'reschedule'],
+  decision: ['start', 'remind_5', 'reschedule', 'cancel'],
+}
+
+function lineFor({ task, focusActive }: CoachContext, stage: CoachStage) {
+  if (focusActive) return `${task.title}에 집중하고 있어요. 지금 흐름을 편안하게 이어가요.`
+  if (stage === 'decision') return `${task.title}을 지금 어떻게 이어갈지 함께 정해요.`
+  if (stage === 'direct') return `하기로 한 ${task.title}을 기억하고 있어요. 가능한 첫 행동부터 이어가 볼까요?`
+  return `${task.title}, ${task.firstAction ?? '가장 작은 첫 행동'}부터 가볍게 시작해 볼까요?`
+}
+
+export function buildCoachDecision(context: CoachContext): CoachDecision {
+  const stage = stageFor(Math.max(0, context.unansweredPrompts))
+  const actions = context.focusActive
+    ? [...actionsByStage[stage].filter((action) => action !== 'start'), 'done' as const]
+    : [...actionsByStage[stage]]
+  const nextPromptAt = context.quiet || context.calendarBusy
+    ? null
+    : nextNudgeAt(context.now, context.determinedMode ? 30 : 60)
+
+  return { stage, line: lineFor(context, stage), actions, nextPromptAt }
 }
 
 function timeInSeoul(now: Date) {
@@ -31,7 +68,7 @@ export function isQuietTime(now: Date, quietStart: string, quietEnd: string) {
 
 export function selectNudgeTask(tasks: Task[], now: Date, latestResponse: TaskCheckInResponse | null = null) {
   const open = tasks.filter((task) => !['completed', 'canceled'].includes(task.status))
-  if (latestResponse?.action === 'later' && latestResponse.remindAt) {
+  if ((latestResponse?.action === 'later' || latestResponse?.action === 'remind_5') && latestResponse.remindAt) {
     const delayed = open.find((task) => task.id === latestResponse.taskId)
     if (new Date(latestResponse.remindAt) > now) {
       const withoutDelayed = open.filter((task) => task.id !== latestResponse.taskId)
@@ -55,10 +92,10 @@ export function applyCheckInResponse(tasks: Task[], response: TaskCheckInRespons
         ? completeMission(task, now)
         : { ...task, status: 'completed' as const, completedAt: updatedAt, updatedAt }
     }
-    if (response.action === 'in_progress') return { ...task, status: 'active' as const, updatedAt }
+    if (response.action === 'in_progress' || response.action === 'start') return { ...task, status: 'active' as const, updatedAt }
     return task
   })
-  const nextTask = response.action === 'in_progress'
+  const nextTask = response.action === 'in_progress' || response.action === 'start'
     ? nextTasks.find((task) => task.id === response.taskId) ?? null
     : selectNudgeTask(nextTasks, now, response)
   return { tasks: nextTasks, nextTaskId: nextTask?.id ?? null }
