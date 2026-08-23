@@ -22,6 +22,9 @@ export interface Task {
   estimateMinutes: number
   category: TaskCategory
   categoryId?: CategoryId
+  personaIds?: string[]
+  recurringInstanceId?: string
+  sourceRef?: string
   dueAt?: string
   orderAfterTaskId?: string
   source: TaskSource

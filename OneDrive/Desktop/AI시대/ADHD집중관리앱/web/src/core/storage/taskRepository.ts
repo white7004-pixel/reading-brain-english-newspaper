@@ -6,6 +6,7 @@ export function createTaskRepository(database: MonggleDatabase) {
   const normalize = (task: Task): Task => ({
     ...task,
     categoryId: task.categoryId ?? normalizeCategoryId(task.category),
+    personaIds: task.personaIds ?? [],
     source: task.source ?? 'manual',
     required: task.required ?? false,
   })

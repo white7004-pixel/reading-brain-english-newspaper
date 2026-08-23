@@ -7,6 +7,9 @@ import type { Task } from '../model/task'
 import type { Category } from '../model/category'
 import type { AvailabilitySnapshot, CalendarConnection } from '../model/calendarAvailability'
 import type { PetGameState, RewardEvent } from '../../features/pet/model'
+import type { Persona, PersonaMastery } from '../model/persona'
+import type { RecurringTaskInstance, RecurringTaskTemplate } from '../model/recurrence'
+import type { ExternalCalendarEvent, QuestCandidate } from '../model/questCandidate'
 
 export class MonggleDatabase extends Dexie {
   tasks!: EntityTable<Task, 'id'>
@@ -21,6 +24,12 @@ export class MonggleDatabase extends Dexie {
   availabilitySnapshots!: EntityTable<AvailabilitySnapshot, 'accountId'>
   petGameStates!: EntityTable<PetGameState, 'key'>
   rewardEvents!: EntityTable<RewardEvent, 'id'>
+  personas!: EntityTable<Persona, 'id'>
+  personaMastery!: EntityTable<PersonaMastery, 'personaId'>
+  recurringTemplates!: EntityTable<RecurringTaskTemplate, 'id'>
+  recurringInstances!: EntityTable<RecurringTaskInstance, 'id'>
+  questCandidates!: EntityTable<QuestCandidate, 'id'>
+  externalCalendarEvents!: EntityTable<ExternalCalendarEvent, 'id'>
 
   constructor(name = 'monggle') {
     super(name)
@@ -84,6 +93,26 @@ export class MonggleDatabase extends Dexie {
       availabilitySnapshots: '&accountId,fetchedAt,expiresAt',
       petGameStates: '&key',
       rewardEvents: '&id,taskId,completedAt,settledAt',
+    })
+    this.version(7).stores({
+      tasks: '&id,day,status,dueAt,categoryId,required,commitmentDay',
+      messages: '&id,status,scheduledAt,platform',
+      routines: '&id',
+      settings: '&key',
+      photoAssets: '&id,createdAt',
+      characterRenders: '&id,sourcePhotoId,preset,createdAt',
+      appearanceSettings: '&key',
+      categories: '&id,name,isDefault,createdAt',
+      calendarConnections: '&accountId,connectedAt',
+      availabilitySnapshots: '&accountId,fetchedAt,expiresAt',
+      petGameStates: '&key',
+      rewardEvents: '&id,taskId,completedAt,settledAt',
+      personas: '&id,status,order',
+      personaMastery: '&personaId',
+      recurringTemplates: '&id,active',
+      recurringInstances: '&id,templateId,periodKey,scheduledDay,status',
+      questCandidates: '&id,&sourceRef,status',
+      externalCalendarEvents: '&id,&sourceRef,startsAt,status',
     })
   }
 }
