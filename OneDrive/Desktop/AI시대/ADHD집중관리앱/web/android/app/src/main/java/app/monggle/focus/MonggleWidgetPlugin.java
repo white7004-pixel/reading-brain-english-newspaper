@@ -1,0 +1,75 @@
+package app.monggle.focus;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.getcapacitor.JSArray;
+import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import java.util.concurrent.TimeUnit;
+
+@CapacitorPlugin(name = "MonggleWidget")
+public class MonggleWidgetPlugin extends Plugin {
+    static final String STORE_NAME = "monggle_widget_shared";
+    static final String SNAPSHOT_KEY = "widget_snapshot_v1";
+    static final String COMPLETION_EVENTS_KEY = "widget_completion_events_v1";
+    static final String NUDGE_CONFIG_KEY = "widget_nudge_config_v1";
+    static final String MASTERY_MISSES_KEY = "widget_mastery_misses_v1";
+    static final String MASTERY_TASK_KEY = "widget_mastery_task_v1";
+    static final String MASTERY_ANSWERED_KEY = "widget_mastery_answered_v1";
+
+    private SharedPreferences store() {
+        return getContext().getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);
+    }
+
+    @PluginMethod
+    public void updateWidget(PluginCall call) {
+        JSObject snapshot = call.getObject("snapshot");
+        if (snapshot == null) {
+            call.reject("snapshot is required");
+            return;
+        }
+        store().edit().putString(SNAPSHOT_KEY, snapshot.toString()).apply();
+        MonggleWidgetProvider.refreshAll(getContext());
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void scheduleNudges(PluginCall call) {
+        store().edit().putString(NUDGE_CONFIG_KEY, call.getData().toString()).apply();
+        int interval = call.getInt("intervalMinutes", 0);
+        WorkManager workManager = WorkManager.getInstance(getContext());
+        if (interval == 0) {
+            workManager.cancelUniqueWork("monggle-nudges");
+        } else {
+            PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(MonggleNudgeWorker.class, interval, TimeUnit.MINUTES).build();
+            workManager.enqueueUniquePeriodicWork("monggle-nudges", ExistingPeriodicWorkPolicy.UPDATE, request);
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getCompletionEvents(PluginCall call) {
+        String rawEvents = store().getString(COMPLETION_EVENTS_KEY, "[]");
+        JSObject result = new JSObject();
+        try {
+            result.put("events", new JSArray(rawEvents));
+            call.resolve(result);
+        } catch (Exception exception) {
+            result.put("events", new JSArray());
+            call.resolve(result);
+        }
+    }
+
+    @PluginMethod
+    public void clearCompletionEvents(PluginCall call) {
+        store().edit().remove(COMPLETION_EVENTS_KEY).apply();
+        call.resolve();
+    }
+}
