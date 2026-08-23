@@ -31,7 +31,7 @@ function candidate(overrides: Partial<QuestCandidate> = {}): QuestCandidate {
 }
 
 describe('quest candidate repository', () => {
-  it('suppresses duplicate source references and returns the existing record', async () => {
+  it('suppresses duplicate canonical identities and returns the existing record', async () => {
     const repository = setup()
     const first = await repository.put(candidate())
     const duplicate = await repository.put(candidate({ id: 'another-id', title: '다시 가져온 제목' }))
@@ -89,5 +89,26 @@ describe('quest candidate repository', () => {
       first.id,
       'kakaotalk:room-2/message-1',
     ])
+  })
+
+  it('keeps the same source reference distinct across providers and updates only the canonical identity', async () => {
+    const repository = setup()
+    const talk = await repository.put(candidate({ source: 'kakaotalk', sourceRef: 'shared-X', title: '카카오톡 후보' }))
+    const work = await repository.put(candidate({ source: 'kakaowork', sourceRef: 'shared-X', title: '카카오워크 후보' }))
+
+    expect([talk.id, work.id]).toEqual(['kakaotalk:shared-X', 'kakaowork:shared-X'])
+    await repository.accept({ ...talk, title: '카카오톡 후보 확정' })
+
+    await expect(database!.questCandidates.get('kakaotalk:shared-X')).resolves.toMatchObject({
+      source: 'kakaotalk',
+      title: '카카오톡 후보 확정',
+      status: 'accepted',
+    })
+    await expect(database!.questCandidates.get('kakaowork:shared-X')).resolves.toMatchObject({
+      source: 'kakaowork',
+      title: '카카오워크 후보',
+      status: 'pending_review',
+    })
+    await expect(database!.questCandidates.count()).resolves.toBe(2)
   })
 })

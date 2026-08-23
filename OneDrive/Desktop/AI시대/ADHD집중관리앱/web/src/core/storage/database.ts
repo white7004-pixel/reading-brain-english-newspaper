@@ -114,6 +114,26 @@ export class MonggleDatabase extends Dexie {
       questCandidates: '&id,&sourceRef,status',
       externalCalendarEvents: '&id,&sourceRef,startsAt,status',
     })
+    this.version(8).stores({
+      tasks: '&id,day,status,dueAt,categoryId,required,commitmentDay',
+      messages: '&id,status,scheduledAt,platform',
+      routines: '&id',
+      settings: '&key',
+      photoAssets: '&id,createdAt',
+      characterRenders: '&id,sourcePhotoId,preset,createdAt',
+      appearanceSettings: '&key',
+      categories: '&id,name,isDefault,createdAt',
+      calendarConnections: '&accountId,connectedAt',
+      availabilitySnapshots: '&accountId,fetchedAt,expiresAt',
+      petGameStates: '&key',
+      rewardEvents: '&id,taskId,completedAt,settledAt',
+      personas: '&id,status,order',
+      personaMastery: '&personaId',
+      recurringTemplates: '&id,active',
+      recurringInstances: '&id,templateId,periodKey,scheduledDay,status',
+      questCandidates: '&id,sourceRef,status',
+      externalCalendarEvents: '&id,&sourceRef,startsAt,status',
+    })
   }
 }
 

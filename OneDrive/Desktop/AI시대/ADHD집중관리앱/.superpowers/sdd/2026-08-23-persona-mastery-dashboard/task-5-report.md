@@ -72,3 +72,40 @@ Complete. Local classification, duplicate-safe candidate storage, explicit candi
 
 - `CandidateInbox` is intentionally not composed into the Today dashboard in Task 5; Task 6 owns that integration boundary.
 - Existing unrelated generated MediaPipe asset changes remain in the working tree and are excluded from this task.
+
+## Fix round 1
+
+### Status
+
+- Corrected candidate persistence to use `${source}:${sourceRef}` as the sole duplicate and terminal-update identity.
+- Added schema v8 with a non-unique candidate `sourceRef` index while preserving every existing store and all other index contracts.
+
+### RED evidence
+
+- `npm test -- --run src/core/storage/questCandidateRepository.test.ts src/core/storage/personaDashboardMigration.test.ts`
+  - 2 of 8 tests failed as intended.
+  - Repository RED returned `kakaotalk:shared-X` for both the KakaoTalk and KakaoWork inserts.
+  - Schema RED raised a `ConstraintError` when two canonical IDs reused `sourceRef: external-item-X` across providers.
+
+### GREEN and build evidence
+
+- `npm test -- --run src/features/inbox/candidatePolicy.test.ts src/core/storage/questCandidateRepository.test.ts src/core/storage/personaDashboardMigration.test.ts`
+  - 3 test files passed; 20 tests passed; 0 failed.
+- `npm run build`
+  - `tsc -b && vite build` passed; 126 modules transformed; production bundle and PWA service worker generation completed.
+
+### Decisions and self-review
+
+- Replaced repository `sourceRef` queries in `put` and `accept` with primary-key `get(canonical.id)` calls; `dismiss` already accepted the canonical ID directly.
+- Kept `sourceRef` indexed in v8 for future source-local queries, but removed global uniqueness so equal provider-native references can coexist.
+- Copied every v7 store into v8 unchanged except `questCandidates: '&id,sourceRef,status'`, preventing an upgrade from dropping unrelated stores.
+- Regression coverage proves cross-source coexistence, accepts only the KakaoTalk canonical record, and leaves the KakaoWork record pending and unchanged.
+- Task-only staging continues to exclude unrelated generated MediaPipe changes.
+
+### Commit
+
+- `fix: scope candidate identity by source`
+
+### Concerns
+
+- None in fix-round scope.

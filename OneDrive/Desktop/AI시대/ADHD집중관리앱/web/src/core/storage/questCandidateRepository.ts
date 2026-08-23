@@ -10,7 +10,7 @@ export function createQuestCandidateRepository(database: MonggleDatabase) {
   return {
     async put(candidate: QuestCandidate): Promise<QuestCandidate> {
       const canonical = canonicalCandidate(candidate)
-      const existing = await database.questCandidates.where('sourceRef').equals(canonical.sourceRef).first()
+      const existing = await database.questCandidates.get(canonical.id)
       if (existing) return existing
       await database.questCandidates.put(canonical)
       return canonical
@@ -24,7 +24,7 @@ export function createQuestCandidateRepository(database: MonggleDatabase) {
     async accept(candidate: QuestCandidate): Promise<void> {
       const canonical = canonicalCandidate(candidate)
       await database.transaction('rw', database.questCandidates, async () => {
-        const existing = await database.questCandidates.where('sourceRef').equals(canonical.sourceRef).first()
+        const existing = await database.questCandidates.get(canonical.id)
         if (!existing || existing.status !== 'pending_review') return
         await database.questCandidates.put({ ...canonical, id: existing.id, status: 'accepted' })
       })

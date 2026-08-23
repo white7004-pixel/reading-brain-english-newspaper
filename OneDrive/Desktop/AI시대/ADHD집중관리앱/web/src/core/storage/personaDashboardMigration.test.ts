@@ -70,4 +70,17 @@ describe('persona dashboard migration', () => {
       database.externalCalendarEvents.count(),
     ])).resolves.toEqual([1, 1, 1, 1, 1, 1])
   })
+
+  it('allows different candidate sources to reuse a source reference', async () => {
+    const { database } = setup()
+    const shared = 'external-item-X'
+    const candidates: QuestCandidate[] = [
+      { id: `kakaotalk:${shared}`, source: 'kakaotalk', sourceRef: shared, title: '카카오톡 후보', personaIds: [], category: 'other', estimateMinutes: 15, status: 'pending_review' },
+      { id: `kakaowork:${shared}`, source: 'kakaowork', sourceRef: shared, title: '카카오워크 후보', personaIds: [], category: 'other', estimateMinutes: 15, status: 'pending_review' },
+    ]
+
+    await database.questCandidates.bulkAdd(candidates)
+
+    await expect(database.questCandidates.count()).resolves.toBe(2)
+  })
 })
