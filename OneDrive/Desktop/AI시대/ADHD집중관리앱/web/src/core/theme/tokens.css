@@ -1,15 +1,16 @@
 :root {
-  --color-bg: #f7f7fa;
-  --color-surface: #ffffff;
-  --color-sunken: #f0eff4;
-  --color-text: #24222d;
+  --color-bg: #F4F3F1;
+  --color-surface: #FFFFFF;
+  --color-sunken: #E9E4F3;
+  --color-text: #242329;
   --color-muted: #6d6878;
-  --color-accent: #6758d1;
-  --color-accent-soft: #eeebff;
-  --color-line: #e4e2ea;
-  --color-glass: rgb(255 255 255 / 96%);
-  --color-glass-line: #e8e6ed;
-  --shadow-card-3d: 0 8px 24px rgb(41 35 65 / 7%);
+  --color-accent: #6E5AA8;
+  --color-accent-soft: #E9E4F3;
+  --color-quest: #292735;
+  --color-line: #dedbd7;
+  --color-glass: #FFFFFF;
+  --color-glass-line: #dedbd7;
+  --shadow-card-3d: 0 6px 18px rgb(41 39 53 / 7%);
   --shadow-control-3d: 0 4px 12px rgb(69 54 126 / 12%);
   --glow-lavender: radial-gradient(circle, rgb(191 172 255 / 42%), transparent 68%);
   --pet-lilac: #9180d7;
@@ -19,7 +20,7 @@
   --pet-ink: #392d49;
   --pet-shadow: rgb(83 62 116 / 18%);
   --reward-gold: #8b5a00;
-  --radius-card: 18px;
+  --radius-card: 16px;
   --radius-control: 14px;
   --space-page: 16px;
   --tap-min: 48px;
