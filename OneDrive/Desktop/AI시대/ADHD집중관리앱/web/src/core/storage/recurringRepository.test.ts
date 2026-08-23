@@ -84,4 +84,37 @@ describe('recurring repository', () => {
     ])
     expect(await repository.ensureForDay('2026-08-25')).toHaveLength(1)
   })
+
+  it('returns a regular weekly instance and its carry-forward together on the next due Monday', async () => {
+    const repository = setup()
+    await database!.recurringTemplates.put(dailyTemplate({
+      id: 'weekly-review', cadence: { kind: 'weekly', weekdays: [1] }, carryForward: true,
+    }))
+    await database!.recurringInstances.put({
+      id: 'weekly-review@2026-08-17', templateId: 'weekly-review', periodKey: '2026-08-17', scheduledDay: '2026-08-17', status: 'missed',
+    })
+
+    await expect(repository.ensureForDay('2026-08-24')).resolves.toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'weekly-review@2026-08-24', scheduledDay: '2026-08-24' }),
+      expect.objectContaining({ id: 'weekly-review@2026-08-17@carry@2026-08-24', scheduledDay: '2026-08-24' }),
+    ]))
+    expect(await repository.ensureForDay('2026-08-24')).toHaveLength(2)
+  })
+
+  it('does not automatically carry an already carried original into a second consecutive day', async () => {
+    const repository = setup()
+    await database!.recurringTemplates.put(dailyTemplate({
+      id: 'weekly-review', cadence: { kind: 'weekly', weekdays: [1] }, carryForward: true,
+    }))
+    await database!.recurringInstances.put({
+      id: 'weekly-review@2026-08-17', templateId: 'weekly-review', periodKey: '2026-08-17', scheduledDay: '2026-08-17', status: 'missed',
+    })
+
+    await expect(repository.ensureForDay('2026-08-25')).resolves.toEqual([
+      expect.objectContaining({ id: 'weekly-review@2026-08-17@carry@2026-08-25', scheduledDay: '2026-08-25' }),
+    ])
+    await expect(repository.ensureForDay('2026-08-26')).resolves.toEqual([])
+    await expect(database!.recurringInstances.get('weekly-review@2026-08-17@carry@2026-08-25')).resolves.toMatchObject({ status: 'missed' })
+    expect(await database!.recurringInstances.count()).toBe(2)
+  })
 })

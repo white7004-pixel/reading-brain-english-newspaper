@@ -103,6 +103,19 @@ describe('recurrence policy', () => {
     expect(materializeCarryForward(missed, template({ id: 'weekly-review' }), '2026-08-24')).toBeNull()
   })
 
+  it('does not allow a carry-forward instance to become a nested carry-forward source', () => {
+    const priorCarry = instance({
+      id: 'weekly-review@2026-08-17@carry@2026-08-24',
+      templateId: 'weekly-review',
+      periodKey: '2026-08-17',
+      scheduledDay: '2026-08-24',
+      status: 'missed',
+    })
+    const enabled = template({ id: 'weekly-review', cadence: { kind: 'weekly', weekdays: [1] }, carryForward: true })
+
+    expect(materializeCarryForward(priorCarry, enabled, '2026-08-25')).toBeNull()
+  })
+
   it('creates one weekly count-based instance for a period instead of one instance per target', () => {
     const meetings = template({
       id: 'teacher-meetings',

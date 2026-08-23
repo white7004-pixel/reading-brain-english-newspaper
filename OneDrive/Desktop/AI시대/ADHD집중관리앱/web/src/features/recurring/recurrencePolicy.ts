@@ -66,6 +66,10 @@ function duePeriod(template: RecurringTaskTemplate, day: string) {
   return scheduledDay === day ? month : null
 }
 
+export function isCarryForwardInstance(instance: RecurringTaskInstance) {
+  return instance.id.includes('@carry@')
+}
+
 export function generateInstances(
   templates: RecurringTaskTemplate[],
   existing: RecurringTaskInstance[],
@@ -100,7 +104,7 @@ export function materializeCarryForward(
   template: RecurringTaskTemplate,
   today: string,
 ): RecurringTaskInstance | null {
-  if (!template.carryForward) return null
+  if (!template.carryForward || isCarryForwardInstance(instance)) return null
   return {
     id: `${instance.id}@carry@${today}`,
     templateId: template.id,

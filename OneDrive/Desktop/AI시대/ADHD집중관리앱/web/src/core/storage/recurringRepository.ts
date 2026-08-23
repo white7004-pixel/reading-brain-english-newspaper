@@ -1,7 +1,7 @@
 import type { RecurringTaskInstance } from '../model/recurrence'
 import type { MonggleDatabase } from './database'
 import { DEFAULT_RECURRING_TEMPLATES } from '../../features/recurring/defaultTemplates'
-import { closePastInstances, generateInstances, materializeCarryForward } from '../../features/recurring/recurrencePolicy'
+import { closePastInstances, generateInstances, isCarryForwardInstance, materializeCarryForward } from '../../features/recurring/recurrencePolicy'
 
 function changedRecords(
   previous: Map<string, RecurringTaskInstance>,
@@ -37,11 +37,16 @@ export function createRecurringRepository(database: MonggleDatabase) {
 
         for (const template of templates) {
           if (template.cadence.kind === 'daily') continue
-          if ([...records.values()].some((instance) => instance.templateId === template.id && instance.scheduledDay === day)) continue
           const latestMissed = [...records.values()]
-            .filter((instance) => instance.templateId === template.id && instance.status === 'missed' && instance.scheduledDay < day)
+            .filter((instance) => (
+              instance.templateId === template.id
+              && instance.status === 'missed'
+              && instance.scheduledDay < day
+              && !isCarryForwardInstance(instance)
+            ))
             .sort((a, b) => b.scheduledDay.localeCompare(a.scheduledDay))[0]
           if (!latestMissed) continue
+          if ([...records.values()].some((instance) => instance.id.startsWith(`${latestMissed.id}@carry@`))) continue
           const carryForward = materializeCarryForward(latestMissed, template, day)
           if (carryForward) records.set(carryForward.id, carryForward)
         }
