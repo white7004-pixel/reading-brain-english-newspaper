@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Task } from '../../core/model/task'
+import type { Persona } from '../../core/model/persona'
+import type { QuestCandidate } from '../../core/model/questCandidate'
+import type { RecurringTaskInstance, RecurringTaskTemplate } from '../../core/model/recurrence'
 import { createDatabase } from '../../core/storage/database'
 import { createTaskRepository } from '../../core/storage/taskRepository'
 import { buildTimeline } from './buildTimeline'
@@ -14,6 +17,9 @@ import { buildWidgetSnapshot, type WidgetSnapshot } from '../widgets/widgetSnaps
 import type { Category } from '../../core/model/category'
 import { DEFAULT_CATEGORIES } from '../../core/model/category'
 import { createCategoryRepository } from '../../core/storage/categoryRepository'
+import { createPersonaRepository } from '../../core/storage/personaRepository'
+import { createRecurringRepository } from '../../core/storage/recurringRepository'
+import { createQuestCandidateRepository } from '../../core/storage/questCandidateRepository'
 import { PriorityTaskList } from './PriorityTaskList'
 import { MissionCommitmentReview } from '../missions/MissionCommitmentReview'
 import { CurrentMissionCard } from '../missions/CurrentMissionCard'
@@ -21,17 +27,14 @@ import { FocusScreen } from '../focus/FocusScreen'
 import { taskCheckInRepository } from '../nudges/taskCheckIn'
 import { reschedulePlan, type RescueDecision } from '../rescue/reschedulePlan'
 import { appNow } from '../../core/time/appClock'
-import { TodayHeader } from './TodayHeader'
 import { UpcomingPreview } from './UpcomingPreview'
-import { InlineQuickAdd } from './InlineQuickAdd'
-import { PetHero } from '../pet/PetHero'
 import { RewardBurst } from '../pet/RewardBurst'
 import { createPetRepository } from '../pet/petRepository'
 import { calculateReward } from '../pet/rewardPolicy'
 import type { PetGameState, RewardEvent, RewardGrant } from '../pet/model'
-import { FeaturedQuest } from './FeaturedQuest'
-import { QuestList } from './QuestList'
 import { rewardOutbox } from './rewardOutbox'
+import { TodayDashboard } from './TodayDashboard'
+import { acceptCandidate as convertCandidateToTask } from '../inbox/candidatePolicy'
 
 export interface TodayDependencies {
   parse(input: string, now: Date): TaskDraft[]
@@ -48,12 +51,22 @@ export interface TodayDependencies {
   listPendingRewards(): RewardEvent[]
   savePendingReward(event: RewardEvent): void
   removePendingReward(eventId: string): void
+  ensurePersonas?(): Promise<Persona[]>
+  ensureRecurringTemplates?(): Promise<RecurringTaskTemplate[]>
+  ensureRecurringForDay?(day: string): Promise<RecurringTaskInstance[]>
+  listPendingCandidates?(): Promise<QuestCandidate[]>
+  completeRecurring?(instance: RecurringTaskInstance, completedAt: string): Promise<void>
+  acceptCandidate?(candidate: QuestCandidate): Promise<void>
+  dismissCandidate?(id: string): Promise<void>
 }
 
 const database = createDatabase()
 const taskRepository = createTaskRepository(database)
 const categoryRepository = createCategoryRepository(database)
 const petRepository = createPetRepository(database)
+const personaRepository = createPersonaRepository(database)
+const recurringRepository = createRecurringRepository(database)
+const candidateRepository = createQuestCandidateRepository(database)
 const defaultDependencies: TodayDependencies = {
   parse: parseTaskDrafts,
   saveMany: taskRepository.putMany,
@@ -77,6 +90,18 @@ const defaultDependencies: TodayDependencies = {
   listPendingRewards: rewardOutbox.list,
   savePendingReward: rewardOutbox.put,
   removePendingReward: rewardOutbox.remove,
+  ensurePersonas: personaRepository.ensureDefaults.bind(personaRepository),
+  ensureRecurringTemplates: recurringRepository.ensureDefaults.bind(recurringRepository),
+  ensureRecurringForDay: async (day) => {
+    await recurringRepository.ensureDefaults()
+    return recurringRepository.ensureForDay(day)
+  },
+  listPendingCandidates: candidateRepository.listPending,
+  completeRecurring: async (instance, completedAt) => {
+    await recurringRepository.complete(instance.id, completedAt)
+  },
+  acceptCandidate: candidateRepository.accept,
+  dismissCandidate: candidateRepository.dismiss,
 }
 
 function dayFor(date: Date) {
@@ -96,6 +121,12 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [petState, setPetState] = useState<PetGameState | null>(null)
   const [rewardGrant, setRewardGrant] = useState<RewardGrant | null>(null)
   const [rewardStatus, setRewardStatus] = useState('')
+  const [personas, setPersonas] = useState<Persona[]>([])
+  const [selectedPersonaId, setSelectedPersonaId] = useState<'all' | string>('all')
+  const [recurringTemplates, setRecurringTemplates] = useState<RecurringTaskTemplate[]>([])
+  const [recurringInstances, setRecurringInstances] = useState<RecurringTaskInstance[]>([])
+  const [pendingCandidates, setPendingCandidates] = useState<QuestCandidate[]>([])
+  const [dashboardError, setDashboardError] = useState('')
   const [tasksLoading, setTasksLoading] = useState(Boolean(dependencies.listForDay || dependencies.listRequiredOpen))
   const [taskLoadError, setTaskLoadError] = useState('')
   const [categoryLoadError, setCategoryLoadError] = useState('')
@@ -104,9 +135,6 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const [completingTaskIds, setCompletingTaskIds] = useState<ReadonlySet<string>>(new Set())
   const nowTask = useMemo(() => recommendForEnergy(tasks, energy, appNow()), [tasks, energy])
   const currentMission = useMemo(() => selectCurrentMission(tasks, appNow()), [tasks])
-  const featuredReward = useMemo(() => nowTask
-    ? calculateReward({ taskId: nowTask.id, focusMinutes: 0 }, () => 1)
-    : null, [nowTask])
 
   useEffect(() => {
     let active = true
@@ -114,6 +142,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     setTasksLoading(hasTaskLoaders)
     setTaskLoadError('')
     setCategoryLoadError('')
+    setDashboardError('')
     if (hasTaskLoaders) void Promise.all([
       dependencies.listForDay ? dependencies.listForDay(dayFor(appNow())) : Promise.resolve([]),
       dependencies.listRequiredOpen ? dependencies.listRequiredOpen() : Promise.resolve([]),
@@ -127,6 +156,29 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     if (dependencies.listCategories) void dependencies.listCategories()
       .then((saved) => { if (active) setCategories(saved) })
       .catch(() => { if (active) setCategoryLoadError('분류를 불러오지 못했어요') })
+    if (dependencies.ensurePersonas) void dependencies.ensurePersonas()
+      .then((saved) => { if (active) setPersonas(saved.filter((persona) => persona.status === 'active')) })
+      .catch(() => { if (active) setDashboardError('페르소나를 불러오지 못했어요') })
+    if (dependencies.ensureRecurringTemplates) {
+      const templatesPromise = dependencies.ensureRecurringTemplates()
+      void templatesPromise
+        .then(async (templates) => {
+          const instances = dependencies.ensureRecurringForDay
+            ? await dependencies.ensureRecurringForDay(dayFor(appNow()))
+            : []
+          if (!active) return
+          setRecurringTemplates(templates)
+          setRecurringInstances(instances)
+        })
+        .catch(() => { if (active) setDashboardError('반복 업무를 불러오지 못했어요') })
+    } else if (dependencies.ensureRecurringForDay) {
+      void dependencies.ensureRecurringForDay(dayFor(appNow()))
+        .then((instances) => { if (active) setRecurringInstances(instances) })
+        .catch(() => { if (active) setDashboardError('반복 업무를 불러오지 못했어요') })
+    }
+    if (dependencies.listPendingCandidates) void dependencies.listPendingCandidates()
+      .then((saved) => { if (active) setPendingCandidates(saved.filter((candidate) => candidate.status === 'pending_review')) })
+      .catch(() => { if (active) setDashboardError('외부 할 일을 불러오지 못했어요') })
     const recoverAllRewards = async () => {
       let state = await dependencies.recoverRewards()
       for (const event of dependencies.listPendingRewards()) {
@@ -150,6 +202,12 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       })
     return () => { active = false }
   }, [dependencies])
+
+  useEffect(() => {
+    if (selectedPersonaId !== 'all' && !personas.some((persona) => persona.id === selectedPersonaId && persona.status === 'active')) {
+      setSelectedPersonaId('all')
+    }
+  }, [personas, selectedPersonaId])
 
   const saveTasks = async (next: Task[]) => {
     await dependencies.saveMany(next)
@@ -248,6 +306,44 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     }
   }
 
+  const completeRecurring = async (instance: RecurringTaskInstance) => {
+    if (!dependencies.completeRecurring || instance.status !== 'open') return
+    const completedAt = appNow().toISOString()
+    setDashboardError('')
+    try {
+      await dependencies.completeRecurring(instance, completedAt)
+      setRecurringInstances((current) => current.map((item) => (
+        item.id === instance.id ? { ...item, status: 'completed', completedAt } : item
+      )))
+    } catch {
+      setDashboardError('반복 업무 완료를 저장하지 못했어요')
+    }
+  }
+
+  const acceptQuestCandidate = async (candidate: QuestCandidate) => {
+    if (!dependencies.acceptCandidate) return
+    setDashboardError('')
+    try {
+      const task = convertCandidateToTask(candidate, appNow())
+      await saveTasks([task])
+      await dependencies.acceptCandidate(candidate)
+      setPendingCandidates((current) => current.filter((item) => item.id !== candidate.id))
+    } catch {
+      setDashboardError('후보를 반영하지 못했어요. 내용을 유지했으니 다시 시도해 주세요.')
+    }
+  }
+
+  const dismissQuestCandidate = async (id: string) => {
+    if (!dependencies.dismissCandidate) return
+    setDashboardError('')
+    try {
+      await dependencies.dismissCandidate(id)
+      setPendingCandidates((current) => current.filter((candidate) => candidate.id !== id))
+    } catch {
+      setDashboardError('후보를 닫지 못했어요. 다시 시도해 주세요.')
+    }
+  }
+
   const rescheduleMission = (task: Task, decision: RescueDecision) => {
     const next = reschedulePlan([task], { [task.id]: decision }, appNow()).items[0]
     void saveTasks([next])
@@ -261,27 +357,40 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   if (focusMission) return <FocusScreen title={focusMission.title} taskId={focusMission.id} minutes={3} autoStart onComplete={({ elapsedMinutes }) => { void completeQuest(focusMission, elapsedMinutes); setFocusMission(null) }} onExit={() => setFocusMission(null)} />
 
   return <>
-    <TodayHeader date={appNow()} energy={energy} total={dashboardTasks.length} completed={completedCount} onEnergyChange={setEnergy} onAdd={() => {
-      setCaptureExpanded(true)
-      setPlanningExpanded(true)
-    }} />
-    {petState ? <div className="pet-home-status">
-      <PetHero state={petState} />
-      <p aria-label="몽글이 보유 보상"><span>경험치 {petState.xp}</span><span>코인 {petState.coins}</span></p>
-    </div> : <p className="pet-state-loading">몽글이를 깨우고 있어요…</p>}
-    {nowTask && featuredReward && <FeaturedQuest task={nowTask} reward={featuredReward} onStart={startMission} />}
-    <InlineQuickAdd inputRef={quickAddInputRef} onAdd={addSingleTask} />
-    {tasksLoading || taskLoadError ? <section className="quest-list" aria-label="오늘 할 일">
-      <div className="quest-list__heading"><h2>오늘의 퀘스트</h2></div>
-      <div className="quest-list__empty">
-        {tasksLoading
-          ? <strong role="status" aria-label="오늘 퀘스트 불러오는 중">오늘 퀘스트를 불러오는 중이에요…</strong>
-          : <strong>퀘스트를 표시할 수 없어요</strong>}
-      </div>
-    </section> : <QuestList tasks={dashboardTasks} completingTaskIds={completingTaskIds} onStart={startMission} onComplete={(task) => { void completeQuest(task) }} />}
-    {(taskLoadError || categoryLoadError) && <div className="today-load-error" role="alert">
+    <TodayDashboard
+      date={appNow()}
+      energy={energy}
+      total={dashboardTasks.length}
+      completed={completedCount}
+      personas={personas}
+      selectedPersonaId={selectedPersonaId}
+      tasks={dashboardTasks}
+      recurringTemplates={recurringTemplates}
+      recurringInstances={recurringInstances}
+      pendingCandidates={pendingCandidates}
+      petState={petState}
+      coachLine="지금 할 수 있는 가장 작은 행동부터 시작해 봐요."
+      completingTaskIds={completingTaskIds}
+      tasksLoading={tasksLoading}
+      taskLoadError={taskLoadError}
+      quickAddInputRef={quickAddInputRef}
+      onEnergyChange={setEnergy}
+      onSelectPersona={setSelectedPersonaId}
+      onCompleteRecurring={(instance) => { void completeRecurring(instance) }}
+      onStartQuest={startMission}
+      onCompleteQuest={(task) => { void completeQuest(task) }}
+      onAcceptCandidate={acceptQuestCandidate}
+      onDismissCandidate={dismissQuestCandidate}
+      onAddTask={addSingleTask}
+      onOpenTools={() => {
+        setCaptureExpanded(true)
+        setPlanningExpanded(true)
+      }}
+    />
+    {(taskLoadError || categoryLoadError || dashboardError) && <div className="today-load-error" role="alert">
       {taskLoadError && <span>{taskLoadError}</span>}
       {categoryLoadError && <span>{categoryLoadError}</span>}
+      {dashboardError && <span>{dashboardError}</span>}
     </div>}
     {rewardStatus && <p className="reward-status" role="status">{rewardStatus}</p>}
     {rewardGrant && <RewardBurst grant={rewardGrant} returnFocusRef={quickAddInputRef} onDismiss={() => setRewardGrant(null)} />}

@@ -56,6 +56,14 @@ export function createRecurringRepository(database: MonggleDatabase) {
         return [...records.values()].filter((instance) => instance.scheduledDay === day)
       })
     },
+
+    async complete(id: string, completedAt: string) {
+      await database.transaction('rw', database.recurringInstances, async () => {
+        const instance = await database.recurringInstances.get(id)
+        if (!instance || instance.status !== 'open') return
+        await database.recurringInstances.update(id, { status: 'completed', completedAt })
+      })
+    },
   }
 }
 

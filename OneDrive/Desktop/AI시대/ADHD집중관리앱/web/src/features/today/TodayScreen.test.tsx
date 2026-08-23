@@ -7,6 +7,9 @@ import { DEFAULT_CATEGORIES } from '../../core/model/category'
 import { taskCheckInRepository } from '../nudges/taskCheckIn'
 import type { Task } from '../../core/model/task'
 import { initialPetGameState, type PetGameState } from '../pet/model'
+import type { Persona } from '../../core/model/persona'
+import type { QuestCandidate } from '../../core/model/questCandidate'
+import type { RecurringTaskInstance, RecurringTaskTemplate } from '../../core/model/recurrence'
 
 function dependencies(): TodayDependencies {
   const pendingRewards = new Map<string, Parameters<TodayDependencies['savePendingReward']>[0]>()
@@ -57,7 +60,7 @@ it('shows one quick-add row and rotates its example after submission', async () 
   ]))
   expect(input).toHaveValue('')
   expect(input).toHaveAttribute('placeholder', '예: 10분 안에 할 수 있는 일')
-  expect(within(screen.getByRole('region', { name: '오늘 할 일' })).getByText('우유 사기')).toBeVisible()
+  expect(screen.getByRole('region', { name: '메인 퀘스트' })).toHaveTextContent('우유 사기')
 })
 
 it('keeps quick-add text and its suggestion when persistence fails, then allows retry', async () => {
@@ -168,7 +171,7 @@ it('recovers a completion reward from the durable outbox when ledger recording i
 
   await userEvent.click(await screen.findByRole('button', { name: '메일 답장하기 완료' }))
 
-  expect(await screen.findByRole('status')).toBeVisible()
+  expect(await screen.findByText('퀘스트는 완료했지만 보상을 저장하지 못했어요')).toBeVisible()
   expect(deps.savePendingReward).toHaveBeenCalledOnce()
   expect(deps.listPendingRewards()).toHaveLength(1)
   expect(deps.settleReward).not.toHaveBeenCalled()
@@ -247,7 +250,7 @@ it('keeps a completed task and explains that a recorded reward will recover late
 
   await userEvent.click(await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' }))
 
-  expect(await screen.findByRole('status')).toHaveTextContent('보상은 다음 실행에서 다시 받을 수 있어요')
+  expect(await screen.findByText('보상은 다음 실행에서 다시 받을 수 있어요')).toBeVisible()
   expect(screen.getByRole('button', { name: '메일 한 통 답장하기 완료됨' })).toBePressed()
   expect(deps.recordReward).toHaveBeenCalledOnce()
 })
@@ -317,19 +320,20 @@ it('shows no more than two upcoming scheduled tasks', async () => {
   expect(await screen.findAllByTestId('upcoming-item')).toHaveLength(2)
 })
 
-it('puts the pet and recommended quest before quick add and the quest list', async () => {
+it('puts the coach and main quest before quick add and the remaining quest list', async () => {
   const deps = dependencies()
   deps.listForDay = vi.fn().mockResolvedValue([
     { id: 'open', title: '수학 숙제', day: '2026-08-20', status: 'open', priority: 1, estimateMinutes: 20, category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z' },
     { id: 'done', title: '물 마시기', day: '2026-08-20', status: 'completed', priority: 2, estimateMinutes: 5, category: 'life', source: 'manual', createdAt: '2026-08-20T07:00:00Z', updatedAt: '2026-08-20T07:10:00Z' },
   ])
   render(<TodayScreen dependencies={deps} />)
-  const pet = await screen.findByRole('region', { name: '몽글이' })
-  const featured = screen.getByRole('region', { name: '추천 퀘스트' })
+  const pet = await screen.findByRole('region', { name: '3D 몽글 코치' })
+  const featured = screen.getByRole('region', { name: '메인 퀘스트' })
   const capture = screen.getByRole('region', { name: '빠른 할 일 입력' })
   const list = screen.getByRole('region', { name: '오늘 할 일' })
   expect(screen.getByText('1개 완료 · 2개 중')).toBeVisible()
-  expect(within(list).getByRole('button', { name: '수학 숙제 지금 하기' })).toBeVisible()
+  expect(featured).toHaveTextContent('수학 숙제')
+  expect(within(list).queryByText('수학 숙제')).not.toBeInTheDocument()
   expect(pet.compareDocumentPosition(featured) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   expect(featured.compareDocumentPosition(capture) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   expect(capture.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
@@ -343,7 +347,7 @@ it('does not reserve a large upcoming section when there are no scheduled tasks'
     category: 'study', source: 'manual', createdAt: '2026-08-20T08:00:00Z', updatedAt: '2026-08-20T08:00:00Z',
   }])
   render(<TodayScreen dependencies={deps} />)
-  await screen.findByRole('button', { name: '책 읽기 지금 하기' })
+  expect(await screen.findByRole('region', { name: '메인 퀘스트' })).toHaveTextContent('책 읽기')
   expect(screen.queryByRole('region', { name: '다음 일정' })).not.toBeInTheDocument()
 })
 
@@ -404,4 +408,106 @@ it('opens a reschedule path and persists the selected recovery action', async ()
   await userEvent.click(screen.getByRole('button', { name: '5분으로 줄이기' }))
 
   expect(deps.saveMany).toHaveBeenCalledWith([expect.objectContaining({ id: 'required', estimateMinutes: 5, required: true })])
+})
+
+const activePersonas: Persona[] = [
+  { id: 'director', name: '원장·경영자', icon: '🏢', color: '#849A8C', kind: 'default', status: 'active', order: 0, classificationKeywords: [] },
+  { id: 'personal', name: '개인', icon: '🌿', color: '#9A9A82', kind: 'default', status: 'active', order: 1, classificationKeywords: [] },
+]
+const recurringTemplate: RecurringTaskTemplate = {
+  id: 'daily-review', title: '오늘 일정 확인', personaIds: ['director'], category: 'operations',
+  cadence: { kind: 'daily' }, targetCount: 1, estimateMinutes: 5, carryForward: false, active: true,
+}
+const recurringInstance: RecurringTaskInstance = {
+  id: 'daily-review@2026-08-23', templateId: 'daily-review', periodKey: '2026-08-23',
+  scheduledDay: '2026-08-23', status: 'open',
+}
+const pendingCandidate: QuestCandidate = {
+  id: 'kakaotalk:message-1', source: 'kakaotalk', sourceRef: 'message-1', title: '상담 일정 확인',
+  personaIds: ['director'], category: 'counseling', estimateMinutes: 15, status: 'pending_review',
+}
+
+function dashboardDependencies() {
+  const deps = dependencies()
+  return Object.assign(deps, {
+    ensurePersonas: vi.fn().mockResolvedValue(activePersonas),
+    ensureRecurringTemplates: vi.fn().mockResolvedValue([recurringTemplate]),
+    ensureRecurringForDay: vi.fn().mockResolvedValue([recurringInstance]),
+    listPendingCandidates: vi.fn().mockResolvedValue([pendingCandidate]),
+    completeRecurring: vi.fn().mockResolvedValue(undefined),
+    acceptCandidate: vi.fn().mockResolvedValue(undefined),
+    dismissCandidate: vi.fn().mockResolvedValue(undefined),
+  })
+}
+
+it('loads persona, recurring, and pending candidate repositories for Today', async () => {
+  const deps = dashboardDependencies()
+  render(<TodayScreen dependencies={deps} />)
+
+  expect(await screen.findByRole('region', { name: '페르소나 선택' })).toBeVisible()
+  expect(screen.getByText('오늘 일정 확인')).toBeVisible()
+  expect(screen.getByDisplayValue('상담 일정 확인')).toBeVisible()
+  expect(deps.ensurePersonas).toHaveBeenCalledOnce()
+  expect(deps.ensureRecurringTemplates).toHaveBeenCalledOnce()
+  expect(deps.ensureRecurringForDay).toHaveBeenCalledWith('2026-08-23')
+  expect(deps.listPendingCandidates).toHaveBeenCalledOnce()
+})
+
+it('completes a recurring instance without creating an ad-hoc task', async () => {
+  const deps = dashboardDependencies()
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('checkbox', { name: '오늘 일정 확인 반복 업무 완료' }))
+
+  expect(deps.completeRecurring).toHaveBeenCalledWith(recurringInstance, expect.any(String))
+  expect(deps.saveMany).not.toHaveBeenCalled()
+  expect(await screen.findByText('완료')).toBeVisible()
+})
+
+it('accepts a candidate by persisting the converted task before the terminal candidate state', async () => {
+  const deps = dashboardDependencies()
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '수락' }))
+
+  await waitFor(() => expect(deps.acceptCandidate).toHaveBeenCalledWith(expect.objectContaining({ id: pendingCandidate.id })))
+  expect(deps.saveMany).toHaveBeenCalledWith([expect.objectContaining({
+    title: '상담 일정 확인', source: 'kakaotalk', sourceRef: 'message-1', personaIds: ['director'],
+  })])
+  expect(vi.mocked(deps.saveMany).mock.invocationCallOrder[0]).toBeLessThan(deps.acceptCandidate.mock.invocationCallOrder[0])
+  expect(screen.queryByDisplayValue('상담 일정 확인')).not.toBeInTheDocument()
+})
+
+it('dismisses a pending candidate and removes it from the dashboard', async () => {
+  const deps = dashboardDependencies()
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '닫기' }))
+
+  await waitFor(() => expect(deps.dismissCandidate).toHaveBeenCalledWith(pendingCandidate.id))
+  expect(screen.queryByRole('region', { name: '외부에서 가져온 할 일' })).not.toBeInTheDocument()
+})
+
+it('keeps a candidate visible with an alert when candidate acceptance fails', async () => {
+  const deps = dashboardDependencies()
+  deps.acceptCandidate.mockRejectedValue(new Error('candidate database unavailable'))
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '수락' }))
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('후보를 반영하지 못했어요')
+  expect(screen.getByDisplayValue('상담 일정 확인')).toBeVisible()
+})
+
+it('resets an unavailable selected persona to all', async () => {
+  const first = dashboardDependencies()
+  const view = render(<TodayScreen dependencies={first} />)
+  await userEvent.click(await screen.findByRole('button', { name: /원장·경영자/ }))
+  expect(screen.getByRole('button', { name: /원장·경영자/ })).toHaveAttribute('aria-pressed', 'true')
+
+  const next = dashboardDependencies()
+  next.ensurePersonas.mockResolvedValue([activePersonas[1]])
+  view.rerender(<TodayScreen dependencies={next} />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: /전체/ })).toHaveAttribute('aria-pressed', 'true'))
 })

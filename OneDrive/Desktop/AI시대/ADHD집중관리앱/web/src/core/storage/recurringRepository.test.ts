@@ -117,4 +117,20 @@ describe('recurring repository', () => {
     await expect(database!.recurringInstances.get('weekly-review@2026-08-17@carry@2026-08-25')).resolves.toMatchObject({ status: 'missed' })
     expect(await database!.recurringInstances.count()).toBe(2)
   })
+
+  it('completes the recurring instance itself with the supplied timestamp', async () => {
+    const repository = setup()
+    const open = {
+      id: 'daily-review@2026-08-23', templateId: 'daily-review', periodKey: '2026-08-23',
+      scheduledDay: '2026-08-23', status: 'open' as const,
+    }
+    await database!.recurringInstances.put(open)
+
+    await repository.complete(open.id, '2026-08-23T01:00:00.000Z')
+
+    await expect(database!.recurringInstances.get(open.id)).resolves.toMatchObject({
+      status: 'completed',
+      completedAt: '2026-08-23T01:00:00.000Z',
+    })
+  })
 })
