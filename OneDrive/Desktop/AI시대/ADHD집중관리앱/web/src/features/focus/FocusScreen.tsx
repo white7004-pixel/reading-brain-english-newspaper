@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { breakIntoSteps } from './taskBreakdown'
 import { emitCompanionEvent } from '../companion/companionEvents'
 import { extendTimer, remainingSeconds, startTimer, type FocusTimerState } from './focusTimer'
@@ -12,18 +12,29 @@ export function FocusScreen({ title, minutes, taskId, autoStart = false, onCompl
   minutes: number
   taskId?: string
   autoStart?: boolean
-  onComplete?: () => void
+  onComplete?: (result: { elapsedMinutes: number }) => void
   onExit?: () => void
 }) {
   const [seconds, setSeconds] = useState(minutes * 60)
   const [timer, setTimer] = useState<FocusTimerState | null>(() => autoStart ? startTimer(taskId ?? title, minutes) : null)
+  const completionReportedRef = useRef(false)
   const steps = useMemo(() => breakIntoSteps(title), [title])
+  const reportCompletion = (remaining: number) => {
+    if (completionReportedRef.current) return
+    completionReportedRef.current = true
+    const elapsedMinutes = Math.max(minutes, Math.floor((minutes * 60 - remaining) / 60))
+    emitCompanionEvent('task_completed')
+    onComplete?.({ elapsedMinutes })
+  }
   useEffect(() => {
     if (!timer) return
     const tick = () => {
       const remaining = remainingSeconds(timer)
       setSeconds(remaining)
-      if (remaining === 0) setTimer(null)
+      if (remaining === 0) {
+        setTimer(null)
+        reportCompletion(remaining)
+      }
     }
     tick()
     const interval = window.setInterval(tick, 1_000)
@@ -47,7 +58,7 @@ export function FocusScreen({ title, minutes, taskId, autoStart = false, onCompl
     <div className="focus-actions">
       <button className="primary" onClick={start}>{timer ? '일시정지' : '시작'}</button>
       <button onClick={() => timer ? setTimer(extendTimer(timer, 5)) : setSeconds((value) => value + 300)}>5분 추가</button>
-      <button onClick={() => { setTimer(null); emitCompanionEvent('task_completed'); onComplete?.() }}>완료</button>
+      <button onClick={() => { setTimer(null); reportCompletion(seconds) }}>완료</button>
       {onExit && <button onClick={onExit}>집중 나가기</button>}
     </div>
   </section>

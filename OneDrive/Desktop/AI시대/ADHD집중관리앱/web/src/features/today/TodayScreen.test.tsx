@@ -362,6 +362,20 @@ it('starts a required mission in a real three-minute focus session', async () =>
   expect(deps.saveMany).toHaveBeenCalledWith([expect.objectContaining({ id: 'required', status: 'active' })])
 })
 
+it('uses completed focus minutes for the three-minute quest reward', async () => {
+  const deps = dependencies()
+  deps.listRequiredOpen = vi.fn().mockResolvedValue([requiredTask])
+  render(<TodayScreen dependencies={deps} />)
+
+  await userEvent.click(await screen.findByRole('button', { name: '3분만 시작' }))
+  await userEvent.click(await screen.findByRole('button', { name: '완료' }))
+
+  expect(deps.recordReward).toHaveBeenCalledWith(expect.objectContaining({
+    focusMinutes: 3,
+    grant: { xp: 15, coins: 7, food: expect.any(Number), hearts: 1 },
+  }))
+})
+
 it('persists a five-minute mission delay for the existing quiet-hour-aware nudge flow', async () => {
   taskCheckInRepository.clear()
   const deps = dependencies()

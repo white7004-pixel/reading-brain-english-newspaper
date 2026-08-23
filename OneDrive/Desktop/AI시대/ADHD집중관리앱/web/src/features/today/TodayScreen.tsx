@@ -257,7 +257,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
   const dashboardTasks = tasks.filter((task) => task.status !== 'canceled' && task.status !== 'deferred')
   const completedCount = dashboardTasks.filter((task) => task.status === 'completed').length
 
-  if (focusMission) return <FocusScreen title={focusMission.title} taskId={focusMission.id} minutes={3} autoStart onComplete={() => { void completeQuest(focusMission, 3); setFocusMission(null) }} onExit={() => setFocusMission(null)} />
+  if (focusMission) return <FocusScreen title={focusMission.title} taskId={focusMission.id} minutes={3} autoStart onComplete={({ elapsedMinutes }) => { void completeQuest(focusMission, elapsedMinutes); setFocusMission(null) }} onExit={() => setFocusMission(null)} />
 
   return <>
     <TodayHeader date={appNow()} energy={energy} total={dashboardTasks.length} completed={completedCount} onEnergyChange={setEnergy} onAdd={() => {
