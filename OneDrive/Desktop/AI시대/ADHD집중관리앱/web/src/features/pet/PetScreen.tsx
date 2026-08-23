@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { database } from '../../core/storage/database'
+import { createDatabase } from '../../core/storage/database'
 import type { PetGameState } from './model'
 import { createPetRepository } from './petRepository'
 import { PetRoom } from './PetRoom'
@@ -11,7 +11,7 @@ export interface PetScreenDependencies {
   equipItem(itemId: string): Promise<PetGameState>
 }
 
-const repository = createPetRepository(database)
+const repository = createPetRepository(createDatabase())
 const defaultDependencies: PetScreenDependencies = repository
 
 function itemActionName(item: (typeof ROOM_ITEMS)[number], state: PetGameState) {
