@@ -112,4 +112,31 @@ describe('PersonaManager', () => {
     expect(screen.getByRole('button', { name: '마케터 수정' })).toBeInTheDocument()
     expect(within(screen.getByRole('region', { name: '원장·운영자 편집' })).getByLabelText('페르소나 이름')).toHaveValue('운영 책임자')
   })
+
+  it('uses the repository tie-breaker when restoring an archived persona with an equal order', async () => {
+    const user = userEvent.setup()
+    const repo = repository()
+    const counseling = { ...director, id: 'counseling', name: '상담 관리자', icon: '💬', order: 1, status: 'archived' as const, classificationKeywords: ['상담'] }
+    render(<PersonaManager personas={[{ ...director, order: 1 }, counseling]} repository={repo} />)
+
+    await user.click(within(screen.getByRole('region', { name: '보관된 페르소나' })).getByRole('button', { name: '상담 관리자 복원' }))
+
+    expect(screen.getAllByRole('button', { name: /수정$/ }).map((button) => button.getAttribute('aria-label'))).toEqual([
+      '상담 관리자 수정', '원장·경영자 수정',
+    ])
+  })
+
+  it('does not let a stale cloned personas prop erase an optimistic archive', async () => {
+    const user = userEvent.setup()
+    const repo = repository()
+    const marketing = { ...director, id: 'marketing', name: '마케터', icon: '📣', order: 1, classificationKeywords: ['마케팅'] }
+    const initial = [director, marketing]
+    const { rerender } = render(<PersonaManager personas={initial} repository={repo} />)
+
+    await user.click(screen.getByRole('button', { name: '원장·경영자 보관' }))
+    rerender(<PersonaManager personas={initial.map((persona) => ({ ...persona }))} repository={repo} />)
+
+    expect(within(screen.getByRole('region', { name: '보관된 페르소나' })).getByRole('button', { name: '원장·경영자 복원' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '원장·경영자 보관' })).not.toBeInTheDocument()
+  })
 })

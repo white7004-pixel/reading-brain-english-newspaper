@@ -24,7 +24,7 @@ export const DEFAULT_PERSONAS: Persona[] = [
   },
 ]
 
-function byOrder(a: Persona, b: Persona) {
+export function comparePersonasByOrder(a: Persona, b: Persona) {
   return a.order - b.order || a.id.localeCompare(b.id)
 }
 
@@ -39,7 +39,7 @@ export function createPersonaRepository(database: MonggleDatabase) {
       return this.listActive()
     },
     async listActive() {
-      return (await database.personas.where('status').equals('active').toArray()).sort(byOrder)
+      return (await database.personas.where('status').equals('active').toArray()).sort(comparePersonasByOrder)
     },
     async save(persona: Persona) {
       await database.personas.put(persona)
@@ -51,7 +51,7 @@ export function createPersonaRepository(database: MonggleDatabase) {
       await database.personas.update(id, { status: 'active' })
     },
     async reorder(ids: string[]) {
-      const current = (await database.personas.toArray()).sort(byOrder)
+      const current = (await database.personas.toArray()).sort(comparePersonasByOrder)
       const records = new Map(current.map((persona) => [persona.id, persona]))
       const requested = ids.flatMap((id) => {
         const persona = records.get(id)

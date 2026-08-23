@@ -61,4 +61,19 @@ describe('persona repository', () => {
       'education', 'marketing', 'counseling', 'personal', 'director',
     ])
   })
+
+  it('uses the ID tie-breaker after restoring an archived persona with an equal order', async () => {
+    const personas = setup()
+    await personas.ensureDefaults()
+    const director = await database!.personas.get('director')
+    expect(director).toBeDefined()
+
+    await personas.archive('director')
+    await personas.save({ ...director!, status: 'archived', order: 1 })
+    await personas.restore('director')
+
+    expect((await personas.listActive()).map((persona) => persona.id)).toEqual([
+      'counseling', 'director', 'education', 'marketing', 'personal',
+    ])
+  })
 })

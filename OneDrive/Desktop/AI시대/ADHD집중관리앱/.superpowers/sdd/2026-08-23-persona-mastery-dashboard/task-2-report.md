@@ -56,3 +56,16 @@ DONE
 - RED: `npm test -- --run src/core/storage/personaRepository.test.ts src/features/personas/PersonaManager.test.tsx` — expected failures: sparse-order creation saved order `1` instead of `2`; restored order put the archived persona first; rerender did not show the newly supplied marketing persona.
 - GREEN: `npm test -- --run src/core/storage/personaRepository.test.ts src/features/personas/PersonaManager.test.tsx` — PASS: 2 files, 8 tests.
 - Build: `npm run build` — PASS: TypeScript build and Vite production bundle completed.
+
+## Fix round 2/5
+
+### Findings addressed
+
+- Exported the repository's deterministic `comparePersonasByOrder` comparator and use it for every manager sort, including active and archived displays.
+- Replaced unconditional prop copying with semantic reconciliation. Unchanged cloned props are ignored; changed incoming records update local state, while local optimistic records survive when the incoming version still matches the prior external snapshot. Acknowledged or genuinely changed optimistic records become authoritative.
+
+### Regression evidence
+
+- RED: `npm test -- --run src/core/storage/personaRepository.test.ts src/features/personas/PersonaManager.test.tsx` — expected failures: the manager restored equal-order records in insertion order and a stale cloned prop removed the archived local record. The repository equal-order reload test passed, confirming the mismatch was manager-only.
+- GREEN: `npm test -- --run src/core/storage/personaRepository.test.ts src/features/personas/PersonaManager.test.tsx` — PASS: 2 files, 11 tests.
+- Build: `npm run build` — PASS: TypeScript build and Vite production bundle completed.

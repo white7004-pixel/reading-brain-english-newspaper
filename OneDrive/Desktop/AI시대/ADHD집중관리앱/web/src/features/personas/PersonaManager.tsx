@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Persona } from '../../core/model/persona'
+import { comparePersonasByOrder } from '../../core/storage/personaRepository'
 
 export interface PersonaManagerRepository {
   save(persona: Persona): Promise<void>
@@ -27,6 +28,27 @@ function draftFor(persona: Persona): Draft {
   }
 }
 
+function sameList(a: string[] | undefined, b: string[] | undefined) {
+  const left = a ?? []
+  const right = b ?? []
+  return left.length === right.length && left.every((item, index) => item === right[index])
+}
+
+function samePersona(a: Persona, b: Persona) {
+  return a.id === b.id && a.name === b.name && a.icon === b.icon && a.color === b.color && a.kind === b.kind
+    && a.status === b.status && a.order === b.order && sameList(a.classificationKeywords, b.classificationKeywords)
+    && sameList(a.masteryLabels, b.masteryLabels)
+}
+
+function samePersonaSet(a: Persona[], b: Persona[]) {
+  if (a.length !== b.length) return false
+  const byId = new Map(a.map((persona) => [persona.id, persona]))
+  return b.every((persona) => {
+    const previous = byId.get(persona.id)
+    return previous !== undefined && samePersona(previous, persona)
+  })
+}
+
 function PersonaForm({ draft, onChange, onSubmit, submitLabel }: {
   draft: Draft
   onChange: (draft: Draft) => void
@@ -45,13 +67,33 @@ function PersonaForm({ draft, onChange, onSubmit, submitLabel }: {
 }
 
 export function PersonaManager({ personas, repository }: { personas: Persona[]; repository: PersonaManagerRepository }) {
-  const [items, setItems] = useState(() => [...personas].sort((a, b) => a.order - b.order))
+  const [items, setItems] = useState(() => [...personas].sort(comparePersonasByOrder))
   const [newDraft, setNewDraft] = useState<Draft>(emptyDraft)
   const [editing, setEditing] = useState<{ id: string; draft: Draft } | null>(null)
   const [error, setError] = useState('')
+  const previousPersonas = useRef(personas)
+  const optimistic = useRef(new Map<string, Persona>())
 
   useEffect(() => {
-    setItems([...personas].sort((a, b) => a.order - b.order))
+    const previous = previousPersonas.current
+    if (samePersonaSet(previous, personas)) return
+    const previousById = new Map(previous.map((persona) => [persona.id, persona]))
+    const incomingById = new Map(personas.map((persona) => [persona.id, persona]))
+    setItems((current) => {
+      const currentById = new Map(current.map((persona) => [persona.id, persona]))
+      const reconciled = personas.map((incoming) => {
+        const local = currentById.get(incoming.id)
+        const prior = previousById.get(incoming.id)
+        if (local && optimistic.current.has(incoming.id) && prior && samePersona(incoming, prior)) return local
+        if (optimistic.current.has(incoming.id)) optimistic.current.delete(incoming.id)
+        return incoming
+      })
+      for (const local of current) {
+        if (!incomingById.has(local.id) && optimistic.current.has(local.id)) reconciled.push(local)
+      }
+      return reconciled.sort(comparePersonasByOrder)
+    })
+    previousPersonas.current = personas
   }, [personas])
 
   const rejectDuplicate = (name: string, exceptId?: string) => {
@@ -73,6 +115,7 @@ export function PersonaManager({ personas, repository }: { personas: Persona[]; 
       classificationKeywords: splitList(newDraft.keywords), masteryLabels: splitList(newDraft.labels),
     }
     await repository.save(persona)
+    optimistic.current.set(persona.id, persona)
     setItems((current) => [...current, persona])
     setNewDraft(emptyDraft)
   })
@@ -87,11 +130,12 @@ export function PersonaManager({ personas, repository }: { personas: Persona[]; 
       classificationKeywords: splitList(editing.draft.keywords), masteryLabels: splitList(editing.draft.labels),
     }
     await repository.save(next)
+    optimistic.current.set(next.id, next)
     setItems((all) => all.map((item) => item.id === next.id ? next : item))
     setEditing(null)
   })
   const move = (id: string, direction: -1 | 1) => void apply(async () => {
-    const current = [...items].sort((a, b) => a.order - b.order)
+    const current = [...items].sort(comparePersonasByOrder)
     const active = current.filter((item) => item.status === 'active')
     const index = active.findIndex((item) => item.id === id)
     const target = index + direction
@@ -101,18 +145,30 @@ export function PersonaManager({ personas, repository }: { personas: Persona[]; 
     await repository.reorder(ids)
     const unlisted = current.filter((item) => !ids.includes(item.id))
     const order = new Map([...active, ...unlisted].map((item, position) => [item.id, position]))
-    setItems((all) => all.map((item) => ({ ...item, order: order.get(item.id) ?? item.order })))
+    setItems((all) => all.map((item) => {
+      const next = { ...item, order: order.get(item.id) ?? item.order }
+      optimistic.current.set(next.id, next)
+      return next
+    }))
   })
   const archive = (id: string) => void apply(async () => {
     await repository.archive(id)
-    setItems((all) => all.map((item) => item.id === id ? { ...item, status: 'archived' } : item))
+    setItems((all) => all.map((item) => {
+      const next = item.id === id ? { ...item, status: 'archived' as const } : item
+      if (item.id === id) optimistic.current.set(id, next)
+      return next
+    }))
   })
   const restore = (id: string) => void apply(async () => {
     await repository.restore(id)
-    setItems((all) => all.map((item) => item.id === id ? { ...item, status: 'active' } : item))
+    setItems((all) => all.map((item) => {
+      const next = item.id === id ? { ...item, status: 'active' as const } : item
+      if (item.id === id) optimistic.current.set(id, next)
+      return next
+    }))
   })
-  const active = items.filter((item) => item.status === 'active').sort((a, b) => a.order - b.order)
-  const archived = items.filter((item) => item.status === 'archived').sort((a, b) => a.order - b.order)
+  const active = items.filter((item) => item.status === 'active').sort(comparePersonasByOrder)
+  const archived = items.filter((item) => item.status === 'archived').sort(comparePersonasByOrder)
 
   return <section aria-labelledby="persona-manager-heading" className="persona-manager">
     <h3 id="persona-manager-heading">페르소나 관리</h3>
