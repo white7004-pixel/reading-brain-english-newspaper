@@ -97,20 +97,42 @@ describe('pet repository', () => {
     const { database, repository } = setup()
     await database.petGameStates.put({
       ...(await repository.loadState()),
-      ownedItemIds: ['hat-1'],
+      ownedItemIds: ['sunny-rug'],
     })
 
-    await repository.equipItem('hat-1')
-    await repository.equipItem('hat-1')
+    await repository.equipItem('sunny-rug')
+    await repository.equipItem('sunny-rug')
 
-    expect(await repository.loadState()).toMatchObject({ equippedItemIds: ['hat-1'] })
+    expect(await repository.loadState()).toMatchObject({ equippedItemIds: ['sunny-rug'] })
   })
 
   it('leaves equipped items unchanged when the item is not owned', async () => {
     const { repository } = setup()
 
-    await repository.equipItem('hat-1')
+    await expect(repository.equipItem('missing-item')).rejects.toThrow('Unknown room item: missing-item')
 
     expect(await repository.loadState()).toMatchObject({ equippedItemIds: [] })
+  })
+
+  it('buys a coin item once and equips it again without another charge', async () => {
+    const { database, repository } = setup()
+    await database.petGameStates.put({ ...(await repository.loadState()), coins: 50 })
+
+    await repository.equipItem('cloud-cushion')
+    await repository.equipItem('cloud-cushion')
+
+    expect(await repository.loadState()).toMatchObject({
+      coins: 30,
+      ownedItemIds: ['cloud-cushion'],
+      equippedItemIds: ['cloud-cushion'],
+    })
+  })
+
+  it('rejects premium previews and purchases without enough coins', async () => {
+    const { repository } = setup()
+
+    await expect(repository.equipItem('starlight-bed')).rejects.toThrow('Premium room item is not available: starlight-bed')
+    await expect(repository.equipItem('cloud-cushion')).rejects.toThrow('Not enough coins for room item: cloud-cushion')
+    expect(await repository.loadState()).toMatchObject({ coins: 0, ownedItemIds: [], equippedItemIds: [] })
   })
 })

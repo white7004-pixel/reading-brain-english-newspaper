@@ -111,3 +111,36 @@
   .reward-burst__confetti i { animation: none !important; transition: none !important; }
   .reward-burst__confetti { display: none; }
 }
+
+.pet-screen { padding-bottom: 110px; }
+.pet-room { position: relative; min-height: 300px; overflow: hidden; margin: 18px 0 12px; border: 1px solid var(--color-line); border-radius: 30px; background: linear-gradient(#f4ecff 0 68%, #e8d8be 68%); box-shadow: 0 16px 36px var(--pet-shadow); }
+.pet-room__window { position: absolute; top: 28px; right: 28px; width: 82px; height: 92px; border: 8px solid #fff9ed; border-radius: 44px 44px 12px 12px; background: linear-gradient(#bfe4ff, #fff7cf); box-shadow: inset 0 0 0 2px rgb(72 50 87 / 12%); }
+.pet-room__pet { position: absolute; z-index: 2; bottom: 5px; left: 50%; width: 170px; transform: translateX(-50%); }
+.pet-room__item { position: absolute; display: block; }
+.pet-room__item--rug { bottom: 17px; left: 18%; width: 64%; height: 44px; border-radius: 50%; background: #f4cfdc; }
+.pet-room__item--cushion { z-index: 3; right: 24px; bottom: 36px; width: 62px; height: 44px; border-radius: 50% 50% 45% 45%; background: #d9cef7; box-shadow: inset 0 -7px 0 rgb(82 62 116 / 8%); }
+.pet-room__item--plant { left: 25px; bottom: 38px; width: 52px; height: 58px; border-radius: 10px 10px 20px 20px; background: #dba882; }
+.pet-screen__stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.pet-screen__stats > * { padding: 8px 12px; border-radius: 999px; background: var(--color-sunken); color: var(--color-muted); font-size: 13px; }
+.pet-screen__stats strong { color: var(--color-text); }
+.pet-screen__feed { width: 100%; min-height: 52px; border: 0; border-radius: 16px; background: var(--pet-action); color: #fff; font-weight: 850; }
+.pet-screen__feed:disabled { background: var(--color-sunken); color: var(--color-muted); box-shadow: none; }
+.pet-screen h3 { margin: 28px 0 12px; font-size: 20px; }
+.pet-screen__status { padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--pet-pink) 14%, var(--color-surface)); color: var(--color-text); }
+.room-catalog { display: grid; gap: 10px; }
+.room-item { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 11px; padding: 12px; border: 1px solid var(--color-line); border-radius: 18px; background: var(--color-surface); }
+.room-item__preview { width: 42px; height: 42px; border-radius: 14px; background: var(--pet-lilac); }
+.room-item__preview--rug { height: 24px; border-radius: 50%; background: #f4cfdc; }
+.room-item__preview--cushion { border-radius: 50% 50% 42% 42%; background: #d9cef7; }
+.room-item__preview--plant { border-radius: 50% 50% 12px 12px; background: #9ac898; }
+.room-item__preview--bed { background: #e8d9ff; }
+.room-item__preview--lamp { border-radius: 50%; background: #ffe5a7; }
+.room-item div { display: grid; gap: 3px; }
+.room-item small { color: var(--color-muted); }
+.room-item button { min-height: 48px; max-width: 145px; padding: 8px 12px; border: 1px solid var(--color-line); border-radius: 14px; background: var(--color-sunken); color: var(--color-text); font-weight: 750; }
+.room-item button:disabled { color: var(--color-muted); opacity: .76; }
+
+@media (max-width: 359px) {
+  .room-item { grid-template-columns: 42px minmax(0, 1fr); }
+  .room-item button { grid-column: 1 / -1; width: 100%; max-width: none; }
+}

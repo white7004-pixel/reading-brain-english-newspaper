@@ -1,5 +1,6 @@
 import type { MonggleDatabase } from '../../core/storage/database'
 import { initialPetGameState, type PetGameState, type RewardEvent } from './model'
+import { findRoomItem } from './roomCatalog'
 
 const seoulDateFormatter = new Intl.DateTimeFormat('en-US', {
   timeZone: 'Asia/Seoul',
@@ -90,9 +91,20 @@ export function createPetRepository(database: MonggleDatabase) {
     async equipItem(itemId: string) {
       return database.transaction('rw', database.petGameStates, async () => {
         const state = await getOrCreateState()
-        if (!state.ownedItemIds.includes(itemId) || state.equippedItemIds.includes(itemId)) return state
+        const item = findRoomItem(itemId)
+        if (!item) throw new Error(`Unknown room item: ${itemId}`)
+        if (item.premium) throw new Error(`Premium room item is not available: ${itemId}`)
+        if (state.equippedItemIds.includes(itemId)) return state
 
-        const nextState: PetGameState = { ...state, equippedItemIds: [...state.equippedItemIds, itemId] }
+        const isOwned = state.ownedItemIds.includes(itemId)
+        if (!isOwned && state.coins < item.price) throw new Error(`Not enough coins for room item: ${itemId}`)
+
+        const nextState: PetGameState = {
+          ...state,
+          coins: isOwned ? state.coins : state.coins - item.price,
+          ownedItemIds: isOwned ? state.ownedItemIds : [...state.ownedItemIds, itemId],
+          equippedItemIds: [...state.equippedItemIds, itemId],
+        }
         await database.petGameStates.put(nextState)
         return nextState
       })
