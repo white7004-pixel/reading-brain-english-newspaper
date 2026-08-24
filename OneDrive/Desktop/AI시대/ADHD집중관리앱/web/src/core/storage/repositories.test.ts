@@ -95,6 +95,18 @@ describe('local repositories', () => {
     expect(await taskRepository.listForDay('2026-08-20')).toHaveLength(2)
   })
 
+  it('lists only tasks inside an inclusive day range', async () => {
+    const { taskRepository } = setup()
+    await taskRepository.putMany([
+      task({ id: 'before', day: '2026-07-31' }),
+      task({ id: 'first', day: '2026-08-01' }),
+      task({ id: 'last', day: '2026-08-31' }),
+      task({ id: 'after', day: '2026-09-01' }),
+    ])
+
+    expect((await taskRepository.listBetween('2026-08-01', '2026-08-31')).map(({ id }) => id)).toEqual(['first', 'last'])
+  })
+
   it('keeps an unfinished required mission in its original commitment', async () => {
     const { taskRepository } = setup()
     const committed = commitMission(task(), {

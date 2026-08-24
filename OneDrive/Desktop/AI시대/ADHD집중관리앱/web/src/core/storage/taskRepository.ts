@@ -20,6 +20,9 @@ export function createTaskRepository(database: MonggleDatabase) {
     async listForDay(day: string) {
       return (await database.tasks.where('day').equals(day).toArray()).map(normalize)
     },
+    async listBetween(startDay: string, endDay: string) {
+      return (await database.tasks.where('day').between(startDay, endDay, true, true).sortBy('day')).map(normalize)
+    },
     async listRequiredOpen() {
       return (await database.tasks.toArray())
         .map(normalize)

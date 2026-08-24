@@ -64,6 +64,14 @@ export function createRecurringRepository(database: MonggleDatabase) {
         await database.recurringInstances.update(id, { status: 'completed', completedAt })
       })
     },
+
+    listTemplates() {
+      return database.recurringTemplates.toArray()
+    },
+
+    listBetween(startDay: string, endDay: string) {
+      return database.recurringInstances.where('scheduledDay').between(startDay, endDay, true, true).sortBy('scheduledDay')
+    },
   }
 }
 
