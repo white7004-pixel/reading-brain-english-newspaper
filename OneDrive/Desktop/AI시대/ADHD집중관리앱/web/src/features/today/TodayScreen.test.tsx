@@ -10,10 +10,13 @@ import { initialPetGameState, type PetGameState } from '../pet/model'
 import type { Persona } from '../../core/model/persona'
 import type { QuestCandidate } from '../../core/model/questCandidate'
 import type { RecurringTaskInstance, RecurringTaskTemplate } from '../../core/model/recurrence'
+import type { CompletionResult } from './completeQuest'
+import { calculateReward } from '../pet/rewardPolicy'
 
 function dependencies(): TodayDependencies {
   const pendingRewards = new Map<string, Parameters<TodayDependencies['savePendingReward']>[0]>()
-  return {
+  const completionEvents = new Map<string, CompletionResult>()
+  const deps: TodayDependencies = {
     parse: vi.fn().mockReturnValue([
       { id: 'draft-1', title: '수학 숙제', day: '2026-08-20', priority: 2, categoryId: 'personal', estimateMinutes: 20, confidence: 0.9, needsReview: false },
       { id: 'draft-2', title: '병원 방문', day: '2026-08-20', priority: 2, categoryId: 'personal', estimateMinutes: 15, confidence: 0.9, needsReview: false },
@@ -23,6 +26,7 @@ function dependencies(): TodayDependencies {
     listCategories: vi.fn().mockResolvedValue(DEFAULT_CATEGORIES),
     addCategory: vi.fn(),
     loadPetState: vi.fn().mockResolvedValue({ ...initialPetGameState }),
+    completeQuest: vi.fn(),
     recordReward: vi.fn().mockResolvedValue(undefined),
     settleReward: vi.fn().mockResolvedValue({ ...initialPetGameState }),
     recoverRewards: vi.fn().mockResolvedValue({ ...initialPetGameState }),
@@ -30,6 +34,28 @@ function dependencies(): TodayDependencies {
     savePendingReward: vi.fn((event) => { pendingRewards.set(event.id, event) }),
     removePendingReward: vi.fn((eventId) => { pendingRewards.delete(eventId) }),
   }
+  deps.completeQuest = vi.fn(async (input) => {
+    const completedTask: Task = {
+      ...input.task,
+      status: 'completed',
+      completedAt: input.completedAt,
+      updatedAt: input.completedAt,
+    }
+    const eventId = `${completedTask.id}@${input.completedAt}`
+    const existing = completionEvents.get(eventId)
+    if (existing) return existing
+    const rewardEvent = {
+      id: eventId,
+      taskId: completedTask.id,
+      completedAt: input.completedAt,
+      focusMinutes: input.focusMinutes,
+      grant: calculateReward({ taskId: completedTask.id, focusMinutes: input.focusMinutes }, input.random),
+    }
+    const result: CompletionResult = { task: completedTask, rewardEvent, mastery: [] }
+    completionEvents.set(eventId, result)
+    return result
+  })
+  return deps
 }
 
 function openTask(id: string, title: string): Task {
@@ -99,15 +125,14 @@ it('moves from recommended quest to one-time pet reward after persisting the tas
   await userEvent.click(screen.getByRole('button', { name: '메일 한 통 답장하기 완료' }))
 
   expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toHaveTextContent('경험치 +10')
-  expect(deps.recordReward).toHaveBeenCalledWith(expect.objectContaining({
-    id: 'mail@2026-08-23T01:00:00.000Z',
-    taskId: 'mail',
+  expect(deps.completeQuest).toHaveBeenCalledWith(expect.objectContaining({
+    task: expect.objectContaining({ id: 'mail' }),
     completedAt: '2026-08-23T01:00:00.000Z',
-    grant: expect.objectContaining({ xp: 10, coins: 5 }),
+    focusMinutes: 0,
+    random: expect.any(Function),
   }))
-  expect(deps.settleReward).toHaveBeenCalledOnce()
-  expect(vi.mocked(deps.saveMany).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.recordReward).mock.invocationCallOrder[0])
-  expect(vi.mocked(deps.recordReward).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.settleReward).mock.invocationCallOrder[0])
+  expect(deps.settleReward).toHaveBeenCalledWith('mail@2026-08-23T01:00:00.000Z')
+  expect(vi.mocked(deps.completeQuest).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(deps.settleReward).mock.invocationCallOrder[0])
 })
 
 it('returns focus to quick add after dismissing a reward from Today', async () => {
@@ -123,10 +148,15 @@ it('returns focus to quick add after dismissing a reward from Today', async () =
 })
 
 it('locks a task immediately while its first completion is being persisted', async () => {
-  let releaseSave!: () => void
+  let releaseCompletion!: () => void
   const deps = dependencies()
   deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 한 통 답장하기')])
-  deps.saveMany = vi.fn(() => new Promise<void>((resolve) => { releaseSave = resolve }))
+  const complete = vi.mocked(deps.completeQuest).getMockImplementation()!
+  const completionGate = new Promise<void>((resolve) => { releaseCompletion = resolve })
+  deps.completeQuest = vi.fn(async (input) => {
+    await completionGate
+    return complete(input)
+  })
   deps.settleReward = vi.fn().mockResolvedValue({ ...initialPetGameState, xp: 10, coins: 5 })
   render(<TodayScreen dependencies={deps} />)
 
@@ -135,14 +165,15 @@ it('locks a task immediately while its first completion is being persisted', asy
   fireEvent.click(completion)
 
   expect(completion).toBeDisabled()
-  expect(deps.saveMany).toHaveBeenCalledOnce()
-  releaseSave()
+  expect(deps.completeQuest).toHaveBeenCalledOnce()
+  releaseCompletion()
   expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toBeVisible()
-  expect(deps.recordReward).toHaveBeenCalledOnce()
+  expect(screen.getAllByRole('dialog', { name: '퀘스트 완료 보상' })).toHaveLength(1)
+  expect(screen.getAllByRole('button', { name: '메일 한 통 답장하기 완료됨' })).toHaveLength(1)
+  expect(screen.getByText('1개 완료 · 1개 중')).toBeVisible()
   expect(deps.settleReward).toHaveBeenCalledOnce()
-  const [savedTask] = vi.mocked(deps.saveMany).mock.calls[0][0]
-  const [event] = vi.mocked(deps.recordReward).mock.calls[0]
-  expect(event.id).toBe(`${savedTask.id}@${savedTask.completedAt}`)
+  const [input] = vi.mocked(deps.completeQuest).mock.calls[0]
+  expect(deps.settleReward).toHaveBeenCalledWith(`${input.task.id}@${input.completedAt}`)
 })
 
 it('settles the reward when task storage succeeds but widget projection fails', async () => {
@@ -155,39 +186,47 @@ it('settles the reward when task storage succeeds but widget projection fails', 
   await userEvent.click(await screen.findByRole('button', { name: '메일 한 통 답장하기 완료' }))
 
   expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toBeVisible()
-  expect(deps.saveMany).toHaveBeenCalledOnce()
-  expect(deps.recordReward).toHaveBeenCalledOnce()
+  expect(deps.completeQuest).toHaveBeenCalledOnce()
   expect(deps.settleReward).toHaveBeenCalledOnce()
 })
 
-it('recovers a completion reward from the durable outbox when ledger recording initially fails', async () => {
+it('keeps a task open when atomic completion fails and allows a clean retry', async () => {
   const deps = dependencies()
   deps.listForDay = vi.fn().mockResolvedValue([openTask('mail', '메일 답장하기')])
-  deps.recordReward = vi.fn()
-    .mockRejectedValueOnce(new Error('ledger unavailable'))
-    .mockResolvedValueOnce(undefined)
+  const complete = deps.completeQuest
+  deps.completeQuest = vi.fn()
+    .mockRejectedValueOnce(new Error('transaction unavailable'))
+    .mockImplementationOnce(complete)
   deps.settleReward = vi.fn().mockResolvedValue({ ...initialPetGameState, xp: 10, coins: 5 })
-  const view = render(<TodayScreen dependencies={deps} />)
+  render(<TodayScreen dependencies={deps} />)
 
   await userEvent.click(await screen.findByRole('button', { name: '메일 답장하기 완료' }))
 
-  expect(await screen.findByText('퀘스트는 완료했지만 보상을 저장하지 못했어요')).toBeVisible()
-  expect(deps.savePendingReward).toHaveBeenCalledOnce()
-  expect(deps.listPendingRewards()).toHaveLength(1)
+  expect(await screen.findByText('완료를 저장하지 못했어요. 다시 시도해 주세요.')).toBeVisible()
+  expect(screen.getByRole('button', { name: '메일 답장하기 완료' })).not.toBePressed()
+  expect(deps.savePendingReward).not.toHaveBeenCalled()
   expect(deps.settleReward).not.toHaveBeenCalled()
 
-  view.rerender(<TodayScreen key="recover-outbox" dependencies={deps} />)
+  await userEvent.click(screen.getByRole('button', { name: '메일 답장하기 완료' }))
 
-  expect(await screen.findByText('경험치 10')).toBeVisible()
-  expect(deps.recordReward).toHaveBeenCalledTimes(2)
+  expect(await screen.findByRole('dialog', { name: '퀘스트 완료 보상' })).toBeVisible()
+  expect(deps.completeQuest).toHaveBeenCalledTimes(2)
   expect(deps.settleReward).toHaveBeenCalledOnce()
-  expect(deps.removePendingReward).toHaveBeenCalledOnce()
-  expect(deps.listPendingRewards()).toHaveLength(0)
 })
 
 it('does not increase visible totals when the same completion ID is rendered again', async () => {
   window.history.replaceState({}, '', '/?now=2026-08-23T01:00:00.000Z')
   const deps = dependencies()
+  const atomicComplete = deps.completeQuest
+  let completedOnce = false
+  deps.completeQuest = vi.fn(async (input) => {
+    const result = await atomicComplete(input)
+    if (completedOnce) {
+      return { ...result, rewardEvent: { ...result.rewardEvent, settledAt: '2026-08-23T01:00:01.000Z' } }
+    }
+    completedOnce = true
+    return result
+  })
   let petState = { ...initialPetGameState }
   const settledIds = new Set<string>()
   deps.recoverRewards = vi.fn(async () => petState)
@@ -210,7 +249,11 @@ it('does not increase visible totals when the same completion ID is rendered aga
 
   expect(await screen.findByText('경험치 10')).toBeVisible()
   expect(screen.getByText('코인 5')).toBeVisible()
-  expect(new Set(vi.mocked(deps.recordReward).mock.calls.map(([event]) => event.id))).toEqual(new Set(['mail@2026-08-23T01:00:00.000Z']))
+  expect(screen.queryByRole('dialog', { name: '퀘스트 완료 보상' })).not.toBeInTheDocument()
+  expect(deps.settleReward).toHaveBeenCalledOnce()
+  expect(deps.listPendingRewards()).toEqual([])
+  expect(new Set(vi.mocked(deps.completeQuest).mock.calls.map(([input]) => `${input.task.id}@${input.completedAt}`)))
+    .toEqual(new Set(['mail@2026-08-23T01:00:00.000Z']))
 })
 
 it('recovers pending rewards before showing current pet totals', async () => {
@@ -252,7 +295,7 @@ it('keeps a completed task and explains that a recorded reward will recover late
 
   expect(await screen.findByText('보상은 다음 실행에서 다시 받을 수 있어요')).toBeVisible()
   expect(screen.getByRole('button', { name: '메일 한 통 답장하기 완료됨' })).toBePressed()
-  expect(deps.recordReward).toHaveBeenCalledOnce()
+  expect(deps.completeQuest).toHaveBeenCalledOnce()
 })
 
 it('organizes input but does not save before review confirmation', async () => {
@@ -377,9 +420,8 @@ it('uses completed focus minutes for the three-minute quest reward', async () =>
   await userEvent.click(await screen.findByRole('button', { name: '3분만 시작' }))
   await userEvent.click(await screen.findByRole('button', { name: '완료' }))
 
-  expect(deps.recordReward).toHaveBeenCalledWith(expect.objectContaining({
+  expect(deps.completeQuest).toHaveBeenCalledWith(expect.objectContaining({
     focusMinutes: 3,
-    grant: { xp: 15, coins: 7, food: expect.any(Number), hearts: 1 },
   }))
 })
 
@@ -441,6 +483,7 @@ function dashboardDependencies() {
 }
 
 it('loads persona, recurring, and pending candidate repositories for Today', async () => {
+  window.history.replaceState({}, '', '/?now=2026-08-23T01:00:00.000Z')
   const deps = dashboardDependencies()
   render(<TodayScreen dependencies={deps} />)
 

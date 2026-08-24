@@ -30,9 +30,9 @@ import { appNow } from '../../core/time/appClock'
 import { UpcomingPreview } from './UpcomingPreview'
 import { RewardBurst } from '../pet/RewardBurst'
 import { createPetRepository } from '../pet/petRepository'
-import { calculateReward } from '../pet/rewardPolicy'
 import type { PetGameState, RewardEvent, RewardGrant } from '../pet/model'
 import { rewardOutbox } from './rewardOutbox'
+import { createQuestCompletionService, type CompleteQuestInput, type CompletionResult } from './completeQuest'
 import { TodayDashboard } from './TodayDashboard'
 import { acceptCandidate as convertCandidateToTask } from '../inbox/candidatePolicy'
 import { useCoachRuntime } from '../nudges/CoachRuntime'
@@ -46,6 +46,7 @@ export interface TodayDependencies {
   listCategories?(): Promise<Category[]>
   addCategory?(input: { name: string; color: string }): Promise<Category>
   loadPetState(): Promise<PetGameState>
+  completeQuest(input: CompleteQuestInput): Promise<CompletionResult>
   recordReward(event: RewardEvent): Promise<void>
   settleReward(eventId: string): Promise<PetGameState>
   recoverRewards(): Promise<PetGameState>
@@ -65,6 +66,7 @@ const database = createDatabase()
 const taskRepository = createTaskRepository(database)
 const categoryRepository = createCategoryRepository(database)
 const petRepository = createPetRepository(database)
+const questCompletionService = createQuestCompletionService(database)
 const personaRepository = createPersonaRepository(database)
 const recurringRepository = createRecurringRepository(database)
 const candidateRepository = createQuestCandidateRepository(database)
@@ -80,6 +82,7 @@ const defaultDependencies: TodayDependencies = {
   },
   addCategory: (input) => categoryRepository.add(input),
   loadPetState: petRepository.loadState,
+  completeQuest: questCompletionService.complete,
   recordReward: async (event) => { await petRepository.record(event) },
   settleReward: petRepository.settle,
   recoverRewards: async () => {
@@ -213,8 +216,7 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     }
   }, [personas, selectedPersonaId])
 
-  const saveTasks = async (next: Task[]) => {
-    await dependencies.saveMany(next)
+  const projectTasks = async (next: Task[]) => {
     const merged = [...tasks.filter((task) => !next.some(({ id }) => id === task.id)), ...next]
     setTasks(merged)
     try {
@@ -224,6 +226,11 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
       // turn an already-persisted task change into a failed save.
     }
     window.dispatchEvent(new Event('monggle:tasks-changed'))
+  }
+
+  const saveTasks = async (next: Task[]) => {
+    await dependencies.saveMany(next)
+    await projectTasks(next)
   }
 
   const addSingleTask = async (title: string) => {
@@ -262,45 +269,44 @@ export function TodayScreen({ dependencies = defaultDependencies }: { dependenci
     completionInFlightRef.current.add(task.id)
     setCompletingTaskIds(new Set(completionInFlightRef.current))
     const completedAt = appNow().toISOString()
-    const completedTask: Task = { ...task, status: 'completed', completedAt, updatedAt: completedAt }
     setRewardStatus('')
 
     try {
+      let result: CompletionResult
       try {
-        await saveTasks([completedTask])
+        result = await dependencies.completeQuest({ task, focusMinutes, completedAt, random: Math.random })
       } catch {
         setRewardStatus('완료를 저장하지 못했어요. 다시 시도해 주세요.')
         return
       }
 
-      const grant = calculateReward({ taskId: task.id, focusMinutes }, Math.random)
-      const event: RewardEvent = {
-        id: `${completedTask.id}@${completedTask.completedAt}`,
-        taskId: completedTask.id,
-        completedAt: completedTask.completedAt!,
-        focusMinutes,
-        grant,
+      await projectTasks([result.task])
+      if (result.recurringInstance) {
+        setRecurringInstances((current) => current.map((instance) => (
+          instance.id === result.recurringInstance?.id ? result.recurringInstance : instance
+        )))
       }
 
-      try {
-        dependencies.savePendingReward(event)
-      } catch {
-        setRewardStatus('보상 복구 정보를 저장하지 못했어요. 다시 시도해 주세요.')
+      if (result.rewardEvent.settledAt) {
+        try {
+          dependencies.removePendingReward(result.rewardEvent.id)
+        } catch {
+          // A settled ledger event remains safe even if stale outbox cleanup fails.
+        }
         return
       }
 
       try {
-        await dependencies.recordReward(event)
+        dependencies.savePendingReward(result.rewardEvent)
       } catch {
-        setRewardStatus('퀘스트는 완료했지만 보상을 저장하지 못했어요')
-        return
+        // The reward event is already durable in Dexie as part of completion.
       }
 
       try {
-        const state = await dependencies.settleReward(event.id)
-        dependencies.removePendingReward(event.id)
+        const state = await dependencies.settleReward(result.rewardEvent.id)
+        dependencies.removePendingReward(result.rewardEvent.id)
         setPetState(state)
-        setRewardGrant(grant)
+        setRewardGrant(result.rewardEvent.grant)
       } catch {
         setRewardStatus('보상은 다음 실행에서 다시 받을 수 있어요')
       }
