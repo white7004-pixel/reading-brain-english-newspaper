@@ -1,4 +1,14 @@
 import type { Article, KnowledgeDomain, SourceRef } from "./types";
+import { AR1_BATCH_07_IMAGES } from "./library/ar1-07-images";
+
+const SAMPLE_HERO_IMAGES: Record<string, Article["heroImage"]> = {
+  "stars-shine": AR1_BATCH_07_IMAGES["ar1-kites"],
+  "silk-road": AR1_BATCH_07_IMAGES["ar1-ancient-bridges"],
+  "great-wave": AR1_BATCH_07_IMAGES["ar1-ocean-tides"],
+  "stoic-control": AR1_BATCH_07_IMAGES["ar1-stone-sculpture"],
+  "small-habits": AR1_BATCH_07_IMAGES["ar1-reading-focus"],
+  "tea-cultures": AR1_BATCH_07_IMAGES["ar1-world-tea"],
+};
 
 const review = {
   approvedBy: "논픽션랩 편집팀",
@@ -34,6 +44,7 @@ function makeArticle(seed: Seed): Article {
       { id: `${seed.id}-q3`, prompt: "Which statement is supported by the passage?", options: [first.split(".")[0] + ".", "Nothing changes over time.", "There is no evidence in the text."], correctIndex: 0, explanation: "The first option repeats a fact stated directly in the reading." },
     ],
     media: [],
+    heroImage: SAMPLE_HERO_IMAGES[seed.id],
     review,
   };
 }

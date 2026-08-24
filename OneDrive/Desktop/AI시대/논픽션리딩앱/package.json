@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "audio:generate": "npx --no-install tsx scripts/generate-native-audio.ts",
     "verify": "npm test && npm run lint && npm run build && npm run test:e2e"
   },
   "dependencies": {

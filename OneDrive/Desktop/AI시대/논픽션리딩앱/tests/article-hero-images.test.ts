@@ -2,6 +2,7 @@ import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { AR1_BATCH_07 } from "@/lib/library/ar1-07";
 import { AR1_BATCH_07_IMAGES } from "@/lib/library/ar1-07-images";
+import { SAMPLE_ARTICLES } from "@/lib/sample-content";
 
 const ALLOWED_LICENSES = new Set([
   "CC BY 2.0", "CC BY 3.0", "CC BY 4.0",
@@ -35,5 +36,13 @@ it("attaches the manifest photograph to every exported seventh-batch seed", () =
   for (const seed of AR1_BATCH_07) {
     expect(seed.heroImage).toEqual(AR1_BATCH_07_IMAGES[seed.id]);
     expect(seed.quest).toBeDefined();
+  }
+});
+
+it("attaches a local hero photograph to every published learner article", () => {
+  for (const article of SAMPLE_ARTICLES.filter((item) => item.status === "published")) {
+    expect(article.heroImage, `${article.id} heroImage`).toBeDefined();
+    expect(article.heroImage?.src.startsWith("/article-images/"), `${article.id} local image`).toBe(true);
+    expect(existsSync(join(process.cwd(), "public", article.heroImage?.src ?? "")), `${article.id} missing image`).toBe(true);
   }
 });

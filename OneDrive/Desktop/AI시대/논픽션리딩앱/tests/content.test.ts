@@ -44,6 +44,14 @@ describe("learner-safe content repository", () => {
     expect(getArticleById("draft", storage)).toBeUndefined();
   });
 
+  it("restores a seeded hero photo for an older saved learner article", () => {
+    const storage = createMemoryStorage();
+    const published = makePublishedArticle({ id: "stars-shine", title: "Why Do Stars Shine?", heroImage: undefined });
+    saveStudioState(storage, { schemaVersion: 3, articles: [published] });
+
+    expect(getPublishedArticles(storage)[0]?.heroImage?.src).toMatch(/^\/article-images\//);
+  });
+
   it("falls back to seeded public articles when corrupt storage cannot be backed up", () => {
     const storage = {
       getItem: () => "{corrupt studio state",
