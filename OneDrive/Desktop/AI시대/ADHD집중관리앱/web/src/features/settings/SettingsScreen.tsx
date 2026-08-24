@@ -10,11 +10,12 @@ import { CategoryManager } from './CategoryManager'
 import { settingsRepository } from './settingsRepository'
 import { SettingsRow } from './SettingsRow'
 import { SettingsSection } from './SettingsSection'
+import { ConnectorSettings } from '../inbox/ConnectorSettings'
 
 export function SettingsScreen() {
   const [settings, setSettings] = useState<MonggleSettings>(() => settingsRepository.load())
   const [appearanceTarget, setAppearanceTarget] = useState<AppearanceTarget | null>(null)
-  const [expandedConnection, setExpandedConnection] = useState<'category' | 'calendar' | null>(null)
+  const [expandedConnection, setExpandedConnection] = useState<'category' | 'calendar' | 'sources' | null>(null)
   const update = (patch: Partial<MonggleSettings>) => {
     const next = { ...settings, ...patch }
     setSettings(next)
@@ -58,6 +59,10 @@ export function SettingsScreen() {
       <SettingsRow title="Google Calendar" description="일정 내용이 아닌 바쁜 시간만 확인해요"><button type="button" aria-expanded={expandedConnection === 'calendar'} onClick={() => setExpandedConnection((current) => current === 'calendar' ? null : 'calendar')}>연결 설정 ›</button></SettingsRow>
       {expandedConnection === 'calendar' && <CalendarSettings state={{ kind: 'disconnected' }} onConnect={() => { window.location.href = '/oauth/google/start' }} onRefresh={() => undefined} onDisconnect={() => undefined} />}
       <SettingsRow title="메시지 연결" description="Slack · Telegram · KakaoWork"><a className="settings-link" href="/messages">관리 ›</a></SettingsRow>
+      <SettingsRow title="외부 입력 연결" description="카카오 공유·카카오워크·Google 일정"><button type="button" aria-expanded={expandedConnection === 'sources'} onClick={() => setExpandedConnection((current) => current === 'sources' ? null : 'sources')}>연결 관리 ›</button></SettingsRow>
+      {expandedConnection === 'sources' && <ConnectorSettings states={{
+        kakaotalk: { kind: 'disconnected' }, kakaowork: { kind: 'disconnected' }, google: { kind: 'disconnected' },
+      }} onConnect={() => undefined} onRetry={() => undefined} onDisconnect={() => undefined} />}
     </SettingsSection>
     <SettingsSection title="몽글 플러스">
       <PremiumPreview features={['새로운 펫', '별빛 방', '특별한 방 꾸미기']} />
