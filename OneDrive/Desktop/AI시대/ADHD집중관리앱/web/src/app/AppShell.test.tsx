@@ -171,7 +171,7 @@ it('labels the app from the selected active mission when commitment days are mix
 
   render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
 
-  await waitFor(() => expect(screen.getByRole('region', { name: '추천 퀘스트' })).toHaveTextContent('active'))
+  await waitFor(() => expect(screen.getByRole('region', { name: '메인 퀘스트' })).toHaveTextContent('active'))
   expect(screen.queryByRole('region', { name: '오늘 연장 완료 모드' })).not.toBeInTheDocument()
   expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('active')
 })

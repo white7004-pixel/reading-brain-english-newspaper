@@ -14,12 +14,14 @@ test('reduced motion leaves the mascot resting', async ({ page }) => {
   await expect(page.getByTestId('monggle-companion')).toHaveAttribute('data-mode', 'resting')
 })
 
-test('all five routes retain the companion and navigation order', async ({ page }) => {
+test('all five routes retain the navigation order while the companion stays focused on Today', async ({ page }) => {
   await page.goto('/')
-  const labels = ['오늘', '집중', '메시지', '루틴', '설정']
+  const labels = ['오늘', '월간', '몽글', '집중', '나']
   await expect(page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link')).toHaveText(labels)
+  await expect(page.getByTestId('monggle-companion')).toBeVisible()
   for (const label of labels.slice(1)) {
     await page.getByRole('link', { name: label }).click()
-    await expect(page.getByTestId('monggle-companion')).toBeVisible()
+    await expect(page.getByRole('navigation', { name: '주요 메뉴' })).toBeVisible()
+    await expect(page.getByTestId('monggle-companion')).not.toBeVisible()
   }
 })

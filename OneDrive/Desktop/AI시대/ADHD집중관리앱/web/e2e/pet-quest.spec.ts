@@ -32,7 +32,7 @@ test('stacks the featured quest action on narrow phones', async ({ page }) => {
   await page.getByRole('textbox', { name: '빠른 할 일 추가' }).fill('물 한 잔 마시기')
   await page.getByRole('button', { name: '할 일 추가' }).click()
 
-  const quest = page.getByRole('region', { name: '추천 퀘스트' })
+  const quest = page.getByRole('region', { name: '메인 퀘스트' })
   const headingBox = await quest.getByRole('heading').boundingBox()
   const buttonBox = await quest.getByRole('button', { name: '3분만 시작' }).boundingBox()
   const questBox = await quest.boundingBox()

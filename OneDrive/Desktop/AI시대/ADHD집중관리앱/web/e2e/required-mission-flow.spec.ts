@@ -5,6 +5,7 @@ test('keeps the unfinished required mission current through midnight', async ({ 
   const afterMidnight = '2026-08-22T00:10:00+09:00'
   await page.goto(`/?now=${encodeURIComponent(beforeMidnight)}`)
 
+  await page.getByRole('button', { name: '여러 할 일 한 번에 입력' }).click()
   await page.getByLabel('오늘 할 일 한 번에 적기').fill('독서, 글쓰기')
   await page.getByRole('button', { name: '정리하기' }).click()
   await page.getByRole('button', { name: '모두 저장' }).click()
@@ -22,11 +23,12 @@ test('keeps the unfinished required mission current through midnight', async ({ 
   await expect(currentMission).toContainText('글쓰기')
 
   await page.reload()
-  await expect(currentMission).toContainText('글쓰기')
+  const mainQuest = page.getByRole('region', { name: '메인 퀘스트' })
+  await expect(mainQuest).toContainText('글쓰기')
   await page.goto(`/?now=${encodeURIComponent(afterMidnight)}`)
 
   const extendedMode = page.getByRole('region', { name: '오늘 연장 완료 모드' })
   await expect(extendedMode).toContainText('글쓰기')
-  await expect(currentMission).toContainText('글쓰기')
-  await expect(currentMission).not.toContainText('독서')
+  await expect(mainQuest).toContainText('글쓰기')
+  await expect(mainQuest).not.toContainText('독서')
 })

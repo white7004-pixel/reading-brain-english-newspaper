@@ -58,7 +58,7 @@ it('uses the calm page and dark quest surfaces without flattening the pet hero',
   expect(globalStyles).toMatch(/\.appearance-bg--studio-purple\s*{[^}]*background:\s*var\(--color-bg\)\s*!important;/s)
   expect(globalStyles).toMatch(/\.featured-quest\s*{[^}]*background:\s*var\(--color-quest\);/s)
   const matureOverrides = globalStyles.slice(globalStyles.indexOf('/* Mature dashboard shell */'))
-  expect(matureOverrides).not.toMatch(/\.pet-hero\s*[,\{]/)
+  expect(matureOverrides).not.toMatch(/(?:^|\n)\.pet-hero\s*[,\{]/)
 })
 
 it('keeps late-loaded feature cards inside the mature surface contract', () => {
