@@ -15,3 +15,10 @@ it('keeps primary Today interactions at least 48 pixels tall', () => {
   expect(rule('.task-check')).toMatch(/min-height:\s*48px/)
   expect(rule('.task-start')).toMatch(/min-height:\s*48px/)
 })
+
+it('keeps recurring checkboxes visually compact inside an accessible tap target', () => {
+  expect(rule('.recurring-checklist__check-target')).toMatch(/width:\s*48px/)
+  expect(rule('.recurring-checklist__check-target')).toMatch(/min-height:\s*48px/)
+  expect(rule('.recurring-checklist__check-target > input')).toMatch(/width:\s*22px/)
+  expect(rule('.recurring-checklist__check-target > input')).toMatch(/height:\s*22px/)
+})

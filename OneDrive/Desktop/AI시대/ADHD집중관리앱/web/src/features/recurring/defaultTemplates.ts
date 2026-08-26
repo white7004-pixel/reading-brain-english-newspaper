@@ -3,6 +3,8 @@ import type { RecurringTaskTemplate } from '../../core/model/recurrence'
 const daily = { kind: 'daily' } as const
 
 export const DEFAULT_RECURRING_TEMPLATES: RecurringTaskTemplate[] = [
+  { id: 'daily-reading', title: '독서', personaIds: ['personal'], category: 'reading', cadence: daily, targetCount: 1, estimateMinutes: 10, firstAction: '책 한 쪽 펼치기', carryForward: false, active: true },
+  { id: 'daily-exercise', title: '운동', personaIds: ['personal'], category: 'exercise', cadence: daily, targetCount: 1, estimateMinutes: 10, firstAction: '자리에서 가볍게 스트레칭', carryForward: false, active: true },
   { id: 'inbox-calendar-review', title: '카카오톡·카카오워크·구글 캘린더 새 일정 확인', personaIds: ['director'], category: 'operations', cadence: daily, targetCount: 1, estimateMinutes: 10, firstAction: '새 메시지부터 확인', carryForward: false, active: true },
   { id: 'naver-place-inquiry', title: '네이버 플레이스 상담 확인', personaIds: ['counseling'], category: 'counseling', cadence: daily, targetCount: 1, estimateMinutes: 10, firstAction: '새 문의 열기', carryForward: false, active: true },
   { id: 'parent-counseling', title: '학부모 상담 1건', personaIds: ['counseling'], category: 'counseling', cadence: daily, targetCount: 1, estimateMinutes: 20, firstAction: '상담 대상 정하기', carryForward: false, active: true },

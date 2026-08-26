@@ -38,3 +38,11 @@ it('keeps advanced category editing collapsed initially', () => {
   expect(screen.queryByLabelText('카테고리 관리')).not.toBeInTheDocument()
   expect(screen.getByRole('button', { name: /카테고리 관리/ })).toBeVisible()
 })
+
+it('lets the user tune or disable motivation, reading, and exercise routines', async () => {
+  render(<SettingsScreen />)
+  await userEvent.selectOptions(screen.getByLabelText('독서 시간'), '5')
+  await userEvent.click(screen.getByRole('checkbox', { name: '운동 루틴 사용' }))
+  await userEvent.click(screen.getByRole('checkbox', { name: '오늘의 명언 사용' }))
+  expect(settingsRepository.load()).toMatchObject({ readingMinutes: 5, exerciseEnabled: false, motivationEnabled: false })
+})

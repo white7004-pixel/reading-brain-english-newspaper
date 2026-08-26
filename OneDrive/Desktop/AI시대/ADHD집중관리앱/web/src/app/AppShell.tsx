@@ -1,8 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { BottomNav } from './BottomNav'
-import { MonggleCompanion } from '../features/companion/MonggleCompanion'
 import { settingsRepository } from '../features/settings/settingsRepository'
-import { subscribeCompanionEvents, type CompanionEvent } from '../features/companion/companionEvents'
 import { AppBackground } from '../features/appearance/AppBackground'
 import { createAppearanceRepository, defaultAppearanceSettings } from '../features/appearance/appearanceRepository'
 import { createDatabase } from '../core/storage/database'
@@ -17,11 +15,10 @@ import { taskCheckInRepository } from '../features/nudges/taskCheckIn'
 import { nativeWidgetBridge } from '../features/widgets/nativeWidgetBridge'
 import { mergeWidgetEvents } from '../features/widgets/mergeWidgetEvents'
 import { buildWidgetSnapshot } from '../features/widgets/widgetSnapshot'
-import { applyMasteryEvent, masteryStage, taskMasteryRepository, type CoachAction, type CoachStage, type TaskMasteryState } from '../features/nudges/taskMastery'
+import { applyMasteryEvent, taskMasteryRepository, type CoachAction, type TaskMasteryState } from '../features/nudges/taskMastery'
 import { dayInSeoul, missionModeForMission } from '../features/missions/extendedDay'
 import { selectCurrentMission } from '../features/today/selectNowTask'
 import { appNow } from '../core/time/appClock'
-import { useLocation } from 'react-router-dom'
 import { createAvailabilityRepository } from '../features/calendar/availabilityRepository'
 import { isBusyAt } from '../features/calendar/availabilityPlanner'
 
@@ -31,26 +28,14 @@ const shellTaskRepository = createTaskRepository(shellDatabase)
 const shellAvailabilityRepository = createAvailabilityRepository(shellDatabase)
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const location = useLocation()
   const [settings, setSettings] = useState(() => settingsRepository.load())
-  const [companionEvent, setCompanionEvent] = useState<CompanionEvent | null>(null)
   const [appearance, setAppearance] = useState<AppearanceSettings>(defaultAppearanceSettings)
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null)
-  const [profileUrl, setProfileUrl] = useState<string | null>(null)
   const [todayTasks, setTodayTasks] = useState<Task[]>([])
   const [latestCheckIn, setLatestCheckIn] = useState(() => taskCheckInRepository.load())
   const [clockTick, setClockTick] = useState(() => appNow().getTime())
   const [mastery, setMastery] = useState<TaskMasteryState | null>(null)
   const [availability, setAvailability] = useState<{ checkedAt?: number; snapshot?: AvailabilitySnapshot }>({})
-  useEffect(() => {
-    let expiry: number | undefined
-    const unsubscribe = subscribeCompanionEvents((event) => {
-      window.clearTimeout(expiry)
-      setCompanionEvent(event)
-      expiry = window.setTimeout(() => setCompanionEvent(null), 1_800)
-    })
-    return () => { unsubscribe(); window.clearTimeout(expiry) }
-  }, [])
   useEffect(() => {
     let active = true
     const refreshTasks = async () => {
@@ -136,7 +121,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     taskMasteryRepository.save(next)
     setMastery(next)
   }, [nudgeTask?.id, clockTick, interruptionsSuppressed, settings.determinedMonggle, settings.nudgeIntervalMinutes])
-  const activeStage: CoachStage = mastery && mastery.taskId === nudgeTask?.id ? masteryStage(mastery) : 'gentle'
   const coachDecision = nudgeTask ? buildCoachDecision({
     task: nudgeTask,
     unansweredPrompts: mastery?.taskId === nudgeTask.id ? mastery.misses : 0,
@@ -173,28 +157,20 @@ export function AppShell({ children }: { children: ReactNode }) {
     const refreshAppearance = async () => {
       const loaded = await appearanceRepository.loadSettings()
       let nextBackgroundUrl: string | null = null
-      let nextProfileUrl: string | null = null
       if (loaded.background.kind !== 'preset') {
         const asset = loaded.background.kind === 'photo'
           ? await appearanceRepository.getPhoto(loaded.background.assetId)
           : await appearanceRepository.getRender(loaded.background.assetId)
         if (asset) nextBackgroundUrl = URL.createObjectURL(asset.blob)
       }
-      if (loaded.profile.kind !== 'default_monggle') {
-        const asset = loaded.profile.kind === 'photo'
-          ? await appearanceRepository.getPhoto(loaded.profile.assetId)
-          : await appearanceRepository.getRender(loaded.profile.assetId)
-        if (asset) nextProfileUrl = URL.createObjectURL(asset.blob)
-      }
       if (disposed) {
-        ;[nextBackgroundUrl, nextProfileUrl].forEach((url) => { if (url) URL.revokeObjectURL(url) })
+        if (nextBackgroundUrl) URL.revokeObjectURL(nextBackgroundUrl)
         return
       }
       activeUrls.forEach((url) => URL.revokeObjectURL(url))
-      activeUrls = [nextBackgroundUrl, nextProfileUrl].filter((url): url is string => Boolean(url))
+      activeUrls = [nextBackgroundUrl].filter((url): url is string => Boolean(url))
       setAppearance(loaded.background.kind !== 'preset' && !nextBackgroundUrl ? { ...loaded, background: defaultAppearanceSettings.background } : loaded)
       setBackgroundUrl(nextBackgroundUrl)
-      setProfileUrl(nextProfileUrl)
     }
     void refreshAppearance()
     window.addEventListener('monggle:appearance-changed', refreshAppearance)
@@ -233,7 +209,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         onReschedule={() => void respondToTask('reschedule')}
         onCancel={() => void respondToTask('cancel')}
       />}
-      {location.pathname === '/' && <MonggleCompanion reducedMotion={settings.reducedMotion} mascotVisible={settings.mascotVisible} event={companionEvent} sourceUrl={profileUrl} intensity={activeStage} suppressed={interruptionsSuppressed} />}
       <BottomNav />
     </div>
   )

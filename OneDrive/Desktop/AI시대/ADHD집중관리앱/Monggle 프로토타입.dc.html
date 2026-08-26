@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-bc11010c-b812-41de-938f-fe9edef423f8/styles.css">
+<script src="_ds/nocturne-bc11010c-b812-41de-938f-fe9edef423f8/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+body{margin:0;background:#0e0f18;display:flex;justify-content:center;padding:28px 0;font-family:var(--font-body)}
+a{color:var(--app-accent)} a:hover{color:color-mix(in oklab,var(--app-accent) 30%,#fff)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes glow{0%,100%{opacity:.3}50%{opacity:.6}}
+[data-app-theme="dark"]{--app-bg:var(--color-bg);--app-surface:var(--color-surface);--app-sunken:var(--color-neutral-900);--app-line:var(--color-neutral-800);--app-text:var(--color-text);--app-dim:var(--color-neutral-500);--app-dim2:var(--color-neutral-500);--app-accent:var(--color-accent-300);--app-accent-ink:var(--color-accent-300);--app-glow:var(--color-accent-900);--app-glow2:var(--color-accent-800);--app-bubble-bg:var(--color-accent-200);--app-bubble-fg:var(--color-accent-900);--app-tab-active:var(--color-accent-800);--app-tabbar:rgba(35,37,50,.82);--app-scrim:rgba(14,15,24,.82);--app-shadow:rgba(0,0,0,.5)}
+[data-app-theme="light"]{--app-bg:#fbfbfe;--app-surface:#fdfdff;--app-sunken:var(--color-neutral-200);--app-line:var(--color-neutral-300);--app-text:var(--color-neutral-900);--app-dim:var(--color-neutral-700);--app-dim2:var(--color-neutral-700);--app-accent:var(--color-accent-600);--app-accent-ink:var(--color-accent-800);--app-glow:var(--color-accent-200);--app-glow2:var(--color-accent-300);--app-bubble-bg:var(--color-accent-700);--app-bubble-fg:var(--color-accent-100);--app-tab-active:var(--color-accent-200);--app-tabbar:rgba(253,253,255,.86);--app-scrim:rgba(41,43,49,.55);--app-shadow:rgba(41,43,49,.16);--color-accent:var(--color-accent-700);--color-text:var(--color-neutral-900);--color-bg:#fbfbfe;--color-surface:#fdfdff}
+[data-app-skin]:not([data-app-skin="lavender"]){
+  --app-glow:color-mix(in oklab,var(--app-accent) 16%,transparent);
+  --app-glow2:color-mix(in oklab,var(--app-accent) 28%,transparent);
+  --app-tab-active:color-mix(in oklab,var(--app-accent) 16%,transparent);
+  --app-bubble-bg:var(--app-accent);
+  --color-accent:var(--app-accent);--color-text:var(--app-text);--color-bg:var(--app-bg);--color-surface:var(--app-surface);
+}
+[data-app-skin="cream"]{--app-bg:#fdf5ef;--app-surface:#fffaf6;--app-sunken:#f6e9e0;--app-line:#ecd9cd;--app-text:#2a1d16;--app-dim:#6b503f;--app-dim2:#7a5c4a;--app-accent:#e0512c;--app-accent-ink:#a8330f;--app-bubble-fg:#fff6f2;--app-tabbar:rgba(255,250,246,.88);--app-scrim:rgba(42,29,22,.5);--app-shadow:rgba(80,50,35,.16)}
+[data-app-skin="mint"]{--app-bg:#eff7f2;--app-surface:#fbfefc;--app-sunken:#e0efe6;--app-line:#cfe4d7;--app-text:#12261c;--app-dim:#41594c;--app-dim2:#506b5c;--app-accent:#0d8f6c;--app-accent-ink:#046148;--app-bubble-fg:#f2fdf8;--app-tabbar:rgba(251,254,252,.88);--app-scrim:rgba(18,38,28,.5);--app-shadow:rgba(20,60,42,.14)}
+[data-app-skin="butter"]{--app-bg:#fff8e6;--app-surface:#fffdf5;--app-sunken:#faeecd;--app-line:#eddfb8;--app-text:#2b2211;--app-dim:#64522a;--app-dim2:#6f5c31;--app-accent:#c9740a;--app-accent-ink:#8a4b00;--app-bubble-fg:#fffaf0;--app-tabbar:rgba(255,253,245,.88);--app-scrim:rgba(43,34,17,.5);--app-shadow:rgba(90,70,25,.16)}
+[data-app-skin="sky"]{--app-bg:#eff4ff;--app-surface:#fbfcff;--app-sunken:#e2eaff;--app-line:#cfdbfa;--app-text:#141b30;--app-dim:#445070;--app-dim2:#4f5c7e;--app-accent:#2f5fe8;--app-accent-ink:#1f43ad;--app-bubble-fg:#f4f7ff;--app-tabbar:rgba(251,252,255,.88);--app-scrim:rgba(20,27,48,.5);--app-shadow:rgba(30,45,95,.15)}
+[data-app-skin="peach"]{--app-bg:#fff2f6;--app-surface:#fffafc;--app-sunken:#ffe4ee;--app-line:#f8d1e0;--app-text:#2c1420;--app-dim:#6d4558;--app-dim2:#7a4f63;--app-accent:#d63472;--app-accent-ink:#a5124d;--app-bubble-fg:#fff5f9;--app-tabbar:rgba(255,250,252,.88);--app-scrim:rgba(44,20,32,.5);--app-shadow:rgba(100,35,65,.15)}
+[data-app-skin="lime"]{--app-bg:#12142a;--app-surface:#1d2043;--app-sunken:#191c39;--app-line:#2a2e58;--app-text:#eef2e6;--app-dim:#a1a8ca;--app-dim2:#8e95ba;--app-accent:#a8e838;--app-accent-ink:#b9ee5c;--app-bubble-fg:#171c08;--app-tabbar:rgba(29,32,67,.84);--app-scrim:rgba(14,15,32,.82);--app-shadow:rgba(0,0,0,.55)}
+[data-app-skin="grape"]{--app-bg:#f5f1ff;--app-surface:#fdfbff;--app-sunken:#eae2ff;--app-line:#dbd0f7;--app-text:#1e1533;--app-dim:#524671;--app-dim2:#5e5280;--app-accent:#6b3fe0;--app-accent-ink:#4f22c4;--app-bubble-fg:#f7f3ff;--app-tabbar:rgba(253,251,255,.88);--app-scrim:rgba(30,21,51,.5);--app-shadow:rgba(55,35,110,.15)}
+::-webkit-scrollbar{width:0}
+</style>
+</helmet>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ isDarkTheme }}" hint-size="420px,880px">
+<div data-app-theme="{{ appTheme }}" data-app-skin="{{ appSkin }}" style="position:relative;display:flex;flex-direction:column;height:100%;background:var(--app-bg);color:var(--app-text);font-family:var(--font-body);overflow:hidden">
+<div style="position:absolute;top:-160px;left:-60px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,var(--app-glow2),transparent 68%);animation:glow 6s ease-in-out infinite;pointer-events:none"></div>
+<div style="position:absolute;bottom:-140px;right:-110px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,var(--app-glow),transparent 70%);pointer-events:none"></div>
+
+<div style="position:relative;flex:1;overflow-y:auto;padding:62px var(--space-6) 110px">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-8)">
+  <div>
+    <div style="font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink);white-space:nowrap">7월 28일 화요일</div>
+    <div style="font-size:42px;line-height:.98;font-weight:600;font-family:var(--font-heading);letter-spacing:-.02em;margin-top:6px">오늘</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+    <div style="display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:99px;background:var(--app-glow2);font-size:14px;font-weight:600;color:var(--app-text)"><i class="ph-fill ph-flame" style="font-size:16px;color:var(--app-accent)"></i><span style="font-variant-numeric:tabular-nums">{{ streak }}일</span></div>
+    <div style="display:flex;gap:4px">
+      <sc-for list="{{ weekDots }}" as="d" hint-placeholder-count="7">
+        <div style="width:7px;height:7px;border-radius:50%;background: {{ d.bg }}"></div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+
+<sc-if value="{{ buddyAlive }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);border-radius:999px;background:var(--app-sunken);border:1px solid var(--app-line);margin-bottom:var(--space-6)">
+  <span style="font-size:11.5px;color:var(--app-accent-ink)">{{ buddyStageLabel }}</span>
+  <span style="font-size:11.5px;color:var(--app-dim)">함께한 {{ togetherDays }}일</span>
+  <div style="flex:1;height:4px;border-radius:2px;background:var(--app-line);overflow:hidden"><div style="height:4px;border-radius:2px;background:linear-gradient(90deg,color-mix(in oklab,var(--app-accent) 78%,#000),var(--app-accent));width: {{ moodW }};transition:width .4s"></div></div>
+  <span style="font-size:11px;color:var(--app-dim);white-space:nowrap">{{ moodLabel }}</span>
+</div>
+</sc-if>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-6)">
+  <div style="padding:16px 16px 14px;border-radius:22px;background:var(--app-sunken)">
+    <div style="font-size:11.5px;color:var(--app-dim)">오늘 집중</div>
+    <div style="display:flex;align-items:baseline;gap:3px;margin-top:6px"><span style="font-size:30px;font-weight:600;font-family:var(--font-heading);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums">{{ focusedMin }}</span><span style="font-size:13px;color:var(--app-dim)">분</span></div>
+  </div>
+  <div style="padding:16px 16px 14px;border-radius:22px;background:linear-gradient(150deg,var(--app-glow),var(--app-sunken))">
+    <div style="font-size:11.5px;color:var(--app-dim)">완료</div>
+    <div style="display:flex;align-items:baseline;gap:3px;margin-top:6px"><span style="font-size:30px;font-weight:600;font-family:var(--font-heading);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums">{{ doneCount }}</span><span style="font-size:13px;color:var(--app-dim)">/ {{ totalCount }}</span></div>
+  </div>
+</div>
+
+<div style="position:relative;margin-bottom:var(--space-8);animation:rise .4s ease both">
+  <div style="position:absolute;left:-16px;top:4px;bottom:4px;width:2px;background:linear-gradient(180deg,transparent,var(--color-accent),transparent)"></div>
+  <div style="font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--app-dim);margin-bottom:var(--space-4)">{{ heroKicker }}</div>
+  <div style="font-size:33px;line-height:1.14;font-weight:600;font-family:var(--font-heading);letter-spacing:-.02em;text-wrap:pretty">{{ heroTitle }}</div>
+  <sc-if value="{{ hasCurrent }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:var(--space-3);margin:var(--space-4) 0 var(--space-6);font-size:12px;color:var(--app-dim)">
+      <span style="display:inline-flex;align-items:center;gap:4px"><i class="ph ph-timer"></i>{{ heroEst }}</span>
+      <span style="width:3px;height:3px;border-radius:50%;background:var(--app-dim2)"></span>
+      <span style="color:var(--app-accent-ink);white-space:nowrap">{{ heroGoal }}</span>
+    </div>
+    <div style="display:flex;gap:var(--space-3);width:max-content">
+      <button class="btn btn-primary" onClick="{{ startFocus }}" style="display:flex;align-items:center;justify-content:center;gap:7px;flex:none;white-space:nowrap;min-height: {{ ctaH }};padding:0 28px;font-size: {{ ctaFont }};font-weight:600;border-radius:99px;background:var(--app-glow2);color:var(--app-text);box-shadow:0 8px 28px var(--app-glow)"><i class="ph-fill ph-play"></i>지금 시작</button>
+      <button class="btn btn-ghost" onClick="{{ snooze }}" style="display:flex;align-items:center;justify-content:center;flex:none;white-space:nowrap;min-height: {{ ctaH }};padding:0 22px;font-size: {{ ctaFont }};border-radius:99px;background:var(--app-sunken);border-color:transparent">나중에</button>
+    </div>
+  </sc-if>
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--space-3)">
+  <span style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim)">남은 할 일</span>
+  <span style="font-size:11px;color:var(--app-dim);font-variant-numeric:tabular-nums">{{ doneCount }} / {{ totalCount }}</span>
+</div>
+<div style="height:9px;background:var(--app-sunken);border-radius:99px;margin-bottom:var(--space-4);overflow:hidden"><div style="height:9px;border-radius:99px;background:linear-gradient(90deg,color-mix(in oklab,var(--app-accent) 78%,#000),var(--app-accent));width: {{ progW }};transition:width .4s ease"></div></div>
+<div style="display:flex;flex-direction:column;gap:var(--space-2)">
+<sc-for list="{{ tasks }}" as="item" hint-placeholder-count="4">
+  <div onClick="{{ item.toggle }}" style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);border-radius:18px;background:var(--app-sunken);border:1px solid transparent;cursor:pointer;transition:border-color .15s,background .15s;border-radius: {{ cardRadius }}" style-hover="border-color:var(--app-glow2);background:var(--app-surface)">
+    <i class="{{ item.checkIcon }}" style="font-size:21px;color: {{ item.checkColor }}"></i>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:14px;color: {{ item.titleColor }};text-decoration: {{ item.deco }}">{{ item.title }}</div>
+      <div style="font-size:11px;color:var(--app-dim2);margin-top:2px">{{ item.meta }}</div>
+    </div>
+  </div>
+</sc-for>
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin:var(--space-8) 0 var(--space-3)">
+  <span style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-accent-ink)">{{ buddyName }} 추천</span>
+  <span style="font-size:11px;color:var(--app-dim2)">{{ gradeLabel }} 기준</span>
+</div>
+<div style="font-size:12px;color:var(--app-dim);line-height:1.6;margin-bottom:var(--space-4)">{{ suggestNote }}</div>
+<div style="display:flex;flex-direction:column;gap:var(--space-2)">
+<sc-for list="{{ suggests }}" as="sg" hint-placeholder-count="4">
+  <div style="display:flex;align-items:flex-start;gap:var(--space-4);padding:var(--space-4);border-radius: {{ cardRadius }};background:var(--app-sunken);border:1px solid var(--app-line)">
+    <i class="{{ sg.icon }}" style="font-size:19px;color:var(--app-accent);margin-top:2px"></i>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:13.5px;font-weight:500;line-height:1.4">{{ sg.title }}</div>
+      <div style="font-size:11px;color:var(--app-dim2);margin-top:3px;line-height:1.55">{{ sg.why }}</div>
+      <div style="font-size:10.5px;color:var(--app-dim);margin-top:5px;display:flex;align-items:center;gap:4px"><i class="ph ph-timer"></i>{{ sg.est }}</div>
+    </div>
+    <sc-if value="{{ sg.notAdded }}" hint-placeholder-val="{{ true }}">
+      <button class="btn btn-ghost" onClick="{{ sg.add }}" style="display:flex;align-items:center;gap:5px;flex:none;min-height:46px;padding:0 14px;font-size:12px;white-space:nowrap"><i class="ph ph-plus"></i>담기</button>
+    </sc-if>
+    <sc-if value="{{ sg.isAdded }}" hint-placeholder-val="{{ false }}">
+      <span style="display:flex;align-items:center;gap:5px;flex:none;min-height:46px;padding:0 12px;font-size:12px;color:var(--app-accent-ink);white-space:nowrap"><i class="ph-fill ph-check-circle"></i>담았어</span>
+    </sc-if>
+  </div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGoals }}" hint-placeholder-val="{{ false }}">
+<div style="margin-bottom:var(--space-8)">
+  <div style="font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink)">왜 하는가</div>
+  <div style="font-size:42px;line-height:.98;font-weight:600;font-family:var(--font-heading);letter-spacing:-.02em;margin-top:6px">목표</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:var(--space-4)">
+<sc-for list="{{ goals }}" as="g" hint-placeholder-count="3">
+  <div style="position:relative;padding:var(--space-6);border-radius:24px;background:linear-gradient(160deg,var(--app-surface),var(--app-sunken));box-shadow:var(--shadow-sm);overflow:hidden">
+    <div style="position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,var(--app-glow),transparent 70%)"></div>
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-4)">
+      <div><div style="font-size:17px;font-weight:500;font-family:var(--font-heading);letter-spacing:-.01em">{{ g.name }}</div><div style="font-size:11.5px;color:var(--app-dim);margin-top:3px">{{ g.why }}</div></div>
+      <div style="font-size:26px;font-weight:500;font-family:var(--font-heading);color:var(--app-accent);font-variant-numeric:tabular-nums;line-height:1">{{ g.pct }}<span style="font-size:13px;color:var(--app-dim)">%</span></div>
+    </div>
+    <div style="position:relative;height:9px;background:var(--app-line);border-radius:99px;margin:var(--space-6) 0 var(--space-4);overflow:hidden"><div style="height:9px;border-radius:99px;background:linear-gradient(90deg,color-mix(in oklab,var(--app-accent) 78%,#000),var(--app-accent));width: {{ g.pctW }}"></div></div>
+    <div style="position:relative;font-size:11px;color:var(--app-dim);display:flex;align-items:center;gap:5px"><i class="ph ph-link-simple"></i>오늘 연결된 할 일 {{ g.linked }}개</div>
+  </div>
+</sc-for>
+</div>
+<button class="btn btn-ghost btn-block" style="margin-top:var(--space-6);display:flex;align-items:center;justify-content:center;gap:6px"><i class="ph ph-plus"></i>목표 추가</button>
+</sc-if>
+
+<sc-if value="{{ isFocus }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center">
+  <div style="font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink)">집중</div>
+  <div style="font-size:18px;font-weight:500;font-family:var(--font-heading);margin-top:var(--space-3);max-width:250px;text-wrap:pretty">{{ focusTitle }}</div>
+  <div style="position:relative;width:236px;height:236px;margin:var(--space-8) 0 var(--space-6)">
+    <div style="position:absolute;inset:26px;border-radius:50%;background:radial-gradient(circle,var(--app-glow),transparent 72%);animation:glow 4s ease-in-out infinite"></div>
+    <svg width="236" height="236" style="position:relative">
+      <circle cx="118" cy="118" r="104" fill="none" stroke="var(--app-sunken)" stroke-width="5"></circle>
+      <circle cx="118" cy="118" r="104" fill="none" stroke="var(--app-accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="653.5" stroke-dashoffset="{{ dashOffset }}" transform="rotate(-90 118 118)" style="transition:stroke-dashoffset .5s linear;filter:drop-shadow(0 0 10px color-mix(in oklab,var(--app-accent) 62%,#000))"></circle>
+    </svg>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div style="font-size:58px;font-weight:600;font-family:var(--font-heading);font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1">{{ timeText }}</div>
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--app-dim);margin-top:8px">{{ focusStateLabel }}</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);width:max-content;flex-wrap:nowrap">
+    <button class="btn btn-primary" onClick="{{ toggleRun }}" style="display:flex;align-items:center;justify-content:center;gap:7px;flex:none;white-space:nowrap;min-height: {{ ctaH }};padding:0 30px;font-size: {{ ctaFont }};font-weight:600;border-radius:99px;background:var(--app-glow2);color:var(--app-text);box-shadow:0 8px 28px var(--app-glow)"><i class="{{ runIcon }}"></i>{{ runLabel }}</button>
+    <button class="btn btn-ghost" onClick="{{ resetTimer }}" style="display:flex;align-items:center;justify-content:center;flex:none;white-space:nowrap;min-height: {{ ctaH }};padding:0 22px;font-size: {{ ctaFont }};border-radius:99px;background:var(--app-sunken);border-color:transparent">초기화</button>
+  </div>
+  <div style="margin-top:var(--space-8);display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--app-dim);padding:var(--space-3) var(--space-4);border-radius:999px;background:var(--app-sunken)"><i class="ph-fill ph-lock-key" style="color:var(--app-accent)"></i><span>{{ blockNote }}</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLock }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:var(--space-8)">
+  <div style="font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink)">몽글 잠금화면</div>
+  <div style="font-size:72px;font-weight:600;font-family:var(--font-heading);letter-spacing:-.04em;line-height:1.05;margin-top:var(--space-3);font-variant-numeric:tabular-nums">9:41</div>
+  <div style="font-size:12.5px;color:var(--app-dim)">7월 28일 화요일 · {{ gradeLabel }}</div>
+  <div style="display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-6);padding:var(--space-2) var(--space-4) var(--space-2) var(--space-2);border-radius:999px;background:var(--app-sunken);border:1px solid var(--app-line)">
+    <div style="position:relative;width:30px;height:30px">
+      <sc-if value="{{ hasAntenna }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;left:13px;top:-4px;width:2px;height:6px;background:var(--app-accent)"></div>
+        <div style="position:absolute;left:10px;top:-8px;width:7px;height:7px;border-radius:50%;background:var(--app-accent)"></div>
+      </sc-if>
+      <sc-if value="{{ hasEars }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:1px;top:-5px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+        <div style="position:absolute;right:1px;top:-5px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+      </sc-if>
+      <sc-if value="{{ hasTuft }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:9px;top:-6px;width:12px;height:9px;border-radius:50% 50% 0 0;background:var(--app-accent)"></div>
+      </sc-if>
+      <div style="position:absolute;inset:0;border-radius: {{ bodyRadius }};background: {{ bodyBg }};border:1px solid var(--app-accent)"></div>
+      <div style="position:absolute;left:7px;top:11px;width:5px;height:6px;border-radius:50%;background:#fbfbfe"></div>
+      <div style="position:absolute;right:7px;top:11px;width:5px;height:6px;border-radius:50%;background:#fbfbfe"></div>
+    </div>
+    <span style="font-size:12px;color:var(--app-text)">{{ buddyName }}가 오늘 것도 챙겨왔어</span>
+  </div>
+</div>
+<div style="display:flex;flex-direction:column;gap:var(--space-3)">
+  <div style="padding:var(--space-6);border-radius:24px;background:linear-gradient(160deg,var(--app-surface),var(--app-sunken));box-shadow:var(--shadow-sm)">
+    <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink);margin-bottom:var(--space-4)"><i class="ph-fill ph-function"></i>오늘의 수학 공식</div>
+    <div style="font-size:19px;font-family:var(--font-heading);font-weight:500;letter-spacing:-.01em;line-height:1.4">{{ mathFormula }}</div>
+    <div style="font-size:11.5px;color:var(--app-dim);margin-top:var(--space-3);line-height:1.6">{{ mathNote }}</div>
+  </div>
+  <div style="padding:var(--space-6);border-radius:24px;background:var(--app-sunken);box-shadow:var(--shadow-sm)">
+    <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink);margin-bottom:var(--space-4)"><i class="ph-fill ph-text-aa"></i>오늘의 영문법</div>
+    <div style="font-size:14.5px;font-weight:500;line-height:1.5">{{ grammarTitle }}</div>
+    <div style="font-size:12.5px;color:var(--app-accent-ink);margin-top:var(--space-3);line-height:1.55">{{ grammarExample }}</div>
+    <div style="font-size:11.5px;color:var(--app-dim);margin-top:var(--space-2);line-height:1.6">{{ grammarNote }}</div>
+  </div>
+  <div style="padding:var(--space-6);border-radius:24px;background:var(--app-sunken);box-shadow:var(--shadow-sm)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4)">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink)"><i class="ph-fill ph-cards"></i>오늘의 영단어 3</div>
+      <span style="font-size:10.5px;color:var(--app-dim2)">탭하면 뜻 보기</span>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ words }}" as="w" hint-placeholder-count="3">
+        <div onClick="{{ w.toggle }}" style="display:flex;align-items:center;gap:var(--space-4);min-height:52px;padding:var(--space-3) 0;border-bottom:1px solid var(--app-surface);cursor:pointer">
+          <span style="font-size:15px;font-weight:500;min-width:96px;text-align:left">{{ w.en }}</span>
+          <span style="font-size:12.5px;color: {{ w.meaningColor }};flex:1;text-align:left">{{ w.shown }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div onClick="{{ nextQuote }}" style="position:relative;padding:var(--space-6) var(--space-6) var(--space-6) var(--space-8);border-radius:24px;background:linear-gradient(160deg,var(--app-glow),var(--app-sunken));overflow:hidden;cursor:pointer;min-height:52px">
+    <div style="position:absolute;left:var(--space-4);top:var(--space-6);bottom:var(--space-6);width:2px;background:linear-gradient(180deg,transparent,var(--app-accent),transparent)"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-4)">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink)"><i class="ph-fill ph-quotes"></i>오늘의 명언</div>
+      <span style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--app-dim2)"><i class="ph ph-arrows-clockwise"></i>{{ quoteNo }}</span>
+    </div>
+    <div style="font-size:15px;line-height:1.6;font-family:var(--font-heading);font-weight:500;letter-spacing:-.01em;text-wrap:pretty">{{ quoteText }}</div>
+    <div style="font-size:11.5px;color:var(--app-accent-ink);margin-top:var(--space-3)">— {{ quoteBy }}</div>
+  </div>
+</div>
+<div style="margin-top:var(--space-6);font-size:11px;color:var(--app-dim2);line-height:1.7;text-align:center">매일 0시에 학년에 맞춰 새로 바뀌어. 폰 켤 때마다 자동으로 눈에 들어와.</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="margin-bottom:var(--space-8)">
+  <div style="font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--app-accent-ink)">몽글 · Monggle</div>
+  <div style="font-size:42px;line-height:.98;font-weight:600;font-family:var(--font-heading);letter-spacing:-.02em;margin-top:6px">설정</div>
+</div>
+<div style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim);margin-bottom:var(--space-3)">화면 밝기</div>
+<div style="display:flex;gap:var(--space-2);margin-bottom:var(--space-3)">
+<sc-for list="{{ themeModes }}" as="m" hint-placeholder-count="3">
+  <button onClick="{{ m.pick }}" style="flex:1;min-height:46px;padding:12px 0;border-radius:999px;font-size: {{ chipFont }};font-family:var(--font-body);cursor:pointer;background: {{ m.bg }};color: {{ m.color }};border:1px solid {{ m.border }};transition:all .15s">{{ m.label }}</button>
+</sc-for>
+</div>
+<div style="margin-bottom:var(--space-8);font-size:11px;color:var(--app-dim2);line-height:1.7">{{ themeNote }}</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:var(--space-3)">
+  <span style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim)">테마 색</span>
+  <span style="font-size:11.5px;color:var(--app-accent-ink);font-weight:600">{{ skinName }}</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);margin-bottom:var(--space-3)">
+<sc-for list="{{ skins }}" as="k" hint-placeholder-count="8">
+  <button onClick="{{ k.pick }}" style="display:flex;align-items:center;gap:9px;min-height:50px;padding:0 14px;border-radius:18px;font-size:12.5px;font-family:var(--font-body);text-align:left;cursor:pointer;background: {{ k.bg }};color: {{ k.color }};border:1px solid {{ k.border }};transition:all .15s">
+    <span style="width:18px;height:18px;border-radius:50%;flex:none;background: {{ k.dot }}"></span>{{ k.name }}
+  </button>
+</sc-for>
+</div>
+<div style="margin-bottom:var(--space-8);font-size:11px;color:var(--app-dim2);line-height:1.7">{{ skinNote }}</div>
+<div style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim);margin-bottom:var(--space-3)">함께할 캐릭터</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-2);margin-bottom:var(--space-8)">
+<sc-for list="{{ characters }}" as="c" hint-placeholder-count="7">
+  <div onClick="{{ c.pick }}" style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);padding:14px 4px 10px;border-radius:20px;cursor:pointer;background: {{ c.cardBg }};border:1px solid {{ c.cardBorder }};transition:all .15s">
+    <div style="position:relative;width:40px;height:40px">
+      <sc-if value="{{ c.antenna }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:17px;top:-6px;width:2px;height:8px;background:var(--app-accent)"></div>
+        <div style="position:absolute;left:14px;top:-11px;width:8px;height:8px;border-radius:50%;background:var(--app-accent)"></div>
+      </sc-if>
+      <sc-if value="{{ c.ears }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:3px;top:-6px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+        <div style="position:absolute;right:3px;top:-6px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+      </sc-if>
+      <sc-if value="{{ c.tuft }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:13px;top:-8px;width:14px;height:11px;border-radius:50% 50% 0 0;background:var(--app-accent)"></div>
+      </sc-if>
+      <div style="position:absolute;inset:0;border-radius: {{ c.radius }};background: {{ c.bg }};border:1px solid var(--app-accent)"></div>
+      <div style="position:absolute;left:9px;top:15px;width:6px;height:8px;border-radius:50%;background:#fbfbfe"></div>
+      <div style="position:absolute;right:9px;top:15px;width:6px;height:8px;border-radius:50%;background:#fbfbfe"></div>
+      <sc-if value="{{ c.beak }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;top:23px;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid color-mix(in oklab,var(--app-accent) 30%,#fff)"></div>
+      </sc-if>
+    </div>
+    <span style="font-size:11.5px;color: {{ c.nameColor }}">{{ c.name }}</span>
+  </div>
+</sc-for>
+</div>
+<div style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim);margin-bottom:var(--space-3)">학년</div>
+<div style="display:flex;gap:var(--space-2);margin-bottom:var(--space-3)">
+<sc-for list="{{ gradeSegs }}" as="g" hint-placeholder-count="4">
+  <button onClick="{{ g.pick }}" style="flex:1;min-height:46px;padding:12px 0;border-radius:999px;font-size: {{ chipFont }};font-family:var(--font-body);cursor:pointer;background: {{ g.bg }};color: {{ g.color }};border:1px solid {{ g.border }};transition:all .15s">{{ g.label }}</button>
+</sc-for>
+</div>
+<div style="display:flex;gap:var(--space-2);flex-wrap:wrap;margin-bottom:var(--space-8)">
+<sc-for list="{{ grades }}" as="g" hint-placeholder-count="6">
+  <button onClick="{{ g.pick }}" style="flex:none;min-height:46px;min-width:56px;padding: {{ chipPad }};border-radius:999px;font-size: {{ chipFont }};font-family:var(--font-body);cursor:pointer;background: {{ g.bg }};color: {{ g.color }};border:1px solid {{ g.border }};transition:all .15s">{{ g.label }}</button>
+</sc-for>
+</div>
+<div style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim);margin-bottom:var(--space-3)">집중 중 차단할 앱</div>
+<div style="margin-bottom:var(--space-8)">
+<sc-for list="{{ apps }}" as="a" hint-placeholder-count="4">
+  <div onClick="{{ a.toggle }}" style="display:flex;align-items:center;gap:var(--space-4);min-height:56px;padding:var(--space-4) 0;border-bottom:1px solid var(--app-sunken);cursor:pointer">
+    <i class="ph {{ a.icon }}" style="font-size:19px;color:var(--app-dim)"></i>
+    <span style="flex:1;font-size:13.5px">{{ a.name }}</span>
+    <div style="width: {{ swW }};height: {{ swH }};border-radius: {{ swR }};background: {{ a.swBg }};position:relative;cursor:pointer;transition:background .2s;flex:none">
+      <div style="position:absolute;top:2px;left:2px;width: {{ knobS }};height: {{ knobS }};border-radius:50%;background:#fbfbfe;transform: translateX({{ a.knobX }});transition:transform .2s;box-shadow:0 1px 3px var(--app-shadow)"></div>
+    </div>
+  </div>
+</sc-for>
+</div>
+<div style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim);margin-bottom:var(--space-3)">잔소리 · 리마인더</div>
+<div>
+<sc-for list="{{ reminders }}" as="a" hint-placeholder-count="3">
+  <div onClick="{{ a.toggle }}" style="display:flex;align-items:center;gap:var(--space-4);min-height:56px;padding:var(--space-4) 0;border-bottom:1px solid var(--app-sunken);cursor:pointer">
+    <i class="ph {{ a.icon }}" style="font-size:19px;color:var(--app-dim)"></i>
+    <span style="flex:1;font-size:13.5px">{{ a.name }}</span>
+    <div style="width: {{ swW }};height: {{ swH }};border-radius: {{ swR }};background: {{ a.swBg }};position:relative;cursor:pointer;transition:background .2s;flex:none">
+      <div style="position:absolute;top:2px;left:2px;width: {{ knobS }};height: {{ knobS }};border-radius:50%;background:#fbfbfe;transform: translateX({{ a.knobX }});transition:transform .2s;box-shadow:0 1px 3px var(--app-shadow)"></div>
+    </div>
+  </div>
+</sc-for>
+</div>
+<div style="margin-top:var(--space-6);font-size:11px;color:var(--app-dim2);line-height:1.7">잠금화면 위젯이 켜져 있으면 오늘의 할 일과 뽀약이가 항상 바탕화면에 떠 있어.</div>
+<div style="margin-top:var(--space-8);padding-top:var(--space-6);border-top:1px solid var(--app-sunken)">
+  <div style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--app-dim2);margin-bottom:var(--space-3)">위험 구역</div>
+  <sc-if value="{{ buddyAlive }}" hint-placeholder-val="{{ true }}">
+    <button class="btn btn-ghost btn-block" onClick="{{ askDelete }}" style="display:flex;align-items:center;justify-content:center;gap:6px;color:var(--app-dim)"><i class="ph ph-trash"></i>{{ buddyName }} 지우기</button>
+    <div style="margin-top:var(--space-3);font-size:11px;color:var(--app-dim2);line-height:1.7">지우면 {{ togetherDays }}일간 모은 기록과 {{ buddyStageLabel }} 단계가 함께 사라져.</div>
+  </sc-if>
+  <div style="margin-top:var(--space-8);padding-top:var(--space-6);border-top:1px solid var(--app-sunken);text-align:center">
+    <div style="font-size:20px;font-weight:600;font-family:var(--font-heading);letter-spacing:-.02em">몽글</div>
+    <div style="margin-top:4px;font-size:11px;color:var(--app-dim2);line-height:1.7">조금씩, 매일. Monggle 0.1 프로토타입</div>
+  </div>
+  <sc-if value="{{ buddyGone }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:var(--space-6);border-radius:24px;background:var(--app-sunken);text-align:center">
+      <div style="font-size:13px;color:var(--app-dim);line-height:1.6">{{ buddyName }}는 지금 잠들어 있어.<br>{{ togetherDays }}일치 기록은 7일간 보관돼.</div>
+      <button class="btn btn-primary" onClick="{{ reviveBuddy }}" style="margin-top:var(--space-4);display:inline-flex;align-items:center;gap:6px"><i class="ph ph-arrow-counter-clockwise"></i>다시 깨우기</button>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ showBuddy }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left: {{ buddyX }};top: {{ buddyY }};transition:left 2.6s cubic-bezier(.4,0,.3,1),top 2.6s cubic-bezier(.4,0,.3,1);z-index:20;pointer-events:none">
+  <sc-if value="{{ buddyTalking }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;bottom:60px;left: {{ bubbleLeft }};right: {{ bubbleRight }};width:max-content;max-width:186px;animation:pop .25s ease both;pointer-events:none">
+      <div style="padding:9px 12px;border-radius:14px;background:var(--app-bubble-bg);color:var(--app-bubble-fg);font-size: {{ bubbleFont }};line-height:1.45;font-weight:500;box-shadow:0 6px 20px var(--app-shadow);text-wrap:pretty">{{ buddyLine }}</div>
+      <div style="position:absolute;bottom:-5px;left: {{ tailLeft }};right: {{ tailRight }};width:11px;height:11px;background:var(--app-bubble-bg);transform:rotate(45deg);border-radius:2px"></div>
+    </div>
+  </sc-if>
+  <div onClick="{{ pokeBuddy }}" style="position:relative;width: {{ buddySize }};height: {{ buddySize }};cursor:pointer;pointer-events:auto;animation:bob 2.8s ease-in-out infinite">
+    <div style="position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle,var(--app-glow2),transparent 70%);opacity:.85"></div>
+    <sc-if value="{{ hasAntenna }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;left:24px;top:-9px;width:2px;height:11px;background:var(--app-accent)"></div>
+      <div style="position:absolute;left:20px;top:-15px;width:10px;height:10px;border-radius:50%;background:var(--app-accent);box-shadow:0 0 10px var(--app-accent)"></div>
+    </sc-if>
+    <sc-if value="{{ hasEars }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:5px;top:-9px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:15px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+      <div style="position:absolute;right:5px;top:-9px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:15px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+    </sc-if>
+    <sc-if value="{{ hasTuft }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:19px;top:-11px;width:18px;height:14px;border-radius:50% 50% 0 0;background:var(--app-accent)"></div>
+    </sc-if>
+    <div style="position:absolute;inset:0;border-radius: {{ bodyRadius }};background: {{ bodyBg }};border:1px solid var(--app-accent);box-shadow:inset 0 -6px 12px rgba(0,0,0,.35),0 8px 20px rgba(0,0,0,.45)"></div>
+    <sc-if value="{{ hasBeak }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:50%;top:29px;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid color-mix(in oklab,var(--app-accent) 30%,#fff)"></div>
+    </sc-if>
+    <div style="position:absolute;left:12px;top:21px;width:9px;height:11px;border-radius:50%;background:#fbfbfe;animation:blink 5.2s infinite">
+      <div style="position:absolute;left:2px;top:3px;width:5px;height:6px;border-radius:50%;background:#1d1b26"></div>
+    </div>
+    <div style="position:absolute;right:12px;top:21px;width:9px;height:11px;border-radius:50%;background:#fbfbfe;animation:blink 5.2s infinite">
+      <div style="position:absolute;left:2px;top:3px;width:5px;height:6px;border-radius:50%;background:#1d1b26"></div>
+    </div>
+    <div style="position:absolute;left:6px;top:32px;width:8px;height:4px;border-radius:50%;background:var(--app-accent);opacity:.55"></div>
+    <div style="position:absolute;right:6px;top:32px;width:8px;height:4px;border-radius:50%;background:var(--app-accent);opacity:.55"></div>
+    <div style="position:absolute;left:50%;top:35px;transform:translateX(-50%);width: {{ mouthW }};height: {{ mouthH }};border-radius: {{ mouthR }};background: {{ mouthBg }};transition:all .2s"></div>
+    <div style="position:absolute;left:13px;bottom:-4px;width:12px;height:7px;border-radius:0 0 8px 8px;background:color-mix(in oklab,var(--app-accent) 62%,#000)"></div>
+    <div style="position:absolute;right:13px;bottom:-4px;width:12px;height:7px;border-radius:0 0 8px 8px;background:color-mix(in oklab,var(--app-accent) 62%,#000)"></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ deleteOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:60;background:var(--app-scrim);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:var(--space-8)">
+  <div style="width:100%;max-width:290px;padding:var(--space-8) var(--space-6) var(--space-6);border-radius:24px;background:linear-gradient(165deg,var(--app-surface),var(--app-sunken));box-shadow:var(--shadow-lg);text-align:center;animation:pop .28s ease both">
+    <div style="position:relative;width:72px;height:72px;margin:0 auto var(--space-6)">
+      <div style="position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,var(--app-glow),transparent 70%)"></div>
+      <div style="position:absolute;left:33px;top:-10px;width:2px;height:12px;background:color-mix(in oklab,var(--app-accent) 62%,#000);transform:rotate(16deg)"></div>
+      <div style="position:absolute;left:36px;top:-17px;width:11px;height:11px;border-radius:50%;background:color-mix(in oklab,var(--app-accent) 62%,#000)"></div>
+      <div style="position:absolute;inset:0;border-radius:50% 50% 44% 44%;background:linear-gradient(165deg,var(--app-accent),color-mix(in oklab,var(--app-accent) 62%,#000) 62%,color-mix(in oklab,var(--app-accent) 45%,#000));border:1px solid color-mix(in oklab,var(--app-accent) 78%,#000)"></div>
+      <div style="position:absolute;left:15px;top:27px;width:12px;height:13px;border-radius:50%;background:#fbfbfe"><div style="position:absolute;left:3px;top:4px;width:7px;height:8px;border-radius:50%;background:#1d1b26"></div></div>
+      <div style="position:absolute;right:15px;top:27px;width:12px;height:13px;border-radius:50%;background:#fbfbfe"><div style="position:absolute;left:3px;top:4px;width:7px;height:8px;border-radius:50%;background:#1d1b26"></div></div>
+      <div style="position:absolute;left:12px;top:40px;width:4px;height:16px;border-radius:2px;background:var(--app-accent);opacity:.8"></div>
+      <div style="position:absolute;right:12px;top:40px;width:4px;height:13px;border-radius:2px;background:var(--app-accent);opacity:.8"></div>
+      <div style="position:absolute;left:50%;top:46px;transform:translateX(-50%);width:14px;height:7px;border-radius:7px 7px 0 0;background:#1d1b26"></div>
+    </div>
+    <div style="font-size:19px;font-weight:500;font-family:var(--font-heading);line-height:1.35;text-wrap:pretty">{{ deleteTitle }}</div>
+    <div style="margin-top:var(--space-4);font-size:12.5px;color:var(--app-dim);line-height:1.65;text-wrap:pretty">{{ deleteBody }}</div>
+    <div style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-8)">
+      <button class="btn btn-primary btn-block" onClick="{{ keepBuddy }}" style="padding:12px;font-size:14px">{{ keepLabel }}</button>
+      <button onClick="{{ confirmDelete }}" style="background:none;border:none;cursor:pointer;font-family:var(--font-body);font-size:12px;color:var(--app-dim2);padding:var(--space-2)" style-hover="color:var(--app-dim)">{{ deleteLabel }}</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:var(--space-6);right:var(--space-6);bottom:24px;display:flex;gap:4px;padding:6px;border-radius:26px;background:var(--app-tabbar);backdrop-filter:blur(14px);border:1px solid var(--app-line);box-shadow:0 10px 30px var(--app-shadow);z-index:30">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+  <button onClick="{{ t.go }}" style="flex:1;background: {{ t.bg }};border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 0;border-radius:20px;color: {{ t.color }};font-family:var(--font-body);transition:background .18s,color .18s;box-shadow: {{ t.shadow }}">
+    <i class="{{ t.icon }}" style="font-size:21px"></i><span style="font-size:10px;font-weight:600;letter-spacing:.01em">{{ t.label }}</span>
+  </button>
+</sc-for>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:950},&quot;grade&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;초1&quot;,&quot;초2&quot;,&quot;초3&quot;,&quot;초4&quot;,&quot;초5&quot;,&quot;초6&quot;,&quot;중1&quot;,&quot;중2&quot;,&quot;중3&quot;,&quot;고1&quot;,&quot;고2&quot;,&quot;고3&quot;,&quot;성인&quot;],&quot;default&quot;:&quot;중3&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;학습&quot;},&quot;skin&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;lavender&quot;,&quot;cream&quot;,&quot;mint&quot;,&quot;butter&quot;,&quot;sky&quot;,&quot;peach&quot;,&quot;grape&quot;,&quot;lime&quot;],&quot;default&quot;:&quot;lavender&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;화면&quot;},&quot;themeMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;자동&quot;,&quot;밝게&quot;,&quot;어둡게&quot;],&quot;default&quot;:&quot;자동&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;화면&quot;},&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;징징&quot;,&quot;단호&quot;,&quot;응원&quot;],&quot;default&quot;:&quot;징징&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;캐릭터&quot;},&quot;nagSeconds&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:7,&quot;min&quot;:3,&quot;max&quot;:30,&quot;unit&quot;:&quot;초&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;캐릭터&quot;},&quot;focusMinutes&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:25,&quot;min&quot;:5,&quot;max&quot;:90,&quot;unit&quot;:&quot;분&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;집중&quot;},&quot;strictMode&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;집중&quot;}}">
+class Component extends DCLogic {
+  state = {
+    tab: 'home', secondsLeft: null, running: false, focusId: 1, streak: 5,
+    bx: 72, by: 70, talking: true, lineIdx: 0, poked: 0,
+    deleteStep: 0, buddyGone: false, togetherDays: 23,
+    grade: null, revealed: {}, charId: 'ppo', themeMode: null, seg: null, kidTasks: null, skin: null,
+    tasks: [
+      { id: 1, title: '영어 단어 20개 암기', goal: '토익 900', est: '25분', done: false },
+      { id: 2, title: '이력서 자기소개 문단 수정', goal: '이직 준비', est: '25분', done: false },
+      { id: 3, title: '헬스장 — 하체 루틴', goal: '체중 -5kg', est: '50분', done: false },
+      { id: 4, title: '방 책상 정리', goal: null, est: '10분', done: true },
+      { id: 5, title: '약 챙겨 먹기', goal: null, est: '1분', done: true }
+    ],
+    goals: [
+      { name: '토익 900점', why: '10월 시험까지', pct: 42, linked: 1 },
+      { name: '이직 준비', why: '포트폴리오 완성', pct: 18, linked: 1 },
+      { name: '체중 -5kg', why: '매주 3회 운동', pct: 60, linked: 1 }
+    ],
+    apps: [
+      { name: '인스타그램', icon: 'ph-instagram-logo', on: true },
+      { name: '유튜브', icon: 'ph-youtube-logo', on: true },
+      { name: '틱톡', icon: 'ph-music-notes', on: true },
+      { name: '모바일 게임', icon: 'ph-game-controller', on: false }
+    ],
+    reminders: [
+      { name: '캐릭터 잔소리', icon: 'ph-chat-teardrop-dots', on: true },
+      { name: '잠금화면 위젯으로 항상 표시', icon: 'ph-device-mobile', on: true },
+      { name: '미완료 시 반복 알림', icon: 'ph-bell-ringing', on: true }
+    ]
+  };
+  componentDidMount() {
+    const gap = (this.props.nagSeconds ?? 7) * 1000;
+    this.wander = setInterval(() => {
+      this.setState(s => ({
+        bx: 8 + Math.round(Math.random() * 62),
+        by: s.tab === 'focus' ? 72 + Math.round(Math.random() * 8) : 34 + Math.round(Math.random() * 42),
+        talking: false
+      }));
+      this.talkT = setTimeout(() => this.setState(s => ({ talking: true, lineIdx: s.lineIdx + 1 })), 2700);
+    }, gap);
+  }
+  componentWillUnmount() { clearInterval(this.wander); clearInterval(this.int); clearTimeout(this.talkT); }
+  base() { return (this.props.focusMinutes ?? 25) * 60; }
+  talk() {
+    return {
+      kidIdle: [
+        '우리 « {n} » 같이 하자! 응?', '나 기다리다가 폭신폭신 잠들 것 같아…', '{n} 하면 내가 뿅 하고 칭찬해줄게!',
+        '히잉… {n} 아직 안 했어?', '나랑 손가락 걸자! {n} 딱 하나만!', '{n} 하면 나 폴짝폴짝 뛸 거야!',
+        '나 아까부터 여기서 기다렸다구…', '{n} 무섭지 않아! 내가 옆에 있잖아!', '조금만! 아주 조금만 해보자, 응?',
+        '{n} 끝나면 우리 같이 쉬는 거야!', '나 배고파… 칭찬 도장 먹고 싶어…', '{n} 하는 거 나 보고 싶어! 보여줘!',
+        '하나 끝내면 별 하나 반짝! 어때?', '나 오늘 너 기다리면서 세 번 하품했어…', '으쌰으쌰! 우리 힘 합치면 금방이야!',
+        '{n} 먼저 하면 나머지는 슝슝 지나가!'
+      ],
+      kidRunning: [
+        '우와 잘한다 잘한다!', '나 여기서 지켜보고 있을게!', '조금만 더! 거의 다 왔어!',
+        '우리 진짜 멋지다… 나 감동했어…', '집중하는 모습 완전 반짝반짝해!', '나 숨도 안 쉬고 보고 있어!',
+        '이대로! 이대로 쭉쭉!', '조금 있으면 별 하나 생긴다!', '나 지금 응원 춤 추고 있어!',
+        '딴 데 보면 나 눈 커질 거야… 봤지?', '와… 우리 오늘 좀 하는데?', '끝나면 내가 폭신 안아줄게!'
+      ],
+      allDone: [
+        '오늘 거 다 했다! 나 심장 두근거려…', '진짜 다 한 거지? 대박이야', '내일도 나 깨워줄 거지?',
+        '오늘 영단어 3개도 봤어? 잠금화면에 있었잖아', '나 오늘 하루 종일 기분 좋았어…', '우리 오늘 완전 팀워크 최고였어!',
+        '이런 날이 또 오면 나 울지도 몰라…', '오늘은 폰 좀 봐도 돼. 딱 조금만!', '나 자랑하고 싶어. 누구한테 하지…',
+        '오늘의 너, 어제의 너보다 한 칸 위!', '나 지금 배가 칭찬으로 빵빵해', '내일도 이만큼만 하면 우리 무적이야',
+        '수고했어… 진짜로, 진심으로.', '나 오늘 밤 좋은 꿈 꿀 것 같아'
+      ],
+      running: [
+        '보고 있어. 딴짓하면 삐질 거야', '좋아 좋아, 이대로 {m}분만 더!', '폰 만지지 마. 나 여기 있어',
+        '지금 표정 진지한데… 좀 멋있다', '{m}분 남았어. 나 안 잔다?', '흠흠, 감시 중이야. 눈 두 개 다 뜨고',
+        '이 흐름 끊지 마. 아깝잖아', '집중하는 거 보니까 나 뿌듯해…', '알림 와도 무시해. 내가 대신 봐줄게',
+        '조금만 버티면 여기 별 하나 붙어', '나 지금 응원 게이지 최대치야', '괜찮아, 딱 이만큼만 더 가면 돼',
+        '어디 안 가. 끝날 때까지 옆에 있을게', '{m}분 뒤에 우리 하이파이브하자'
+      ],
+      cheer: [
+        '{n}, 우리 같이 해볼까?', '5분만! 5분만 하면 내가 칭찬해줄게', '지금 시작하면 오늘 완벽해져',
+        '할 수 있어. 나는 이미 알고 있었어', '{n} 하나면 오늘 기분 확 달라질걸?', '천천히 해도 돼. 시작만 하자',
+        '오늘의 너, 꽤 괜찮아 보여!', '{n}부터 가볍게 톡 건드려보자', '완벽하지 않아도 괜찮아. 하기만 하자',
+        '나는 항상 너 편이야. 알지?', '어제 해낸 사람이 오늘도 해내는 거야', '{n} 끝난 너, 상상해봐. 멋지지?',
+        '한 칸만 올라가면 돼. 딱 한 칸!', '준비 됐어? 나는 아까부터 됐어!', '자, 심호흡 한 번. 그리고 시작!'
+      ],
+      stern: [
+        '지금 « {n} » 시작해', '변명 그만. 타이머 눌러', '폰 내려놔. 지금이야',
+        '5분 뒤에 다시 물어볼 거야', '나중은 안 와. 지금만 있어', '{n}, 지금 아니면 오늘도 없어',
+        '스크롤 그만. 손 떼자', '고민할 시간에 벌써 끝났어', '핑계는 접어두고 한 줄만',
+        '너 어제도 똑같이 말했어', '{m}분이면 돼. 없다고 하지 마', '지금 시작, 이야기 끝',
+        '오늘 못 한 건 내일 두 배로 와', '눈 봐. 나 진지해'
+      ],
+      whine: [
+        '으엥… « {n} » 언제 해…?', '나 계속 기다렸단 말이야ㅠㅠ', '{n}… 5분만이라도 해줘…',
+        '또 폰 만졌지? 나 다 봤어…', '나 시들시들해지고 있어… 물 대신 {n} 줘…', '히잉 나 여기서 계속 서 있었어…',
+        '나 심심해… 놀아주진 말고 {n} 해줘…', '너 없는 동안 나 세 번이나 한숨 쉬었어', '{n} 안 하면 나 배 아파…',
+        '우리 사이 이러면 안 되잖아…ㅠ', '오늘도 나만 기다리는 거야…?', '나 이러다 진짜 삐질 거야… 진짜야…',
+        '{m}분… 딱 {m}분만… 응? 응?', '나 눈물 고였어… 이거 진짜 눈물이야', '조금만… 아주 조금만 해주면 안 될까…',
+        '나 착하게 기다렸는데… 상 안 줘?'
+      ]
+    };
+  }
+  suggests() {
+    return {
+      '초등': [
+        { icon: 'ph-cards', title: '오늘 영단어 3개 다시 보기', why: '잠금화면에 나온 단어 — 자기 전에 한 번 더', est: '5분' },
+        { icon: 'ph-function', title: '수학 공식 문제 3개 풀기', why: '오늘 공식이 아직 손에 안 익었어', est: '10분' },
+        { icon: 'ph-book-open', title: '소리 내어 책 5쪽 읽기', why: '읽기 습관 만들기', est: '10분' },
+        { icon: 'ph-backpack', title: '내일 준비물 챙기기', why: '아침에 허둥대지 않게', est: '5분' }
+      ],
+      '중등': [
+        { icon: 'ph-cards', title: '영단어 20개 암기', why: '오늘 나온 단어 포함 — 시험 범위', est: '25분' },
+        { icon: 'ph-text-aa', title: '오늘 영문법 예문 5개 만들기', why: '문법은 쓰면서 외워야 남아', est: '15분' },
+        { icon: 'ph-function', title: '수학 오답 3문제 다시 풀기', why: '틀린 문제가 시험에 또 나와', est: '20분' },
+        { icon: 'ph-broom', title: '책상 위 정리', why: '집중 전에 시야 비우기', est: '10분' }
+      ],
+      '고등': [
+        { icon: 'ph-newspaper', title: '영어 지문 1개 정독 + 단어 정리', why: '수능형 독해는 매일이 핵심', est: '25분' },
+        { icon: 'ph-function', title: '수학 유형 문제 5개', why: '오늘 공식 적용 연습', est: '40분' },
+        { icon: 'ph-notebook', title: '오늘 배운 내용 5줄 요약', why: '복습 안 하면 3일 뒤 절반 날아가', est: '10분' },
+        { icon: 'ph-moon', title: '자기 전 폰 30분 전 내려놓기', why: '수면이 다음 날 집중력을 정한다', est: '—' }
+      ],
+      '성인': [
+        { icon: 'ph-briefcase', title: '비즈니스 표현 5개 말로 연습', why: '오늘 표현 — 메일·미팅에 바로 씀', est: '15분' },
+        { icon: 'ph-target', title: '오늘의 우선순위 1개만 정하기', why: '중요한 일 먼저, 급한 일 나중', est: '5분' },
+        { icon: 'ph-envelope-open', title: '밀린 메일 15분 몰아서 처리', why: '조각난 확인이 집중을 깨뜨려', est: '15분' },
+        { icon: 'ph-person-simple-run', title: '20분 걷기', why: '운동한 날 집중 시간이 더 길었어', est: '20분' }
+      ]
+    };
+  }
+  quotes() {
+    return {
+      '초등': [
+        ['천 리 길도 한 걸음부터.', '옛말'],
+        ['오늘 할 일을 내일로 미루지 말자.', '옛말'],
+        ['넘어져도 다시 일어나면 그게 이긴 거야.', '넬슨 만델라'],
+        ['작은 일도 계속하면 큰 힘이 돼.', '이순신'],
+        ['하고 싶은 마음보다 먼저 몸을 움직여 봐.', '뽀약이']
+      ],
+      '중등': [
+        ['시작이 반이다.', '아리스토텔레스'],
+        ['가장 어려운 일은 시작하기로 마음먹는 것이다.', '아멜리아 에어하트'],
+        ['오늘 걷지 않으면 내일은 뛰어야 한다.', '옛말'],
+        ['성공은 매일 반복한 작은 노력의 합이다.', '로버트 콜리어'],
+        ['나는 실패한 것이 아니다. 안 되는 방법을 찾은 것이다.', '토머스 에디슨']
+      ],
+      '고등': [
+        ['우리는 반복하는 것의 결과다. 탁월함은 습관이다.', '아리스토텔레스'],
+        ['규율은 원하는 것과 이루는 것 사이의 다리다.', '짐 론'],
+        ['할 수 있다고 믿으면 이미 절반은 온 것이다.', '시어도어 루스벨트'],
+        ['오늘의 고통은 내일의 힘이다.', '옛말'],
+        ['운은 준비된 사람에게만 기회로 보인다.', '루이 파스퇴르']
+      ],
+      '성인': [
+        ['중요한 일을 먼저 하라. 급한 일이 아니라.', '스티븐 코비'],
+        ['계획 없는 목표는 그저 소망일 뿐이다.', '생텍쥐페리'],
+        ['바쁜 것과 생산적인 것은 다르다.', '팀 페리스'],
+        ['하지 않기로 정하는 것이 전략이다.', '마이클 포터'],
+        ['완벽함보다 완료가 낫다.', '셰릴 샌드버그']
+      ]
+    };
+  }
+  curriculum() {
+    return {
+      '초1': {
+        math: '3 + 4 = 7', mathNote: '한 자리 수 더하기 — 손가락으로 세어도 괜찮아!',
+        grammarTitle: '인사말 — Hello / Hi', grammarExample: 'Hello! I am Mina.', grammarNote: '내 이름 말할 때는 I am',
+        words: [['cat', '고양이'], ['dog', '강아지'], ['milk', '우유']],
+        quote: ['오늘 한 개만 해도 대단해!', '']
+      },
+      '초2': {
+        math: '2 × 3 = 6', mathNote: '곱셈은 2를 3번 더한 것과 같아',
+        grammarTitle: '숫자 세기 — one, two, three', grammarExample: 'I have two pencils.', grammarNote: '2개부터는 낱말 끝에 s',
+        words: [['apple', '사과'], ['school', '학교'], ['friend', '친구']],
+        quote: ['조금씩 하면 어느새 다 끝나 있어!', '']
+      },
+      '초3': {
+        math: '1/2 + 1/2 = 1', mathNote: '반쪽 두 개를 합치면 하나가 돼',
+        grammarTitle: '좋아하는 것 말하기 — like', grammarExample: 'I like pizza.', grammarNote: 'I 다음엔 like 그대로',
+        words: [['happy', '행복한'], ['study', '공부하다'], ['water', '물']],
+        quote: ['어제보다 한 걸음이면 충분해!', '']
+      },
+      '초4': {
+        math: '(직사각형 넓이) = 가로 × 세로', mathNote: '칸 수를 세는 대신 곱하면 빨라',
+        grammarTitle: '지금 하는 일 — be동사 + ~ing', grammarExample: 'I am reading a book.', grammarNote: '지금 하고 있는 일에 써',
+        words: [['because', '왜냐하면'], ['answer', '대답, 답'], ['travel', '여행하다']],
+        quote: ['시작이 제일 어렵고, 나머지는 쉬워!', '']
+      },
+      '초5': {
+        math: '(평균) = 자료의 합 ÷ 자료의 개수', mathNote: '다 더한 다음 개수로 나눠',
+        grammarTitle: '과거의 일 — 동사 + ed', grammarExample: 'I finished my homework.', grammarNote: '불규칙 동사는 따로 외워야 해',
+        words: [['plan', '계획, 계획하다'], ['choose', '고르다'], ['almost', '거의']],
+        quote: ['미루면 재미없어지고, 하면 가벼워져!', '']
+      },
+      '초6': {
+        math: '(원의 넓이) = 3.14 × 반지름 × 반지름', mathNote: '반지름을 두 번 곱하는 게 핵심',
+        grammarTitle: '비교하기 — 형용사 + er than', grammarExample: 'Today is better than yesterday.', grammarNote: 'good은 better로 바뀌어',
+        words: [['important', '중요한'], ['practice', '연습하다'], ['finish', '끝내다']],
+        quote: ['끝까지 해본 사람만 아는 기분이 있어!', '']
+      },
+      '중1': {
+        math: 'a × (b + c) = ab + ac', mathNote: '분배법칙 — 괄호 앞 수를 각각 곱해서 푼다',
+        grammarTitle: 'be동사 현재형 — am / are / is', grammarExample: 'She is my classmate.', grammarNote: '주어가 3인칭 단수면 is',
+        words: [['effort', '노력'], ['decide', '결정하다'], ['habit', '습관']],
+        quote: ['작게 시작해도 시작한 사람이 이긴다.', '뽀약이']
+      },
+      '중2': {
+        math: '(a + b)² = a² + 2ab + b²', mathNote: '곱셈 공식 — 2ab 항을 빼먹지 않기',
+        grammarTitle: '현재완료 have/has + p.p.', grammarExample: 'I have finished my homework.', grammarNote: '과거에 시작해 지금까지 이어진 일',
+        words: [['achieve', '이루다, 달성하다'], ['focus', '집중하다'], ['delay', '미루다, 지연'] ],
+        quote: ['미룬 하루는 사라지지 않고 내일에 쌓인다.', '뽀약이']
+      },
+      '중3': {
+        math: 'x = (−b ± √(b² − 4ac)) / 2a', mathNote: '이차방정식의 근의 공식 — 판별식 b²−4ac 먼저 확인',
+        grammarTitle: '수동태 be + p.p. + by', grammarExample: 'The plan was made by us.', grammarNote: '행위자가 중요하지 않으면 by 생략',
+        words: [['consistent', '꾸준한, 일관된'], ['distract', '집중을 흐트러뜨리다'], ['progress', '진전, 나아가다']],
+        quote: ['오늘의 30분이 내년의 실력을 만든다.', '뽀약이']
+      },
+      '고1': {
+        math: 'a³ + b³ = (a + b)(a² − ab + b²)', mathNote: '세제곱의 합 — 부호 −ab 주의',
+        grammarTitle: '관계대명사 that / which 생략', grammarExample: 'The book (that) I read was short.', grammarNote: '목적격 관계대명사는 생략 가능',
+        words: [['discipline', '자기 관리, 규율'], ['obstacle', '장애물'], ['deliberate', '의도적인'] ],
+        quote: ['의지가 아니라 시스템이 사람을 움직인다.', '뽀약이']
+      },
+      '고2': {
+        math: "f'(x) = lim(h→0) [f(x+h) − f(x)] / h", mathNote: '미분계수의 정의 — 순간변화율',
+        grammarTitle: '가정법 과거 If + 과거, would + 동사원형', grammarExample: 'If I started now, I would finish early.', grammarNote: '현재 사실의 반대를 말할 때',
+        words: [['persistence', '끈기'], ['accumulate', '축적되다'], ['inevitable', '피할 수 없는']],
+        quote: ['집중은 재능이 아니라 환경 설계다.', '뽀약이']
+      },
+      '고3': {
+        math: '∫ xⁿ dx = xⁿ⁺¹ / (n+1) + C', mathNote: '부정적분 기본 공식 — n ≠ −1',
+        grammarTitle: '분사구문 — 접속사 + 주어 생략', grammarExample: 'Studying hard, he passed the exam.', grammarNote: '주절과 주어가 같을 때만 가능',
+        words: [['perseverance', '인내, 끈질김'], ['imminent', '임박한'], ['culminate', '정점에 이르다']],
+        quote: ['남은 날은 줄지만, 오늘 할 수 있는 건 그대로다.', '']
+      },
+      '성인': {
+        math: '복리 = 원금 × (1 + r)ⁿ', mathNote: '작은 r도 n이 커지면 크게 벌어진다',
+        grammarTitle: '완곡한 요청 — Would you mind + ~ing', grammarExample: 'Would you mind sending the file?', grammarNote: '업무 메일에서 가장 무난한 표현',
+        words: [['leverage', '활용하다, 지렛대'], ['bandwidth', '여유 시간·역량'], ['align', '맞추다, 합의하다']],
+        quote: ['하루의 우선순위 하나만 지켜도 그 주는 성공이다.', '']
+      }
+    };
+  }
+  startTick() {
+    clearInterval(this.int);
+    this.int = setInterval(() => {
+      this.setState(s => {
+        const n = (s.secondsLeft ?? this.base()) - 1;
+        if (n <= 0) {
+          clearInterval(this.int);
+          const k = s.grade && (s.grade[0] === '초');
+          const patch = { secondsLeft: null, running: false, talking: true, lineIdx: s.lineIdx + 1 };
+          if (k) patch.kidTasks = (s.kidTasks || []).map(t => t.id === s.focusId ? { ...t, done: true } : t);
+          else patch.tasks = s.tasks.map(t => t.id === s.focusId ? { ...t, done: true } : t);
+          return patch;
+        }
+        return { secondsLeft: n };
+      });
+    }, 1000);
+  }
+  renderVals() {
+    const s = this.state, tone = this.props.tone ?? '징징';
+    const KID_TASKS = [
+      { id: 101, title: '받아쓰기 10문제', goal: '한글 척척', est: '15분', done: false },
+      { id: 102, title: '수학 익힘책 3쪽', goal: '수학 자신감', est: '20분', done: false },
+      { id: 103, title: '줄넘기 100번', goal: '튼튼 몸', est: '10분', done: false },
+      { id: 104, title: '책가방 챙기기', goal: null, est: '5분', done: true },
+      { id: 105, title: '물 한 컵 마시기', goal: null, est: '1분', done: true }
+    ];
+    const base = this.base(), secs = s.secondsLeft ?? base;
+    const grade0 = s.grade ?? this.props.grade ?? '중3';
+    const segList0 = { '초등': ['초1', '초2', '초3', '초4', '초5', '초6'], '중등': ['중1', '중2', '중3'], '고등': ['고1', '고2', '고3'], '성인': ['성인'] };
+    const seg0 = s.seg ?? (grade0 === '성인' ? '성인' : grade0[0] === '초' ? '초등' : grade0[0] === '중' ? '중등' : '고등');
+    const kid = seg0 === '초등';
+    const taskList = kid ? (s.kidTasks || KID_TASKS) : s.tasks;
+    const cur = taskList.find(t => !t.done);
+    const curName = cur ? cur.title : null;
+    const tkey = kid ? 'kidTasks' : 'tasks';
+    const toggleTask = id => this.setState(st => ({ [tkey]: (kid ? (st.kidTasks || KID_TASKS) : st.tasks).map(t => t.id === id ? { ...t, done: !t.done } : t) }));
+    const tasks = taskList.filter(t => !cur || t.id !== cur.id).map(t => ({
+      ...t, toggle: () => toggleTask(t.id),
+      checkIcon: t.done ? 'ph-fill ph-check-circle' : 'ph ph-circle',
+      checkColor: t.done ? 'var(--app-accent)' : 'var(--app-dim2)',
+      titleColor: t.done ? 'var(--app-dim2)' : 'var(--app-text)',
+      deco: t.done ? 'line-through' : 'none',
+      meta: t.est + (t.goal ? ' · ' + t.goal : '')
+    }));
+    const done = taskList.filter(t => t.done).length;
+    const mix = (p, w) => 'color-mix(in oklab,var(--app-accent) ' + p + '%,' + w + ')';
+    const grad = (a, b, c) => 'linear-gradient(165deg,' + a + ',' + b + ' 62%,' + c + ')';
+    const CHARS = [
+      { id: 'ppo', name: '뽀약이', antenna: true, radius: '50% 50% 44% 44%', bg: grad(mix(88, '#fff'), mix(100, '#fff'), mix(70, '#000')) },
+      { id: 'nyang', name: '냥냥이', ears: true, radius: '46%', bg: grad(mix(55, '#fff'), mix(85, '#fff'), mix(60, '#000')) },
+      { id: 'ppyak', name: '삐약이', beak: true, tuft: true, radius: '52% 52% 48% 48%', bg: grad(mix(40, '#fff'), mix(70, '#fff'), mix(90, '#fff')) },
+      { id: 'mung', name: '뭉이', radius: '48% 52% 42% 46%', bg: grad(mix(25, '#fff'), mix(60, '#fff'), mix(80, '#000')) },
+      { id: 'toto', name: '토토', ears: true, tuft: true, radius: '54% 54% 42% 42%', bg: grad(mix(70, '#fff'), mix(95, '#fff'), mix(55, '#000')) },
+      { id: 'kong', name: '콩이', antenna: true, beak: true, radius: '42% 42% 50% 50%', bg: grad(mix(60, '#000'), mix(95, '#000'), mix(75, '#000')) },
+      { id: 'duri', name: '두리', tuft: true, radius: '50%', bg: grad(mix(35, '#fff'), mix(80, '#fff'), mix(100, '#000')) }
+    ];
+    const mode = s.themeMode ?? this.props.themeMode ?? '자동';
+    const hr = new Date().getHours();
+    const isLight = mode === '밝게' || (mode === '자동' && hr >= 7 && hr < 19);
+    const ch = CHARS.find(c => c.id === s.charId) || CHARS[0];
+    const bname = ch.name;
+    const grade = grade0, segList = segList0, seg = seg0;
+    const cur2 = this.curriculum()[grade] || this.curriculum()['중3'];
+    const qPool = [].concat([cur2.quote], this.quotes()[grade[0] === '초' ? '초등' : grade[0] === '중' ? '중등' : grade[0] === '고' ? '고등' : '성인']);
+    const qIdx = ((s.quoteIdx || 0) % qPool.length + qPool.length) % qPool.length;
+    const pickQuote = qPool[qIdx];
+    const tier = grade[0] === '초' ? '초등' : grade[0] === '중' ? '중등' : grade[0] === '고' ? '고등' : '성인';
+    const added = s.added || {};
+    const suggests = this.suggests()[tier].map(x => ({
+      icon: 'ph-fill ' + x.icon, title: x.title, why: x.why, est: x.est,
+      isAdded: !!added[x.title], notAdded: !added[x.title],
+      add: () => this.setState(st => {
+        if ((st.added || {})[x.title]) return {};
+        const t = { id: Date.now(), title: x.title, goal: null, est: x.est, done: false };
+        const patch = { added: { ...(st.added || {}), [x.title]: true } };
+        if (tier === '초등') patch.kidTasks = [...(st.kidTasks || []), t];
+        else patch.tasks = [...st.tasks, t];
+        return patch;
+      })
+    }));
+    const posFor = k => k === 'focus' ? { bx: 62, by: 76 } : { bx: 72, by: 70 };
+    const go = k => () => this.setState({ tab: k, ...posFor(k) });
+    const tabs = [['home', 'ph-house', '홈'], ['lock', 'ph-lock-simple', '잠금'], ['goals', 'ph-flag-pennant', '목표'], ['focus', 'ph-timer', '집중'], ['settings', 'ph-gear-six', '설정']].map(([k, ic, label]) => ({
+      key: k, go: go(k), label,
+      icon: (s.tab === k ? 'ph-fill ' : 'ph ') + ic,
+      color: s.tab === k ? 'var(--app-accent-ink)' : 'var(--app-dim)',
+      bg: s.tab === k ? 'var(--app-tab-active)' : 'transparent',
+      shadow: s.tab === k ? '0 4px 16px var(--app-glow)' : 'none'
+    }));
+    const focusTask = taskList.find(t => t.id === s.focusId) || cur;
+    const circ = 2 * Math.PI * 104;
+    const mm = String(Math.floor(secs / 60)).padStart(2, '0'), ss = String(secs % 60).padStart(2, '0');
+    const mkSwitch = key => s[key].map((a, i) => ({
+      ...a,
+      toggle: () => this.setState(st => ({ [key]: st[key].map((x, j) => j === i ? { ...x, on: !x.on } : x) })),
+      swBg: a.on ? 'var(--app-accent)' : 'var(--app-line)',
+      knobX: a.on ? (kid ? '24px' : '20px') : '0px'
+    }));
+
+    const nagOn = s.reminders[0].on;
+    let lines; const bubbleFont = kid ? '13.5px' : '12.5px';
+    const T = this.talk();
+    if (kid && curName && !s.running) lines = T.kidIdle;
+    else if (kid && s.running) lines = T.kidRunning;
+    else if (!curName) lines = T.allDone;
+    else if (s.running) lines = T.running;
+    else if (tone === '응원') lines = T.cheer;
+    else if (tone === '단호') lines = T.stern;
+    else lines = T.whine;
+    const line = lines[s.lineIdx % lines.length]
+      .split('{n}').join(curName || '오늘 할 일')
+      .split('{m}').join(String(Number(mm) || 5));
+    const leftSide = s.bx < 40;
+
+    const SKINS = [
+      { id: 'lavender', name: '라벤더', dot: '#9184d9', dark: null },
+      { id: 'cream', name: '크림 코랄', dot: '#e0512c', dark: false },
+      { id: 'mint', name: '민트', dot: '#0d8f6c', dark: false },
+      { id: 'butter', name: '버터', dot: '#c9740a', dark: false },
+      { id: 'sky', name: '스카이', dot: '#2f5fe8', dark: false },
+      { id: 'peach', name: '피치', dot: '#d63472', dark: false },
+      { id: 'grape', name: '그레이프', dot: '#6b3fe0', dark: false },
+      { id: 'lime', name: '라임 나이트', dot: '#a8e838', dark: true }
+    ];
+    const skinId = s.skin ?? this.props.skin ?? 'lavender';
+    const skin = SKINS.find(k => k.id === skinId) || SKINS[0];
+    const skinDark = skin.dark === null ? !isLight : skin.dark;
+
+    return {
+      appSkin: skin.id,
+      appTheme: skinDark ? 'dark' : 'light',
+      isDarkTheme: skinDark,
+      skinName: skin.name,
+      skinNote: skin.dark === null ? '라벤더는 위의 밝기 설정을 따라가. 다른 색은 각자 정해진 밝기로 보여.' : '이 색은 ' + (skin.dark ? '어두운' : '밝은') + ' 화면으로 고정돼 있어.',
+      skins: SKINS.map(k => ({
+        name: k.name, dot: k.dot,
+        pick: () => this.setState({ skin: k.id }),
+        bg: k.id === skin.id ? 'var(--app-glow2)' : 'var(--app-sunken)',
+        border: k.id === skin.id ? 'var(--app-accent)' : 'transparent',
+        color: k.id === skin.id ? 'var(--app-text)' : 'var(--app-dim)'
+      })),
+      themeModes: ['자동', '밝게', '어둡게'].map(m => ({
+        label: m, pick: () => this.setState({ themeMode: m }),
+        bg: m === mode ? 'var(--app-glow2)' : 'transparent',
+        color: m === mode ? 'var(--app-text)' : 'var(--app-dim)',
+        border: m === mode ? 'var(--app-accent)' : 'var(--app-line)'
+      })),
+      themeNote: mode === '자동'
+        ? '해 뜨면 밝게, 저녁 7시 이후엔 어둡게 — 지금은 ' + (skinDark ? '어두운' : '밝은') + ' 화면이야.'
+        : mode === '밝게' ? '낮에 밖에서 보기 좋아. 배터리는 조금 더 써.' : '밤에 눈이 편하고, 할 일 한 줄만 도드라져.',
+      isHome: s.tab === 'home', isGoals: s.tab === 'goals', isFocus: s.tab === 'focus', isSettings: s.tab === 'settings', isLock: s.tab === 'lock',
+      gradeLabel: grade,
+      gradeSegs: [['초등', ['초1', '초2', '초3', '초4', '초5', '초6']], ['중등', ['중1', '중2', '중3']], ['고등', ['고1', '고2', '고3']], ['성인', ['성인']]].map(([label, list]) => ({
+        label, pick: () => this.setState({ seg: label, grade: list[0], revealed: {}, kidTasks: label === '초등' ? KID_TASKS : null }),
+        bg: label === seg ? 'var(--app-glow2)' : 'transparent',
+        color: label === seg ? 'var(--app-text)' : 'var(--app-dim)',
+        border: label === seg ? 'var(--app-accent)' : 'var(--app-line)'
+      })),
+      grades: (segList[seg] || segList['중등']).map(g => ({
+        label: g, pick: () => this.setState({ grade: g, revealed: {} }),
+        bg: g === grade ? 'var(--app-glow2)' : 'transparent',
+        color: g === grade ? 'var(--app-text)' : 'var(--app-dim)',
+        border: g === grade ? 'var(--app-accent)' : 'var(--app-line)'
+      })),
+      mathFormula: cur2.math, mathNote: cur2.mathNote,
+      grammarTitle: cur2.grammarTitle, grammarExample: cur2.grammarExample, grammarNote: cur2.grammarNote,
+      words: cur2.words.map(([en, ko], i) => ({
+        en, shown: s.revealed[grade + i] ? ko : '· · · · ·',
+        meaningColor: s.revealed[grade + i] ? 'var(--app-text)' : 'var(--app-dim2)',
+        toggle: () => this.setState(st => ({ revealed: { ...st.revealed, [grade + i]: !st.revealed[grade + i] } }))
+      })),
+      suggests,
+      suggestNote: tier === '초등' ? '오늘 잠금화면에 나온 것들이랑 이어져 있어. 담으면 할 일에 바로 들어가!'
+        : tier === '성인' ? '오늘 학습 카드와 최근 완료 패턴을 보고 골랐어요. 담으면 할 일로 들어갑니다.'
+        : '오늘 학습 카드랑 이어진 것들이야. 담으면 할 일 목록에 들어가.',
+      quoteText: pickQuote[0], quoteBy: pickQuote[1] || bname,
+      quoteNo: (qIdx + 1) + ' / ' + qPool.length,
+      nextQuote: () => this.setState(st => ({ quoteIdx: (st.quoteIdx || 0) + 1 })),
+      streak: s.streak,
+      weekDots: [1, 1, 1, 1, 1, 0, 0].map((v, i) => ({ bg: i < s.streak ? 'var(--app-accent)' : 'var(--app-line)' })),
+      heroKicker: cur ? (kid ? '지금은 이거 하나만!' : tone === '응원' ? '이거 하나만 하면 돼요' : '지금 이것만') : (kid ? '오늘 다 했어! 최고!' : '오늘 끝'),
+      heroTitle: cur ? cur.title : '오늘 할 일을 모두 끝냈어요',
+      heroEst: cur ? cur.est : '', heroGoal: cur ? (cur.goal || '개인') : '', hasCurrent: !!cur,
+      startFocus: () => { if (cur) this.setState({ focusId: cur.id, tab: 'focus', bx: 62, by: 76, talking: true, lineIdx: this.state.lineIdx + 1 }); },
+      snooze: () => this.setState(st => ({ talking: true, lineIdx: st.lineIdx + 1, bx: 12, by: 46 })),
+      tasks, doneCount: done, totalCount: taskList.length,
+      progW: Math.round(done / taskList.length * 100) + '%',
+      goals: s.goals.map(g => ({ ...g, pctW: g.pct + '%' })),
+      focusedMin: done * (this.props.focusMinutes ?? 25),
+      tabs, showTabs: !((this.props.strictMode ?? false) && s.running),
+      focusTitle: focusTask ? focusTask.title : '할 일을 선택하세요',
+      timeText: mm + ':' + ss,
+      dashOffset: circ * (1 - secs / base),
+      focusStateLabel: s.running ? (tone === '응원' ? '잘 하고 있어요' : '집중 중') : '준비되면 시작',
+      runIcon: s.running ? 'ph-fill ph-pause' : 'ph-fill ph-play',
+      runLabel: s.running ? '일시정지' : '시작',
+      toggleRun: () => { if (s.running) { clearInterval(this.int); this.setState({ running: false, talking: true, lineIdx: this.state.lineIdx + 1 }); } else { this.startTick(); this.setState({ running: true, talking: true, lineIdx: this.state.lineIdx + 1 }); } },
+      resetTimer: () => { clearInterval(this.int); this.setState({ running: false, secondsLeft: null }); },
+      blockNote: '방해 앱 ' + s.apps.filter(a => a.on).length + '개 차단 중',
+      apps: mkSwitch('apps'), reminders: mkSwitch('reminders'),
+      buddyAlive: !s.buddyGone, buddyGone: s.buddyGone,
+      togetherDays: s.togetherDays,
+      buddyStageLabel: (s.togetherDays < 7 ? '아기 ' : s.togetherDays < 21 ? '쑥쑥 ' : '든든 ') + bname,
+      buddyName: bname,
+      hasAntenna: !!ch.antenna, hasEars: !!ch.ears, hasTuft: !!ch.tuft, hasBeak: !!ch.beak,
+      bodyRadius: ch.radius, bodyBg: ch.bg,
+      characters: CHARS.map(c => ({
+        name: c.name, radius: c.radius, bg: c.bg,
+        antenna: !!c.antenna, ears: !!c.ears, tuft: !!c.tuft, beak: !!c.beak,
+        pick: () => this.setState({ charId: c.id }),
+        cardBg: c.id === s.charId ? 'var(--app-glow)' : 'var(--app-sunken)',
+        cardBorder: c.id === s.charId ? 'var(--app-accent)' : 'transparent',
+        nameColor: c.id === s.charId ? 'var(--app-text)' : 'var(--app-dim)'
+      })),
+      moodW: Math.round(done / taskList.length * 60 + 40) + '%',
+      moodLabel: done >= 4 ? '기분 최고' : done >= 2 ? '보통' : '시들함',
+      deleteOpen: s.deleteStep > 0,
+      deleteTitle: s.deleteStep === 1 ? '진짜 지울 거야…?' : '마지막으로 하나만',
+      deleteBody: s.deleteStep === 1
+        ? '나 ' + s.togetherDays + '일 동안 너 깨우고, 할 일 다 기억해 놨는데… 지우면 나 이거 다 잊어버려.'
+        : '오늘 할 일 « ' + (curName || '오늘 거') + ' » 하나만 같이 끝내고 결정하면 안 될까? 그것도 싫으면… 알았어.',
+      keepLabel: s.deleteStep === 1 ? '미안, 남아줘' : '알았어, 하나만 하고 올게',
+      deleteLabel: s.deleteStep === 1 ? '그래도 지우기' : '지금 지우기',
+      askDelete: () => this.setState({ deleteStep: 1 }),
+      keepBuddy: () => this.setState({ deleteStep: 0, talking: true, lineIdx: s.lineIdx + 1, tab: s.deleteStep === 2 ? 'home' : s.tab }),
+      confirmDelete: () => s.deleteStep === 1 ? this.setState({ deleteStep: 2 }) : this.setState({ deleteStep: 0, buddyGone: true }),
+      reviveBuddy: () => this.setState({ buddyGone: false, talking: true, lineIdx: s.lineIdx + 1 }),
+      showBuddy: nagOn && !s.buddyGone && s.tab !== 'settings' && s.tab !== 'lock',
+      buddyX: s.bx + '%', buddyY: s.by + '%',
+      buddyTalking: s.talking,
+      buddyLine: line, bubbleFont,
+      chipPad: kid ? '13px 18px' : '12px 16px',
+      chipFont: kid ? '14.5px' : '13px',
+      swW: kid ? '56px' : '50px', swH: kid ? '32px' : '30px', swR: kid ? '16px' : '15px',
+      knobS: kid ? '28px' : '26px',
+      ctaH: kid ? '58px' : '54px', ctaFont: kid ? '16px' : '15px',
+      buddySize: kid ? '68px' : '56px',
+      cardRadius: kid ? '24px' : '20px',
+      heroKickerText: kid ? '지금은 이거 하나만!' : null,
+      isKid: kid,
+      bubbleLeft: leftSide ? '0px' : 'auto',
+      bubbleRight: leftSide ? 'auto' : '0px',
+      tailLeft: leftSide ? '20px' : 'auto',
+      tailRight: leftSide ? 'auto' : '20px',
+      mouthW: s.talking ? '13px' : '9px',
+      mouthH: s.talking ? '9px' : '4px',
+      mouthR: s.talking ? '6px' : '0 0 6px 6px',
+      mouthBg: ch.beak ? 'transparent' : '#1d1b26',
+      pokeBuddy: () => this.setState(st => ({ talking: true, lineIdx: st.lineIdx + 1 }))
+    };
+  }
+}
+</script>
+</body>
+</html>

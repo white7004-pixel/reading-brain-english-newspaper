@@ -7,6 +7,8 @@ export const defaultSettings: MonggleSettings = {
   determinedMonggle: true,
   quietHoursStart: '23:00', quietHoursEnd: '07:00',
   nudgeIntervalMinutes: 60,
+  motivationEnabled: true, readingEnabled: true, exerciseEnabled: true,
+  readingMinutes: 10, exerciseMinutes: 10,
 }
 
 export const settingsRepository = {

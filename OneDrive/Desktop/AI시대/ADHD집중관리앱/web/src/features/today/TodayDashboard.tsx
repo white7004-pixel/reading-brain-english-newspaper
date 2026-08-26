@@ -14,6 +14,7 @@ import { MonggleCoachPanel } from './MonggleCoachPanel'
 import { QuestList } from './QuestList'
 import { recommendForEnergy, type Energy } from './selectNowTask'
 import { TodayHeader } from './TodayHeader'
+import { DailyCareCard } from '../wellbeing/DailyCareCard'
 import type { CoachAction, CoachDecision } from '../nudges/taskMastery'
 
 export interface TodayDashboardProps {
@@ -63,6 +64,9 @@ export function TodayDashboard({
   const remaining = visibleTasks.filter((task) => task.id !== featured?.id)
   const personaNames = new Map(personas.map((persona) => [persona.id, persona.name]))
   const pending = pendingCandidates.filter((candidate) => candidate.status === 'pending_review')
+  const careTemplateIds = new Set(recurringTemplates.filter((template) => template.category === 'reading' || template.category === 'exercise').map((template) => template.id))
+  const careInstances = recurringInstances.filter((instance) => careTemplateIds.has(instance.templateId))
+  const workInstances = recurringInstances.filter((instance) => !careTemplateIds.has(instance.templateId))
 
   return <div className="today-dashboard">
     <section aria-label="오늘 요약">
@@ -88,11 +92,12 @@ export function TodayDashboard({
       onStart={onStartQuest}
       onComplete={onCompleteQuest}
     />}
+    <DailyCareCard day={new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date)} templates={recurringTemplates} instances={careInstances} onComplete={onCompleteRecurring} />
     <RecurringChecklist
       day={new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date)}
       selectedPersonaId={selectedPersonaId}
       templates={recurringTemplates}
-      instances={recurringInstances}
+      instances={workInstances}
       onComplete={onCompleteRecurring}
     />
     <section className="remaining-quests" aria-label="남은 퀘스트">

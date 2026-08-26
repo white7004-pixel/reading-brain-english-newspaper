@@ -35,13 +35,15 @@ export function RecurringChecklist({ day, selectedPersonaId, templates, instance
         ? instance.scheduledDay > day ? '예정' : '진행 중'
         : STATUS_LABELS[instance.status]
       return <li key={instance.id} aria-label={template.title} className={'recurring-checklist__item is-' + instance.status}>
-        <input
-          type="checkbox"
-          aria-label={template.title + ' 반복 업무 완료'}
-          checked={completed}
-          disabled={!actionable}
-          onChange={() => onComplete(instance)}
-        />
+        <label className="recurring-checklist__check-target">
+          <input
+            type="checkbox"
+            aria-label={template.title + ' 반복 업무 완료'}
+            checked={completed}
+            disabled={!actionable}
+            onChange={() => onComplete(instance)}
+          />
+        </label>
         <div>
           <strong>{template.title}</strong>
           <small>{template.estimateMinutes}분{template.firstAction ? ' · 첫 행동: ' + template.firstAction : ''}</small>

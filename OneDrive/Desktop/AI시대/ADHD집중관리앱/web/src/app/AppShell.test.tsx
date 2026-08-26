@@ -103,7 +103,12 @@ it('prioritizes the same unfinished mission on app entry after midnight', async 
   await waitFor(() => expect(screen.getByTestId('persistent-now-task')).toHaveTextContent('독서'))
 })
 
-it('keeps companion and persistent coaching visible but silent during a fresh calendar conflict', async () => {
+it('uses only the single 3D coach on Today instead of a second floating Monggle', () => {
+  render(<MemoryRouter><AppShell><TodayScreen /></AppShell></MemoryRouter>)
+  expect(screen.queryByTestId('monggle-companion')).not.toBeInTheDocument()
+})
+
+it('keeps persistent coaching visible but silent during a fresh calendar conflict', async () => {
   const now = '2026-08-23T10:30:00+09:00'
   await taskRepository.put({
     id: 'calendar-task', title: '상담 준비', day: '2026-08-23', status: 'open', priority: 2,
@@ -127,7 +132,7 @@ it('keeps companion and persistent coaching visible but silent during a fresh ca
   const prompt = await screen.findByTestId('persistent-now-task')
   expect(prompt).toHaveTextContent('상담 준비')
   expect(within(prompt).queryByRole('status')).not.toBeInTheDocument()
-  await waitFor(() => expect(document.querySelector('.monggle-companion__message')).toHaveAttribute('aria-live', 'off'))
+  expect(screen.queryByTestId('monggle-companion')).not.toBeInTheDocument()
   expect(taskMasteryRepository.load('calendar-task').misses).toBe(1)
 })
 

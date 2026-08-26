@@ -23,3 +23,12 @@ it('enables determined Monggle by default and persists an opt-out', () => {
   settingsRepository.save({ determinedMonggle: false })
   expect(settingsRepository.load().determinedMonggle).toBe(false)
 })
+
+it('defaults to gentle reading, exercise, and motivation controls and persists customization', () => {
+  expect(settingsRepository.load()).toMatchObject({
+    motivationEnabled: true, readingEnabled: true, exerciseEnabled: true,
+    readingMinutes: 10, exerciseMinutes: 10,
+  })
+  settingsRepository.save({ motivationEnabled: false, exerciseEnabled: false, readingMinutes: 5 })
+  expect(settingsRepository.load()).toMatchObject({ motivationEnabled: false, exerciseEnabled: false, readingMinutes: 5 })
+})

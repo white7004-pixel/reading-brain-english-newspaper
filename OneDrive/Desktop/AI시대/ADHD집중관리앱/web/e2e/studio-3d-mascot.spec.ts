@@ -1,27 +1,29 @@
 import { expect, test } from '@playwright/test'
 
-test('mascot never covers the primary action or bottom navigation', async ({ page }) => {
+test('Today uses one in-flow 3D coach and no floating companion', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
-  const mascot = await page.getByTestId('monggle-companion').boundingBox()
-  const nav = await page.getByRole('navigation', { name: '주요 메뉴' }).boundingBox()
-  expect(mascot && nav && mascot.y + mascot.height <= nav.y).toBeTruthy()
+  await expect(page.locator('.monggle-coach-panel')).toBeVisible()
+  await expect(page.locator('.monggle-coach-panel .pet-hero')).toHaveCount(1)
+  await expect(page.getByTestId('monggle-companion')).toHaveCount(0)
 })
 
-test('reduced motion leaves the mascot resting', async ({ page }) => {
+test('reduced motion keeps the single coach available without a second mascot', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
-  await expect(page.getByTestId('monggle-companion')).toHaveAttribute('data-mode', 'resting')
+  await expect(page.locator('.monggle-coach-panel .pet-hero')).toBeVisible()
+  await expect(page.getByTestId('monggle-companion')).toHaveCount(0)
 })
 
-test('all five routes retain the navigation order while the companion stays focused on Today', async ({ page }) => {
+test('all five routes retain the navigation order while the 3D coach stays on Today', async ({ page }) => {
   await page.goto('/')
   const labels = ['오늘', '월간', '몽글', '집중', '나']
   await expect(page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link')).toHaveText(labels)
-  await expect(page.getByTestId('monggle-companion')).toBeVisible()
+  await expect(page.locator('.monggle-coach-panel .pet-hero')).toBeVisible()
+  await expect(page.getByTestId('monggle-companion')).toHaveCount(0)
   for (const label of labels.slice(1)) {
     await page.getByRole('link', { name: label }).click()
     await expect(page.getByRole('navigation', { name: '주요 메뉴' })).toBeVisible()
-    await expect(page.getByTestId('monggle-companion')).not.toBeVisible()
+    await expect(page.getByTestId('monggle-companion')).toHaveCount(0)
   }
 })

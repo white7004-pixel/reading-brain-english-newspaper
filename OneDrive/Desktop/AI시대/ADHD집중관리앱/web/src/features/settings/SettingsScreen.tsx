@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { AppearanceTarget } from '../../core/model/appearance'
-import type { MonggleSettings, NudgeIntervalMinutes, ProfileType, ThemeMode } from '../../core/model/settings'
+import type { MonggleSettings, NudgeIntervalMinutes, ProfileType, ThemeMode, WellnessMinutes } from '../../core/model/settings'
 import { applyTheme } from '../../core/theme/theme'
 import { AppearanceScreen } from '../appearance/AppearanceScreen'
 import { CalendarSettings } from '../calendar/CalendarSettings'
@@ -43,6 +43,9 @@ export function SettingsScreen() {
         <div className="time-pair"><label>시작<input type="time" value={settings.quietHoursStart} onChange={(event) => update({ quietHoursStart: event.target.value })} /></label><label>종료<input type="time" value={settings.quietHoursEnd} onChange={(event) => update({ quietHoursEnd: event.target.value })} /></label></div>
       </SettingsRow>
       <SettingsRow title="단호한 코칭" description="필요할 때 더 분명하게 안내해요"><label className="switch"><input type="checkbox" checked={settings.determinedMonggle} onChange={(event) => update({ determinedMonggle: event.target.checked })} /><span>단호한 몽글이</span></label></SettingsRow>
+      <SettingsRow title="오늘의 명언" description="하루 한 번만, 부담 없는 문장을 보여줘요"><label className="switch"><input type="checkbox" checked={settings.motivationEnabled} onChange={(event) => update({ motivationEnabled: event.target.checked })} /><span>오늘의 명언 사용</span></label></SettingsRow>
+      <SettingsRow title="독서 루틴" description="작게 시작하고 못 해도 이월하지 않아요"><div className="wellness-setting"><label className="switch"><input type="checkbox" checked={settings.readingEnabled} onChange={(event) => update({ readingEnabled: event.target.checked })} /><span>독서 루틴 사용</span></label><label className="control-only">독서 시간<select disabled={!settings.readingEnabled} value={settings.readingMinutes} onChange={(event) => update({ readingMinutes: Number(event.target.value) as WellnessMinutes })}><option value="3">3분</option><option value="5">5분</option><option value="10">10분</option><option value="20">20분</option><option value="30">30분</option></select></label></div></SettingsRow>
+      <SettingsRow title="운동 루틴" description="가벼운 스트레칭도 충분한 시작이에요"><div className="wellness-setting"><label className="switch"><input type="checkbox" checked={settings.exerciseEnabled} onChange={(event) => update({ exerciseEnabled: event.target.checked })} /><span>운동 루틴 사용</span></label><label className="control-only">운동 시간<select disabled={!settings.exerciseEnabled} value={settings.exerciseMinutes} onChange={(event) => update({ exerciseMinutes: Number(event.target.value) as WellnessMinutes })}><option value="3">3분</option><option value="5">5분</option><option value="10">10분</option><option value="20">20분</option><option value="30">30분</option></select></label></div></SettingsRow>
     </SettingsSection>
 
     <SettingsSection title="화면">
