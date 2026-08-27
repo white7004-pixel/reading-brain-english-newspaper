@@ -569,7 +569,7 @@ function migrateChangeLog(value: unknown): StudioArticle["changeLog"] {
 }
 
 function isDifficulty(value: unknown): value is StudioArticle["difficulty"] {
-  return isRecord(value) && isNonNegativeNumber(value.value) && value.value >= 0.1 && value.value <= 12.9
+  return isRecord(value) && isNonNegativeNumber(value.value)
     && (value.method === "external-user-entry" || value.method === "nonfiction-lab-estimate")
     && isString(value.label);
 }

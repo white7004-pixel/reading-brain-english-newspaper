@@ -5,6 +5,7 @@ import { applyArticleEdit } from "@/lib/studio-workflow";
 import { studioControlId, studioIssueId } from "@/lib/studio-validation-ui";
 import type { ArticleEditPatch, ArticlePersistenceResult, StudioArticle, StudioMedia, StudioQuizQuestion, StudioSourceRef, StudioVocabularyItem, ValidationIssue } from "@/lib/studio-types";
 import type { QuestMetadata } from "@/lib/quest-types";
+import { GRADE_LEVELS, defaultOralReadingLimitSeconds, gradeLabel } from "@/lib/grade-levels";
 
 type Props = {
   article: StudioArticle;
@@ -136,10 +137,12 @@ export const ArticleEditor = forwardRef<ArticleEditorHandle, Props>(function Art
     </Section>
 
     <Section id="difficulty-age" title="난이도·연령">
-      <Field label="액셀러레이터 추정 AR"><input {...attrs("difficulty.value")} type="number" min="0" value={article.difficulty.value} onChange={(e) => commit({ difficulty: { ...article.difficulty, value: Number(e.target.value) || 0 } })} /></Field>
+      <Field label="액셀러레이터 추정 AR"><input {...attrs("difficulty.value")} type="number" min="0.1" max="12.9" step="0.1" value={article.difficulty.value} onChange={(e) => commit({ difficulty: { ...article.difficulty, value: Number(e.target.value) || 0 } })} /></Field>
       <Field label="난이도 산정 방식"><select value={article.difficulty.method} onChange={(e) => commit({ difficulty: { ...article.difficulty, method: e.target.value as StudioArticle["difficulty"]["method"] } })}><option value="nonfiction-lab-estimate">액셀러레이터 추정</option><option value="external-user-entry">외부 입력</option></select></Field>
       <Field label="난이도 설명"><input {...attrs("difficulty.label")} value={article.difficulty.label} onChange={(e) => commit({ difficulty: { ...article.difficulty, label: e.target.value } })} /></Field>
       <Field label="권장 독자"><select value={article.interestBand} onChange={(e) => commit({ interestBand: e.target.value as StudioArticle["interestBand"] })}><option value="lower-elementary">초등 저학년</option><option value="upper-elementary">초등 고학년</option><option value="teen">청소년</option><option value="adult">성인</option><option value="all-ages">전 연령</option></select></Field>
+      <Field label="권장 학년"><select {...attrs("gradeLevel")} value={article.gradeLevel ?? ""} onChange={(e) => commit({ gradeLevel: (e.target.value || undefined) as StudioArticle["gradeLevel"] })}><option value="">미지정</option>{GRADE_LEVELS.map((level) => <option key={level} value={level}>{gradeLabel(level)}</option>)}</select></Field>
+      <Field label="낭독 제한시간(초)"><div><input {...attrs("oralReadingLimitSeconds")} aria-label="낭독 제한시간(초)" type="number" min="1" step="1" value={article.oralReadingLimitSeconds ?? ""} onChange={(e) => commit({ oralReadingLimitSeconds: e.target.value === "" ? undefined : Number(e.target.value) })} /><small>학년 기본값 {defaultOralReadingLimitSeconds(article.gradeLevel)}초</small></div></Field>
       <Field label="권장 최소 연령"><input {...attrs("minAge")} type="number" min="1" value={article.minAge} onChange={(e) => commit({ minAge: Number(e.target.value) || 0 })} /></Field>
       <Field label="권장 최대 연령"><input {...attrs("maxAge")} type="number" min="1" value={article.maxAge} onChange={(e) => commit({ maxAge: Number(e.target.value) || 0 })} /></Field>
       <Field label="예상 읽기 시간(초)"><input {...attrs("estimatedReadingSeconds")} type="number" min="1" max="180" value={article.estimatedReadingSeconds} onChange={(e) => commit({ estimatedReadingSeconds: Number(e.target.value) || 0 })} /></Field>

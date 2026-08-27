@@ -5,6 +5,7 @@ const FIELD_LABELS: Record<string, string> = {
   sources: "출처", sourceNotes: "출처 메모", reconstructionConfirmed: "독립적 재구성 확인", rightsNotes: "사용 조건 확인 메모",
   pages: "본문 페이지", vocabulary: "어휘", quiz: "퀴즈", "difficulty.value": "논픽션랩 추정 AR", "difficulty.label": "난이도 설명",
   wordCount: "단어 수", estimatedReadingSeconds: "예상 읽기 시간", keySentence: "핵심 문장", minAge: "권장 최소 연령",
+  gradeLevel: "권장 학년", oralReadingLimitSeconds: "낭독 제한시간",
   maxAge: "권장 최대 연령", learningGoal: "학습 목표", safetyReviewed: "아동 주의 요소 검토", keyConcept: "핵심 개념",
   visualTheme: "비주얼 테마", connectedArticleId: "연결 콘텐츠 ID",
 };
@@ -28,6 +29,7 @@ const ISSUE_MESSAGES: Record<string, string> = {
   vocabulary_required: "어휘를 한 개 이상 추가해 주세요.",
   quiz_required: "퀴즈를 한 개 이상 추가해 주세요.",
   reading_time_invalid: "예상 읽기 시간을 1초 이상 180초 이하로 입력해 주세요.",
+  oral_reading_limit_invalid: "낭독 제한시간을 1초 이상의 정수로 입력해 주세요.",
   safety_review_required: "아동 주의 요소 검토를 완료해 주세요.",
 };
 

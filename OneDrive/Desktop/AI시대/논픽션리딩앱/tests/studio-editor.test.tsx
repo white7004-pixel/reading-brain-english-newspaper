@@ -83,6 +83,25 @@ test("필드와 배열 항목을 수정할 때 작업 버전을 갱신하고 저
   expect(screen.getAllByRole("textbox", { name: /본문 페이지 \d+/ })).toHaveLength(4);
 });
 
+test("학년과 AR, 글별 낭독 제한시간을 편집하고 학년 기본값으로 되돌린다", async () => {
+  const user = userEvent.setup();
+  render(<StudioEditorHarness initialArticle={makeStudioArticle()} />);
+
+  await user.selectOptions(screen.getByRole("combobox", { name: "권장 학년" }), "elementary-1");
+  const ar = screen.getByRole("spinbutton", { name: "액셀러레이터 추정 AR" });
+  await user.clear(ar);
+  await user.type(ar, "4.2");
+  const limit = screen.getByRole("spinbutton", { name: "낭독 제한시간(초)" });
+  await user.type(limit, "70");
+
+  expect(ar).toHaveValue(4.2);
+  expect(limit).toHaveValue(70);
+
+  await user.clear(limit);
+  expect(limit).toHaveValue(null);
+  expect(screen.getByText("학년 기본값 90초")).toBeVisible();
+});
+
 test("여러 키 입력을 하나의 자동 저장과 의미 있는 변경 기록으로 병합한다", async () => {
   vi.useFakeTimers();
   const onArticleChange = vi.fn((_article: StudioArticle) => ({ ok: true as const }));
