@@ -7,8 +7,8 @@
 .roadmap-empty strong { display: block; color: var(--forest-800); }
 .roadmap-empty p { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
 .ar-library { margin-top: 22px; border: 1px solid var(--sage-200); border-radius: 24px; padding: 18px; background: white; }
-.ar-library__bands { display: grid; grid-template-columns: repeat(auto-fit, minmax(62px, 1fr)); gap: 7px; }
-.ar-library__bands button { min-height: 42px; border: 1px solid var(--sage-200); border-radius: 12px; background: var(--sage-100); color: var(--forest-800); font-weight: 850; cursor: pointer; }
+.ar-library__bands { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ar-library__bands button { min-width: 0; min-height: 44px; border: 1px solid var(--sage-200); border-radius: 12px; padding: 0 8px; background: var(--sage-100); color: var(--forest-800); font-variant-numeric: tabular-nums; font-weight: 850; letter-spacing: 0; line-height: 1; white-space: nowrap; cursor: pointer; }
 .ar-library__bands button.is-selected { border-color: var(--forest-700); background: var(--lime-300); }
 .ar-library__books { display: grid; gap: 8px; margin-top: 14px; }
 .ar-library__books button { min-height: 52px; border: 1px solid var(--sage-200); border-radius: 14px; padding: 10px 13px; background: white; color: var(--ink); text-align: left; cursor: pointer; }
