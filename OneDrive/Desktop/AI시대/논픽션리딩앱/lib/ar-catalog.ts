@@ -1,5 +1,5 @@
 export const AR_CATALOG_BAND_IDS = [
-  "ar0", "ar1", "ar2", "ar3", "ar4", "ar5", "ar6",
+  "ar1", "ar2", "ar3", "ar4", "ar5", "ar6",
   "ar7", "ar8", "ar9", "ar10", "ar11", "ar12",
 ] as const;
 
@@ -13,15 +13,10 @@ export type ArCatalogBand = {
 };
 
 export const AR_CATALOG_BANDS = Object.fromEntries(
-  AR_CATALOG_BAND_IDS.map((id, index) => [
-    id,
-    {
-      id,
-      minAr: index === 0 ? 0.1 : index,
-      maxArInclusive: index + 0.9,
-      label: `AR ${index === 0 ? "0.1" : `${index}.0`}-`,
-    },
-  ]),
+  AR_CATALOG_BAND_IDS.map((id) => {
+    const level = Number(id.slice(2));
+    return [id, { id, minAr: level, maxArInclusive: level + 0.9, label: `AR ${level}.0` }];
+  }),
 ) as Record<ArCatalogBandId, ArCatalogBand>;
 
 export function catalogBandForAr(value: number): ArCatalogBandId | null {
