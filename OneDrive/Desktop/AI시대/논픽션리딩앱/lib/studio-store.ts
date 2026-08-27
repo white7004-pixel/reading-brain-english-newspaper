@@ -16,6 +16,7 @@ import type {
   StudioMedia,
 } from "./studio-types";
 import type { Article, InterestBand } from "./types";
+import { isGradeLevel } from "./grade-levels";
 
 export const STUDIO_STORAGE_KEY = "nonfiction-lab:studio:v1";
 export const CORRUPT_STUDIO_BACKUP_KEY = "nonfiction-lab:studio:corrupt-backup";
@@ -200,7 +201,9 @@ function migrateLegacyArticle(value: unknown): StudioArticle {
     domain: DOMAINS.has(value.domain as string) ? value.domain as StudioArticle["domain"] : "science",
     subtopic: asString(value.subtopic),
     interestBand,
+    ...(isGradeLevel(value.gradeLevel) ? { gradeLevel: value.gradeLevel } : {}),
     difficulty: isDifficulty(value.difficulty) ? { ...value.difficulty } : { value: 0, method: "nonfiction-lab-estimate", label: "" },
+    ...(isPositiveInteger(value.oralReadingLimitSeconds) ? { oralReadingLimitSeconds: value.oralReadingLimitSeconds } : {}),
     minAge,
     maxAge,
     estimatedReadingSeconds: isNonNegativeInteger(value.estimatedReadingSeconds) ? value.estimatedReadingSeconds : 180,
@@ -330,7 +333,9 @@ function isStudioArticle(value: unknown): value is StudioArticle {
     || !DOMAINS.has(value.domain as string)
     || !isString(value.subtopic)
     || !INTEREST_BANDS.has(value.interestBand as string)
+    || (value.gradeLevel !== undefined && !isGradeLevel(value.gradeLevel))
     || !isDifficulty(value.difficulty)
+    || (value.oralReadingLimitSeconds !== undefined && !isPositiveInteger(value.oralReadingLimitSeconds))
     || !isPositiveInteger(value.minAge)
     || !isPositiveInteger(value.maxAge)
     || value.maxAge < value.minAge
@@ -564,7 +569,7 @@ function migrateChangeLog(value: unknown): StudioArticle["changeLog"] {
 }
 
 function isDifficulty(value: unknown): value is StudioArticle["difficulty"] {
-  return isRecord(value) && isNonNegativeNumber(value.value)
+  return isRecord(value) && isNonNegativeNumber(value.value) && value.value >= 0.1 && value.value <= 12.9
     && (value.method === "external-user-entry" || value.method === "nonfiction-lab-estimate")
     && isString(value.label);
 }

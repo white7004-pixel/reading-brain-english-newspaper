@@ -57,13 +57,13 @@ const FIELD_STAGE = {
   title: "facts", titleKo: "facts", summaryEn: "facts", summaryKo: "facts", domain: "facts", subtopic: "facts",
   sources: "facts", sourceNotes: "facts", reconstructionConfirmed: "facts", rightsNotes: "facts", media: "facts",
   connectedArticleId: "facts", visualTheme: "facts", heroImage: "facts", quest: "facts",
-  difficulty: "language", estimatedReadingSeconds: "language", wordCount: "language", pages: "language",
+  difficulty: "language", oralReadingLimitSeconds: "language", estimatedReadingSeconds: "language", wordCount: "language", pages: "language",
   vocabulary: "language", quiz: "language", keySentence: "language", audioUrl: "language",
-  interestBand: "age", minAge: "age", maxAge: "age", safetyFlags: "age", safetyReviewed: "age", learningGoal: "age", keyConcept: "age",
+  interestBand: "age", gradeLevel: "age", minAge: "age", maxAge: "age", safetyFlags: "age", safetyReviewed: "age", learningGoal: "age", keyConcept: "age",
 } satisfies { [Field in keyof ArticleEditPatch]-?: ReviewStage };
 
 const LEARNER_FACING_FIELDS = new Set<keyof ArticleEditPatch>([
-  "title", "titleKo", "summaryEn", "summaryKo", "domain", "subtopic", "interestBand", "difficulty", "minAge", "maxAge",
+  "title", "titleKo", "summaryEn", "summaryKo", "domain", "subtopic", "interestBand", "gradeLevel", "difficulty", "oralReadingLimitSeconds", "minAge", "maxAge",
   "estimatedReadingSeconds", "safetyFlags", "wordCount", "pages", "vocabulary", "quiz", "connectedArticleId", "visualTheme", "heroImage",
   "audioUrl", "learningGoal", "keySentence", "keyConcept", "media", "quest",
 ]);
@@ -148,7 +148,10 @@ function validateLanguage(article: StudioArticle): ValidationIssue[] {
     required(issues, question.explanation, `quiz.${index}.explanation`, "quiz_explanation_required");
     required(issues, question.evidence, `quiz.${index}.evidence`, "quiz_evidence_required");
   });
-  if (!(article.difficulty.value > 0)) issues.push({ field: "difficulty.value", code: "ar_required" });
+  if (!(article.difficulty.value >= 0.1 && article.difficulty.value <= 12.9)) issues.push({ field: "difficulty.value", code: "ar_required" });
+  if (article.oralReadingLimitSeconds !== undefined && !(Number.isInteger(article.oralReadingLimitSeconds) && article.oralReadingLimitSeconds > 0)) {
+    issues.push({ field: "oralReadingLimitSeconds", code: "oral_reading_limit_invalid" });
+  }
   required(issues, article.difficulty.label, "difficulty.label", "ar_note_required");
   if (!(article.wordCount > 0)) issues.push({ field: "wordCount", code: "word_count_required" });
   if (!(article.estimatedReadingSeconds > 0 && article.estimatedReadingSeconds <= 180)) issues.push({ field: "estimatedReadingSeconds", code: "reading_time_invalid" });
@@ -335,7 +338,9 @@ function createLearnerSnapshot(article: StudioArticle): Article {
     summaryKo: article.summaryKo,
     domain: article.domain,
     interestBand: article.interestBand,
+    ...(article.gradeLevel ? { gradeLevel: article.gradeLevel } : {}),
     difficulty: { ...article.difficulty },
+    ...(article.oralReadingLimitSeconds ? { oralReadingLimitSeconds: article.oralReadingLimitSeconds } : {}),
     estimatedMinutes: article.estimatedMinutes,
     wordCount: article.wordCount,
     status: "published",

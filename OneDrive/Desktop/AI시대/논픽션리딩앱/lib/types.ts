@@ -1,4 +1,5 @@
 import type { QuestMetadata } from "./quest-types";
+import type { GradeLevel } from "./grade-levels";
 
 export type KnowledgeDomain = "science" | "history" | "arts" | "philosophy" | "self-development" | "world-culture";
 export type InterestBand = "lower-elementary" | "upper-elementary" | "teen" | "adult" | "all-ages";
@@ -74,7 +75,9 @@ export type Article = {
   summaryKo: string;
   domain: KnowledgeDomain;
   interestBand: InterestBand;
+  gradeLevel?: GradeLevel;
   difficulty: Difficulty;
+  oralReadingLimitSeconds?: number;
   estimatedMinutes: 3;
   wordCount: number;
   status: ContentStatus;

@@ -1,5 +1,6 @@
 import type { Article, ArticleHeroImage, ArticleMedia } from "./types";
 import { cloneQuestMetadata, isQuestMetadata } from "./quest-types";
+import { isGradeLevel } from "./grade-levels";
 
 export type PublicArticleIssue = { field: string; code: string };
 export type PublicArticleParseResult =
@@ -25,7 +26,11 @@ export function parsePublicArticle(value: unknown): PublicArticleParseResult {
   stringValue(issues, value.summaryKo, "summaryKo");
   if (!DOMAINS.has(value.domain as string)) issues.push({ field: "domain", code: "domain_invalid" });
   if (!INTEREST_BANDS.has(value.interestBand as string)) issues.push({ field: "interestBand", code: "interest_band_invalid" });
+  if (value.gradeLevel !== undefined && !isGradeLevel(value.gradeLevel)) issues.push({ field: "gradeLevel", code: "grade_level_invalid" });
   if (!isDifficulty(value.difficulty)) issues.push({ field: "difficulty", code: "difficulty_invalid" });
+  if (value.oralReadingLimitSeconds !== undefined && !isPositiveInteger(value.oralReadingLimitSeconds)) {
+    issues.push({ field: "oralReadingLimitSeconds", code: "oral_reading_limit_invalid" });
+  }
   if (value.estimatedMinutes !== 3) issues.push({ field: "estimatedMinutes", code: "estimated_minutes_invalid" });
   if (!isFiniteNumber(value.wordCount) || value.wordCount < 0) issues.push({ field: "wordCount", code: "word_count_invalid" });
   if (value.status !== "published") issues.push({ field: "status", code: "status_invalid" });
@@ -94,11 +99,13 @@ export function clonePublicArticle(article: Readonly<Article>): Article {
     summaryKo: article.summaryKo,
     domain: article.domain,
     interestBand: article.interestBand,
+    ...(article.gradeLevel !== undefined ? { gradeLevel: article.gradeLevel } : {}),
     difficulty: {
       value: article.difficulty.value,
       method: article.difficulty.method,
       label: article.difficulty.label,
     },
+    ...(article.oralReadingLimitSeconds !== undefined ? { oralReadingLimitSeconds: article.oralReadingLimitSeconds } : {}),
     estimatedMinutes: article.estimatedMinutes,
     wordCount: article.wordCount,
     status: article.status,
@@ -155,7 +162,8 @@ export function deepFreeze<T>(value: T): Readonly<T> {
 function isDifficulty(value: unknown): boolean {
   return isRecord(value)
     && isFiniteNumber(value.value)
-    && value.value >= 0
+    && value.value >= 0.1
+    && value.value <= 12.9
     && (value.method === "external-user-entry" || value.method === "nonfiction-lab-estimate")
     && isString(value.label);
 }

@@ -128,7 +128,9 @@ export type ArticleEditPatch = Partial<
     | "domain"
     | "subtopic"
     | "interestBand"
+    | "gradeLevel"
     | "difficulty"
+    | "oralReadingLimitSeconds"
     | "minAge"
     | "maxAge"
     | "estimatedReadingSeconds"
@@ -165,7 +167,9 @@ export type StudioArticle = {
   domain: KnowledgeDomain;
   subtopic: string;
   interestBand: InterestBand;
+  gradeLevel?: import("@/lib/grade-levels").GradeLevel;
   difficulty: Difficulty;
+  oralReadingLimitSeconds?: number;
   minAge: number;
   maxAge: number;
   estimatedReadingSeconds: number;

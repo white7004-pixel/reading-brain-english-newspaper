@@ -99,6 +99,28 @@ describe("shared public article schema", () => {
     expect(parsed.value.quest?.nextArticleIds).not.toBe(quest.nextArticleIds);
   });
 
+  it("round-trips optional grade and oral-reading limit metadata", () => {
+    const parsed = parsePublicArticle({
+      ...getPublishedArticles()[0],
+      gradeLevel: "elementary-1",
+      oralReadingLimitSeconds: 70,
+    });
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.gradeLevel).toBe("elementary-1");
+    expect(parsed.value.oralReadingLimitSeconds).toBe(70);
+  });
+
+  it.each([
+    ["unknown grade", { gradeLevel: "college-1" }],
+    ["zero oral-reading limit", { oralReadingLimitSeconds: 0 }],
+    ["fractional oral-reading limit", { oralReadingLimitSeconds: 12.5 }],
+    ["AR beyond the catalog", { difficulty: { value: 13, method: "nonfiction-lab-estimate", label: "AR 13" } }],
+  ])("rejects %s", (_description, patch) => {
+    expect(parsePublicArticle({ ...getPublishedArticles()[0], ...patch }).ok).toBe(false);
+  });
+
   it.each([
     ["remote asset path", { ...heroImage, src: "https://upload.wikimedia.org/owl.jpg" }],
     ["blank creator", { ...heroImage, creator: " " }],
