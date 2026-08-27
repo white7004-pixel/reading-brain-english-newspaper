@@ -15,7 +15,7 @@ export const PLACEMENT_QUESTIONS: PlacementQuestion[] = [
 ];
 
 export const AR_ENTRY_MIN = 0.1;
-export const AR_ENTRY_MAX = 20;
+export const AR_ENTRY_MAX = 12.9;
 export const DEFAULT_ESTIMATED_DIFFICULTY = 0.5;
 
 export function estimateDifficulty(answers: number[]): number {

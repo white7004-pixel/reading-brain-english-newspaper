@@ -168,8 +168,8 @@ it("preserves learning progress when the level changes", () => {
 });
 
 it("rejects an AR value outside the supported range", () => {
-  expect(() => updateLearnerLevel(seededLearner(), { enteredAr: 25, estimatedDifficulty: null })).toThrow(
-    "AR 지수는 0.1에서 20.0 사이여야 합니다.",
+  expect(() => updateLearnerLevel(seededLearner(), { enteredAr: 13, estimatedDifficulty: null })).toThrow(
+    "AR 지수는 0.1에서 12.9 사이여야 합니다.",
   );
 });
 

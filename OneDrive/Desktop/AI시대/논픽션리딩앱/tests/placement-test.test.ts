@@ -27,7 +27,7 @@ describe("isValidArEntry", () => {
 
   test("범위를 벗어나거나 숫자가 아니면 거부한다", () => {
     expect(isValidArEntry(0)).toBe(false);
-    expect(isValidArEntry(20.1)).toBe(false);
+    expect(isValidArEntry(13)).toBe(false);
     expect(isValidArEntry(Number.NaN)).toBe(false);
   });
 });

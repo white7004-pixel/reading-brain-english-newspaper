@@ -153,7 +153,7 @@ export function updateLearnerLevel(state: LearnerState, level: LearnerLevel): Le
     throw new Error("읽기 레벨 값이 필요합니다.");
   }
   if (level.enteredAr !== null && !isValidArEntry(level.enteredAr)) {
-    throw new Error("AR 지수는 0.1에서 20.0 사이여야 합니다.");
+    throw new Error("AR 지수는 0.1에서 12.9 사이여야 합니다.");
   }
   return {
     ...state,
