@@ -81,7 +81,7 @@ it("only offers reading-time options represented by published articles", () => {
   expect(screen.queryByRole("option", { name: "6분 이상" })).not.toBeInTheDocument();
 });
 
-it("lets a grade-one learner start an AR 4.x article regardless of its recommended grade", async () => {
+it("lets a grade-one learner start an AR 4.0- article regardless of its recommended grade", async () => {
   const user = userEvent.setup();
   const article = {
     ...getPublishedArticles()[0],
@@ -93,7 +93,7 @@ it("lets a grade-one learner start an AR 4.x article regardless of its recommend
   const onOpen = vi.fn();
 
   render(<ExploreScreen articles={[article]} onOpen={onOpen} initialDomain={null} />);
-  await user.click(screen.getByRole("button", { name: "AR 4.x" }));
+  await user.click(screen.getByRole("button", { name: "AR 4.0-" }));
   await user.click(screen.getByRole("button", { name: "Direct AR Four" }));
 
   expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ id: "ar4-direct" }));

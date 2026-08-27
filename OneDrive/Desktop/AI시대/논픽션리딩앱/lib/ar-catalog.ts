@@ -19,7 +19,7 @@ export const AR_CATALOG_BANDS = Object.fromEntries(
       id,
       minAr: index === 0 ? 0.1 : index,
       maxArInclusive: index + 0.9,
-      label: `AR ${index}.x`,
+      label: `AR ${index === 0 ? "0.1" : `${index}.0`}-`,
     },
   ]),
 ) as Record<ArCatalogBandId, ArCatalogBand>;
