@@ -8,6 +8,8 @@ import { isSafePublicMedia } from "@/lib/public-article-schema";
 import { ArticleHeroPhoto } from "./article-hero-photo";
 import { getNativeAudioUrl } from "@/lib/native-audio";
 import { getKoreanPreview } from "@/lib/korean-preview";
+import { OralReadingRecorder } from "./oral-reading-recorder";
+import { resolveOralReadingLimit, type OralReadingResult } from "@/lib/oral-reading";
 
 export type ReaderEvent = { type: "page_view" | "word_open" | "audio_play" | "reader_complete" | "key_finder_check"; articleId: string; at: string; detail?: string; keyFinderSelections?: string[] };
 type WordTiming = { startMs: number; endMs: number; charIndex: number; length: number };
@@ -45,6 +47,8 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [selectedSentence, setSelectedSentence] = useState<string | null>(null);
   const [finderChecked, setFinderChecked] = useState(false);
+  const [referenceAudioCompleted, setReferenceAudioCompleted] = useState(false);
+  const [oralResult, setOralResult] = useState<OralReadingResult | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const safePageIndex = Math.min(pageIndex, Math.max(article.pages.length - 1, 0));
@@ -54,6 +58,8 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
   const sentences = (page.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [page]).map((sentence) => sentence.trim()).filter(Boolean);
   const keySentenceCorrect = selectedSentence?.trim() === article.keySentence.trim();
   const koreanPreview = getKoreanPreview(article.id, article.summaryKo);
+  const oralReadingLimit = resolveOralReadingLimit(article);
+  const recordingSupported = typeof MediaRecorder !== "undefined";
 
   useEffect(() => {
     const maximum = Math.max(article.pages.length - 1, 0);
@@ -120,7 +126,7 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
         const charIndex = Math.min(page.length - 1, Math.floor((audio.currentTime / audio.duration) * page.length));
         setSpokenRange(spokenWordRange(page, charIndex));
       });
-      audio.addEventListener("ended", () => { audioRef.current = null; setIsAudioPlaying(false); setSpokenRange(null); });
+      audio.addEventListener("ended", () => { audioRef.current = null; setIsAudioPlaying(false); setSpokenRange(null); setReferenceAudioCompleted(true); });
       setIsAudioPlaying(true);
       audio.play().catch(() => { audioRef.current = null; setIsAudioPlaying(false); setAudioError(true); });
       return;
@@ -137,7 +143,7 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
       if (event.name && event.name !== "word") return;
       setSpokenRange(spokenWordRange(page, event.charIndex));
     };
-    utterance.onend = () => { setIsAudioPlaying(false); setSpokenRange(null); };
+    utterance.onend = () => { setIsAudioPlaying(false); setSpokenRange(null); setReferenceAudioCompleted(true); };
     utterance.onerror = () => { setIsAudioPlaying(false); setSpokenRange(null); setAudioError(true); };
     setIsAudioPlaying(true);
     window.speechSynthesis.speak(utterance);
@@ -186,7 +192,10 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
       <section className="korean-preview" aria-labelledby="korean-preview-heading"><p className="eyebrow">KOREAN PREVIEW</p><h2 id="korean-preview-heading">한글로 먼저 이해하기</h2><ol>{koreanPreview.map((line) => <li key={line}>{line}</li>)}</ol></section>
       <button type="button" className={`audio-button${isAudioPlaying ? " is-playing" : ""}`} onClick={isAudioPlaying ? stopNarration : playAudio}><span aria-hidden="true">{isAudioPlaying ? "■" : "▶"}</span><strong>{isAudioPlaying ? "오디오 정지" : "원어민 오디오로 듣기"}</strong></button>
       {audioError && <p className="inline-notice">오디오는 지금 사용할 수 없어요</p>}
-      <button type="button" className="key-finder__toggle" aria-expanded={finderOpen} onClick={() => { setFinderOpen((current) => !current); resetFinder(); }}>핵심 찾기</button>
+      {audioError && <button type="button" className="text-button" onClick={() => setReferenceAudioCompleted(true)}>오디오 없이 낭독 연습 시작</button>}
+      <OralReadingRecorder enabled={referenceAudioCompleted} limitSeconds={oralReadingLimit} onComplete={(result) => { setOralResult(result); setFinderOpen(true); }} />
+      {oralResult && <div className={`oral-result${oralResult.completedWithinLimit ? " is-success" : ""}`} role="status"><strong>{oralResult.completedWithinLimit ? "제한시간 안에 낭독했어요!" : "낭독을 끝까지 완료했어요!"}</strong><span>{oralResult.durationSeconds}초 / {oralResult.limitSeconds}초</span></div>}
+      {(oralResult || !recordingSupported) && <button type="button" className="key-finder__toggle" aria-expanded={finderOpen} onClick={() => { setFinderOpen((current) => !current); resetFinder(); }}>핵심 찾기</button>}
       <p className="article-copy">{renderText()}</p>
       {finderOpen && <section className="key-finder" aria-labelledby="key-finder-heading">
         <h2 id="key-finder-heading">핵심단어와 핵심문장 찾기</h2>
@@ -207,7 +216,7 @@ export function ReaderScreen({ article, initialPageIndex = 0, onFinish, onBack, 
       {lastPage && <details className="source-drawer"><summary>출처와 검수 정보</summary><ul>{article.sources.map((item) => <li key={item.url}><a href={item.url} target="_blank" rel="noreferrer">{item.publisher}: {item.title}</a></li>)}</ul><p>{article.review.approvedBy} · {article.review.approvedAt} 승인</p></details>}
       <div className="reader-action"><Button fullWidth onClick={() => {
         if (lastPage) { emit("reader_complete"); onFinish(); }
-        else { const next = safePageIndex + 1; stopNarration(); setPageIndex(next); onPageChange?.(next); setFinderOpen(false); resetFinder(); emit("page_view", String(next)); }
+        else { const next = safePageIndex + 1; stopNarration(); setPageIndex(next); onPageChange?.(next); setFinderOpen(false); setReferenceAudioCompleted(false); setOralResult(null); resetFinder(); emit("page_view", String(next)); }
       }}>{lastPage ? "이해 퀴즈 시작" : "다음 페이지"}</Button></div>
       {word && <div className="dialog-backdrop" onMouseDown={closeWord}><div role="dialog" aria-modal="true" aria-label={word.word} className="word-dialog" onMouseDown={(event) => event.stopPropagation()}><button type="button" className="icon-button word-dialog__close" aria-label="단어 설명 닫기" onClick={closeWord}>×</button><h2>{word.word}</h2><p className="pronunciation">{word.pronunciation}</p><p>{word.definitionEn}</p><strong>{word.meaningKo}</strong></div></div>}
     </section>

@@ -1,4 +1,19 @@
 .knowledge-roadmap { --map-accent: var(--color-brand); }
+.knowledge-roadmap .grade-tabs + .grade-tabs { margin-top: 7px; }
+.roadmap-empty { border: 1px dashed var(--sage-200); border-radius: 20px; padding: 28px 18px; background: var(--sage-100); text-align: center; }
+.roadmap-empty strong { display: block; color: var(--forest-800); }
+.roadmap-empty p { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+.ar-library { margin-top: 22px; border: 1px solid var(--sage-200); border-radius: 24px; padding: 18px; background: white; }
+.ar-library__bands { display: grid; grid-template-columns: repeat(auto-fit, minmax(62px, 1fr)); gap: 7px; }
+.ar-library__bands button { min-height: 42px; border: 1px solid var(--sage-200); border-radius: 12px; background: var(--sage-100); color: var(--forest-800); font-weight: 850; cursor: pointer; }
+.ar-library__bands button.is-selected { border-color: var(--forest-700); background: var(--lime-300); }
+.ar-library__books { display: grid; gap: 8px; margin-top: 14px; }
+.ar-library__books button { min-height: 52px; border: 1px solid var(--sage-200); border-radius: 14px; padding: 10px 13px; background: white; color: var(--ink); text-align: left; cursor: pointer; }
+.oral-recorder { display: grid; gap: 10px; margin: 14px 0; border: 1px solid var(--sage-200); border-radius: 18px; padding: 15px; background: #f8faef; }
+.oral-recorder h2, .oral-recorder p { margin: 0; }
+.oral-recorder h2 { font-size: 16px; }.oral-recorder p { color: var(--muted); font-size: 12px; }
+.oral-recorder button { min-height: 44px; border: 0; border-radius: 13px; background: var(--forest-700); color: white; font-weight: 900; }.oral-recorder button:disabled { background: var(--sage-200); color: var(--muted); }
+.oral-recorder audio { width: 100%; }.oral-result { display: flex; justify-content: space-between; gap: 10px; border-radius: 13px; padding: 11px; background: #fff3d5; font-size: 12px; }.oral-result.is-success { background: #edf8d0; }
 .roadmap-grade-heading { display: inline-flex; margin: 20px 0 12px; border-radius: 999px; padding: 8px 13px; background: var(--forest-950); color: white; font-size: 14px; }
 .knowledge-growth-map { position: relative; overflow: hidden; border: 1px solid var(--color-border); border-radius: 26px; padding: 16px; background: linear-gradient(180deg, #f8faef 0%, #fff 38%, #f4f8f3 100%); box-shadow: 0 14px 35px rgba(23,63,52,.08); }
 .knowledge-growth-map::before { content: ""; position: absolute; top: 0; right: -56px; width: 170px; height: 170px; border-radius: 50%; background: rgba(220,248,139,.28); filter: blur(2px); }

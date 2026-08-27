@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { KnowledgeRoadmap } from "@/components/knowledge-roadmap";
+import { ArLibrary } from "@/components/ar-library";
 import { ArticleHeroPhoto } from "./article-hero-photo";
 import { DOMAIN_LABELS } from "@/lib/sample-content";
 import { evaluateQuestReadiness } from "@/lib/quest-readiness";
@@ -78,6 +79,7 @@ export function ExploreScreen({ articles, onOpen, initialDomain }: { articles: A
 
   return <section className="explore-screen">
     <KnowledgeRoadmap articles={publishedArticles} onOpen={onOpen} />
+    <ArLibrary articles={publishedArticles} onOpen={onOpen} />
     <section className="knowledge-library" aria-labelledby="knowledge-library-heading">
       <p className="eyebrow">KNOWLEDGE LIBRARY</p><h1 id="knowledge-library-heading">무엇이 궁금한가요?</h1>
       <label className="search-field"><span className="sr-only">지식 검색</span><input aria-label="지식 검색" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="주제나 제목을 검색해 보세요" /></label>

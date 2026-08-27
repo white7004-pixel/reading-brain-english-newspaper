@@ -36,3 +36,15 @@ it("renders a growth map with AR stages, domain lanes, and connected passage nod
   expect(screen.getByText("기초 단계")).toBeVisible();
   expect(screen.getByText("도전 단계")).toBeVisible();
 });
+
+it("offers middle and high school grades with a content-ready empty state", async () => {
+  const user = userEvent.setup();
+  render(<KnowledgeRoadmap articles={getPublishedArticles()} onOpen={() => {}} />);
+
+  await user.click(screen.getByRole("tab", { name: "중1" }));
+  expect(screen.getByRole("heading", { name: "중등 1학년" })).toBeVisible();
+  expect(screen.getByText("중등 1학년 콘텐츠 준비 중")).toBeVisible();
+
+  await user.click(screen.getByRole("tab", { name: "고3" }));
+  expect(screen.getByRole("heading", { name: "고등 3학년" })).toBeVisible();
+});
