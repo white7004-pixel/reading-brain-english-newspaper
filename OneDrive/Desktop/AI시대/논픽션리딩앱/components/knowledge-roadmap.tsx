@@ -30,9 +30,14 @@ export function KnowledgeRoadmap({ articles, onOpen }: { articles: Article[]; on
       <p className="eyebrow">ELEMENTARY ROADMAP</p>
       <h2 id="knowledge-roadmap-heading">학년별 논픽션 지식</h2>
       <p>학년마다 꼭 알아야 할 지식을 분야별로 차근차근 살펴보세요.</p>
-      {GRADE_GROUPS.map((group) => <div className="grade-tabs" role="tablist" aria-label={`${group.label} 학년 선택`} key={group.id}>
-        {group.grades.map((item) => <button key={item} type="button" role="tab" aria-selected={gradeLevel === item} className={gradeLevel === item ? "is-selected" : ""} onClick={() => setGradeLevel(item)}>{gradeLabel(item)}</button>)}
-      </div>)}
+      <div className="grade-groups">
+        {GRADE_GROUPS.map((group) => <section className="grade-group" aria-labelledby={`grade-group-${group.id}`} key={group.id}>
+          <h3 id={`grade-group-${group.id}`}>{group.label}</h3>
+          <div className="grade-tabs" role="tablist" aria-label={`${group.label} 학년 선택`}>
+            {group.grades.map((item) => <button key={item} type="button" role="tab" aria-selected={gradeLevel === item} className={gradeLevel === item ? "is-selected" : ""} onClick={() => setGradeLevel(item)}>{gradeLabel(item)}</button>)}
+          </div>
+        </section>)}
+      </div>
       <h3 className="roadmap-grade-heading">{fullGradeLabel(gradeLevel)}</h3>
       {!elementaryGrade ? <div className="roadmap-empty"><strong>{fullGradeLabel(gradeLevel)} 콘텐츠 준비 중</strong><p>콘텐츠를 추가하면 이곳에 학습 경로가 자동으로 표시됩니다.</p></div> : <div className="knowledge-growth-map" data-testid="knowledge-growth-map">
         <div className="ar-stage-row" aria-label="AR 학습 단계">

@@ -1,5 +1,8 @@
 .knowledge-roadmap { --map-accent: var(--color-brand); }
-.knowledge-roadmap .grade-tabs + .grade-tabs { margin-top: 7px; }
+.grade-groups { display: grid; gap: 10px; margin-top: 16px; }
+.grade-group { border: 1px solid var(--sage-200); border-radius: 17px; padding: 12px; background: white; }
+.grade-group h3 { margin: 0 0 9px; color: var(--forest-800); font-size: 14px; }
+.grade-group .grade-tabs { margin: 0; }
 .roadmap-empty { border: 1px dashed var(--sage-200); border-radius: 20px; padding: 28px 18px; background: var(--sage-100); text-align: center; }
 .roadmap-empty strong { display: block; color: var(--forest-800); }
 .roadmap-empty p { margin: 8px 0 0; color: var(--muted); font-size: 12px; }

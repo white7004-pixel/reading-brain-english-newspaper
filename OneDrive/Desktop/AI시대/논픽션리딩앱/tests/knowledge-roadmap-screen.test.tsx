@@ -48,3 +48,12 @@ it("offers middle and high school grades with a content-ready empty state", asyn
   await user.click(screen.getByRole("tab", { name: "고3" }));
   expect(screen.getByRole("heading", { name: "고등 3학년" })).toBeVisible();
 });
+
+it("visibly groups all twelve grades by school level", () => {
+  render(<KnowledgeRoadmap articles={getPublishedArticles()} onOpen={() => {}} />);
+
+  expect(screen.getByRole("heading", { name: "초등", exact: true })).toBeVisible();
+  expect(screen.getByRole("heading", { name: "중등", exact: true })).toBeVisible();
+  expect(screen.getByRole("heading", { name: "고등", exact: true })).toBeVisible();
+  expect(screen.getAllByRole("tab")).toHaveLength(12);
+});
