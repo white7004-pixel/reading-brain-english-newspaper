@@ -741,3 +741,15 @@
   .book { grid-template-columns: 88px 1fr; gap: 13px; padding: 15px; }
   .director-cv li { grid-template-columns: 1fr; gap: 2px; }
 }
+
+/* ── 18. 토플 카드를 다른 진단 카드와 같은 형태로 ────────────
+   .diag-card-toefl 만 grid-column: 1/-1 로 전폭을 차지해
+   진단 1~4 와 따로 놀고 있었다. 그리드 한 칸으로 되돌린다. */
+.diag-card.diag-card-toefl { grid-column: auto; padding: 24px; }
+.diag-card-toefl .diag-list li span { min-width: 0; }
+.diag-card-toefl .diag-list li strong {
+  display: block;
+  color: var(--brand-navy);
+  font-weight: 800;
+  margin-bottom: 1px;
+}
