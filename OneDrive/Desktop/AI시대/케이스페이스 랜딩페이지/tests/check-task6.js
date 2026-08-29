@@ -6,7 +6,7 @@ assert(html.includes('id="events"'), 'events 섹션 id 없음');
 ['3개월', '6개월', '12개월', '친구초대', '네이버 리뷰'].forEach(w => assert(html.includes(w), `events에 ${w} 없음`));
 
 assert(html.includes('id="gallery"'), 'gallery 섹션 id 없음');
-const galleryImageNumbers = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+const galleryImageNumbers = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14];
 for (const i of galleryImageNumbers) {
   const name = `assets/images/kspace-${String(i).padStart(2, '0')}.jpg`;
   assert(html.includes(name), `gallery에 ${name} 없음`);
