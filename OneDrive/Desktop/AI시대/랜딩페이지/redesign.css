@@ -557,3 +557,85 @@
   .quick-grid { grid-template-columns: repeat(6, 1fr); } /* 항목 6개 — 5열이라 둘째 줄에 1개만 남았음 */
   .proof-grid { grid-template-columns: repeat(4, 1fr); } /* 카드 4개 — 3열이라 둘째 줄에 1개만 남았음 */
 }
+
+/* ── 16. 영어독서 히어로즈 전체 명단 ──────────────────────────
+   AR 성적표 캡처 이미지를 걷어내고 명단을 본문 텍스트로 올린 블록. */
+.ar-heroes { margin-top: clamp(40px, 5vw, 72px); }
+.ar-heroes h4 {
+  font-size: clamp(18px, 1.7vw, 26px);
+  font-weight: 800;
+  color: var(--brand-navy);
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+  word-break: keep-all;
+}
+.ar-heroes-sub {
+  font-size: var(--us-card-text);
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0 0 24px;
+  word-break: keep-all;
+}
+.ar-heroes-sub strong { color: var(--brand-gold); font-weight: 800; }
+
+.ar-heroes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 20px;
+}
+.ar-heroes-list li {
+  display: grid;
+  grid-template-columns: 4.6em 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  font-size: var(--us-small);
+  line-height: 1.4;
+}
+.ar-heroes-list b { font-weight: 700; color: var(--brand-navy); }
+.ar-heroes-list span { color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ar-heroes-list i { font-style: normal; color: var(--gray-400); margin: 0 2px; }
+.ar-heroes-list em {
+  font-style: normal;
+  font-weight: 800;
+  color: var(--brand-gold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ar-heroes-note {
+  margin: 18px 0 0;
+  font-size: clamp(12px, .95vw, 14px);
+  color: var(--gray-400);
+  line-height: 1.7;
+}
+
+@media (max-width: 1024px) {
+  .ar-heroes-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .ar-heroes-list { grid-template-columns: 1fr; }
+}
+
+/* 기존 AR 명단 카드: CSS 는 span 을 겨냥하는데 HTML 은 small 이라
+   학교·학년이 이름 뒤에 붙어 나오던 문제 */
+.ar-case-name small {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(11px, .9vw, 13px);
+  font-weight: 400;
+  color: var(--gray-400);
+}
+.ar-case-arrow { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.ar-case-arrow strong { color: var(--brand-navy); font-weight: 800; }
+
+@media (max-width: 860px) {
+  /* .hall + .container + .ar-cases 패딩이 겹쳐 모바일 본문 폭이 크게 줄어든다 */
+  .ar-cases { padding-left: 0; padding-right: 0; }
+  .ar-heroes-list li { padding: 9px 12px; }
+}
