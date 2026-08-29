@@ -753,3 +753,24 @@
   font-weight: 800;
   margin-bottom: 1px;
 }
+
+/* ── 19. AR TEST 카드: RTP 진단 리포트 이미지 ─────────────── */
+/* 세로형 리포트라 기존 4:3 cover 로는 가운데만 잘려 보인다.
+   다른 진단 카드와 높이를 맞추되 리포트 윗부분(제목·학생정보)이 보이게 한다. */
+.ar-test-media { display: block; }
+.ar-test-media img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: top center;
+  background: var(--white);
+  transition: opacity .2s var(--us-ease);
+}
+.ar-test-media:hover img { opacity: .88; }
+.ar-test-source {
+  display: inline-flex;
+  width: fit-content;
+  margin: -10px 0 16px;
+  color: var(--text-muted);
+  font-size: clamp(10px, .82vw, 12px);
+  line-height: 1.5;
+}
