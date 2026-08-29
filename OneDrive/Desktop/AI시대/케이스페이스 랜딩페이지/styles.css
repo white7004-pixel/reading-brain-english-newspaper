@@ -262,11 +262,12 @@ ul { list-style: none; }
 
 .hero__overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(15,36,56,0.55) 0%, rgba(15,36,56,0.78) 100%);
+  background: linear-gradient(180deg, rgba(15,36,56,0.25) 0%, rgba(15,36,56,0.55) 100%);
 }
 .hero__inner { position: relative; z-index: 1; padding: 120px 24px; max-width: 720px; }
-.hero h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 800; margin-bottom: 20px; }
-.hero__desc { font-size: 1.1rem; color: rgba(255,255,255,0.9); margin-bottom: 36px; max-width: 560px; }
+.hero h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 800; margin-bottom: 20px; text-shadow: 0 2px 12px rgba(15,36,56,0.5); }
+.hero__desc { font-size: 1.1rem; color: rgba(255,255,255,0.9); margin-bottom: 36px; max-width: 560px; text-shadow: 0 1px 8px rgba(15,36,56,0.5); }
+.hero .section__eyebrow { text-shadow: 0 1px 8px rgba(15,36,56,0.5); }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 14px; }
 
 .event-grid {
