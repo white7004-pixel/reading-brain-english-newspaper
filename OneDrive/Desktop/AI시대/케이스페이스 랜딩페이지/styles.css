@@ -178,47 +178,6 @@ ul { list-style: none; }
   .facility-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.review-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.review-card {
-  background: var(--color-bg-alt);
-  border-radius: var(--radius-lg);
-  padding: 28px;
-}
-.review-card__source { font-weight: 700; color: var(--color-teal); font-size: 0.85rem; margin-bottom: 12px; }
-.review-card__body { color: var(--color-text); margin-bottom: 12px; }
-.review-card__tags { font-size: 0.8rem; color: var(--color-text-muted); display: flex; flex-wrap: wrap; gap: 6px; }
-.review-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.review-card__header .review-card__source { margin-bottom: 0; }
-.review-card__rating { color: var(--color-teal); font-size: 0.9rem; letter-spacing: 1px; }
-.review-card__product { font-weight: 600; color: var(--color-navy); font-size: 0.85rem; margin-bottom: 10px; }
-.tag-chip {
-  display: inline-block;
-  background: #fff;
-  border: 1px solid rgba(22,50,74,0.1);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 0.75rem;
-}
-.review-card__reply {
-  margin-top: 14px;
-  padding: 14px;
-  background: #fff;
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
-}
-.review-card__reply strong { color: var(--color-navy); display: block; margin-bottom: 6px; }
-.review-card__reply p { color: var(--color-text-muted); }
-.review-card__highlights { font-size: 0.85rem; color: var(--color-text-muted); }
-.review-card__highlights li { margin-bottom: 6px; }
-
-@media (max-width: 860px) {
-  .review-grid { grid-template-columns: 1fr; }
-}
-
 .location__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -348,7 +307,6 @@ ul { list-style: none; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.review-shot-heading { margin: 40px 0 16px; font-weight: 700; color: var(--color-navy); }
 .review-shot-grid { column-count: 4; column-gap: 12px; }
 .review-shot {
   display: block; width: 100%; margin-bottom: 12px;
