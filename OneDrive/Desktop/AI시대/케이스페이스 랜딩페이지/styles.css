@@ -278,6 +278,15 @@ ul { list-style: none; }
   color: var(--color-navy-dark);
   box-shadow: 0 14px 36px rgba(47,184,172,0.32);
 }
+.event-card--mint {
+  background: linear-gradient(160deg, rgba(127,224,212,0.22), #fff 60%);
+  border-top: 4px solid var(--color-teal);
+}
+.event-card--navy {
+  background: linear-gradient(160deg, rgba(22,50,74,0.10), #fff 60%);
+  border-top: 4px solid var(--color-navy);
+}
+.event-card--navy .event-card__icon { background: rgba(22,50,74,0.14); }
 .event-card__icon {
   display: inline-flex;
   align-items: center;
