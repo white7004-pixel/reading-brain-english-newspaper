@@ -1,0 +1,473 @@
+/* ==========================================================================
+   리딩브레인 — useschool.co.kr 디자인 언어 레이어
+   기존 인라인 <style> 뒤에 로드되어 톤만 덮어씁니다.
+   색상 팔레트(네이비/버건디/아이보리/골드)는 그대로 유지합니다.
+   되돌리려면 index.html에서 이 파일의 <link> 한 줄만 제거하세요.
+   ========================================================================== */
+
+:root {
+  /* useschool의 대형 타이포 스케일 — 리딩브레인 팔레트에 맞춰 옮김 */
+  --us-display: clamp(38px, 6.4vw, 96px);   /* 히어로 */
+  --us-h2:      clamp(30px, 4.6vw, 68px);   /* 섹션 타이틀 */
+  --us-h3:      clamp(22px, 2.6vw, 40px);   /* 지그재그 문장 */
+  --us-lead:    clamp(16px, 1.5vw, 25px);   /* 리드 문단 */
+  --us-body:    clamp(15px, 1.05vw, 18px);
+
+  --us-pad:     clamp(88px, 11vw, 190px);   /* 섹션 상하 여백 */
+  --us-gap:     clamp(40px, 6vw, 110px);
+
+  --us-round:   20px;
+  --us-pill:    50px;
+  --us-shadow:  0 5px 20px rgba(184, 154, 98, 0.30);
+  --us-shadow-navy: 0 10px 40px rgba(12, 53, 77, 0.14);
+
+  --us-ease:    cubic-bezier(.22,.61,.36,1);
+}
+
+/* ── 1. 여백 · 폭 ─────────────────────────────────────────── */
+.philosophy,
+.programs,
+.testimonials,
+.academy-story,
+.why-rb,
+.curious,
+.director,
+.curriculum,
+.heidi,
+.achievements,
+.hall,
+.gallery,
+.motivation,
+.location { padding-top: var(--us-pad); padding-bottom: var(--us-pad); }
+
+.container { max-width: 1280px; padding-left: 24px; padding-right: 24px; }
+
+/* ── 2. 타이포 스케일 확대 ────────────────────────────────── */
+.section-title {
+  font-size: var(--us-h2);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
+  margin-bottom: 22px;
+  word-break: keep-all;
+}
+.section-desc {
+  font-size: var(--us-lead);
+  line-height: 1.6;
+  max-width: 46em;
+  color: var(--text-muted);
+  word-break: keep-all;
+  /* 기본 .section-desc 는 margin:0 auto 라 좌측 정렬 헤더에서 어긋난다 */
+  margin-left: 0;
+  margin-right: auto;
+}
+.text-center .section-desc { margin-left: auto; margin-right: auto; }
+.text-center { margin-bottom: clamp(48px, 6vw, 96px); }
+
+/* 섹션 라벨 → useschool식 알약 아이브로우 */
+.section-label {
+  font-size: clamp(13px, 1.15vw, 19px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 8px 22px;
+  border-radius: var(--us-pill);
+  margin-bottom: 24px;
+  background: rgba(184, 154, 98, 0.14);
+  color: var(--brand-gold);
+  border: 1px solid rgba(184, 154, 98, 0.38);
+}
+
+/* ── 3. 형광펜 하이라이트 (useschool의 h4 span 대응) ──────── */
+/* 밝은 배경 = 버건디 마커, 어두운 배경 = 골드 마커.
+   두 색 모두 기존 팔레트(--brand-burgundy / --gold-on-dark) 값이다. */
+:root { --us-mark-color: rgba(139, 30, 36, 0.24); }
+
+.us-mark {
+  background: linear-gradient(transparent 60%, var(--us-mark-color) 60%);
+  padding: 0 .1em;
+}
+.us-mark--solid {
+  background: var(--brand-burgundy);
+  color: var(--white);
+  padding: 0 .22em;
+  border-radius: 4px;
+}
+
+/* 네이비/사진 위 섹션 */
+.us-on-dark,
+.hero,
+.cta-section.us-banner { --us-mark-color: rgba(227, 184, 115, 0.42); }
+
+/* 히어로는 글자가 매우 커서 마커 블록이 무겁다 —
+   useschool 히어로처럼 얇은 밑줄 한 줄로 처리한다. */
+.hero .us-mark {
+  background: linear-gradient(
+    transparent 84%,
+    var(--gold-on-dark) 84%,
+    var(--gold-on-dark) 92%,
+    transparent 92%
+  );
+  padding: 0 .04em;
+}
+
+/* ── 4. 알약 버튼 ─────────────────────────────────────────── */
+.btn-gold, .btn-outline, .nav-cta, .cta-btn, .us-btn {
+  border-radius: var(--us-pill);
+  font-weight: 600;
+  transition: transform .2s var(--us-ease), box-shadow .2s var(--us-ease), background-color .2s var(--us-ease);
+}
+.btn-gold, .btn-outline { padding: 16px 34px; font-size: clamp(14px, 1.05vw, 17px); }
+.btn-gold:hover, .cta-btn:hover, .us-btn:hover { transform: translateY(-3px); }
+
+/* useschool의 read_more: 어두운 알약 + 컬러 화살표 */
+.us-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border-radius: var(--us-pill);
+  background: var(--brand-navy);
+  color: var(--brand-ivory);
+  font-size: clamp(14px, 1.05vw, 18px);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform .2s var(--us-ease), background-color .2s var(--us-ease);
+}
+.us-more::after { content: "\2192"; color: var(--brand-gold); font-size: 1.15em; }
+.us-more:hover { transform: translateY(-3px); background: #0a2a3d; }
+
+/* ── 5. 카드 라운드 · 브랜드 그림자 ───────────────────────── */
+.phil-card, .program-card, .test-card, .quick-item,
+.conversion-panel, .conversion-steps {
+  border-radius: var(--us-round);
+}
+.program-card, .test-card { box-shadow: var(--us-shadow-navy); }
+
+/* ── 6. 스크롤 리빌 (useschool gs_reveal) ─────────────────── */
+.us-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity .9s var(--us-ease), transform .9s var(--us-ease);
+  will-change: opacity, transform;
+}
+.us-reveal--left  { transform: translate3d(-70px, 40px, 0); }
+.us-reveal--right { transform: translate3d(70px, 40px, 0); }
+.us-reveal.is-in { opacity: 1; transform: translate3d(0, 0, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .us-reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── 7. HERO — 전면 사진 + 대형 헤드라인 ──────────────────── */
+.hero-content { padding: clamp(120px, 14vw, 180px) 24px clamp(90px, 10vw, 140px); max-width: 1280px; }
+
+.hero-offer {
+  border-radius: var(--us-pill);
+  padding: 9px 22px;
+  font-size: clamp(11px, .95vw, 15px);
+  letter-spacing: 0.06em;
+  background: rgba(139, 30, 36, 0.92);
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+
+.hero-title {
+  font-size: var(--us-display);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -0.04em;
+  margin-bottom: clamp(20px, 2.4vw, 34px);
+  word-break: keep-all;
+  max-width: 17em;
+}
+
+.hero-subtitle {
+  font-size: var(--us-lead);
+  line-height: 1.6;
+  max-width: 34em;
+  margin-bottom: clamp(26px, 3vw, 42px);
+  color: rgba(255,255,255,0.86);
+}
+
+/* 히어로 칩 — useschool 히어로 하단 알약 페이지네이션 톤 */
+.hero-credentials { gap: 12px; margin-bottom: clamp(34px, 4vw, 52px); max-width: 62em; }
+.hero-cred {
+  font-size: clamp(12px, 1vw, 15px);
+  padding: 11px 22px;
+  border-radius: var(--us-pill);
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.24);
+  backdrop-filter: blur(6px);
+}
+
+.hero-buttons { gap: 16px; }
+
+/* ── 8. 지그재그 피처 행 (useschool #productb2c_wrap .features) ── */
+.philosophy.us-zig-section {
+  background: var(--brand-navy);
+  color: var(--brand-ivory);
+}
+.us-zig-section .section-title { color: #fff; }
+.us-zig-section .section-desc { color: rgba(246,242,233,0.78); }
+/* 네이비 위에서는 와인색 강조가 묻히므로 팔레트의 --gold-on-dark 를 쓴다 */
+.us-zig-section .section-label {
+  background: rgba(227, 184, 115, 0.14);
+  color: var(--gold-on-dark);
+  border-color: rgba(227, 184, 115, 0.42);
+}
+
+.us-zig { display: block; margin: 0; padding: 0; list-style: none; }
+
+.us-zig__row {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: center;
+  gap: var(--us-gap);
+  margin-bottom: clamp(64px, 8vw, 130px);
+}
+.us-zig__row:last-child { margin-bottom: 0; }
+.us-zig__row:nth-child(2n) { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.us-zig__row:nth-child(2n) .us-zig__media { order: 2; }
+.us-zig__row:nth-child(2n) .us-zig__body  { order: 1; text-align: right; }
+
+.us-zig__media {
+  position: relative;
+  border-radius: var(--us-round);
+  overflow: hidden;
+  aspect-ratio: 5 / 3;
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+}
+.us-zig__media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .7s var(--us-ease);
+}
+.us-zig__row:hover .us-zig__media img { transform: scale(1.05); }
+
+.us-zig__no {
+  font-size: clamp(14px, 1.2vw, 20px);
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--gold-on-dark);
+  margin-bottom: 14px;
+  display: block;
+}
+.us-zig__title {
+  font-size: var(--us-h3);
+  font-weight: 700;
+  line-height: 1.42;
+  letter-spacing: -0.035em;
+  color: #fff;
+  margin: 0 0 18px;
+  word-break: keep-all;
+}
+.us-zig__text {
+  font-size: var(--us-body);
+  line-height: 1.85;
+  color: rgba(246,242,233,0.74);
+  margin: 0;
+  max-width: 34em;
+  word-break: keep-all;
+}
+.us-zig__row:nth-child(2n) .us-zig__text { margin-left: auto; }
+
+.us-zig__link { color: inherit; text-decoration: none; display: block; height: 100%; }
+
+/* ── 9. 가로 후기 캐러셀 (useschool .sec_after) ───────────── */
+.testimonials.us-reviews {
+  background: linear-gradient(180deg, #fff 0%, var(--brand-ivory) 100%);
+  overflow: hidden;
+}
+.us-reviews__inner {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  gap: clamp(32px, 4vw, 64px);
+  align-items: center;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.us-reviews__head { display: flex; flex-direction: column; gap: clamp(28px, 4vw, 56px); }
+.us-reviews__head .section-title { margin-bottom: 18px; }
+
+.us-reviews__nav { display: flex; align-items: center; gap: 16px; }
+.us-reviews__nav button {
+  position: relative;
+  width: 56px; height: 56px;
+  border: 1px solid rgba(12,53,77,0.12);
+  background: #fff;
+  border-radius: 100px;
+  cursor: pointer;
+  color: var(--brand-navy);
+  display: grid; place-items: center;
+  box-shadow: 0 4px 16px rgba(12,53,77,0.10);
+  transition: transform .2s var(--us-ease), background-color .2s var(--us-ease), color .2s var(--us-ease);
+}
+.us-reviews__nav button:hover:not(:disabled) { transform: translateY(-2px); background: var(--brand-navy); color: #fff; }
+.us-reviews__nav button:disabled { opacity: .35; cursor: default; }
+.us-reviews__nav svg { width: 20px; height: 20px; }
+
+.us-reviews__viewport {
+  overflow: hidden;
+  padding: 60px 0 30px;
+  --edge-fade: 48px;
+  -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - var(--edge-fade)), transparent 100%);
+          mask-image: linear-gradient(to right, #000 0, #000 calc(100% - var(--edge-fade)), transparent 100%);
+}
+.us-reviews__track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  transition: transform .45s var(--us-ease);
+  will-change: transform;
+}
+
+.us-review { flex: 0 0 320px; width: 320px; }
+.us-review__card {
+  position: relative;
+  background: #fff;
+  border-radius: var(--us-round);
+  padding: 64px 28px 28px;
+  box-shadow: var(--us-shadow);
+}
+.us-review__avatar {
+  position: absolute;
+  top: -44px; left: 50%;
+  transform: translateX(-50%);
+  width: 92px; height: 92px;
+  border-radius: 100px;
+  overflow: hidden;
+  border: 4px solid #fff;
+  background: linear-gradient(180deg, var(--brand-ivory) 0%, var(--gray-200) 100%);
+  box-shadow: 0 6px 18px rgba(12,53,77,0.16);
+}
+.us-review__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.us-review__meta {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--brand-ivory);
+  margin-bottom: 18px;
+}
+.us-review__meta p { margin: 0 0 6px; font-size: 15px; line-height: 1.5; color: var(--text); }
+.us-review__meta p:last-child { margin-bottom: 0; }
+.us-review__meta strong { font-weight: 700; color: var(--brand-navy); }
+
+.us-review__quote {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.75;
+  color: var(--text);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.us-review__cta {
+  display: block;
+  position: relative;
+  margin-top: 14px;
+  padding: 20px 28px;
+  border-radius: var(--us-round);
+  background: var(--brand-gold);
+  box-shadow: var(--us-shadow);
+  color: var(--brand-navy);
+  text-decoration: none;
+  transition: transform .2s var(--us-ease);
+}
+.us-review__cta:hover { transform: translateY(-3px); }
+.us-review__cta .top-text { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.03em; }
+.us-review__cta .bottom-text { margin: 2px 0 0; font-size: 17px; letter-spacing: -0.02em; }
+.us-review__cta .arrow {
+  position: absolute; right: 20px; bottom: 20px;
+  width: 32px; height: 32px;
+  border-radius: 100px;
+  background: #fff;
+  font-size: 13px; font-weight: 700; line-height: 32px;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── 10. 전면 사진 CTA 배너 (useschool #expedition_wrap) ──── */
+.cta-section.us-banner {
+  position: relative;
+  padding: clamp(110px, 14vw, 200px) 24px;
+  background: url("images/academy-interior-1.jpg") center center / cover no-repeat;
+  text-align: center;
+  overflow: hidden;
+}
+.cta-section.us-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(12,53,77,0.78) 0%, rgba(9,25,41,0.86) 100%);
+}
+.us-banner__inner { position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; }
+.cta-section.us-banner h2 {
+  font-size: var(--us-h2);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
+  color: var(--brand-ivory);
+  margin: 0 0 clamp(20px, 2.4vw, 36px);
+  word-break: keep-all;
+}
+.cta-section.us-banner p {
+  font-size: var(--us-lead);
+  font-weight: 300;
+  line-height: 1.65;
+  color: rgba(246,242,233,0.88);
+  margin: 0 0 clamp(30px, 3.6vw, 48px);
+  word-break: keep-all;
+}
+.cta-section.us-banner .cta-buttons { justify-content: center; gap: 14px; }
+
+/* ── 11. 맨 위로 (useschool .back-to-top) ─────────────────── */
+.us-top {
+  position: fixed;
+  right: 24px;
+  bottom: calc(env(safe-area-inset-bottom) + 24px);
+  width: 52px; height: 52px;
+  border-radius: 26px;
+  border: 1px solid rgba(12,53,77,0.14);
+  background: rgba(255,255,255,0.94);
+  color: var(--brand-navy);
+  cursor: pointer;
+  display: grid; place-items: center;
+  box-shadow: 0 6px 22px rgba(12,53,77,0.16);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity .28s var(--us-ease), transform .28s var(--us-ease), visibility .28s;
+  z-index: 110;
+}
+.us-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.us-top:hover { background: var(--brand-navy); color: #fff; }
+
+/* ── 12. 반응형 ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .us-reviews__inner { grid-template-columns: 1fr; }
+  .us-reviews__nav { justify-content: flex-start; }
+}
+@media (max-width: 860px) {
+  .us-zig__row,
+  .us-zig__row:nth-child(2n) { grid-template-columns: 1fr; gap: 28px; }
+  .us-zig__row:nth-child(2n) .us-zig__media { order: 0; }
+  .us-zig__row:nth-child(2n) .us-zig__body  { order: 0; text-align: left; }
+  .us-zig__row:nth-child(2n) .us-zig__text  { margin-left: 0; }
+  .us-reviews__viewport { --edge-fade: 24px; }
+  .us-review { flex: 0 0 280px; width: 280px; }
+  .us-top { right: 16px; width: 46px; height: 46px; }
+}
+
+/* ── 13. 기존 좌우 패딩 보정 ──────────────────────────────── */
+/* .testimonials 기본값이 좌우 40px라 캐러셀 마스크가 화면 끝까지 닿지 않음 */
+.testimonials.us-reviews { padding-left: 0; padding-right: 0; }
+@media (max-width: 860px) {
+  .philosophy.us-zig-section,
+  .cta-section.us-banner { padding-left: 20px; padding-right: 20px; }
+  /* 섹션 패딩 + 컨테이너 패딩이 겹쳐 모바일에서 본문 폭이 지나치게 좁아진다 */
+  .us-zig-section .container { padding-left: 0; padding-right: 0; }
+}
