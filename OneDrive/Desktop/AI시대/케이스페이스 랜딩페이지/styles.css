@@ -118,6 +118,7 @@ ul { list-style: none; }
 
 @media (max-width: 860px) {
   .nav-toggle { display: flex; }
+  .site-header__logo { font-size: 0.9rem; }
   .site-nav {
     position: fixed; top: 72px; left: 0; right: 0;
     background: #fff;
