@@ -966,7 +966,7 @@ Expected: `AssertionError: events 섹션 id 없음`
 
 - [ ] **Step 4: `<!-- SECTION:GALLERY -->` 마커 다음에 삽입**
 
-(Task 3 Step 5에서 확인한 실제 공간 내용에 맞게 alt 텍스트를 조정한다. 아래는 촬영 순서 기반 기본 서술형 alt이며, 실제로 본 내용과 다르면 이 문구를 실제 장면에 맞게 고친다.)
+(alt 텍스트는 컨트롤러가 Read 도구로 10장 전부를 직접 확인하고 작성한 정확한 서술이다 — 지어내거나 촬영 순서로 추측한 문구가 아니므로 그대로 사용한다.)
 
 ```html
 <section class="section section--alt" id="gallery">
@@ -974,16 +974,16 @@ Expected: `AssertionError: events 섹션 id 없음`
     <p class="section__eyebrow">GALLERY</p>
     <h2 class="section__title">케이스페이스 공간 둘러보기</h2>
     <div class="gallery-grid">
-      <button class="gallery-item" data-full="assets/images/kspace-01.jpg"><img src="assets/images/kspace-01.jpg" alt="안산 공유오피스 케이스페이스 입구 라운지 전경" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-02.jpg"><img src="assets/images/kspace-02.jpg" alt="안산 스터디카페 1인실 창측 책상과 프리미엄 스탠드" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-03.jpg"><img src="assets/images/kspace-03.jpg" alt="케이스페이스 공유오피스 2인실 내부" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-04.jpg"><img src="assets/images/kspace-04.jpg" alt="케이스페이스 회의실 내부" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-05.jpg"><img src="assets/images/kspace-05.jpg" alt="케이스페이스 복도 및 개인실 도어락" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-06.jpg"><img src="assets/images/kspace-06.jpg" alt="케이스페이스 카페테리아 커피머신과 간식" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-07.jpg"><img src="assets/images/kspace-07.jpg" alt="케이스페이스 무인택배함" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-08.jpg"><img src="assets/images/kspace-08.jpg" alt="안산 공유오피스 케이스페이스 1인실 내측" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-09.jpg"><img src="assets/images/kspace-09.jpg" alt="케이스페이스 라운지 좌석" loading="lazy"></button>
-      <button class="gallery-item" data-full="assets/images/kspace-10.jpg"><img src="assets/images/kspace-10.jpg" alt="안산 스터디카페 케이스페이스 야경 전경" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-01.jpg"><img src="assets/images/kspace-01.jpg" alt="안산공유오피스 케이스페이스 라운지 소파 좌석과 원목 테이블" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-02.jpg"><img src="assets/images/kspace-02.jpg" alt="안산스터디카페 케이스페이스 1인 개인 데스크와 스탠드 조명" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-03.jpg"><img src="assets/images/kspace-03.jpg" alt="케이스페이스 오픈형 개인 부스 좌석 복도" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-04.jpg"><img src="assets/images/kspace-04.jpg" alt="케이스페이스 회의실 내부 전경" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-05.jpg"><img src="assets/images/kspace-05.jpg" alt="케이스페이스 카페테리아 간식 코너" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-06.jpg"><img src="assets/images/kspace-06.jpg" alt="케이스페이스 라운지 소파 좌석과 초록 식물" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-07.jpg"><img src="assets/images/kspace-07.jpg" alt="안산스터디카페 케이스페이스 창가 좌석 책상" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-08.jpg"><img src="assets/images/kspace-08.jpg" alt="케이스페이스 개인 데스크 2인 좌석" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-09.jpg"><img src="assets/images/kspace-09.jpg" alt="안산스터디카페 케이스페이스 독서실형 개인 부스" loading="lazy"></button>
+      <button class="gallery-item" data-full="assets/images/kspace-10.jpg"><img src="assets/images/kspace-10.jpg" alt="케이스페이스 사무 지원 공간의 프린터 및 복합기" loading="lazy"></button>
     </div>
   </div>
   <div class="lightbox" id="lightbox" hidden>
@@ -1051,7 +1051,40 @@ Expected: `AssertionError: events 섹션 id 없음`
 
 - [ ] **Step 6: script.js에 라이트박스 로직 추가**
 
-`script.js`에서 `DOMContentLoaded` 콜백을 닫는 마지막 줄 `});`(Task 2에서 작성한 파일의 최종 줄, 481~498번째 줄 블록의 마지막 `});`)을 아래 블록 전체로 교체한다(새 블록도 `});`로 끝나므로 콜백은 계속 닫혀 있다):
+Task 8에서 이미 `initFaqAccordion()`을 추가해 두었으므로, 현재 `script.js`는 아래와 같은 상태다(28줄):
+
+```js
+document.addEventListener('DOMContentLoaded', () => {
+  const navToggle = document.getElementById('navToggle');
+  const siteNav = document.getElementById('siteNav');
+
+  if (navToggle && siteNav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = siteNav.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    siteNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        siteNav.classList.remove('is-open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  initFaqAccordion();
+
+  function initFaqAccordion() {
+    document.querySelectorAll('.faq-item__question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.faq-item').classList.toggle('is-open');
+      });
+    });
+  }
+});
+```
+
+파일의 마지막 줄인 `});`(DOMContentLoaded 콜백을 닫는 줄)을 아래 블록 전체로 교체한다(새 블록도 `});`로 끝나므로 콜백은 계속 닫혀 있다). 만약 실제 파일이 위 내용과 다르다면(다른 태스크가 먼저 실행되어 내용이 바뀐 경우), 실제 파일에서 콜백을 닫는 마지막 `});`을 직접 찾아 동일한 방식으로 교체한다 — 줄 번호를 가정하지 말 것:
 
 ```js
   initGalleryLightbox();
