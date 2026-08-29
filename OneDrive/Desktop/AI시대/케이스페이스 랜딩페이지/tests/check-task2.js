@@ -7,7 +7,7 @@ const css = fs.readFileSync('styles.css', 'utf8');
 });
 
 const html = fs.readFileSync('index.html', 'utf8');
-assert(html.includes('href="styles.css"'), 'index.html이 styles.css를 링크하지 않음');
+assert(/href="styles\.css(\?[^"]*)?"/.test(html), 'index.html이 styles.css를 링크하지 않음');
 assert(html.includes('src="script.js"'), 'index.html이 script.js를 링크하지 않음');
 
 const js = fs.readFileSync('script.js', 'utf8');
