@@ -141,3 +141,37 @@ ul { list-style: none; }
 .site-footer__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #fff; }
 .site-footer__cta { display: flex; flex-wrap: wrap; gap: 12px; }
 .site-footer__meta { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(22,50,74,0.06);
+}
+.card h3 { color: var(--color-navy); margin-bottom: 12px; font-size: 1.15rem; }
+.card p { color: var(--color-text-muted); }
+
+.facility-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.facility-grid li {
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 20px;
+  font-weight: 600;
+  color: var(--color-navy);
+  border-left: 3px solid var(--color-teal);
+}
+
+@media (max-width: 860px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .facility-grid { grid-template-columns: repeat(2, 1fr); }
+}
