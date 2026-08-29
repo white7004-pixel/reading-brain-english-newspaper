@@ -13,13 +13,16 @@ for (const i of galleryImageNumbers) {
 }
 assert((html.match(/class="gallery-item"/g) || []).length === galleryImageNumbers.length, `gallery-item이 ${galleryImageNumbers.length}개가 아님`);
 
-['라운지 · 스낵바', '1인실', '2인실', '오픈석', '미팅룸'].forEach(group =>
+['라운지 · 스낵바', '1인실 · 2인실 · 오픈석 · 미팅룸'].forEach(group =>
   assert(html.includes(`<h3 class="gallery-group__title">${group}</h3>`), `갤러리에 ${group} 섹션 그룹 없음`)
 );
-assert((html.match(/class="gallery-group"/g) || []).length === 5, '갤러리 섹션 그룹이 5개가 아님');
+assert((html.match(/class="gallery-group"/g) || []).length === 2, '갤러리 섹션 그룹이 2개가 아님');
 // alt 텍스트가 전부 동일한 제네릭 문구가 아닌지 확인 (최소한의 다양성 체크)
 const alts = [...html.matchAll(/class="gallery-item"[\s\S]*?alt="([^"]+)"/g)].map(m => m[1]);
 assert(new Set(alts).size >= 5, '갤러리 alt 텍스트가 지나치게 획일적임(서술형으로 다양화 필요)');
+['1인실', '2인실', '오픈석', '미팅룸'].forEach(label =>
+  assert(html.includes(`<span class="gallery-item__label">${label}</span>`), `갤러리 사진에 ${label} 라벨 없음`)
+);
 
 const js = fs.readFileSync('script.js', 'utf8');
 assert(js.includes('initGalleryLightbox'), 'script.js에 라이트박스 함수 없음');
