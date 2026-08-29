@@ -626,7 +626,9 @@ git commit -m "feat: add optimized logo and interior photos from Google Drive"
 
 ---
 
-### Task 4: 히어로 섹션
+### Task 4: 히어로 섹션 (사진 크로스페이드 슬라이드쇼)
+
+**변경 사유:** 사용자가 명시적으로 "메인헤더부분을 사진으로 번갈아가면서 동영상식으로 채워죠"(단일 배경 이미지 대신 여러 사진이 번갈아 크로스페이드되는 슬라이드쇼)를 요청함. 순수 CSS `@keyframes` 애니메이션으로 구현하여 별도 JS·라이브러리·빌드 도구 없이 처리한다.
 
 **Files:**
 - Modify: `index.html:` `<!-- SECTION:HERO -->` 마커 다음 줄
@@ -634,7 +636,7 @@ git commit -m "feat: add optimized logo and interior photos from Google Drive"
 - Test: `tests/check-task4.js`
 
 **Interfaces:**
-- Consumes: Task 3의 `assets/images/kspace-01.jpg`, Task 2의 `.btn`/`.container` 클래스
+- Consumes: Task 3의 `assets/images/kspace-01.jpg`, `kspace-06.jpg`, `kspace-03.jpg`, `kspace-04.jpg`, `kspace-07.jpg` (5장), Task 2의 `.btn`/`.container` 클래스
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -648,11 +650,19 @@ const html = fs.readFileSync('index.html', 'utf8');
 assert(html.includes('class="hero"'), 'hero 섹션 없음');
 assert(html.includes('안산공유오피스'), 'hero에 안산공유오피스 키워드 없음');
 assert(html.includes('안산스터디카페'), 'hero에 안산스터디카페 키워드 없음');
-assert(html.includes('assets/images/kspace-01.jpg'), 'hero 배경 이미지 없음');
+assert(html.includes('hero__slideshow'), 'hero 슬라이드쇼 컨테이너 없음');
+
+const heroImages = ['kspace-01.jpg', 'kspace-06.jpg', 'kspace-03.jpg', 'kspace-04.jpg', 'kspace-07.jpg'];
+for (const img of heroImages) {
+  assert(html.includes(`assets/images/${img}`), `hero 슬라이드에 ${img} 없음`);
+}
 assert(html.includes('naver.me/x9Jr9zgM'), 'hero CTA에 네이버예약 링크 없음');
 
 const css = fs.readFileSync('styles.css', 'utf8');
 assert(css.includes('.hero'), 'styles.css에 .hero 스타일 없음');
+assert(css.includes('.hero__slide'), 'styles.css에 .hero__slide 스타일 없음');
+assert(css.includes('@keyframes heroFade'), 'styles.css에 heroFade 키프레임 없음');
+assert(css.includes('prefers-reduced-motion'), '모션 최소화 대응(prefers-reduced-motion) 없음');
 
 console.log('PASS: check-task4');
 ```
@@ -664,9 +674,17 @@ Expected: `AssertionError: hero 섹션 없음`
 
 - [ ] **Step 3: index.html의 `<!-- SECTION:HERO -->` 마커 다음에 삽입**
 
+5장의 사진(라운지, 라운지+화분, 1인 부스 복도, 회의실, 창가 좌석)이 5초씩 번갈아 크로스페이드되는 슬라이드쇼. 총 애니메이션 주기는 25초(5장 × 5초)이며, `animation-delay`로 각 슬라이드를 순차 배치한다.
+
 ```html
 <section class="hero" id="top">
-  <div class="hero__bg" style="background-image:url('assets/images/kspace-01.jpg')"></div>
+  <div class="hero__slideshow" aria-hidden="true">
+    <div class="hero__slide" style="background-image:url('assets/images/kspace-01.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('assets/images/kspace-06.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('assets/images/kspace-03.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('assets/images/kspace-04.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('assets/images/kspace-07.jpg')"></div>
+  </div>
   <div class="hero__overlay"></div>
   <div class="container hero__inner">
     <p class="section__eyebrow" style="color:var(--color-mint)">안산공유오피스 · 안산스터디카페</p>
@@ -680,7 +698,7 @@ Expected: `AssertionError: hero 섹션 없음`
 </section>
 ```
 
-- [ ] **Step 4: styles.css 끝에 히어로 스타일 추가**
+- [ ] **Step 4: styles.css 끝에 히어로 슬라이드쇼 스타일 추가**
 
 ```css
 .hero {
@@ -691,12 +709,34 @@ Expected: `AssertionError: hero 섹션 없음`
   color: #fff;
   overflow: hidden;
 }
-.hero__bg {
+.hero__slideshow { position: absolute; inset: 0; }
+.hero__slide {
   position: absolute; inset: 0;
   background-size: cover;
   background-position: center;
+  opacity: 0;
   transform: scale(1.03);
+  animation: heroFade 25s infinite;
 }
+.hero__slide:nth-child(1) { animation-delay: 0s; }
+.hero__slide:nth-child(2) { animation-delay: 5s; }
+.hero__slide:nth-child(3) { animation-delay: 10s; }
+.hero__slide:nth-child(4) { animation-delay: 15s; }
+.hero__slide:nth-child(5) { animation-delay: 20s; }
+
+@keyframes heroFade {
+  0% { opacity: 0; }
+  4% { opacity: 1; }
+  20% { opacity: 1; }
+  24% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__slide { animation: none; opacity: 0; }
+  .hero__slide:first-child { opacity: 1; }
+}
+
 .hero__overlay {
   position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(15,36,56,0.55) 0%, rgba(15,36,56,0.78) 100%);
@@ -716,7 +756,7 @@ Expected: `PASS: check-task4`
 
 ```bash
 git add index.html styles.css tests/check-task4.js
-git commit -m "feat: add hero section"
+git commit -m "feat: add hero section with photo crossfade slideshow"
 ```
 
 ---
