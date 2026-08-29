@@ -774,3 +774,26 @@
   font-size: clamp(10px, .82vw, 12px);
   line-height: 1.5;
 }
+
+/* ── 20. 원장 섹션 배치 보정 ──────────────────────────────────
+   약력·저서가 붙으면서 오른쪽 칼럼이 길어졌는데 그리드가
+   align-items: center 라 사진이 세로 가운데에 떠 있었다. */
+.director-grid { align-items: start; }
+.director-photo { position: sticky; top: 96px; }
+
+/* 약력 — 한 줄에 한 항목씩, 구분선을 넣어 길이감을 준다 */
+.director-cv ul { border-top: 1px solid var(--gray-100); }
+.director-cv li {
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.director-cv li em {
+  display: block;
+  margin-top: 3px;
+  white-space: normal;
+}
+
+@media (max-width: 1024px) {
+  /* 한 칸으로 접히면 sticky 가 오히려 방해된다 */
+  .director-photo { position: static; }
+}
