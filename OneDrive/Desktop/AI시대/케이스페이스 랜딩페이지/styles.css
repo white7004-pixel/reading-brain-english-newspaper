@@ -347,3 +347,22 @@ ul { list-style: none; }
   .event-grid { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.review-shot-heading { margin: 40px 0 16px; font-weight: 700; color: var(--color-navy); }
+.review-shot-grid { column-count: 4; column-gap: 12px; }
+.review-shot {
+  display: block; width: 100%; margin-bottom: 12px;
+  break-inside: avoid;
+  border: none; padding: 0; cursor: pointer; background: none;
+  border-radius: var(--radius-md); overflow: hidden;
+  aspect-ratio: auto;
+}
+.review-shot img { width: 100%; height: auto; display: block; object-fit: initial; }
+.review-shot:hover img { transform: none; }
+
+@media (max-width: 860px) {
+  .review-shot-grid { column-count: 2; }
+}
+@media (max-width: 480px) {
+  .review-shot-grid { column-count: 1; }
+}
