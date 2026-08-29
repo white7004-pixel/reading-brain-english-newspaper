@@ -193,3 +193,32 @@ ul { list-style: none; }
 @media (max-width: 860px) {
   .review-grid { grid-template-columns: 1fr; }
 }
+
+.location__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+.location-info { margin: 24px 0 32px; }
+.location-info li { margin-bottom: 12px; color: var(--color-text-muted); }
+.location-info strong { color: var(--color-navy); display: inline-block; min-width: 84px; }
+
+.faq-list { max-width: 760px; }
+.faq-item { border-bottom: 1px solid rgba(22,50,74,0.1); }
+.faq-item__question {
+  width: 100%; text-align: left; background: none; border: none;
+  padding: 20px 0; font-weight: 600; font-size: 1.02rem; color: var(--color-navy);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.faq-item__question::after { content: '+'; font-size: 1.4rem; color: var(--color-teal); }
+.faq-item.is-open .faq-item__question::after { content: '–'; }
+.faq-item__answer {
+  max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+  color: var(--color-text-muted);
+}
+.faq-item.is-open .faq-item__answer { max-height: 200px; padding-bottom: 20px; }
+
+@media (max-width: 860px) {
+  .location__grid { grid-template-columns: 1fr; }
+}

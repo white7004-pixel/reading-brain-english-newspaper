@@ -15,4 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  initFaqAccordion();
+
+  function initFaqAccordion() {
+    document.querySelectorAll('.faq-item__question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.faq-item').classList.toggle('is-open');
+      });
+    });
+  }
 });
