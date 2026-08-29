@@ -471,3 +471,89 @@
   /* 섹션 패딩 + 컨테이너 패딩이 겹쳐 모바일에서 본문 폭이 지나치게 좁아진다 */
   .us-zig-section .container { padding-left: 0; padding-right: 0; }
 }
+
+/* ── 14. 본문 가독성 보정 ────────────────────────────────────
+   제목만 크게 키우고 본문은 13~15px 그대로라 균형이 깨졌다.
+   본문 스케일을 올리고, 가운데 정렬 헤더에서 글상자가 한쪽으로
+   쏠리던 문제를 함께 잡는다. */
+
+:root {
+  --us-card-title: clamp(17px, 1.45vw, 21px);
+  --us-card-text:  clamp(15px, 1.18vw, 17px);
+  --us-small:      clamp(13px, 1vw, 15px);
+}
+
+/* (1) 정렬 — .text-center 안의 max-width 문단이 좌측에 붙는 문제
+   (.why-copy 등은 max-width 만 있고 margin:0 auto 가 없다) */
+.text-center > p,
+.text-center > .section-desc { margin-left: auto; margin-right: auto; }
+
+/* 섹션 헤더 아래 리드 문장은 섹션 설명과 같은 크기로 */
+.why-copy,
+.curriculum-note,
+.curious .section-header p {
+  font-size: var(--us-lead);
+  line-height: 1.6;
+  max-width: 46em;
+  word-break: keep-all;
+}
+
+/* (2) 카드 제목 */
+.why-card h3,
+.curious-card h3,
+.diag-card h3,
+.heidi-card h3,
+.hall-card h3,
+.motivation-card h3,
+.proof-card h3,
+.program-card h3 {
+  font-size: var(--us-card-title);
+  line-height: 1.35;
+}
+
+/* (3) 카드·스텝 본문 */
+.why-card p,
+.curious-card p,
+.heidi-card p,
+.diag-card p,
+.hall-card p,
+.motivation-card p,
+.proof-card p,
+.test-card p,
+.program-card > p,
+.curr-step p,
+.conversion-panel p,
+.conversion-step,
+.target-item,
+.target-intro,
+.heidi-step,
+.hero-description,
+.roadmap-panel-desc,
+.roadmap-panel-item {
+  font-size: var(--us-card-text);
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+/* (4) 목록·보조 텍스트는 한 단계만 */
+.program-detail-list li,
+.program-target,
+.quick-item,
+.conversion-note,
+.location-info li,
+.track-list li {
+  font-size: var(--us-small);
+  line-height: 1.7;
+}
+
+/* 지그재그 본문도 제목 대비 작아 한 단계 올린다 */
+:root { --us-body: clamp(16px, 1.25vw, 19px); }
+
+/* ── 15. 그리드 열 수 보정 ────────────────────────────────────
+   열 수와 실제 항목 수가 맞지 않아 마지막 줄이 한쪽으로 몰리던 곳들.
+   기존 반응형 규칙(≤1024px)은 건드리지 않도록 데스크톱에만 적용한다. */
+@media (min-width: 1025px) {
+  .why-grid   { grid-template-columns: repeat(3, 1fr); } /* 카드 3개 — 4열이라 한 칸이 비었음 */
+  .quick-grid { grid-template-columns: repeat(6, 1fr); } /* 항목 6개 — 5열이라 둘째 줄에 1개만 남았음 */
+  .proof-grid { grid-template-columns: repeat(4, 1fr); } /* 카드 4개 — 3열이라 둘째 줄에 1개만 남았음 */
+}
