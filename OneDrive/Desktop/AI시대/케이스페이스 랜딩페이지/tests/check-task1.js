@@ -22,9 +22,9 @@ const markers = ['SECTION:HERO','SECTION:SERVICES','SECTION:FACILITIES','SECTION
 markers.forEach(m => assert(html.includes(`<!-- ${m} -->`), `마커 ${m} 없음`));
 
 const robots = fs.readFileSync('robots.txt', 'utf8');
-assert(robots.includes('Sitemap: https://kspace-officestudy.kr/sitemap.xml'), 'robots.txt에 sitemap 참조 없음');
+assert(robots.includes('Sitemap: https://www.kspace.ai.kr/sitemap.xml'), 'robots.txt에 sitemap 참조 없음');
 
 const sitemap = fs.readFileSync('sitemap.xml', 'utf8');
-assert(sitemap.includes('https://kspace-officestudy.kr/'), 'sitemap.xml에 홈 URL 없음');
+assert(sitemap.includes('https://www.kspace.ai.kr/'), 'sitemap.xml에 홈 URL 없음');
 
 console.log('PASS: check-task1');

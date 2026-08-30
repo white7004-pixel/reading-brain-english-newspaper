@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kspace-officestudy.kr/sitemap.xml
+Sitemap: https://www.kspace.ai.kr/sitemap.xml
