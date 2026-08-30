@@ -159,19 +159,28 @@ ul { list-style: none; }
 .card h3 { color: var(--color-navy); margin-bottom: 12px; font-size: 1.15rem; }
 .card p { color: var(--color-text-muted); }
 
+#facilities {
+  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-navy));
+}
+#facilities .section__eyebrow { color: var(--color-mint); }
+#facilities .section__title { color: #fff; }
 .facility-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 .facility-grid li {
-  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.08);
   border-radius: var(--radius-md);
   padding: 20px;
   font-weight: 600;
-  color: var(--color-navy);
-  border-left: 3px solid var(--color-teal);
+  color: #fff;
+  border-left: 3px solid var(--color-mint);
 }
+.facility-icon { font-size: 1.3rem; }
 
 @media (max-width: 860px) {
   .card-grid { grid-template-columns: 1fr; }
@@ -371,10 +380,24 @@ ul { list-style: none; }
   .gallery-item { flex-basis: 180px; }
 }
 
-.review-shot-grid { column-count: 4; column-gap: 12px; }
+.review-track { overflow: hidden; }
+.review-shot-grid {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  gap: 16px;
+  animation: review-scroll 45s linear infinite;
+}
+.review-track:hover .review-shot-grid { animation-play-state: paused; }
+@keyframes review-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .review-shot-grid { animation: none; }
+}
 .review-shot {
-  display: block; width: 100%; margin-bottom: 12px;
-  break-inside: avoid;
+  display: block; flex: 0 0 240px;
   border: none; padding: 0; cursor: pointer; background: none;
   border-radius: var(--radius-md); overflow: hidden;
   aspect-ratio: auto;
@@ -383,8 +406,5 @@ ul { list-style: none; }
 .review-shot:hover img { transform: none; }
 
 @media (max-width: 860px) {
-  .review-shot-grid { column-count: 2; }
-}
-@media (max-width: 480px) {
-  .review-shot-grid { column-count: 1; }
+  .review-shot { flex-basis: 180px; }
 }
