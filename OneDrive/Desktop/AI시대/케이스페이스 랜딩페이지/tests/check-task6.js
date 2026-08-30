@@ -11,7 +11,8 @@ for (const i of galleryImageNumbers) {
   const name = `assets/images/kspace-${String(i).padStart(2, '0')}.jpg`;
   assert(html.includes(name), `gallery에 ${name} 없음`);
 }
-assert((html.match(/class="gallery-item"/g) || []).length === galleryImageNumbers.length, `gallery-item이 ${galleryImageNumbers.length}개가 아님`);
+// 무한 슬라이드 연출을 위해 각 그룹 트랙 안에서 이미지 목록이 한 번 더 중복 렌더링됨
+assert((html.match(/class="gallery-item"/g) || []).length === galleryImageNumbers.length * 2, `gallery-item이 ${galleryImageNumbers.length * 2}개(중복 포함)가 아님`);
 
 ['라운지 · 스낵바', '1인실 · 2인실 · 오픈석 · 미팅룸'].forEach(group =>
   assert(html.includes(`<h3 class="gallery-group__title">${group}</h3>`), `갤러리에 ${group} 섹션 그룹 없음`)
