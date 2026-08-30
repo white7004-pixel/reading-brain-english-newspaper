@@ -4,7 +4,10 @@ const html = fs.readFileSync('index.html', 'utf8');
 
 assert(html.includes('id="location"'), 'location 섹션 id 없음');
 assert(html.includes('광덕3로 178'), 'location에 주소 없음');
-assert(html.includes('<iframe'), 'location에 지도 iframe 없음');
+// 모바일에서 구글맵 embed(output=embed)가 깨지는 문제로 iframe 대신 지도앱 길찾기 링크로 대체함
+assert(html.includes('location-map-card'), 'location에 지도 링크 카드 없음');
+assert(html.includes('map.naver.com'), 'location에 네이버지도 링크 없음');
+assert(html.includes('google.com/maps/search'), 'location에 구글지도 링크 없음');
 
 assert(html.includes('id="faq"'), 'faq 섹션 id 없음');
 const faqJsonMatch = html.match(/"@type": "FAQPage"[\s\S]*?"mainEntity": (\[[\s\S]*?\])\s*}\s*<\/script>/);

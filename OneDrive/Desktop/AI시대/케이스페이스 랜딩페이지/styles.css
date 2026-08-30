@@ -197,6 +197,25 @@ ul { list-style: none; }
 .location-info li { margin-bottom: 12px; color: var(--color-text-muted); }
 .location-info strong { color: var(--color-navy); display: inline-block; min-width: 84px; }
 
+.location-map-card {
+  min-height: 360px;
+  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-navy));
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+}
+.location-map-card__addr {
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
 .faq-list { max-width: 760px; }
 .faq-item { border-bottom: 1px solid rgba(22,50,74,0.1); }
 .faq-item__question {
