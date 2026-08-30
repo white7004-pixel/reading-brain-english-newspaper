@@ -53,4 +53,31 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Escape') lightbox.hidden = true;
     });
   }
+
+  initExitIntent();
+
+  function initExitIntent() {
+    const modal = document.getElementById('exitModal');
+    const closeBtn = document.getElementById('exitModalClose');
+    if (!modal || !closeBtn) return;
+    if (sessionStorage.getItem('exitIntentShown')) return;
+
+    const show = () => {
+      modal.hidden = false;
+      sessionStorage.setItem('exitIntentShown', '1');
+      document.removeEventListener('mouseout', onMouseOut);
+    };
+    const onMouseOut = (e) => {
+      if (!e.relatedTarget && e.clientY <= 0) show();
+    };
+    document.addEventListener('mouseout', onMouseOut);
+
+    closeBtn.addEventListener('click', () => { modal.hidden = true; });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.hidden = true;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') modal.hidden = true;
+    });
+  }
 });
