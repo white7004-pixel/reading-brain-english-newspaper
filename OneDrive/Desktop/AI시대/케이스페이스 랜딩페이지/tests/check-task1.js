@@ -6,9 +6,13 @@ const html = fs.readFileSync('index.html', 'utf8');
 assert(html.includes('<title>케이스페이스 오피스앤스터디 | 안산공유오피스·안산스터디카페'), 'title에 핵심 키워드 누락');
 assert(html.includes('안산공유오피스') , 'meta description에 안산공유오피스 키워드 누락');
 assert(html.includes('안산스터디카페'), 'meta description에 안산스터디카페 키워드 누락');
-assert(html.match(/<script type="application\/ld\+json">/g).length === 2, 'JSON-LD 스크립트가 2개(LocalBusiness, FAQPage)가 아님');
+assert(html.match(/<script type="application\/ld\+json">/g).length === 3, 'JSON-LD 스크립트가 3개(Organization, LocalBusiness, FAQPage)가 아님');
 
 const ldJsonBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
+const organization = ldJsonBlocks.find(b => b['@type'] === 'Organization');
+assert(organization, 'Organization JSON-LD 없음');
+assert(organization.logo === 'https://www.kspace.ai.kr/assets/logo/kspace-logo.png', 'Organization logo 불일치');
+
 const localBusiness = ldJsonBlocks.find(b => b['@type'] === 'LocalBusiness');
 assert(localBusiness, 'LocalBusiness JSON-LD 없음');
 assert(localBusiness.telephone === '+82-10-2646-0326', 'LocalBusiness 전화번호 불일치');
