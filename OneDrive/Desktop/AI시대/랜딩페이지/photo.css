@@ -1,0 +1,159 @@
+/* ==========================================================================
+   리딩브레인 — 사진 중심 레이어 (시안 3 방향)
+   redesign.css 뒤에 로드됩니다. HTML 은 건드리지 않고 CSS 로만 톤을 바꿉니다.
+   되돌리려면 index.html 에서 이 파일의 <link> 한 줄만 제거하세요.
+   ========================================================================== */
+
+:root {
+  --ph-radius: 0px;              /* 사진은 각지게 — 사진 면적이 더 커 보인다 */
+  --ph-ease: cubic-bezier(.22,.61,.36,1);
+}
+
+/* ── 1. 히어로 — 사진을 가리지 않는다 ─────────────────────────
+   기존에는 왼쪽에서 오른쪽으로 어둡게 덮어 사진 대부분이 묻혔다.
+   위쪽은 거의 투명하게 두고 글이 놓이는 아래쪽만 진하게 만든다. */
+.hero { align-items: flex-end; }
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(9,25,41,0.44) 0%,
+    rgba(9,25,41,0.06) 26%,
+    rgba(9,25,41,0.52) 60%,
+    rgba(9,25,41,0.88) 100%
+  );
+}
+.hero-content {
+  padding-top: clamp(140px, 16vw, 220px);
+  padding-bottom: clamp(56px, 7vw, 104px);
+  text-shadow: 0 1px 16px rgba(9,25,41,0.45);
+}
+.hero-static-image,
+.hero-video,
+.hero-video-poster { object-position: center 42%; }
+
+/* ── 2. 프로그램 카드 — 작은 배지를 큰 사진으로 ──────────────
+   .program-header 가 좌우 배치라 사진이 썸네일 크기에 머물렀다. */
+.program-card { overflow: hidden; }
+.program-header {
+  display: block !important;
+  position: relative;
+  margin: 0 0 18px;
+}
+.program-header > img.program-badge {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 0;
+  background: var(--gray-100);
+  transition: transform .8s var(--ph-ease);
+}
+.program-card:hover .program-header > img.program-badge { transform: scale(1.05); }
+.program-header > div {
+  padding: 0 24px;
+}
+.program-header h3 { margin-bottom: 4px; }
+
+/* 카드 안쪽 사진 링크도 키운다 */
+.program-media-link img.program-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* ── 3. 갤러리 — 격자에서 가로 스크롤 사진 스트립으로 ────────── */
+.gallery-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  grid-auto-columns: clamp(280px, 28vw, 420px);
+  gap: 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 20px;
+  /* 오른쪽에 더 있다는 신호 */
+  -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 44px), transparent 100%);
+          mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 44px), transparent 100%);
+}
+.gallery-grid::-webkit-scrollbar { height: 6px; }
+.gallery-grid::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+
+.gallery-item {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  scroll-snap-align: start;
+  overflow: hidden;
+  border-radius: var(--ph-radius);
+}
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .8s var(--ph-ease);
+}
+.gallery-item:hover img { transform: scale(1.06); }
+.gallery-caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 44px 16px 16px;
+  color: #fff;
+  font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(180deg, transparent, rgba(9,25,41,0.86));
+}
+.gallery-caption small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px; font-weight: 400;
+  color: rgba(255,255,255,0.76);
+  letter-spacing: 0;
+}
+
+/* ── 4. 교육철학 지그재그 — 사진 비중을 키운다 ──────────────── */
+.us-zig__row { grid-template-columns: minmax(0, 6.4fr) minmax(0, 5.6fr); }
+.us-zig__row:nth-child(2n) { grid-template-columns: minmax(0, 5.6fr) minmax(0, 6.4fr); }
+.us-zig__media { aspect-ratio: 4 / 3; border-radius: var(--ph-radius); }
+
+/* ── 5. 사진이 들어간 카드들 공통 — 라운드 줄이고 사진 키우기 ── */
+.phil-card .phil-icon,
+.test-card .review-photo,
+.heidi-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--ph-radius);
+}
+
+/* ── 6. 반응형 ────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .program-header { margin: 0 0 14px; }
+  .program-header > div { padding: 0 20px; }
+  .gallery-grid {
+    grid-auto-columns: clamp(240px, 78vw, 330px);
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+            mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+  }
+  .us-zig__row,
+  .us-zig__row:nth-child(2n) { grid-template-columns: 1fr; }
+}
+
+/* 캡션이 기본 상태에서 숨겨져 있어(hover 시 translateY) 사진 설명이 안 보였다 */
+.gallery-item .gallery-caption { transform: none; }
+
+/* 스트립 왼쪽은 제목과 줄을 맞추고, 오른쪽만 화면 밖으로 흘려
+   더 볼 사진이 있다는 것을 알린다. (양쪽을 다 흘리면 첫 사진이
+   화면 끝에 붙어 제목과 어긋나 보인다) */
+.gallery .gallery-grid {
+  max-width: none;
+  margin-right: calc(50% - 50vw);
+  padding-right: clamp(24px, 6vw, 90px);
+}
+
+/* 자동 슬라이드 중에는 스냅이 방해가 되므로 해제하고, 스크롤바도 감춘다 */
+.gallery-grid {
+  scroll-snap-type: none;
+  scrollbar-width: none;
+}
+.gallery-grid::-webkit-scrollbar { display: none; }

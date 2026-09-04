@@ -378,6 +378,8 @@
   transition: transform .2s var(--us-ease);
 }
 .us-review__cta:hover { transform: translateY(-3px); }
+.us-review__cta--static { cursor: default; }
+.us-review__cta--static:hover { transform: none; }
 .us-review__cta .top-text { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.03em; }
 .us-review__cta .bottom-text { margin: 2px 0 0; font-size: 17px; letter-spacing: -0.02em; }
 .us-review__cta .arrow {
@@ -421,6 +423,13 @@
   color: rgba(246,242,233,0.88);
   margin: 0 0 clamp(30px, 3.6vw, 48px);
   word-break: keep-all;
+}
+.cta-section.us-banner .us-banner__title { margin-bottom: 16px; }
+.cta-section.us-banner .us-banner__title-line { display: block; }
+.cta-section.us-banner .us-banner__lead {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .cta-section.us-banner .cta-buttons { justify-content: center; gap: 14px; }
 
@@ -760,12 +769,259 @@
 .ar-test-media { display: block; }
 .ar-test-media img {
   aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: center;
   background: var(--white);
   transition: opacity .2s var(--us-ease);
 }
 .ar-test-media:hover img { opacity: .88; }
+.edunap-official-media img {
+  object-fit: contain;
+  object-position: center;
+  background: var(--white);
+}
+.heidi-icon[src="images/ar-test-rtp-report.jpg"] {
+  object-fit: cover;
+  object-position: center;
+}
+.heidi-icon[src="images/heidi/book-quiz-record.png"] {
+  object-fit: cover;
+  object-position: center;
+}
+.heidi-icon[src="images/heidi/daily-feedback-report.png"] {
+  object-fit: cover;
+  object-position: center;
+}
+.heidi-media-stack {
+  width: 100%;
+  height: 170px;
+  margin: 0 0 24px;
+  order: -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.heidi-media-stack__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: 10px;
+  background: var(--white);
+  border: 1px solid rgba(12,53,77,0.10);
+  box-shadow: 0 4px 16px rgba(12,53,77,0.10);
+  transition: transform var(--transition);
+}
+.heidi-card:hover .heidi-media-stack__image { transform: translateY(-2px); }
+.heidi-flow-showcase {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 18px;
+  align-items: stretch;
+}
+.heidi-flow-feature {
+  position: relative;
+  min-height: 620px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--brand-navy);
+  box-shadow: 0 16px 40px rgba(12,53,77,0.12);
+}
+.heidi-flow-feature img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.heidi-flow-feature::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 58%;
+  background: linear-gradient(180deg, transparent, rgba(5,21,32,.82));
+}
+.heidi-flow-caption {
+  position: absolute;
+  z-index: 2;
+  left: 26px;
+  right: 26px;
+  bottom: 26px;
+  color: var(--white);
+}
+.heidi-flow-caption b {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: var(--brand-gold);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.heidi-flow-caption h3 {
+  margin: 0 0 12px;
+  font-size: clamp(26px, 3.2vw, 44px);
+  line-height: 1.08;
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: 0;
+}
+.heidi-flow-caption p {
+  margin: 0;
+  color: rgba(255,255,255,.86);
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 700;
+  word-break: keep-all;
+}
+.heidi-flow-list {
+  display: grid;
+  gap: 12px;
+}
+.heidi-flow-card {
+  display: grid;
+  grid-template-columns: 136px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 15px;
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  box-shadow: 0 10px 26px rgba(12,53,77,0.06);
+}
+.heidi-flow-card img,
+.heidi-flow-media {
+  width: 136px;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: var(--off-white);
+}
+.heidi-flow-card > img {
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.heidi-flow-media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  overflow: hidden;
+}
+.heidi-flow-media img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+}
+.heidi-flow-card small {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--pink);
+  font-size: 11px;
+  font-weight: 900;
+}
+.heidi-flow-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--brand-navy);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.28;
+}
+.heidi-flow-card span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+.heidi-homework {
+  max-width: 1200px;
+  margin: 28px auto 0;
+  display: grid;
+  grid-template-columns: minmax(260px, .72fr) minmax(0, 1.28fr);
+  gap: 22px;
+  align-items: start;
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: var(--brand-navy);
+  color: var(--white);
+  box-shadow: 0 16px 40px rgba(12,53,77,0.14);
+}
+.heidi-homework__copy span {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: var(--brand-gold);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.heidi-homework__copy h3 {
+  margin: 0 0 10px;
+  font-size: clamp(20px, 2.2vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+.heidi-homework__copy p {
+  margin: 0;
+  color: rgba(255,255,255,0.82);
+  font-size: 14px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+.heidi-homework__system {
+  display: grid;
+  gap: 14px;
+}
+.heidi-homework__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.heidi-homework__details div {
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+}
+.heidi-homework__details strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--brand-gold);
+  font-size: 13px;
+  font-weight: 900;
+}
+.heidi-homework__details span {
+  display: block;
+  color: rgba(255,255,255,0.84);
+  font-size: 13px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.heidi-homework__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+.heidi-homework__chips span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 800;
+}
 .ar-test-source {
   display: inline-flex;
   width: fit-content;
@@ -797,3 +1053,412 @@
   /* 한 칸으로 접히면 sticky 가 오히려 방해된다 */
   .director-photo { position: static; }
 }
+
+/* CTA: Kakao channel benefit */
+.kakao-benefit {
+  width: min(760px, 100%);
+  margin: 0 auto clamp(28px, 3.2vw, 42px);
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid rgba(227, 184, 115, .38);
+  border-radius: var(--us-round);
+  background: rgba(246, 242, 233, .10);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(8px);
+}
+
+.kakao-benefit__eyebrow {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 7px 14px;
+  color: var(--brand-navy);
+  background: #FEE500;
+  border-radius: var(--us-pill);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.kakao-benefit strong {
+  display: block;
+  color: var(--brand-ivory);
+  font-size: clamp(20px, 2.3vw, 32px);
+  font-weight: 900;
+  line-height: 1.4;
+  letter-spacing: -0.035em;
+  word-break: keep-all;
+}
+
+.kakao-benefit ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kakao-benefit li {
+  padding: 9px 15px;
+  color: rgba(246, 242, 233, .90);
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: var(--us-pill);
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 700;
+}
+
+.cta-channel {
+  color: #1e1e1e;
+  background: #FEE500;
+}
+
+.cta-channel:hover {
+  background: #f6d900;
+  transform: translateY(-2px);
+}
+
+/* Achievement proof cards with longer result copy */
+.proof-card[data-proof-section] .proof-head {
+  color: var(--brand-navy);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.proof-card[data-proof-section] .proof-body p {
+  margin: 0 0 12px;
+  color: var(--dark);
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.proof-card[data-proof-section] .proof-row {
+  align-items: flex-start;
+  padding: 12px 0;
+  line-height: 1.55;
+}
+
+.proof-card[data-proof-section] .proof-row span {
+  flex: 0 0 92px;
+  color: var(--brand-burgundy);
+  font-weight: 800;
+}
+
+.proof-card[data-proof-section] .proof-row strong {
+  min-width: 0;
+  color: var(--dark);
+  font-size: 13px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+  .kakao-benefit { padding: 22px 18px; }
+  .kakao-benefit strong br { display: none; }
+  .proof-card[data-proof-section] .proof-row {
+    display: block;
+  }
+  .proof-card[data-proof-section] .proof-row span {
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+
+/* Reading Brain differentiator panel */
+.rb-difference-panel {
+  max-width: 1200px;
+  margin: 0 auto clamp(34px, 4vw, 56px);
+  padding: clamp(30px, 4vw, 52px);
+  color: var(--brand-ivory);
+  background:
+    linear-gradient(135deg, rgba(139, 48, 56, .96), rgba(18, 48, 71, .96)),
+    url("images/english-books-library.jpg") center / cover;
+  border-radius: var(--us-round);
+  box-shadow: 0 18px 48px rgba(18, 48, 71, .18);
+  text-align: center;
+  overflow: hidden;
+}
+
+.rb-difference-panel > span {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 8px 16px;
+  color: var(--brand-navy);
+  background: var(--gold-on-dark);
+  border-radius: var(--us-pill);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.rb-difference-panel h3 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(30px, 4.5vw, 58px);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.045em;
+  word-break: keep-all;
+}
+
+.rb-difference-panel p {
+  margin: 14px auto clamp(24px, 3vw, 36px);
+  color: rgba(246, 242, 233, .88);
+  font-size: clamp(17px, 1.6vw, 24px);
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.rb-difference-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: clamp(22px, 3vw, 34px);
+}
+
+.rb-difference-proof article {
+  padding: 22px 18px;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+}
+
+.rb-difference-proof strong {
+  display: block;
+  color: #fff;
+  font-size: clamp(18px, 1.8vw, 26px);
+  font-weight: 900;
+}
+
+.rb-difference-proof small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(246, 242, 233, .82);
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.rb-difference-strengths {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.rb-difference-strengths span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 12px 14px;
+  color: var(--brand-navy);
+  background: rgba(246, 242, 233, .94);
+  border-radius: 14px;
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 900;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+@media (max-width: 900px) {
+  .rb-difference-proof,
+  .rb-difference-strengths {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .rb-difference-panel {
+    padding: 28px 18px;
+  }
+  .rb-difference-proof,
+  .rb-difference-strengths {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* School network */
+.school-network { background: var(--white); padding: 92px 40px; }
+.school-network-head {
+  max-width: 1200px;
+  margin: 0 auto 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: end;
+}
+.school-network-head h2 {
+  margin-top: 10px;
+  font-size: clamp(28px, 4vw, 50px);
+  font-weight: 900;
+  color: var(--dark);
+  letter-spacing: -0.04em;
+  line-height: 1.16;
+}
+.school-network-head p {
+  max-width: 560px;
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+.school-network-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+  gap: 10px;
+}
+.school-network-counts div {
+  min-width: 128px;
+  padding: 18px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--off-white);
+  text-align: center;
+}
+.school-network-counts strong {
+  display: block;
+  color: var(--pink);
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+}
+.school-network-counts span {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.school-network-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+  gap: 22px;
+}
+.school-panel {
+  padding: 26px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--off-white);
+}
+.school-panel h3 {
+  margin-bottom: 16px;
+  color: var(--dark);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.school-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.school-list li {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid rgba(18,48,71,0.12);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+.school-list--international li {
+  border-color: rgba(139,48,56,0.16);
+  color: var(--brand-navy);
+}
+
+@media (max-width: 1024px) {
+  .school-network-head { grid-template-columns: 1fr; align-items: start; }
+  .school-network-counts { max-width: 320px; }
+  .school-network-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .school-network-counts { grid-template-columns: 1fr 1fr; }
+  .school-panel { padding: 22px 18px; }
+  .school-list li { width: 100%; justify-content: center; text-align: center; }
+}
+
+@media (max-width: 768px) {
+  .heidi-flow-showcase {
+    grid-template-columns: 1fr;
+  }
+  .heidi-flow-feature {
+    min-height: 420px;
+  }
+  .heidi-homework {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+  .heidi-homework__details { grid-template-columns: 1fr; }
+  .heidi-homework__chips { justify-content: flex-start; }
+}
+
+@media (max-width: 560px) {
+  .heidi-flow-caption {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+  }
+  .heidi-flow-card {
+    grid-template-columns: 92px 1fr;
+    padding: 14px;
+  }
+  .heidi-flow-card img,
+  .heidi-flow-media {
+    width: 92px;
+  }
+  .heidi-homework__details {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── 21. 노출과제 블록 대비 보정 ──────────────────────────────
+   .heidi-homework 는 네이비 배경인데 강조 글씨가 --brand-gold
+   (실제 값은 와인 #8B3038)라 대비가 1.4~1.6:1 로 거의 안 읽혔다.
+   팔레트의 --gold-on-dark 로 바꿔 약 7:1 을 확보한다.
+   (지그재그 섹션에서 이미 같은 이유로 적용한 방식) */
+.heidi-homework__copy span,
+.heidi-homework__details strong { color: var(--gold-on-dark); }
+
+/* ── 22. AR 성적 우수자 박스 상단 간격 ────────────────────────
+   .ar-cases 는 아이보리 배경의 독립 패널인데 위 .hall-grid 와
+   간격이 0px 이라 앞 섹션에 붙어 보였다. */
+.hall .ar-cases { margin-top: clamp(48px, 6vw, 88px); }
+
+/* ── 23. 노출과제 본문 가독성 ────────────────────────────────
+   13px · line-height 1.55 · 흰색 84% 라 네이비 위에서 읽기 힘들었다. */
+.heidi-homework__details div {
+  padding: 18px 20px;
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.20);
+}
+.heidi-homework__details strong {
+  font-size: clamp(14px, 1.15vw, 17px);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.heidi-homework__details span {
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.85;
+  color: rgba(255,255,255,0.94);
+}
+/* 문장 안의 핵심 수치·용어를 골드로 짚어준다 */
+.heidi-homework__details span em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--gold-on-dark);
+}
+.heidi-homework__system { gap: 18px; }

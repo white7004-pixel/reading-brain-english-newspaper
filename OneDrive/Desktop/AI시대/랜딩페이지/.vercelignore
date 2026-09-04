@@ -1,0 +1,22 @@
+# 작업용 파일 — 실제 사이트에 올리지 않는다
+tmp/
+docs/
+scripts/
+.superpowers/
+.worktrees/
+.deploy-*/
+
+# 디자인 시안 · 테스트본
+design-test.html
+design-test2.html
+design-test3.html
+test-open.html
+index-backup-*.html
+index-new-simple.html
+landing-test.html
+
+# 링크되지 않은 스타일시트
+new_styles.css
+
+# 안내문
+images/books/README.txt

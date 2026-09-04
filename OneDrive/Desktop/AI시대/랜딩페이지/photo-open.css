@@ -1,0 +1,14 @@
+/* ==========================================================================
+   프로그램 카드 상세 내용을 항상 펼쳐두는 레이어 (테스트)
+   기본 페이지는 .program-card-content { display:none } 으로 접혀 있고
+   "자세히 보기" 를 눌러야 열린다. 이 레이어는 처음부터 다 보이게 한다.
+   ========================================================================== */
+
+/* 상세 내용 상시 노출 */
+.program-card .program-card-content { display: block !important; }
+
+/* 다 펼쳐져 있으므로 여닫기 버튼은 감춘다 */
+.program-card .program-card-toggle { display: none !important; }
+
+/* 접힘 상태를 전제로 잡혀 있던 여백 보정 */
+.program-card .program-card-content { padding-top: 4px; }
