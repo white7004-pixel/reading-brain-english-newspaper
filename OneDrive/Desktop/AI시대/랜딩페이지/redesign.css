@@ -249,7 +249,9 @@ body {
 .conversion-panel, .conversion-steps {
   border-radius: var(--us-round);
 }
-.phil-card, .program-card, .test-card, .quick-item {
+/* .quick-item 은 카드가 아니라 색 띠 위에 놓인 링크다.
+   여기에 흰 배경을 주면 흰 글씨와 겹쳐 글자가 사라진다. */
+.phil-card, .program-card, .test-card {
   border: 1px solid var(--line);
   background: #fff;
 }
@@ -1325,7 +1327,7 @@ body {
   padding: clamp(30px, 4vw, 52px);
   color: var(--brand-ivory);
   background:
-    linear-gradient(135deg, rgba(139, 48, 56, .96), rgba(18, 48, 71, .96)),
+    linear-gradient(135deg, rgba(18, 48, 71, .93), rgba(11, 34, 51, .96)),
     url("images/english-books-library.jpg") center / cover;
   border-radius: var(--us-round);
   box-shadow: 0 18px 48px rgba(18, 48, 71, .18);
@@ -1656,3 +1658,92 @@ body {
    '주목' 이 아니라 '구조' 로 읽히고, 빨강은 진짜 강조에만 남는다. */
 .program-card { --pc-color: var(--brand-navy); }
 .program-card::before { height: 3px; }
+
+/* ── 15. 상단 안내바 글씨 ─────────────────────────────────── */
+/* 주 메뉴가 --text-muted(회색) 13px/500 이라 흰 배경에서 가장 흐린 글씨였다.
+   페이지에서 제일 먼저 읽혀야 할 줄이 제일 약하면 안 된다.
+   네이비 + 600 으로 올리면 흰 배경 대비가 5.9:1 에서 12.6:1 이 된다. */
+.nav-links a {
+  color: var(--brand-navy);
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.nav-links a:hover,
+.nav-links a:focus-visible { color: var(--brand-red); }
+.nav-links a.active { color: var(--brand-red); font-weight: 700; }
+
+/* 로고 옆 영문 태그라인도 같은 이유로 한 단계 올린다. */
+.nav-logo-text small { color: var(--body-text); }
+
+/* ── 16. 파머스 디테일 ────────────────────────────────────── */
+/* 파머스 페이지에 있는데 아직 안 가져온 잔손질 네 가지. */
+
+/* (1) 가운데 정렬 섹션 제목 아래 짧은 빨간 선.
+       파머스의 .rule 에 해당한다 — 제목과 본문 사이를 끊어 주는 역할. */
+.text-center .section-title::after {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 3px;
+  background: var(--brand-red);
+  margin: 26px auto 0;
+}
+.us-zig-section .text-center .section-title::after { background: var(--red-on-dark); }
+
+/* (2) 상단 메뉴에 밑줄이 왼쪽에서 밀려 들어온다.
+       파머스의 .gnb a::after 와 같은 동작. */
+.nav-links a { position: relative; }
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 2px;
+  background: var(--brand-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .25s var(--us-ease);
+}
+.nav-links a:hover::after,
+.nav-links a.active::after { transform: scaleX(1); }
+
+/* (3) 드래그 선택 색도 브랜드 빨강으로. */
+::selection { background: var(--brand-red); color: #fff; }
+
+/* (4) 카드에 마우스를 올리면 조금 더 떠오르고 테두리는 그림자에 자리를 내준다. */
+.program-card:hover,
+.test-card:hover,
+.phil-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--us-shadow-navy);
+  border-color: transparent;
+}
+
+/* ── 17. 빠른 메뉴 띠 ─────────────────────────────────────── */
+/* 띠 전체가 선명한 빨강이면 페이지에서 가장 크게 소리치는 면이 된다.
+   파머스도 같은 자리(.quickbar)를 네이비로 쓴다 — 빨강은 강조에만 남긴다. */
+.quick-menu { background: var(--brand-navy); }
+.quick-item {
+  background: none;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0;
+  color: #fff;
+}
+.quick-item:last-child { border-right: 0; }
+.quick-item:hover { background: rgba(255, 255, 255, 0.08); }
+.quick-icon { color: var(--red-on-dark); font-family: var(--display); font-weight: 800; }
+
+/* ── 18. 남은 옛 팔레트 잔재 ──────────────────────────────── */
+/* 토큰으로 안 잡히고 직접 색을 적어둔 자리들. 불투명도가 높아 눈에 띄는 것만 손본다. */
+
+/* 대상 안내 패널의 아이브로우만 아직 '꽉 찬 알약' 이었다 — 다른 섹션과 같은 납작한 형태로. */
+.target-panel .section-label {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: var(--red-on-dark);
+}
+
+/* 상담봇 버튼 그림자도 와인빛이 남아 있었다. */
+.chatbot-toggle { box-shadow: 0 8px 24px rgba(228, 33, 47, .35); }
+.chatbot-toggle:hover { box-shadow: 0 12px 32px rgba(228, 33, 47, .45); }
