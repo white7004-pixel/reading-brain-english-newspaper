@@ -128,8 +128,11 @@
 
 /* ── 6. 반응형 ────────────────────────────────────────────── */
 @media (max-width: 860px) {
-  .program-header { margin: 0 0 14px; }
-  .program-header > div { padding: 0 20px; }
+  .program-card > .program-header { padding: 18px 18px 0; }
+  .program-card > .program-header > div { padding: 14px 0 0; }
+  .program-card > p,
+  .program-card .program-card-content { padding-left: 18px; padding-right: 18px; }
+  .program-card .program-card-toggle { margin-left: 18px; margin-right: 18px; }
   .gallery-grid {
     grid-auto-columns: clamp(240px, 78vw, 330px);
     -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
@@ -157,3 +160,32 @@
   scrollbar-width: none;
 }
 .gallery-grid::-webkit-scrollbar { display: none; }
+
+/* ── 7. 커리큘럼 카드를 진단 카드와 같은 정렬로 ────────────────
+   문제: 사진은 카드 가장자리까지 꽉 차고(여백 0), 제목은 28px,
+   본문은 24px, 상세는 28px 라 시작선이 제각각이었다.
+   게다가 제목 영역에 회색 띠가 깔려 사진·제목·본문이 따로 놀았다.
+   진단 카드(.diag-card padding 32px 24px + 이미지 -8px 인셋)와
+   같은 규칙으로 맞춘다. */
+.program-card > .program-header {
+  background: transparent;
+  padding: 24px 24px 0;
+}
+.program-card > .program-header > img.program-badge {
+  aspect-ratio: 16 / 10;              /* 진단 카드와 동일 비율 */
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  /* 진단 카드처럼 사진만 좌우로 8px 더 넓게 — 액자처럼 보인다 */
+  width: calc(100% + 16px);
+  max-width: none;
+  margin: 0 -8px;
+}
+.program-card > .program-header > div {
+  padding: 18px 0 0;                  /* 좌우는 헤더의 24px 를 그대로 따른다 */
+  gap: 6px;
+}
+
+/* 본문·상세·버튼도 같은 24px 선에 맞춘다 */
+.program-card > p { padding-left: 24px; padding-right: 24px; }
+.program-card .program-card-content { padding-left: 24px; padding-right: 24px; }
+.program-card .program-card-toggle { margin-left: 24px; margin-right: 24px; width: auto; }
