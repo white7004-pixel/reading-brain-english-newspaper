@@ -1,7 +1,12 @@
 # 리딩브레인영어학원 랜딩페이지
 
 이 폴더는 **리딩브레인영어학원(광명 일직동) 공식 랜딩페이지**다.
-`https://readingbrain.kr` 로 Vercel 배포된다.
+`https://www.readingbrain.co.kr` 로 Vercel 배포된다.
+
+주소를 헷갈리기 쉬우니 적어 둔다.
+- 도메인은 `readingbrain.co.kr` 이다. `readingbrain.kr` 이 아니다.
+- Vercel 프로젝트 이름은 `output` 이다. 이름만 보면 다른 프로젝트 같지만
+  운영 도메인이 걸려 있는 것은 이쪽이다.
 
 ## ⚠ 폴더 혼동 주의 — 가장 먼저 읽을 것
 
@@ -57,3 +62,24 @@ node tmp/functest.js                # 캐러셀·맨위로·리빌 동작 검증
 
 `shoot.js` 주의: 페이지에 `scroll-behavior: smooth` 가 걸려 있어 스크롤 시
 `behavior: 'instant'` 를 써야 리빌이 제때 발동한다. 안 그러면 섹션이 빈 화면으로 찍힌다.
+
+`python -m http.server` 는 동영상 요청이 중간에 끊기면 `ConnectionResetError` 로
+프로세스째 죽는다. 대신 `python tmp/serve.py 8765` 를 쓴다.
+
+## ⚠ 배포 — 폴더째 올리지 말 것
+
+`images/` 에 파일이 295개인데 페이지가 실제로 쓰는 것은 58개다. 나머지는
+학생 얼굴이 담긴 원본 사진이라, 링크가 걸려 있지 않아도 **주소만 알면
+누구나 받을 수 있는 상태**가 된다.
+
+그래서 `vercel --prod` 를 이 폴더에서 바로 실행하지 않는다. 참조되는 파일만
+골라 담은 배포본을 만든 뒤 그 폴더에서 배포한다. 991MB 가 75MB 로 줄고,
+쓰지 않는 사진은 애초에 올라가지 않는다.
+
+배포본을 만드는 방법은 `index.html` 과 `curriculum-detail.html` 에서 시작해
+링크된 css/js 를 따라가고, 그 안의 `url()` 과 `images/` `videos/` 참조를
+전부 모아 그 파일들만 복사하는 것이다. `.vercel/project.json` 을 배포본
+폴더에 같이 넣어야 같은 프로젝트로 올라간다.
+
+`.vercelignore` 도 있지만 그것만 믿으면 안 된다. 새로 생긴 초안 파일은
+목록에 없어서 그대로 공개된다.
