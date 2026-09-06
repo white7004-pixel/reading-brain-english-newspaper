@@ -14,6 +14,7 @@ test-open.html
 index-backup-*.html
 index-new-simple.html
 landing-test.html
+preview-bold-landing.html
 
 # 링크되지 않은 스타일시트
 new_styles.css

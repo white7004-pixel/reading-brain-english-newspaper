@@ -1,27 +1,115 @@
 /* ==========================================================================
-   리딩브레인 — useschool.co.kr 디자인 언어 레이어
-   기존 인라인 <style> 뒤에 로드되어 톤만 덮어씁니다.
-   색상 팔레트(네이비/버건디/아이보리/골드)는 그대로 유지합니다.
-   되돌리려면 index.html에서 이 파일의 <link> 한 줄만 제거하세요.
+   리딩브레인 — 디자인 레이어
+   기존 인라인 <style> 뒤에 로드되어 색·타이포·여백을 다시 잡는다.
+
+   톤: 파머스어학원 페이지와 같은 계열 — 네이비를 유지하고
+   강조 색을 와인에서 선명한 빨강으로 올렸고, 아이보리 배경을
+   흰색 + 차가운 연회색으로 바꿔 훨씬 깔끔하게 만든다.
+
+   바꿼 점 4가지
+     1) 색    — 와인/골드/아이보리 → 빨강/네이비/흰색·연회색
+     2) 폰트  — Noto Sans KR + Playfair → Pretendard + Montserrat
+     3) 스케일 — 제목 68px·여백 190px처럼 과한 값을 44px·120px로 내림
+     4) 장식  — 형광펜 마커·알약 라벨·큰 라운드를 높이를 줄이거나 없앤다
+
+   되돌리려면 redesign.css.bak 을 다시 덮어쓰면 된다.
    ========================================================================== */
 
 :root {
-  /* useschool의 대형 타이포 스케일 — 리딩브레인 팔레트에 맞춰 옮김 */
-  --us-display: clamp(38px, 6.4vw, 96px);   /* 히어로 */
-  --us-h2:      clamp(30px, 4.6vw, 68px);   /* 섹션 타이틀 */
-  --us-h3:      clamp(22px, 2.6vw, 40px);   /* 지그재그 문장 */
-  --us-lead:    clamp(16px, 1.5vw, 25px);   /* 리드 문단 */
-  --us-body:    clamp(15px, 1.05vw, 18px);
+  /* ── 색 ────────────────────────────────── */
+  /* 네이비는 리딩브레인 것을 그대로 쓴다. */
+  --brand-navy:     #123047;
+  --navy-deep:      #0B2233;   /* 어두운 섹션 바닥 */
+  --navy-soft:      #1E3A54;
 
-  --us-pad:     clamp(88px, 11vw, 190px);   /* 섹션 상하 여백 */
-  --us-gap:     clamp(40px, 6vw, 110px);
+  /* 강조색 — 와인(#8B3038) 자리에 선명한 빨강이 들어간다. */
+  --brand-red:      #E4212F;
+  --red-dark:       #B7161F;
+  --red-on-dark:    #FF6B76;   /* 네이비·사진 위에서 쓰는 밝은 빨강 */
+  --red-tint:       rgba(228, 33, 47, 0.08);
+  --red-line:       rgba(228, 33, 47, 0.28);
 
-  --us-round:   20px;
-  --us-pill:    50px;
-  --us-shadow:  0 5px 20px rgba(184, 154, 98, 0.30);
-  --us-shadow-navy: 0 10px 40px rgba(12, 53, 77, 0.14);
+  /* 중성색 — 따뜻한 베이지 계열을 차가운 회색으로 교체 */
+  --ink:            #1A1D23;
+  --body-text:      #5B6472;
+  --muted-text:     #8B94A3;
+  --line:           #E6E9EE;
+  --soft:           #F5F7FA;
+  --soft-2:         #EDF0F5;
+
+  /* ── 기존 이름들을 위 색에 다시 연결 ────────────── */
+  /* 페이지 전체가 이 이름들을 쓰고 있어, 여기서 바꾸면 한 번에 바뀐다. */
+  --brand-burgundy: var(--brand-red);
+  --brand-gold:     var(--brand-red);
+  --maroon:         var(--brand-red);
+  --gold:           var(--brand-red);
+  --pink:           var(--brand-red);
+  --pink-hover:     var(--red-dark);
+  --pink-dim:       var(--red-tint);
+  --pink-light:     #FEF2F3;
+  --gold-on-dark:   var(--red-on-dark);
+
+  --brand-ivory:    #FFFFFF;
+  --off-white:      var(--soft);
+  --brand-ink:      var(--ink);
+  --text:           var(--ink);
+  --text-muted:     var(--body-text);
+
+  --navy-2:         var(--navy-soft);
+  --dark:           var(--brand-navy);
+  --dark-2:         var(--navy-soft);
+  --navy-dim:       rgba(18, 48, 71, 0.06);
+
+  --gray-50:        var(--soft);
+  --gray-100:       var(--line);
+  --gray-200:       #D6DBE3;
+  --gray-400:       var(--muted-text);
+  --gray-500:       var(--body-text);
+
+  /* ── 폰트 ─────────────────────────────── */
+  --sans:    'Pretendard', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+  --display: 'Montserrat', 'Pretendard', sans-serif;
+
+  /* ── 스케일 ───────────────────────────── */
+  /* 이전 값이 문제였다 — 제목이 68px까지 커지고 리드 문단이 25px여서
+     페이지 전체가 소리치는 느낌이었다. 절제된 값으로 내린다. */
+  --us-display: clamp(34px, 5.2vw, 62px);   /* 히어로  (이전 96px) */
+  --us-h2:      clamp(27px, 3.4vw, 44px);   /* 섹션 제목 (이전 68px) */
+  --us-h3:      clamp(20px, 2.1vw, 30px);   /* 지그재그 문장 (이전 40px) */
+  --us-lead:    clamp(15px, 1.15vw, 17.5px);/* 리드 문단 (이전 25px) */
+  --us-body:    clamp(14.5px, 1vw, 16px);
+
+  --us-pad:     clamp(76px, 8vw, 120px);    /* 섹션 상하 여백 (이전 190px) */
+  --us-gap:     clamp(36px, 4.5vw, 72px);
+
+  --us-round:   6px;                        /* 이전 20px — 높이면 둥글어 보인다 */
+  --us-pill:    999px;
+  --us-shadow:      0 2px 10px rgba(18, 48, 71, 0.06);
+  --us-shadow-navy: 0 10px 40px rgba(18, 48, 71, 0.10);
 
   --us-ease:    cubic-bezier(.22,.61,.36,1);
+
+  --radius:     4px;
+  --radius-md:  6px;
+  --radius-lg:  6px;
+  --radius-xl:  10px;
+}
+
+/* ── 0. 본문 타이포 ───────────────────────── */
+body {
+  font-family: var(--sans);
+  background: #fff;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Playfair 를 쓰던 숫자 라벨(01, 02 …)은 Montserrat 로 넘긴다. */
+.krashen-point span,
+.original-effect-card span,
+.admissions-pillars span {
+  font-family: var(--display);
+  letter-spacing: 0.04em;
 }
 
 /* ── 1. 여백 · 폭 ─────────────────────────────────────────── */
@@ -66,48 +154,60 @@
 
 /* 섹션 라벨 → useschool식 알약 아이브로우 */
 .section-label {
-  font-size: clamp(13px, 1.15vw, 19px);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-size: 12.5px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 8px 22px;
-  border-radius: var(--us-pill);
-  margin-bottom: 24px;
-  background: rgba(184, 154, 98, 0.14);
-  color: var(--brand-gold);
-  border: 1px solid rgba(184, 154, 98, 0.38);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  margin-bottom: 20px;
+  color: var(--brand-red);
 }
+/* 알약 배경 대신 짧은 선 하나 — 이게 훨씬 조용하고 정돈되어 보인다. */
+.section-label::before {
+  content: "";
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+.text-center .section-label { justify-content: center; }
 
 /* ── 3. 형광펜 하이라이트 (useschool의 h4 span 대응) ──────── */
 /* 밝은 배경 = 버건디 마커, 어두운 배경 = 골드 마커.
    두 색 모두 기존 팔레트(--brand-burgundy / --gold-on-dark) 값이다. */
-:root { --us-mark-color: rgba(139, 30, 36, 0.24); }
-
+/* 형광펜 반투명 블록은 글자를 흘리게 만든다.
+   배경을 없애고 글자 자체를 빨강으로 세우는 편이 훨씬 선명하다. */
 .us-mark {
-  background: linear-gradient(transparent 60%, var(--us-mark-color) 60%);
-  padding: 0 .1em;
+  background: none;
+  padding: 0;
+  color: var(--brand-red);
+  font-weight: 800;
 }
 .us-mark--solid {
-  background: var(--brand-burgundy);
-  color: var(--white);
-  padding: 0 .22em;
-  border-radius: 4px;
+  background: var(--brand-red);
+  color: #fff;
+  padding: 0 .24em;
+  border-radius: var(--radius);
+  font-weight: 800;
 }
 
-/* 네이비/사진 위 섹션 */
-.us-on-dark,
-.hero,
-.cta-section.us-banner { --us-mark-color: rgba(227, 184, 115, 0.42); }
+/* 네이비·사진 위에서는 진한 빨강이 묻히므로 밝은 빨강을 쓴다. */
+.us-on-dark .us-mark,
+.hero .us-mark,
+.cta-section.us-banner .us-mark { color: var(--red-on-dark); }
 
-/* 히어로는 글자가 매우 커서 마커 블록이 무겁다 —
-   useschool 히어로처럼 얇은 밑줄 한 줄로 처리한다. */
-.hero .us-mark {
-  background: linear-gradient(
-    transparent 84%,
-    var(--gold-on-dark) 84%,
-    var(--gold-on-dark) 92%,
-    transparent 92%
-  );
-  padding: 0 .04em;
+.us-on-dark .us-mark--solid,
+.hero .us-mark--solid,
+.cta-section.us-banner .us-mark--solid {
+  background: var(--brand-red);
+  color: #fff;
 }
 
 /* ── 4. 알약 버튼 ─────────────────────────────────────────── */
@@ -116,8 +216,15 @@
   font-weight: 600;
   transition: transform .2s var(--us-ease), box-shadow .2s var(--us-ease), background-color .2s var(--us-ease);
 }
-.btn-gold, .btn-outline { padding: 16px 34px; font-size: clamp(14px, 1.05vw, 17px); }
-.btn-gold:hover, .cta-btn:hover, .us-btn:hover { transform: translateY(-3px); }
+.btn-gold, .btn-outline { padding: 16px 32px; font-size: clamp(14px, 1vw, 15.5px); font-weight: 700; }
+.btn-gold {
+  background: var(--brand-red);
+  color: #fff;
+  border-color: var(--brand-red);
+  box-shadow: 0 10px 26px rgba(228, 33, 47, 0.30);
+}
+.btn-gold:hover { background: var(--red-dark); box-shadow: 0 14px 32px rgba(228, 33, 47, 0.38); }
+.btn-gold:hover, .cta-btn:hover, .us-btn:hover { transform: translateY(-2px); }
 
 /* useschool의 read_more: 어두운 알약 + 컬러 화살표 */
 .us-more {
@@ -142,7 +249,11 @@
 .conversion-panel, .conversion-steps {
   border-radius: var(--us-round);
 }
-.program-card, .test-card { box-shadow: var(--us-shadow-navy); }
+.phil-card, .program-card, .test-card, .quick-item {
+  border: 1px solid var(--line);
+  background: #fff;
+}
+.program-card, .test-card { box-shadow: var(--us-shadow); }
 
 /* ── 6. 스크롤 리빌 (useschool gs_reveal) ─────────────────── */
 .us-reveal {
@@ -162,14 +273,24 @@
 /* ── 7. HERO — 전면 사진 + 대형 헤드라인 ──────────────────── */
 .hero-content { padding: clamp(120px, 14vw, 180px) 24px clamp(90px, 10vw, 140px); max-width: 1280px; }
 
+/* 사진 위 태그는 꽉 찬 빨강이면 시끄럽다. 유리처럼 반투명하게 두고
+   테두리 한 줄로만 잡아 준다. 강조는 제목의 빨간 단어 하나로 충분하다. */
 .hero-offer {
   border-radius: var(--us-pill);
   padding: 9px 22px;
-  font-size: clamp(11px, .95vw, 15px);
+  font-size: clamp(11px, .95vw, 14px);
   letter-spacing: 0.06em;
-  background: rgba(139, 30, 36, 0.92);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  backdrop-filter: blur(6px);
+  color: #fff;
   margin-bottom: clamp(24px, 3vw, 40px);
 }
+
+/* 히어로 제목: 빨간 강조는 '사고력' 한 곳만. 마지막 줄까지 빨강이면
+   어느 쪽이 핵심인지 사라진다 — 마지막 줄은 흰색으로 되돌린다. */
+.hero-title em { color: #fff; }
+.hero .us-mark { color: var(--red-on-dark); font-weight: 800; }
 
 .hero-title {
   font-size: var(--us-display);
@@ -211,9 +332,9 @@
 .us-zig-section .section-desc { color: rgba(246,242,233,0.78); }
 /* 네이비 위에서는 와인색 강조가 묻히므로 팔레트의 --gold-on-dark 를 쓴다 */
 .us-zig-section .section-label {
-  background: rgba(227, 184, 115, 0.14);
-  color: var(--gold-on-dark);
-  border-color: rgba(227, 184, 115, 0.42);
+  background: none;
+  border: 0;
+  color: var(--red-on-dark);
 }
 
 .us-zig { display: block; margin: 0; padding: 0; list-style: none; }
@@ -324,13 +445,27 @@
   will-change: transform;
 }
 
-.us-review { flex: 0 0 320px; width: 320px; }
+/* 후기 링크는 카드의 형제 요소라 카드 테두리 밖으로 떨어져 나갔다.
+   흰 상자 · 테두리 · 그림자를 바깥 .us-review 로 옮겨서
+   본문과 링크가 한 장의 카드 안에 들어오게 한다. */
+.us-review {
+  flex: 0 0 320px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--us-round);
+  box-shadow: var(--us-shadow);
+}
 .us-review__card {
   position: relative;
-  background: #fff;
-  border-radius: var(--us-round);
-  padding: 64px 28px 28px;
-  box-shadow: var(--us-shadow);
+  flex: 1;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 64px 24px 20px;
+  box-shadow: none;
 }
 .us-review__avatar {
   position: absolute;
@@ -365,32 +500,51 @@
   word-break: keep-all;
 }
 
+/* 후기 카드의 링크는 원래 카드 절반을 채우는 빨간 덩어리였다.
+   후기 본문보다 버튼이 더 눈에 띄면 주객이 바뀐다 —
+   카드 아래에 붙는 얇은 줄 하나로 줄인다. */
 .us-review__cta {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   position: relative;
-  margin-top: 14px;
-  padding: 20px 28px;
-  border-radius: var(--us-round);
-  background: var(--brand-gold);
-  box-shadow: var(--us-shadow);
-  color: var(--brand-navy);
+  margin-top: auto;
+  padding: 14px 24px;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--brand-red);
   text-decoration: none;
-  transition: transform .2s var(--us-ease);
+  transition: color .2s var(--us-ease);
 }
-.us-review__cta:hover { transform: translateY(-3px); }
+.us-review__cta:hover { color: var(--red-dark); }
 .us-review__cta--static { cursor: default; }
-.us-review__cta--static:hover { transform: none; }
-.us-review__cta .top-text { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.03em; }
-.us-review__cta .bottom-text { margin: 2px 0 0; font-size: 17px; letter-spacing: -0.02em; }
+.us-review__cta--static:hover { color: var(--brand-red); }
+.us-review__cta .top-text {
+  margin: 0;
+  font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em;
+}
+.us-review__cta .bottom-text {
+  margin: 0;
+  font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--muted-text);
+}
 .us-review__cta .arrow {
-  position: absolute; right: 20px; bottom: 20px;
-  width: 32px; height: 32px;
+  position: static;
+  flex: 0 0 auto;
+  width: 28px; height: 28px;
   border-radius: 100px;
-  background: #fff;
-  font-size: 13px; font-weight: 700; line-height: 32px;
+  background: var(--red-tint);
+  color: var(--brand-red);
+  font-size: 12px; font-weight: 700; line-height: 28px;
   text-align: center;
   margin: 0;
 }
+
+/* 카드 높이를 맞춰 링크 줄이 한 줄로 정렬되게 한다. */
+.us-review__card { display: flex; flex-direction: column; }
 
 /* ── 10. 전면 사진 CTA 배너 (useschool #expedition_wrap) ──── */
 .cta-section.us-banner {
@@ -716,7 +870,7 @@
   letter-spacing: .08em;
   padding: 4px 12px;
   border-radius: var(--us-pill);
-  background: rgba(139, 30, 36, 0.08);
+  background: var(--red-tint);
   color: var(--brand-gold);
   margin-bottom: 9px;
 }
@@ -1059,9 +1213,9 @@
   width: min(760px, 100%);
   margin: 0 auto clamp(28px, 3.2vw, 42px);
   padding: clamp(22px, 3vw, 34px);
-  border: 1px solid rgba(227, 184, 115, .38);
+  border: 1px solid rgba(255, 107, 118, .38);
   border-radius: var(--us-round);
-  background: rgba(246, 242, 233, .10);
+  background: rgba(255, 255, 255, .07);
   box-shadow: 0 16px 42px rgba(0, 0, 0, .18);
   backdrop-filter: blur(8px);
 }
@@ -1375,7 +1529,7 @@
   word-break: keep-all;
 }
 .school-list--international li {
-  border-color: rgba(139,48,56,0.16);
+  border-color: var(--red-line);
   color: var(--brand-navy);
 }
 
@@ -1462,3 +1616,43 @@
   color: var(--gold-on-dark);
 }
 .heidi-homework__system { gap: 18px; }
+
+/* ── 12. 카드 바닥 정렬 ───────────────────────────────────── */
+/* .program-card 는 flex column 인데 토글 버튼에 margin-top:auto 가 없어
+   글이 짧은 카드는 버튼이 위로 올라붙고 긴 카드는 아래에 놓여,
+   한 줄에 놓인 카드들의 버튼 높이가 제각각이었다. */
+.program-card-toggle { margin-top: auto; }
+.program-card.open .program-card-toggle { margin-top: auto; }
+
+/* ── 13. 남은 섹션 머리글 통일 ────────────────────────────── */
+/* 입시관리 섹션만 .section-label 이 아니라 .section-kicker 를 쓰고 있어
+   혼자 다른 모양이었다. 다른 섹션과 같은 '빨간 선 + 영문 대문자' 로 맞춘다. */
+.admissions-management .section-kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--red-on-dark);
+  margin-bottom: 20px;
+}
+.admissions-management .section-kicker::before,
+.admissions-management .section-kicker::after {
+  content: "";
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+/* 강조 단어는 다른 네이비 섹션과 같은 밝은 빨강으로. */
+.admissions-management .section-title em { color: var(--red-on-dark); }
+
+/* ── 14. 커리큘럼 카드 상단 띠 통일 ───────────────────────── */
+/* .pc-1 ~ .pc-12 가 네이비/빨강을 번갈아 쓰고 있었는데 규칙이 보이지 않아
+   12장이 제각각으로 읽혔다. 모든 카드에 같은 띠를 두르면 이 줄은
+   '주목' 이 아니라 '구조' 로 읽히고, 빨강은 진짜 강조에만 남는다. */
+.program-card { --pc-color: var(--brand-navy); }
+.program-card::before { height: 3px; }
