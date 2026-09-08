@@ -1,1 +1,6 @@
 .worktrees/
+
+# 최적화 전 원본 사진 보관 · 배포본 · 헤드리스 크롬 프로필 — 저장소에 넣지 않는다
+images-원본보관/
+.deploy-*/
+tmp/chrome-profile/

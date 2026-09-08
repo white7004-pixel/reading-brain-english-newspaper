@@ -5,6 +5,7 @@ scripts/
 .superpowers/
 .worktrees/
 .deploy-*/
+images-원본보관/
 
 # 디자인 시안 · 테스트본
 design-test.html

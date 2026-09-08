@@ -940,11 +940,11 @@ body {
   object-fit: cover;
   object-position: center;
 }
-.heidi-icon[src="images/heidi/book-quiz-record.png"] {
+.heidi-icon[src="images/heidi/book-quiz-record.jpg"] {
   object-fit: cover;
   object-position: center;
 }
-.heidi-icon[src="images/heidi/daily-feedback-report.png"] {
+.heidi-icon[src="images/heidi/daily-feedback-report.jpg"] {
   object-fit: cover;
   object-position: center;
 }
@@ -1747,3 +1747,27 @@ body {
 /* 상담봇 버튼 그림자도 와인빛이 남아 있었다. */
 .chatbot-toggle { box-shadow: 0 8px 24px rgba(228, 33, 47, .35); }
 .chatbot-toggle:hover { box-shadow: 0 12px 32px rgba(228, 33, 47, .45); }
+
+/* ── 19. 메인 헤더 사진 크로스페이드 ──────────────────────── */
+/* 사진 여러 장이 서서히 겹쳐 넘어가면서 천천히 확대된다.
+   동영상 파일을 쓰지 않고도 움직이는 느낌을 낸다 — 17MB 짜리
+   동영상 대신 사진 5장(합계 1.3MB) 이면 충분하다. */
+.hero-video-wrap .hero-static-image {
+  opacity: 0;
+  transition: opacity 1.4s ease-in-out;
+  will-change: opacity, transform;
+}
+.hero-video-wrap .hero-static-image.is-on {
+  opacity: 1;
+  animation: heroZoom 12s ease-out forwards;
+}
+@keyframes heroZoom {
+  from { transform: scale(1.02); }
+  to   { transform: scale(1.10); }
+}
+
+/* 움직임을 줄여 달라는 설정에서는 첫 장만 조용히 보여 준다. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-video-wrap .hero-static-image { opacity: 0; transition: none; animation: none; }
+  .hero-video-wrap .hero-static-image.is-on { opacity: 1; animation: none; transform: none; }
+}
