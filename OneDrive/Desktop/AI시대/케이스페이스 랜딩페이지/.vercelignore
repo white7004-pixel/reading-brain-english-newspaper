@@ -1,0 +1,9 @@
+# 작업용 파일 — 실제 사이트에 올리지 않는다
+docs/
+scripts/
+tests/
+.claude/
+
+# 페이지에서 쓰지 않는 이미지
+assets/images/kspace-06.jpg
+assets/images/kspace-hero.jpg
