@@ -1930,3 +1930,59 @@ body {
   color: var(--body-text);
 }
 @media (max-width: 620px) { .talk-list { grid-template-columns: 1fr; } }
+
+/* ────────────────────────────────────────────────────────────────
+   §22. 원장 1:1 학습 로드맵 상담 (#director 안)
+   약력·저서·강연이 모두 '밖에서의 이력'이라, 정작 학부모가 가장
+   궁금해하는 '내 아이를 어떻게 봐 주는가'가 비어 있었다.
+   ──────────────────────────────────────────────────────────────── */
+.director-roadmap { margin-top: 34px; }
+.director-roadmap h4 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--brand-red);
+  margin-bottom: 14px;
+}
+.roadmap-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.roadmap-shot { margin: 0; }
+.roadmap-shot img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--us-round);
+  border: 1px solid var(--line);
+  background: var(--soft);
+}
+.roadmap-body > p {
+  margin: 0 0 14px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--body-text);
+}
+.roadmap-body > p strong { color: var(--brand-navy); font-weight: 700; }
+
+.roadmap-points { list-style: none; margin: 0; padding: 0; }
+.roadmap-points li {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+.roadmap-points li:first-child { border-top: 0; padding-top: 0; }
+.roadmap-points b {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--brand-red);
+  letter-spacing: -0.01em;
+}
+.roadmap-points span {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--body-text);
+}
+
+@media (max-width: 760px) { .roadmap-row { grid-template-columns: 1fr; } }
