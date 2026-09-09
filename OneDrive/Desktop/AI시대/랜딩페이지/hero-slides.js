@@ -11,8 +11,11 @@
 (function () {
   'use strict';
 
-  var HOLD = 5000;   // 한 장이 머무는 시간
-  var FADE = 1400;   // 겹쳐 넘어가는 시간 (CSS 와 맞춘다)
+  // CSS 의 transition/animation 시간과 함께 움직여야 한다.
+  // 한 장이 화면에 보이는 총 시간 = FADE(들어옴) + HOLD + FADE(나감) = 7.7초.
+  // CSS 의 확대 애니메이션도 8초로 맞춰야 중간에 끊기지 않는다.
+  var HOLD = 4500;
+  var FADE = 1600;
 
   function start() {
     var first = document.querySelector('.hero-static-image[data-hero-slides]');

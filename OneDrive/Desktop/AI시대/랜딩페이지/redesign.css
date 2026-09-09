@@ -1749,21 +1749,37 @@ body {
 .chatbot-toggle:hover { box-shadow: 0 12px 32px rgba(228, 33, 47, .45); }
 
 /* ── 19. 메인 헤더 사진 크로스페이드 ──────────────────────── */
-/* 사진 여러 장이 서서히 겹쳐 넘어가면서 천천히 확대된다.
-   동영상 파일을 쓰지 않고도 움직이는 느낌을 낸다 — 17MB 짜리
-   동영상 대신 사진 5장(합계 1.3MB) 이면 충분하다. */
+/* 사진 여러 장이 겹쳐 넘어가면서 천천히 움직여 동영상처럼 보이게 한다.
+   동영상 파일을 쓰지 않으므로 17MB 대신 사진 6장 1.8MB 로 끝난다.
+
+   시간을 맞추는 것이 핵심이다. 한 장이 화면에 보이는 총 시간은
+   들어오는 1.6초 + 머무는 4.5초 + 나가는 1.6초 = 7.7초다.
+   예전에는 확대 애니메이션만 12초로 잡혀 있어서, 다 자라기 전에
+   사진이 바뀌고 다음 차례에 처음 크기로 되감겨 툭 끊겨 보였다.
+   8초로 맞추고 등속(linear)으로 두면 영상처럼 일정하게 흐른다. */
 .hero-video-wrap .hero-static-image {
   opacity: 0;
-  transition: opacity 1.4s ease-in-out;
+  transition: opacity 1.6s ease-in-out;
   will-change: opacity, transform;
 }
-.hero-video-wrap .hero-static-image.is-on {
-  opacity: 1;
-  animation: heroZoom 12s ease-out forwards;
+.hero-video-wrap .hero-static-image.is-on { opacity: 1; }
+
+/* 홀수·짝수 장의 움직임을 반대로 둔다 —
+   전부 같은 방향으로 확대되면 같은 장면이 반복되는 느낌이 든다. */
+.hero-video-wrap .hero-static-image:nth-child(odd).is-on {
+  animation: heroDriftIn 8s linear forwards;
 }
-@keyframes heroZoom {
-  from { transform: scale(1.02); }
-  to   { transform: scale(1.10); }
+.hero-video-wrap .hero-static-image:nth-child(even).is-on {
+  animation: heroDriftOut 8s linear forwards;
+}
+
+@keyframes heroDriftIn {
+  from { transform: scale(1.03) translate3d(-0.6%, 0, 0); }
+  to   { transform: scale(1.11) translate3d(0.6%, 0, 0); }
+}
+@keyframes heroDriftOut {
+  from { transform: scale(1.11) translate3d(0.6%, 0, 0); }
+  to   { transform: scale(1.03) translate3d(-0.6%, 0, 0); }
 }
 
 /* 움직임을 줄여 달라는 설정에서는 첫 장만 조용히 보여 준다. */
