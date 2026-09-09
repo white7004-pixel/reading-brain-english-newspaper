@@ -110,3 +110,17 @@
     initBackToTop();
   });
 })();
+
+/* 원서정독 결과물 — 처음 15장만 보이고 나머지는 버튼으로 편다.
+   숨겨 두는 동안에는 lazy 이미지가 내려받아지지 않는다. */
+(function () {
+  var btn = document.getElementById('workMore');
+  var grid = document.getElementById('workGrid');
+  if (!btn || !grid) return;
+  btn.addEventListener('click', function () {
+    var open = grid.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.textContent = btn.getAttribute(open ? 'data-less' : 'data-more');
+    if (!open) grid.scrollIntoView({ block: 'start' });
+  });
+})();
