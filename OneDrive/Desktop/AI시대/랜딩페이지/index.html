@@ -2904,9 +2904,9 @@ a { text-decoration: none; color: inherit; }
 }
 </style>
 <!-- useschool 디자인 언어 레이어 (색상 팔레트는 위 :root 값을 그대로 사용) -->
-<link rel="stylesheet" href="redesign.css?v=20260912">
+<link rel="stylesheet" href="redesign.css?v=20260913">
 <!-- 사진 중심 레이어 (시안 3) -->
-<link rel="stylesheet" href="photo.css?v=20260912">
+<link rel="stylesheet" href="photo.css?v=20260913">
 </head>
 <body>
 
@@ -2960,25 +2960,105 @@ a { text-decoration: none; color: inherit; }
 </section>
 
 <!-- SCHOOL NETWORK -->
-<!-- DIRECTOR BAND (헤더 바로 아래 권위 띠 — 상세는 #director) -->
-<section class="director-band" id="director-band" aria-labelledby="directorBandName">
+
+
+<section class="director" id="director">
   <div class="container">
-    <a class="db-inner" href="#director">
-      <div class="db-photo"><img src="director.jpg" alt="리딩브레인영어학원 김기숙 원장" loading="lazy" width="864" height="1184"></div>
-      <div class="db-body">
-        <div class="db-eyebrow">From The Director</div>
-        <h2 class="db-name" id="directorBandName">김기숙 <span>원장</span></h2>
-        <p class="db-line">25년 넘게 <strong>3,000명이 넘는 학생</strong>의 입시 영어를 직접 지도했습니다.<br>
-          아이마다 읽는 수준도, 목표도 다르기에 <strong>학습 로드맵을 1:1로 짜 드립니다.</strong></p>
-        <ul class="db-facts">
-          <li><b>25년+</b><span>입시영어 지도</span></li>
-          <li><b>3,000명+</b><span>학습코칭</span></li>
-          <li><b>저서 2권</b><span>단독 · 공저</span></li>
-          <li><b>TESOL</b><span>1급</span></li>
-        </ul>
-        <span class="db-more">원장 소개 자세히 보기</span>
+    <div class="director-grid">
+      <div class="director-photo fade-up">
+        <img src="director.jpg" alt="김기숙 원장" class="director-photo-img">
       </div>
-    </a>
+      <div class="director-content fade-up">
+        <div class="section-label">From The Director</div>
+        <h3>김기숙 원장</h3>
+        <div class="director-role">상위 1% 영어몰입교육 리딩브레인 대표</div>
+        <p>
+          안녕하세요. 리딩브레인 영어학원 대표 김기숙입니다.
+          서울 동작구, 관악구, 금천구, 경기도 소하동, 부천, 목감, 석수, 안양 지역 학생들이 찾아오는
+          사립초, 국제학교, 리터니, 유학준비생, 주재원 자녀, 특목·자사고 대비까지 — 상위 1% 영어 몰입 교육기관입니다.
+        </p>
+        <p>
+          25년 넘게 3,000명이 넘는 학생의 입시 영어 지도 및 진로적성·학습코칭 경험을 바탕으로,
+          한국의 주입식 영어 교육에서 벗어나 영어를 언어로 자연스럽게 체득하는 환경을 만들었습니다.
+        </p>
+        <div class="director-cv">
+          <h4>약력</h4>
+          <ul>
+            <li><b>현</b><span>리딩브레인 영어학원 대표원장 <em>2018.5 개원 · 2022.2 2관 개원</em></span></li>
+            <li><b>전</b><span>제이드영수학원 대표원장</span></li>
+            <li><b>전</b><span>금천구 학원연합회 회장</span></li>
+            <li><b>자격</b><span>테솔(TESOL) 1급</span></li>
+            <li><b>자격</b><span>지문적성상담사 수료</span></li>
+            <li><b>교육</b><span>블루타이 학원장 교육 10·11기 수료</span></li>
+            <li><b>지도</b><span>25년 넘게 3,000명+ 입시영어 지도 및 학습코칭</span></li>
+          </ul>
+        </div>
+
+        <div class="director-books">
+          <h4>저서</h4>
+          <div class="book-list">
+            <article class="book">
+              <div class="book-cover">
+                <img src="images/books/book-international-school.jpg" alt="김기숙 원장 저서 『유학없이 우리아이 국제학교 보내는 비법』 표지" loading="lazy">
+              </div>
+              <div class="book-body">
+                <span class="book-badge">단독 저서</span>
+                <h5>유학없이 우리아이<br>국제학교 보내는 비법</h5>
+                <p>학원비 0원의 기적은 정말 가능할까? AI 시대, 입시를 넘어 전 세계에 통하는 글로벌 인재로 키우는 방법을 담았습니다.</p>
+                <p class="book-meta">해외국제학교 · 제주도 국제학교 · 국제원 입학컨설팅</p>
+              </div>
+            </article>
+            <article class="book">
+              <div class="book-cover">
+                <img src="images/books/book-10-experts.jpg" alt="김기숙 원장 공저 『10인의 교육전문가들이 전해주는 학습 노하우』 표지" loading="lazy">
+              </div>
+              <div class="book-body">
+                <span class="book-badge">공저</span>
+                <h5>10인의 교육전문가들이<br>전해주는 학습 노하우</h5>
+                <p>교육 현장의 전문가 10인이 함께 쓴 학습법 안내서. 김기숙 원장은 <strong>‘상위 1% 영어두뇌 만들기’</strong> 편을 집필했습니다.</p>
+                <p class="book-meta">김기숙 · 김현우 · 김효진 · 남경채 · 서명은 · 오미진 · 이웅준 · 조경이 · 조은혜 · 황교일 지음</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="director-roadmap">
+          <h4>1:1 학습 로드맵 상담</h4>
+          <div class="roadmap-row">
+            <figure class="roadmap-shot">
+              <img src="images/briefing/director-one-on-one-counseling.jpg" alt="김기숙 원장이 학생과 1:1로 마주 앉아 학습 로드맵과 입시 방향을 상담하는 모습" loading="lazy">
+            </figure>
+            <div class="roadmap-body">
+              <p>학생을 원장이 직접 만납니다. 지금 어디까지 읽을 수 있는지, 학교 시험은 어떻게 나오는지, 어느 학교를 목표로 하는지를 함께 짚고 <strong>학생마다 다른 학습 로드맵</strong>을 짭니다.</p>
+              <ul class="roadmap-points">
+                <li><b>진단</b><span>AR 레벨과 학교 내신을 함께 놓고 현재 위치를 확인합니다.</span></li>
+                <li><b>설계</b><span>목표 학교와 남은 기간을 역산해 학년별 원서·문법·라이팅 순서를 정합니다.</span></li>
+                <li><b>수정</b><span>정기 테스트와 성적을 보며 로드맵을 그때그때 고쳐 나갑니다.</span></li>
+                <li><b>입시</b><span>고학년에는 특목·자사고·유학까지 진학 상담으로 이어집니다.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="director-talks">
+          <h4>강연 · 설명회</h4>
+          <div class="talk-list">
+            <figure class="talk">
+              <img src="images/briefing/director-seminar-lecture.jpg" alt="김기숙 원장 미국교과 커리큘럼 세미나 강연" loading="lazy">
+              <figcaption><b>교육 세미나 초청 강연</b><span>미국 공교육 과정 운영과 마인드맵 독서법을 전국 원장님들에게 공유</span></figcaption>
+            </figure>
+            <figure class="talk">
+              <img src="images/briefing/parent-briefing-exam.jpg" alt="리딩브레인 학부모 설명회 — 초등학교 때 끝내는 고등영어 모의고사의 비밀" loading="lazy">
+              <figcaption><b>학부모 정기 설명회</b><span>‘초등학교 때 끝내는 고등영어 모의고사의 비밀’ — 학원에서 직접 진행</span></figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="director-quote">
+          <p>"소중하고 잠재력이 무한한 아이들에게 영어로 사고할 수 있는 글로벌 리더 역량 교육을 통해, 한국을 넘어 세계 속에서 세상을 빛내는 리더를 양성합니다."</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -3303,105 +3383,7 @@ a { text-decoration: none; color: inherit; }
 </section>
 
 <!-- DIRECTOR -->
-<section class="director" id="director">
-  <div class="container">
-    <div class="director-grid">
-      <div class="director-photo fade-up">
-        <img src="director.jpg" alt="김기숙 원장" class="director-photo-img">
-      </div>
-      <div class="director-content fade-up">
-        <div class="section-label">From The Director</div>
-        <h3>김기숙 원장</h3>
-        <div class="director-role">상위 1% 영어몰입교육 리딩브레인 대표</div>
-        <p>
-          안녕하세요. 리딩브레인 영어학원 대표 김기숙입니다.
-          서울 동작구, 관악구, 금천구, 경기도 소하동, 부천, 목감, 석수, 안양 지역 학생들이 찾아오는
-          사립초, 국제학교, 리터니, 유학준비생, 주재원 자녀, 특목·자사고 대비까지 — 상위 1% 영어 몰입 교육기관입니다.
-        </p>
-        <p>
-          25년 넘게 3,000명이 넘는 학생의 입시 영어 지도 및 진로적성·학습코칭 경험을 바탕으로,
-          한국의 주입식 영어 교육에서 벗어나 영어를 언어로 자연스럽게 체득하는 환경을 만들었습니다.
-        </p>
-        <div class="director-cv">
-          <h4>약력</h4>
-          <ul>
-            <li><b>현</b><span>리딩브레인 영어학원 대표원장 <em>2018.5 개원 · 2022.2 2관 개원</em></span></li>
-            <li><b>전</b><span>제이드영수학원 대표원장</span></li>
-            <li><b>전</b><span>금천구 학원연합회 회장</span></li>
-            <li><b>자격</b><span>테솔(TESOL) 1급</span></li>
-            <li><b>자격</b><span>지문적성상담사 수료</span></li>
-            <li><b>교육</b><span>블루타이 학원장 교육 10·11기 수료</span></li>
-            <li><b>지도</b><span>25년 넘게 3,000명+ 입시영어 지도 및 학습코칭</span></li>
-          </ul>
-        </div>
 
-        <div class="director-books">
-          <h4>저서</h4>
-          <div class="book-list">
-            <article class="book">
-              <div class="book-cover">
-                <img src="images/books/book-international-school.jpg" alt="김기숙 원장 저서 『유학없이 우리아이 국제학교 보내는 비법』 표지" loading="lazy">
-              </div>
-              <div class="book-body">
-                <span class="book-badge">단독 저서</span>
-                <h5>유학없이 우리아이<br>국제학교 보내는 비법</h5>
-                <p>학원비 0원의 기적은 정말 가능할까? AI 시대, 입시를 넘어 전 세계에 통하는 글로벌 인재로 키우는 방법을 담았습니다.</p>
-                <p class="book-meta">해외국제학교 · 제주도 국제학교 · 국제원 입학컨설팅</p>
-              </div>
-            </article>
-            <article class="book">
-              <div class="book-cover">
-                <img src="images/books/book-10-experts.jpg" alt="김기숙 원장 공저 『10인의 교육전문가들이 전해주는 학습 노하우』 표지" loading="lazy">
-              </div>
-              <div class="book-body">
-                <span class="book-badge">공저</span>
-                <h5>10인의 교육전문가들이<br>전해주는 학습 노하우</h5>
-                <p>교육 현장의 전문가 10인이 함께 쓴 학습법 안내서. 김기숙 원장은 <strong>‘상위 1% 영어두뇌 만들기’</strong> 편을 집필했습니다.</p>
-                <p class="book-meta">김기숙 · 김현우 · 김효진 · 남경채 · 서명은 · 오미진 · 이웅준 · 조경이 · 조은혜 · 황교일 지음</p>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <div class="director-roadmap">
-          <h4>1:1 학습 로드맵 상담</h4>
-          <div class="roadmap-row">
-            <figure class="roadmap-shot">
-              <img src="images/briefing/director-one-on-one-counseling.jpg" alt="김기숙 원장이 학생과 1:1로 마주 앉아 학습 로드맵과 입시 방향을 상담하는 모습" loading="lazy">
-            </figure>
-            <div class="roadmap-body">
-              <p>학생을 원장이 직접 만납니다. 지금 어디까지 읽을 수 있는지, 학교 시험은 어떻게 나오는지, 어느 학교를 목표로 하는지를 함께 짚고 <strong>학생마다 다른 학습 로드맵</strong>을 짭니다.</p>
-              <ul class="roadmap-points">
-                <li><b>진단</b><span>AR 레벨과 학교 내신을 함께 놓고 현재 위치를 확인합니다.</span></li>
-                <li><b>설계</b><span>목표 학교와 남은 기간을 역산해 학년별 원서·문법·라이팅 순서를 정합니다.</span></li>
-                <li><b>수정</b><span>정기 테스트와 성적을 보며 로드맵을 그때그때 고쳐 나갑니다.</span></li>
-                <li><b>입시</b><span>고학년에는 특목·자사고·유학까지 진학 상담으로 이어집니다.</span></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="director-talks">
-          <h4>강연 · 설명회</h4>
-          <div class="talk-list">
-            <figure class="talk">
-              <img src="images/briefing/director-seminar-lecture.jpg" alt="김기숙 원장 미국교과 커리큘럼 세미나 강연" loading="lazy">
-              <figcaption><b>교육 세미나 초청 강연</b><span>미국 공교육 과정 운영과 마인드맵 독서법을 전국 원장님들에게 공유</span></figcaption>
-            </figure>
-            <figure class="talk">
-              <img src="images/briefing/parent-briefing-exam.jpg" alt="리딩브레인 학부모 설명회 — 초등학교 때 끝내는 고등영어 모의고사의 비밀" loading="lazy">
-              <figcaption><b>학부모 정기 설명회</b><span>‘초등학교 때 끝내는 고등영어 모의고사의 비밀’ — 학원에서 직접 진행</span></figcaption>
-            </figure>
-          </div>
-        </div>
-
-        <div class="director-quote">
-          <p>"소중하고 잠재력이 무한한 아이들에게 영어로 사고할 수 있는 글로벌 리더 역량 교육을 통해, 한국을 넘어 세계 속에서 세상을 빛내는 리더를 양성합니다."</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- PHILOSOPHY -->
 <section class="philosophy us-zig-section us-on-dark" id="philosophy">
@@ -5293,9 +5275,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 <button class="us-top" type="button" aria-label="맨 위로 이동">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
 </button>
-<script src="redesign.js?v=20260912" defer></script>
+<script src="redesign.js?v=20260913" defer></script>
 <script src="photo-slide.js" defer></script>
-<script src="hero-slides.js?v=20260912" defer></script>
+<script src="hero-slides.js?v=20260913" defer></script>
 
 </body>
 </html>
