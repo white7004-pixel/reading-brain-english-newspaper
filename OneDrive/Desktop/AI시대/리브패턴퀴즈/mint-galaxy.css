@@ -1,23 +1,23 @@
 /* Mint Galaxy design tokens and reusable 3D-friendly primitives. */
 :root {
   --bottom-nav-height: 72px;
-  --mg-ink: #24345B;
-  --mg-mint: #35C6A8;
-  --mg-sky: #4DB8FF;
-  --mg-star: #FFC857;
-  --mg-coral: #FF6B6B;
-  --mg-bg: #F5F8FC;
+  --mg-ink: #0F172A;
+  --mg-mint: #2563EB;
+  --mg-sky: #0EA5E9;
+  --mg-star: #F59E0B;
+  --mg-coral: #DC2626;
+  --mg-bg: #EFF6FF;
   --mg-surface: #FFFFFF;
-  --mg-line: #DDE5EF;
+  --mg-line: #E4ECFC;
   --mg-radius-sm: 16px;
   --mg-radius-md: 20px;
   --mg-radius-lg: 28px;
   --mg-depth-sm: 4px;
   --mg-depth-md: 6px;
   --mg-depth-lg: 8px;
-  --mg-shadow-sm: 0 var(--mg-depth-sm) 0 rgba(36, 52, 91, 0.12);
-  --mg-shadow-md: 0 var(--mg-depth-md) 0 rgba(36, 52, 91, 0.14);
-  --mg-shadow-lg: 0 var(--mg-depth-lg) 0 rgba(36, 52, 91, 0.16);
+  --mg-shadow-sm: 0 var(--mg-depth-sm) 0 rgba(15, 23, 42, 0.12);
+  --mg-shadow-md: 0 var(--mg-depth-md) 0 rgba(15, 23, 42, 0.14);
+  --mg-shadow-lg: 0 var(--mg-depth-lg) 0 rgba(15, 23, 42, 0.16);
   --mg-motion: 160ms ease;
 }
 
@@ -63,7 +63,7 @@
 
 .mg-button:active {
   transform: translateY( var(--mg-depth-sm) );
-  box-shadow: 0 2px 0 rgba(36, 52, 91, 0.14);
+  box-shadow: 0 2px 0 rgba(15, 23, 42, 0.14);
 }
 
 .mg-chip {
@@ -81,7 +81,7 @@
 
 .mg-star {
   color: var(--mg-star);
-  filter: drop-shadow(0 2px 0 rgba(36, 52, 91, 0.16));
+  filter: drop-shadow(0 2px 0 rgba(15, 23, 42, 0.16));
 }
 
 .mg-focus-ring {
@@ -192,7 +192,7 @@
     color: var(--mg-ink);
     background: rgba(255, 255, 255, 0.97);
     border-top: 2px solid var(--mg-line);
-    box-shadow: 0 -6px 20px rgba(36, 52, 91, 0.12);
+    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.12);
   }
 }
 
@@ -331,7 +331,7 @@
 }
 
 #quizView #quizOptions .answer-card:active:not(:disabled) {
-  box-shadow: 0 2px 0 rgba(36, 52, 91, 0.14);
+  box-shadow: 0 2px 0 rgba(15, 23, 42, 0.14);
   transform: translateY(var(--mg-depth-sm));
 }
 
@@ -365,17 +365,17 @@
 }
 
 #quizView #quizOptions .answer-card.correct {
-  color: var(--mg-ink);
-  background: var(--mg-mint);
-  border-color: #21977f;
-  box-shadow: 0 var(--mg-depth-sm) 0 #21977f;
+  color: #fff;
+  background: var(--game-green);
+  border-color: var(--game-green-dark);
+  box-shadow: 0 var(--mg-depth-sm) 0 var(--game-green-dark);
 }
 
 #quizView #quizOptions .answer-card.wrong {
-  color: var(--mg-ink);
-  background: var(--mg-coral);
-  border-color: #d84d4d;
-  box-shadow: 0 var(--mg-depth-sm) 0 #d84d4d;
+  color: #fff;
+  background: var(--game-red);
+  border-color: var(--game-red-dark);
+  box-shadow: 0 var(--mg-depth-sm) 0 var(--game-red-dark);
 }
 
 #studyView :is(.study-actions button, .action-know, .action-review) {
@@ -742,17 +742,26 @@
   text-align: left;
   border: 0;
   border-radius: 24px;
-  color: #243052;
-  background: linear-gradient(145deg, #e9fff7, #eef1ff);
-  box-shadow: 0 14px 30px rgba(57, 73, 120, 0.14);
+  color: var(--mg-ink);
+  background: linear-gradient(145deg, #dbeafe, #eef2ff);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.16);
   cursor: pointer;
 }
 
-.daily-course-eyebrow { color: #1b8765; font-weight: 800; }
+.daily-course-eyebrow { color: var(--mg-mint); font-weight: 800; }
 .daily-course-cta > strong { font-size: clamp(1.35rem, 4vw, 2rem); }
-.daily-course-cta > b { color: #4055d5; font-size: 1.05rem; }
-.daily-course-progress { width: 100%; height: 10px; overflow: hidden; border-radius: 999px; background: #dfe4f2; }
-.daily-course-progress i { display: block; width: 0; height: 100%; border-radius: inherit; background: #34c697; transition: width 240ms ease; }
+.daily-course-cta > b { color: var(--mg-mint); font-size: 1.05rem; }
+.daily-course-progress {
+  width: 100%; height: 14px; overflow: hidden; border-radius: 999px;
+  background: #c7d7f5;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.12);
+}
+.daily-course-progress i {
+  display: block; width: 0; height: 100%; border-radius: inherit;
+  background: linear-gradient(180deg, #fbbf24, var(--mg-star));
+  box-shadow: inset 0 -2px 0 rgba(180, 83, 9, 0.35);
+  transition: width 240ms ease;
+}
 
 .learning-section-grid {
   display: grid;
@@ -845,7 +854,7 @@
   background: rgba(255, 255, 255, .96);
   border: 2px solid var(--mg-line, #dce6f0);
   border-radius: 18px;
-  box-shadow: var(--mg-shadow-md, 0 10px 24px rgba(36, 52, 91, .15));
+  box-shadow: var(--mg-shadow-md, 0 10px 24px rgba(15, 23, 42, .15));
   overflow-wrap: anywhere;
   transform: translateX(-50%);
 }

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "20260829-fix-lastcard-autoadvance";
+const CACHE_VERSION = "20260912-clay-game";
 const SHELL_CACHE = `rb-shell-${CACHE_VERSION}`;
 const CONTENT_CACHE = `rb-content-${CACHE_VERSION}`;
 const CACHE_PREFIXES = ["rb-shell-", "rb-content-"];

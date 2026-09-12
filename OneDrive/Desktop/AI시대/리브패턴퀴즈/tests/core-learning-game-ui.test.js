@@ -85,8 +85,9 @@ assert.ok(
 assert.match(css, /\.action-know[\s\S]*?background:\s*var\(--mg-mint\)/, "know actions must use Mint");
 assert.match(css, /\.action-review[\s\S]*?background:\s*var\(--mg-coral\)/, "review actions must use Coral");
 assert.match(css, /#speakButton[\s\S]*?background:\s*var\(--mg-sky\)/, "speech actions must use Sky");
-assert.match(css, /\.answer-card\.correct[\s\S]*?background:\s*var\(--mg-mint\)/, "correct answers must use Mint");
-assert.match(css, /\.answer-card\.wrong[\s\S]*?background:\s*var\(--mg-coral\)/, "wrong answers must use Coral");
+// 정답은 주색과 갈라 둔다. 주색으로 칠하면 '맞았다'가 신호로 읽히지 않는다.
+assert.match(css, /\.answer-card\.correct[\s\S]*?background:\s*var\(--game-green\)/, "correct answers must use the success green");
+assert.match(css, /\.answer-card\.wrong[\s\S]*?background:\s*var\(--game-red\)/, "wrong answers must use the error red");
 assert.match(css, /:focus-visible/, "core game controls need keyboard focus treatment");
 assert.match(
   css,

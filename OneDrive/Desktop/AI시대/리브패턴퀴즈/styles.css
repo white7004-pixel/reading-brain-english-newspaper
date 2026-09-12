@@ -1660,7 +1660,7 @@ main { padding: 26px clamp(16px, 3.5vw, 48px); }
 /* ─── QUIZ OPTIONS ────────────────────────── */
 #quizQuestion {
   min-height: 50px;
-  color: var(--wine);
+  color: var(--joy-green);
   font-size: clamp(22px, 3.5vw, 38px);
   font-weight: 800;
   letter-spacing: -0.3px;
@@ -4034,8 +4034,8 @@ main { padding: 26px clamp(16px, 3.5vw, 48px); }
 }
 
 .options button:hover { background: #e8edf1; border-color: #aec0ca; opacity: 1; }
-.options button.correct { color: #0a4a37; background: #ddf4ec; border-color: #68c9ae; font-weight: 700; }
-.options button.wrong   { color: #7b1620; background: #f7dfe1; border-color: #d6848d; font-weight: 700; }
+.options button.correct { color: var(--ok-dark); background: var(--ok-soft); border-color: var(--ok); font-weight: 700; }
+.options button.wrong   { color: var(--joy-red-dark); background: #fee2e2; border-color: var(--joy-red); font-weight: 700; }
 
 /* ─── 북퀴즈 셸 ─────────────────────────────────────── */
 .bookquiz-shell {
@@ -6099,35 +6099,46 @@ main { min-width: 0; max-width: 100%; }
 :root {
   /* 기존 브랜드 변수를 새 팔레트로 재정의한다.
      이 변수들을 쓰던 규칙이 전부 한 번에 따라온다. */
-  --gold: #5965d8;
-  --mint: #5965d8;
-  --wine: #c76067;
-  --ink: #30364b;
-  --ink-2: #444b63;
-  --paper: #f8f8fa;
-  --line: #d8dbe8;
-  --muted: #74798d;
+  --gold: #f59e0b;
+  --mint: #2563eb;
+  --wine: #dc2626;
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --paper: #eff6ff;
+  --line: #e4ecfc;
+  --muted: #475569;
 
-  --joy-green: #5965d8;
-  --joy-green-dark: #434cad;
-  --joy-blue: #7b84d8;
-  --joy-blue-dark: #5962b4;
-  --joy-yellow: #5965d8;
-  --joy-yellow-dark: #434cad;
-  --joy-red: #c76067;
-  --joy-red-dark: #a94c54;
-  --joy-grey: #d8dbe8;
-  --joy-grey-dark: #bdc1d2;
+  /* 주색 — 학습과 진행. 이름은 green이지만 역할은 '주색'이다. */
+  --joy-green: #2563eb;
+  --joy-green-dark: #1d4ed8;
+  /* 보조 — 루틴 번호 · 카운트다운 · '지금 여기' */
+  --joy-blue: #0ea5e9;
+  --joy-blue-dark: #0284c7;
+  /* 보상 — 포인트 · 연속 · 별. 주색과 반드시 달라야 보상으로 읽힌다. */
+  --joy-yellow: #f59e0b;
+  --joy-yellow-dark: #d97706;
+  /* 오답과 목숨 */
+  --joy-red: #dc2626;
+  --joy-red-dark: #b91c1c;
+  --joy-grey: #e4ecfc;
+  --joy-grey-dark: #cbd5e1;
 
-  --ok: #4f8a68;
-  --ok-soft: #edf5f0;
-  --warn-soft: #f1f2fb;
-  --warn-ink: #5962b4;
-  --locked: #9ca1b4;
+  /* 정답 — 주색과 갈라 둔다. 맞았다는 신호는 파랑이 아니라 초록이다.
+     --ok 는 테두리와 채움, --ok-dark 는 글자(흰 바탕 대비 5.3:1). */
+  --ok: #16a34a;
+  --ok-dark: #15803d;
+  --ok-soft: #dcfce7;
+  --warn-soft: #fef3c7;
+  --warn-ink: #b45309;
+  --locked: #94a3b8;
 
-  --shadow-sm: 0 1px 3px rgba(48,54,75,0.05), 0 2px 8px rgba(48,54,75,0.04);
-  --shadow: 0 4px 16px rgba(48,54,75,0.07);
-  --shadow-lg: 0 12px 40px rgba(48,54,75,0.12);
+  /* 클레이 — 두툼한 모서리와 눌리는 깊이 */
+  --radius: 20px;
+  --lip: 5px;
+
+  --shadow-sm: 0 1px 3px rgba(37,99,235,0.06), 0 2px 8px rgba(15,23,42,0.05);
+  --shadow: 0 4px 16px rgba(37,99,235,0.09);
+  --shadow-lg: 0 12px 40px rgba(15,23,42,0.14);
 }
 
 /* ─── 상단 바 · 로고 ────────────────────────── */
@@ -6342,13 +6353,13 @@ main { min-width: 0; max-width: 100%; }
 }
 .option-grid button.correct,
 .match-item.matched {
-  color: var(--joy-green-dark);
+  color: var(--ok-dark);
   background: var(--ok-soft);
-  border-color: var(--joy-green);
+  border-color: var(--ok);
 }
 .option-grid button.wrong {
   color: var(--joy-red-dark);
-  background: #fcebec;
+  background: #fee2e2;
   border-color: var(--joy-red);
 }
 
@@ -6495,19 +6506,21 @@ button:disabled,
    모바일 우선 게임형 학습 인터페이스의 최종 스타일 레이어.
    ═══════════════════════════════════════════════════════ */
 :root {
-  --game-green: #58cc02;
-  --game-green-dark: #46a302;
-  --game-blue: #1cb0f6;
-  --game-blue-dark: #168dcc;
-  --game-red: #ff4b4b;
-  --game-red-dark: #d93d3d;
-  --game-yellow: #ffc800;
-  --game-bg: #f7f7f7;
+  /* 정답 채움 — 흰 글자가 얹히므로 5.3:1 이 나오는 깊은 초록을 쓴다.
+     듀오링고의 #58cc02 는 흰 글자 대비가 2.1:1 이라 그대로 쓰지 않는다. */
+  --game-green: #15803d;
+  --game-green-dark: #166534;
+  --game-blue: #0ea5e9;
+  --game-blue-dark: #0284c7;
+  --game-red: #dc2626;
+  --game-red-dark: #b91c1c;
+  --game-yellow: #f59e0b;
+  --game-bg: #eff6ff;
   --game-surface: #ffffff;
-  --game-line: #e5e5e5;
-  --game-ink: #3c3c3c;
-  --game-muted: #777777;
-  --game-lip: 4px;
+  --game-line: #e4ecfc;
+  --game-ink: #0f172a;
+  --game-muted: #475569;
+  --game-lip: 5px;
   --bottom-nav-height: 72px;
 }
 
@@ -7457,4 +7470,107 @@ main .nav-buttons {
   main :is(#cardEnglish, #quizQuestion, #verbMeaningDisplay, #bqCardEnglish) {
     max-width: 18ch;
   }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CLAY GAME LAYER — 2026-09-12  (홈 · 카드학습 · 퀴즈)
+
+   색은 위 팔레트가 정한다. 여기서는 '손맛'만 더한다.
+   누르면 내려앉고, 맞으면 튀어오르고, 틀리면 흔들린다.
+   움직임을 끈 사용자에게는 색만 남는다.
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── 보상은 보상색으로 ─────────────────────── */
+.stats strong { color: var(--joy-yellow-dark); }
+
+/* 연속(streak)에 불꽃을 붙인다. SVG 인라인 — 이모지를 쓰지 않는다. */
+.stats span:has(#streakText)::before {
+  content: "";
+  display: inline-block;
+  width: 15px; height: 15px;
+  margin-right: 3px;
+  vertical-align: -2px;
+  background: var(--joy-yellow) ;
+  -webkit-mask: var(--flame-mask) center/contain no-repeat;
+  mask: var(--flame-mask) center/contain no-repeat;
+}
+:root {
+  --flame-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 2s1.5 3.2-1 6c-2 2.2-4 4.2-4 7a7 7 0 0 0 14 0c0-3.5-2.5-5.5-3.5-8.5-1 1.5-2 2-2.5 1C14 6 12 4 12 2z'/%3E%3C/svg%3E");
+}
+
+/* ─── 클레이 손맛 ───────────────────────────── */
+main :is(.options button, .option-grid button, .planet-button, .daily-course-cta) {
+  border-width: 3px;
+  border-radius: var(--radius);
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 160ms ease;
+}
+main :is(.options button, .option-grid button, .daily-course-cta):active:not(:disabled) {
+  transform: translateY(var(--lip));
+  box-shadow: none;
+}
+
+/* ─── 맞았다 · 틀렸다 ───────────────────────── */
+@keyframes rb-pop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes rb-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-7px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(2px); }
+}
+main :is(.options, .option-grid) button.correct {
+  animation: rb-pop 320ms ease-out;
+  box-shadow: 0 var(--lip) 0 var(--ok-dark);
+}
+main :is(.options, .option-grid) button.wrong {
+  animation: rb-shake 320ms ease-out;
+  box-shadow: 0 var(--lip) 0 var(--joy-red-dark);
+}
+
+/* 움직임을 줄여 달라고 한 사용자에게는 애니메이션을 주지 않는다.
+   정답·오답은 색과 테두리만으로도 구분된다. */
+@media (prefers-reduced-motion: reduce) {
+  main :is(.options, .option-grid) button.correct,
+  main :is(.options, .option-grid) button.wrong {
+    animation: none;
+  }
+  main :is(.options button, .option-grid button, .daily-course-cta) {
+    transition: none;
+  }
+}
+
+/* ─── 색의 역할을 지킨다 ────────────────────── */
+/* .pmode-btn.active 는 이 파일에서 아홉 번 재정의된다. 마지막이 정답 초록을
+   쓰고 있었다 — 지금 보고 있는 탭은 '맞았다'가 아니라 '여기'다. 주색으로 돌린다. */
+.quiz-tab.active,
+.pmode-btn.active {
+  background: var(--joy-green);
+  border-color: var(--joy-green-dark);
+  box-shadow: 0 var(--lip) 0 var(--joy-green-dark);
+}
+
+/* 안내 말풍선이 퀴즈 답안 글자를 덮는다. 클릭은 통과시켜 뒀지만
+   글자가 가려지는 건 그대로이므로, 퀴즈를 푸는 동안에는 비운다. */
+body:has(#quizView.active) .liv-guide { display: none; }
+
+/* .primary 는 '시작하기' 같은 주요 행동이다. 정답 초록으로 칠하면
+   버튼이 채점 결과처럼 보인다. 주색으로 돌린다. */
+.primary {
+  background: var(--joy-green);
+  border-color: var(--joy-green-dark);
+  box-shadow: 0 var(--lip) 0 var(--joy-green-dark);
+}
+.primary:active:not(:disabled) { transform: translateY(var(--lip)); box-shadow: none; }
+
+/* 하단 탭의 '지금 여기'도 주색이다. 연초록 배경은 듀오링고 그린이
+   남긴 하드코딩이었다. */
+.mobile-bottom-item.active {
+  color: var(--joy-green-dark);
+  background: #dbeafe;
+  border-color: #93c5fd;
+  box-shadow: 0 3px 0 #60a5fa;
 }

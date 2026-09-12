@@ -71,12 +71,14 @@ assert.match(
 );
 
 for (const token of [
-  "--joy-green: #5965d8",
-  "--joy-green-dark: #434cad",
-  "--joy-blue: #7b84d8",
-  "--joy-red: #c76067",
-  "--joy-grey: #d8dbe8",
-  "--paper: #f8f8fa",
+  "--joy-green: #2563eb",
+  "--joy-green-dark: #1d4ed8",
+  "--joy-blue: #0ea5e9",
+  "--joy-yellow: #f59e0b",
+  "--joy-red: #dc2626",
+  "--joy-grey: #e4ecfc",
+  "--paper: #eff6ff",
+  "--ok: #16a34a",
 ]) {
   assert.ok(palette.includes(token), `missing palette token: ${token}`);
 }
@@ -115,5 +117,14 @@ for (const legacy of [
 ]) {
   assert.ok(!palette.toLowerCase().includes(legacy), `legacy color remains in palette override: ${legacy}`);
 }
+
+assert.ok(
+  !/--joy-yellow:\s*#2563eb/i.test(palette),
+  "보상색은 주색과 달라야 한다 — 같아지면 '정답'과 '보상'이 한 색으로 뭉친다",
+);
+assert.ok(
+  !/--ok:\s*#2563eb/i.test(palette),
+  "정답색은 주색과 달라야 한다",
+);
 
 console.log("duolingo palette tests passed");

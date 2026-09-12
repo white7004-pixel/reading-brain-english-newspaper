@@ -13,14 +13,14 @@ assert.ok(stylesLink >= 0, "the existing styles.css link must remain present");
 assert.ok(mintLink > stylesLink, "Mint Galaxy CSS must follow the existing styles.css link");
 
 for (const token of [
-  "--mg-ink: #24345B",
-  "--mg-mint: #35C6A8",
-  "--mg-sky: #4DB8FF",
-  "--mg-star: #FFC857",
-  "--mg-coral: #FF6B6B",
-  "--mg-bg: #F5F8FC",
+  "--mg-ink: #0F172A",
+  "--mg-mint: #2563EB",
+  "--mg-sky: #0EA5E9",
+  "--mg-star: #F59E0B",
+  "--mg-coral: #DC2626",
+  "--mg-bg: #EFF6FF",
   "--mg-surface: #FFFFFF",
-  "--mg-line: #DDE5EF",
+  "--mg-line: #E4ECFC",
   "--mg-radius-sm: 16px",
   "--mg-radius-md: 20px",
   "--mg-radius-lg: 28px",
