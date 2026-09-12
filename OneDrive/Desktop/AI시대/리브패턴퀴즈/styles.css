@@ -7574,3 +7574,171 @@ body:has(#quizView.active) .liv-guide { display: none; }
   border-color: #93c5fd;
   box-shadow: 0 3px 0 #60a5fa;
 }
+
+/* ═══════════════════════════════════════════════════════
+   REWARD MOMENT — 맞힌 순간
+
+   맞혔을 때 아무 일도 일어나지 않는 것이 이 앱에서 가장 큰 구멍이었다.
+   폭죽은 화면 전체를 덮는 한 겹 위에 뿌리고, 점수는 누른 자리에서
+   튀어오른다. 둘 다 클릭을 막지 않는다.
+   ═══════════════════════════════════════════════════════ */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.score-pop {
+  position: fixed;
+  z-index: 61;
+  transform: translate(-50%, 0);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--joy-yellow-dark);
+  text-shadow: 0 2px 0 #fff, 0 0 10px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  animation: score-rise 1100ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+.score-pop-combo {
+  font-size: 1.15rem;
+  color: var(--joy-green-dark);
+}
+@keyframes score-rise {
+  0%   { opacity: 0; transform: translate(-50%, 6px) scale(0.7); }
+  20%  { opacity: 1; transform: translate(-50%, -6px) scale(1.15); }
+  45%  { transform: translate(-50%, -18px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -54px) scale(0.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score-pop { animation: none; opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   HUB ORDER — 모험 지도를 주인공으로
+
+   허브에 들어오면 통계 타일 두 줄(735px)을 지나야 지도가 나왔다.
+   학생이 가장 먼저 볼 것은 "내가 어디까지 왔나"다.
+
+   #studentDashboard 를 display:contents 로 풀어 그 자식들을 main 의
+   형제로 만들고, order 로 지도를 앞으로 당긴다. 마크업은 그대로다.
+   ═══════════════════════════════════════════════════════ */
+main:has(#hubView.view.active) {
+  display: flex;
+  flex-direction: column;
+}
+main:has(#hubView.view.active) #studentDashboard {
+  display: contents;
+}
+main:has(#hubView.view.active) .daily-course-cta { order: 1; }
+main:has(#hubView.view.active) .pattern-mode-bar { order: 2; }
+main:has(#hubView.view.active) #hubView        { order: 3; }
+/* 숫자는 지도 아래로. 없애지는 않는다 — 원장님이 보시는 값이다. */
+main:has(#hubView.view.active) .learning-section-grid { order: 4; }
+main:has(#hubView.view.active) .daily-course-metrics  { order: 5; }
+main:has(#hubView.view.active) .dashboard-main        { order: 6; }
+main:has(#hubView.view.active) .dashboard-metrics     { order: 7; }
+
+/* .hub-top 의 '이어서 학습하기'는 맨 위 오늘의 학습 카드와 같은 말이다.
+   지도를 먼저 보여 주고, 목표 링은 지도 아래에서 확인하게 한다. */
+#hubView .hub-shell {
+  display: flex;
+  flex-direction: column;
+}
+#hubView .hub-toolbar { order: 1; }
+#hubView .hub-path    { order: 2; }
+#hubView .hub-empty   { order: 3; }
+#hubView .hub-top     { order: 4; }
+
+/* ═══════════════════════════════════════════════════════
+   ADVENTURE MAP — 갤럭시 지도를 실제 우주로
+
+   지도라고 이름 붙여 놓고 배경이 흰색이었다. 깊은 밤하늘을 깔면
+   행성이 빛나 보이고, 화면 전체의 인상이 가장 크게 달라진다.
+   배경을 뒤집었으므로 그 안의 글자색을 전부 다시 잡는다.
+   ═══════════════════════════════════════════════════════ */
+.hub-path .galaxy-map {
+  color: #e2e8f0;
+  background:
+    radial-gradient(120% 80% at 15% 0%, rgba(37, 99, 235, 0.35), transparent 60%),
+    radial-gradient(90% 70% at 90% 20%, rgba(14, 165, 233, 0.22), transparent 55%),
+    linear-gradient(165deg, #111c36 0%, #0b1226 100%);
+  border-color: #22305a;
+  box-shadow: 0 14px 34px rgba(8, 13, 30, 0.45);
+}
+/* 별밭 — 원래 있던 점 패턴을 흰 별로 바꾼다. */
+.hub-path .galaxy-map::before {
+  opacity: 0.55;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.45) 1px, transparent 1.6px);
+  background-size: 68px 68px, 37px 41px;
+  background-position: 0 0, 19px 23px;
+}
+
+.hub-path .galaxy-map-head { border-bottom-color: #2b3a66; }
+.hub-path .galaxy-map-head > div > span { color: var(--mg-star); }
+.hub-path .galaxy-map-head strong,
+.hub-path .galaxy-map-progress { color: #f1f5f9; }
+.hub-path .galaxy-map .planet-node-label { color: #e2e8f0; }
+.hub-path .galaxy-map .planet-node-label strong { color: #7dd3fc; }
+.hub-path .galaxy-map .planet-status { color: #a9b6d4; }
+
+/* ─── 길을 길처럼 ───────────────────────────── */
+/* 연결선이 흐린 회색 막대여서 칸이 따로 놀았다. 빛나는 줄로 잇는다. */
+.hub-path .galaxy-map .planet-node:not(:last-child)::after {
+  height: 5px;
+  background: linear-gradient(90deg, rgba(125, 211, 252, 0.75), rgba(125, 211, 252, 0.18));
+  box-shadow: 0 0 10px rgba(125, 211, 252, 0.35);
+}
+/* 이미 지난 길은 초록으로 채워 둔다 — 걸어온 자취가 보인다. */
+.hub-path .galaxy-map .planet-node.status-done:not(:last-child)::after,
+.hub-path .galaxy-map .planet-node.status-cleared:not(:last-child)::after {
+  background: linear-gradient(90deg, var(--game-green), rgba(21, 128, 61, 0.35));
+  box-shadow: 0 0 10px rgba(21, 128, 61, 0.45);
+}
+
+/* ─── 지금 여기 ─────────────────────────────── */
+.hub-path .galaxy-map .planet-node.current .planet-core {
+  border-color: var(--mg-star);
+  box-shadow:
+    0 var(--mg-depth-sm) 0 #b45309,
+    inset 0 5px 0 rgba(255, 255, 255, 0.4),
+    0 0 0 6px rgba(245, 158, 11, 0.22);
+  animation: planet-pulse 1800ms ease-in-out infinite;
+}
+.hub-path .galaxy-map .planet-node.current .planet-orbit {
+  border-color: rgba(245, 158, 11, 0.75);
+}
+@keyframes planet-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+/* ─── 끝낸 칸 · 잠긴 칸 ─────────────────────── */
+.hub-path .galaxy-map .planet-node.status-done .planet-core,
+.hub-path .galaxy-map .planet-node.status-cleared .planet-core {
+  background: var(--game-green);
+  border-color: var(--game-green);
+  box-shadow: 0 var(--mg-depth-sm) 0 var(--game-green-dark), inset 0 5px 0 rgba(255, 255, 255, 0.3);
+}
+.hub-path .galaxy-map .planet-node.status-done .planet-orbit,
+.hub-path .galaxy-map .planet-node.status-cleared .planet-orbit {
+  border-color: rgba(34, 197, 94, 0.6);
+}
+/* 잠긴 칸은 밤하늘에 묻힌 행성처럼. 회색 벽이 아니라 '아직 안 간 곳'. */
+.hub-path .galaxy-map .planet-node.status-locked .planet-core {
+  color: #cbd5e1;
+  background: #24304f;
+  border-color: #3a4a75;
+  box-shadow: 0 var(--mg-depth-sm) 0 #1a2340, inset 0 5px 0 rgba(255, 255, 255, 0.06);
+}
+.hub-path .galaxy-map .planet-node.status-locked .planet-orbit { border-color: #33406a; }
+.hub-path .galaxy-map .planet-node.status-locked .planet-node-label { color: #9fb0d4; }
+.hub-path .galaxy-map .planet-node.status-locked .planet-status { color: #8d9cc4; }
+
+@media (prefers-reduced-motion: reduce) {
+  .galaxy-map .planet-node.current .planet-core { animation: none; }
+}

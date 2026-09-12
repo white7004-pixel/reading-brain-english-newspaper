@@ -1405,9 +1405,47 @@ function advanceInterpret() {
 
 const CONFETTI_COLORS = ["var(--mg-mint)", "var(--mg-sky)", "var(--mg-star)", "var(--mg-coral)"];
 
+// 폭죽은 화면 전체를 덮는 한 겹 위에 뿌린다.
+// 예전 호스트(#confettiBurst)는 통역 결과 화면 안에 있어서, 퀴즈에서 부르면
+// 숨겨진 곳에 터져 아무것도 보이지 않았다.
+function confettiHost() {
+  let host = document.getElementById("confettiLayer");
+  if (!host) {
+    host = document.createElement("div");
+    host.id = "confettiLayer";
+    host.className = "confetti-layer";
+    host.setAttribute("aria-hidden", "true");
+    document.body.appendChild(host);
+  }
+  return host;
+}
+
+// 맞힌 자리에서 점수가 튀어오른다. 1초 뒤 스스로 사라진다.
+function popScore(anchor, text, tone = "gain") {
+  if (!anchor) return;
+  const rect = anchor.getBoundingClientRect();
+  const pop = document.createElement("span");
+  pop.className = `score-pop score-pop-${tone}`;
+  pop.textContent = text;
+  pop.style.left = `${rect.left + rect.width / 2}px`;
+  pop.style.top = `${rect.top + rect.height / 3}px`;
+  document.body.appendChild(pop);
+  window.setTimeout(() => pop.remove(), 1200);
+}
+
+// 연속으로 맞히면 점점 크게 반응한다.
+const COMBO_WORDS = { 3: "좋아요!", 5: "굉장해요!", 10: "완벽해요!" };
+
+function celebrateCorrect(button, gained, streak) {
+  popScore(button, `+${gained}`);
+  const word = COMBO_WORDS[streak];
+  burstConfetti(word ? 70 : 16);
+  if (word) window.setTimeout(() => popScore(button, `${streak}연속 ${word}`, "combo"), 260);
+}
+
 // 섹션 클리어 축하 폭죽. 정리는 애니메이션이 끝난 뒤 스스로 한다.
 function burstConfetti(count = 60) {
-  const host = $("#confettiBurst");
+  const host = confettiHost();
   if (!host) return;
   host.innerHTML = "";
   for (let i = 0; i < count; i++) {
@@ -2283,12 +2321,14 @@ function checkQuiz(button, id) {
 
   if (id === state.quizAnswer) {
     button.classList.add("correct");
-    state.score += 20 + Math.min(state.streak * 2, 20);
+    const gained = 20 + Math.min(state.streak * 2, 20);
+    state.score += gained;
     state.streak += 1;
     state.mastered.add(state.quizItem.id);
     state.review.delete(state.quizItem.id);
     bumpDaily("correct");
     elements.quizFeedback.textContent = "정답입니다!";
+    celebrateCorrect(button, gained, state.streak);
   } else {
     button.classList.add("wrong");
     state.streak = 0;

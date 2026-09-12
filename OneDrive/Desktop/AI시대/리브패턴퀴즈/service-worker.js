@@ -1,4 +1,4 @@
-const CACHE_VERSION = "20260912-clay-game";
+const CACHE_VERSION = "20260912-space-map-3";
 const SHELL_CACHE = `rb-shell-${CACHE_VERSION}`;
 const CONTENT_CACHE = `rb-content-${CACHE_VERSION}`;
 const CACHE_PREFIXES = ["rb-shell-", "rb-content-"];
@@ -8,8 +8,8 @@ const SHELL_ASSETS = [
   "/index.html",
   "/offline.html",
   "/manifest.webmanifest",
-  "/styles.css?v=20260829-bookquiz-card-quest-style",
-  "/mint-galaxy.css?v=20260829-bigger-english-card",
+  "/styles.css?v=20260912-space-map-3",
+  "/mint-galaxy.css?v=20260912-space-map-3",
   "/assets/reading-brain-logo.jpg",
   "/assets/icons/icon-192.png",
   "/assets/icons/icon-512.png",
@@ -29,7 +29,7 @@ const CONTENT_ASSETS = [
   "/game-ui-model.js?v=20260821",
   "/game-ui.js?v=20260821",
   "/offline-sync-model.js?v=20260823",
-  "/app.js?v=20260829-fix-lastcard-autoadvance",
+  "/app.js?v=20260912-space-map-3",
 ];
 
 async function cacheRequiredContent() {
