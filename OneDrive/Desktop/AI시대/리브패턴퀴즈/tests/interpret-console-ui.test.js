@@ -87,4 +87,8 @@ assert.match(css, /#interpretStopBtn[\s\S]*?min-height:\s*48px/, "the secondary 
 assert.match(css, /#interpretView button:focus-visible/, "interpretation controls need a visible keyboard focus");
 assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.communication-mic/, "the microphone animation must honor reduced motion");
 
+const setMode = functionSlice("function setMode(mode)", "function bindEvents()");
+assert.doesNotMatch(setMode, /flowModeUnlocked\(mode\)/, "the interpretation tab must open even when a saved course is incomplete");
+assert.match(setMode, /if \(mode === "interpret"\) renderInterpretEntry\(patternSections\(\)\);/, "opening the interpretation tab must render its entry screen");
+
 console.log("interpret communication console UI tests passed");

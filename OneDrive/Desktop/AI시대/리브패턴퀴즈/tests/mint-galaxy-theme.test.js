@@ -8,7 +8,7 @@ const cssPath = path.join(root, "mint-galaxy.css");
 const css = fs.existsSync(cssPath) ? fs.readFileSync(cssPath, "utf8") : "";
 
 const stylesLink = html.indexOf('<link rel="stylesheet" href="styles.css');
-const mintLink = html.indexOf('<link rel="stylesheet" href="mint-galaxy.css?v=20260821"');
+const mintLink = html.indexOf('<link rel="stylesheet" href="mint-galaxy.css');
 assert.ok(stylesLink >= 0, "the existing styles.css link must remain present");
 assert.ok(mintLink > stylesLink, "Mint Galaxy CSS must follow the existing styles.css link");
 

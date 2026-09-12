@@ -206,6 +206,22 @@
     return units;
   }
 
+  const LEARNING_FLOW = ["study", "quiz", "interpret"];
+
+  function nextLearningMode(mode) {
+    const index = LEARNING_FLOW.indexOf(mode);
+    return index >= 0 && index < LEARNING_FLOW.length - 1
+      ? LEARNING_FLOW[index + 1]
+      : null;
+  }
+
+  function isLearningModeUnlocked(mode, progress = {}) {
+    const index = LEARNING_FLOW.indexOf(mode);
+    if (mode === "quiz" || mode === "interpret") return true;
+    if (index <= 0) return index === 0;
+    return LEARNING_FLOW.slice(0, index).every((step) => Boolean(progress[step]));
+  }
+
   return {
     parseSectionName,
     buildSections,
@@ -216,5 +232,7 @@
     applyPathState,
     findCurrentSection,
     buildUnits,
+    nextLearningMode,
+    isLearningModeUnlocked,
   };
 });

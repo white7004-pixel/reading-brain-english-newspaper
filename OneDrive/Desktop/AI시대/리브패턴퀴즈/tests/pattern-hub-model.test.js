@@ -9,6 +9,8 @@ const {
   applyPathState,
   findCurrentSection,
   buildUnits,
+  nextLearningMode,
+  isLearningModeUnlocked,
 } = require("../pattern-hub-model.js");
 
 const SAMPLE = [
@@ -211,6 +213,20 @@ function testBuildUnits() {
   assert.deepEqual(buildUnits([], 3), []);
 }
 
+function testLearningFlow() {
+  assert.equal(nextLearningMode("study"), "quiz");
+  assert.equal(nextLearningMode("quiz"), "interpret");
+  assert.equal(nextLearningMode("match"), null);
+  assert.equal(nextLearningMode("interpret"), null);
+
+  const progress = { study: true, quiz: true, interpret: false };
+  assert.equal(isLearningModeUnlocked("study", progress), true);
+  assert.equal(isLearningModeUnlocked("quiz", progress), true);
+  assert.equal(isLearningModeUnlocked("quiz", {}), true);
+  assert.equal(isLearningModeUnlocked("interpret", {}), true);
+  assert.equal(isLearningModeUnlocked("interpret", progress), true);
+}
+
 function run() {
   testParseSectionName();
   testBuildSections();
@@ -221,6 +237,7 @@ function run() {
   testApplyPathState();
   testFindCurrentSection();
   testBuildUnits();
+  testLearningFlow();
   console.log("pattern-hub-model tests passed");
 }
 

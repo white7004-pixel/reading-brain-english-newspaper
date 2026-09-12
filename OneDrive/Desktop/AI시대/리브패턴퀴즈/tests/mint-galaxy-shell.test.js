@@ -24,8 +24,8 @@ assert.deepEqual(mobileDestinations, [
 assert.match(css, /\.mg-bottom-nav[\s\S]*?env\(safe-area-inset-bottom\)/);
 assert.match(css, /--bottom-nav-height:\s*\d+px/);
 assert.match(css, /\.mg-bottom-nav[\s\S]*?\.mobile-bottom-item[\s\S]*?min-height:\s*56px/);
-assert.match(css, /@media \(max-width:\s*760px\)[\s\S]*?\.mg-sidebar[\s\S]*?transform:\s*translateX\(-100%\)/);
-assert.match(css, /@media \(max-width:\s*760px\)[\s\S]*?main[\s\S]*?env\(safe-area-inset-bottom\)/);
+assert.match(css, /@media \(max-width:\s*1000px\)[\s\S]*?\.mg-sidebar[\s\S]*?transform:\s*translateX\(-100%\)/);
+assert.match(css, /@media \(max-width:\s*1000px\)[\s\S]*?main[\s\S]*?env\(safe-area-inset-bottom\)/);
 assert.match(app, /window\.ReadingBrainGameUI\?\.setMode\?\.\(mode\)/);
 assert.match(
   app,

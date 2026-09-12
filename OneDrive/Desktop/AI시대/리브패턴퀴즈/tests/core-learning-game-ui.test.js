@@ -41,9 +41,12 @@ assert.ok(!html.includes('id="cardBackEnglish"'), "the study card must not visua
 assert.ok(!app.includes("cardBackEnglish"), "renderStudy must update only the single English sentence");
 assert.ok(!html.includes("우리말뜻"), "the Korean meaning must not gain a redundant label");
 
-for (const id of ["markKnownBtn", "markUnsureBtn", "speakButton", "prevButton", "nextButton", "newQuizButton"]) {
+for (const id of ["prevButton", "nextButton", "newQuizButton"]) {
   assert.ok(html.includes(`id="${id}"`), `the existing ${id} action hook must remain`);
 }
+assert.ok(!html.includes('id="speakButton"'), "study cards autoplay pronunciation without a duplicate button");
+assert.ok(!html.includes('id="markKnownBtn"'), "the streamlined study view must not restore the known button");
+assert.ok(!html.includes('id="markUnsureBtn"'), "the streamlined study view must not restore the unsure button");
 
 assert.match(html, /class="[^"]*quest-card[^"]*"[^>]*id="flashcard"/, "the study sentence needs a quest card");
 assert.match(html, /id="quizOptions"[^>]*class="[^"]*answer-grid[^"]*"/, "quiz choices need the answer grid hook");
@@ -96,36 +99,60 @@ assert.match(
   "reduced motion must override high-specificity hover and active transforms",
 );
 
-assert.ok(!app.includes("currentStudyCards"), "Task 5 must not limit learning to the first three cards");
-assert.ok(!app.includes("SECTION_QUIZ_TARGET"), "Task 5 must not invent a five-question completion target");
-assert.ok(!app.includes("flowProgress"), "Task 5 must not invent flow completion persistence");
-
 const currentItem = functionSlice("function currentItem()", "function dashboardSnapshot");
-assert.match(currentItem, /const items = filteredItems\(\);[\s\S]*?return items\[state\.index\];/, "currentItem must retain the full filtered scope");
+assert.match(currentItem, /const cards = currentStudyCards\(\);[\s\S]*?return cards\[state\.index\];/, "currentItem must use the mobile study set");
+assert.match(app, /const PATTERN_SESSION_SIZE = 3;/, "pattern study and quiz must share a three-item session size");
+assert.match(app, /return gameItems\(\)\.slice\(0, PATTERN_SESSION_SIZE\)\.map/, "the daily pattern course must use the same three items as card study");
+assert.match(app, /const SECTION_QUIZ_TARGET = PATTERN_SESSION_SIZE;/, "the free pattern quiz must end after the same three items");
 
 const moveCard = functionSlice("function moveCard(step = 1)", "function markKnown(known)");
 assert.match(moveCard, /if \(step > 0\) bumpDaily\("cards"\);/, "forward navigation must retain daily card progress");
-assert.match(moveCard, /newIndex >= items\.length && state\.category !== "all"[\s\S]*?findNextSection/, "forward navigation must retain next-section behavior");
+assert.match(moveCard, /newIndex >= cards\.length[\s\S]*?setMode\("quiz"\)/, "reaching the last card and pressing next must lead straight into the quiz");
 
 const markKnown = functionSlice("function markKnown(known)", "async function speakCurrent");
 const markSavedAt = markKnown.indexOf("saveState();");
 const markResultAt = markKnown.indexOf('ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong")');
 const studyMoveAt = markKnown.indexOf("moveCard(1);");
 assert.ok(markResultAt > markSavedAt, "study feedback must follow the existing state persistence");
-assert.ok(markResultAt > studyMoveAt, "study feedback must follow the complete existing moveCard continuation");
-assert.ok(!markKnown.includes('setMascot?.("complete")'), "study must not invent a completion hook without a base condition");
+assert.ok(studyMoveAt >= 0, "free study must retain the existing moveCard continuation");
+assert.match(markKnown, /progressDailyAnswer\("pattern"[\s\S]*?setMascot/, "daily study must advance its course before feedback");
+assert.match(markKnown, /currentStudyCards\(\)\.every[\s\S]*?setMascot\?\.\("complete"\)/, "study completion must follow mastery of the compact set");
 
 const checkQuiz = functionSlice("function checkQuiz(button, id)", "let mahjong");
+const quizItems = functionSlice("function quizItems()", "function quizTitle()");
+const newQuiz = functionSlice("function newQuiz()", "function checkQuiz(button, id)");
+assert.match(quizItems, /return currentStudyCards\(\);/, "pattern quiz questions must come from the same three cards as study");
+assert.match(
+  newQuiz,
+  /pool\[\(state\.quizCount - 1\) % pool\.length\]/,
+  "free pattern quiz must ask each studied card in order without random repeats",
+);
+assert.match(newQuiz, /makeOptions\(item, optionKey, gameItems\(\)\)/, "quiz distractors may use the wider section without changing the studied question set");
 const quizResultStateAt = checkQuiz.indexOf('const mascotState = id === state.quizAnswer ? "correct" : "wrong";');
 const quizSavedAt = checkQuiz.indexOf("saveState();");
 const quizStatsAt = checkQuiz.indexOf("updateStats();", quizSavedAt);
 const quizResultAt = checkQuiz.indexOf("ReadingBrainGameUI?.setMascot?.(mascotState)");
 const quizIncrementAt = checkQuiz.indexOf("state.quizCount += 1;");
-const quizContinuationAt = checkQuiz.indexOf("setTimeout(newQuiz, 950);");
+const quizContinuationAt = checkQuiz.indexOf("scheduleCourseAdvance(advanceToken, nextQuizDelay, () =>");
 assert.ok(quizResultStateAt >= 0 && quizResultStateAt < quizSavedAt, "quiz must safely capture the result before later state changes");
 assert.ok(quizResultAt > quizStatsAt, "quiz feedback must follow existing grading, persistence, and stat updates");
-assert.ok(quizContinuationAt > quizIncrementAt, "quiz feedback must retain scheduling of the next question");
+assert.ok(quizContinuationAt > quizIncrementAt, "quiz feedback must use guarded scheduling for the next question");
 assert.ok(quizResultAt > quizContinuationAt, "quiz feedback must follow the complete existing counter and next-question continuation");
-assert.ok(!checkQuiz.includes('setMascot?.("complete")'), "quiz must not invent a completion hook without a base condition");
+assert.match(checkQuiz, /quizCount >= SECTION_QUIZ_TARGET[\s\S]*?setMascot\?\.\("complete"\)/, "quiz completion must use the configured target");
+assert.match(
+  checkQuiz,
+  /const nextQuizDelay = id === state\.quizAnswer \? 0 : 950;[\s\S]*?scheduleCourseAdvance\(advanceToken, nextQuizDelay, \(\) =>/,
+  "a correct pattern answer must schedule the next quiz immediately",
+);
+
+const saveState = functionSlice("function saveState()", "function learningCatalog()");
+assert.match(saveState, /queueProgressEvent\(progressPayload\(\)\)/, "progress must enter the durable queue before syncing");
+assert.doesNotMatch(saveState, /apiRequest\("\/api\/progress"/, "saveState must not bypass the offline queue");
+assert.match(app, /function queueProgressEvent\(payload\)/, "the app needs one durable progress enqueue boundary");
+const syncPendingProgress = functionSlice("function syncPendingProgress()", "function cancelScheduledCourseAdvance()");
+assert.match(syncPendingProgress, /offlineSync\.nextBatch/, "sync must preserve queue order");
+assert.match(syncPendingProgress, /acknowledgedEventIds/, "sync must wait for explicit server acknowledgement");
+assert.match(syncPendingProgress, /offlineSync\.acknowledge/, "only acknowledged events may leave the queue");
+assert.match(app, /addEventListener\("online",[\s\S]*?syncPendingProgress/, "reconnection must retry queued progress");
 
 console.log("core learning game UI tests passed");

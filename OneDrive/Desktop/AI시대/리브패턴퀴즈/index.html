@@ -3,11 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2f3651" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <title>Reading Brain 영어표현 카드 게임</title>
-    <link rel="stylesheet" href="styles.css?v=20260818-calm2" />
-    <link rel="stylesheet" href="mint-galaxy.css?v=20260821" />
+    <link rel="stylesheet" href="styles.css?v=20260829-bookquiz-card-quest-style" />
+    <link rel="stylesheet" href="mint-galaxy.css?v=20260829-bigger-english-card" />
+    <style id="quizAlignmentGuard">
+      #quizView .quiz-panel { text-align: center !important; }
+      #quizView .quiz-panel :is(#quizCount, #quizScopeText, #quizPrompt, #quizQuestion, #quizFeedback),
+      #quizView #quizOptions button {
+        text-align: center !important;
+      }
+      #quizView #quizOptions button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+    </style>
   </head>
   <body class="locked">
+    <aside class="pwa-status" id="pwaStatus" aria-live="polite" hidden>
+      <span id="pwaStatusText"></span>
+      <button id="pwaInstallButton" type="button" hidden>앱 설치</button>
+      <button id="pwaUpdateButton" type="button" hidden>업데이트 적용</button>
+    </aside>
     <svg class="icon-sprite" aria-hidden="true" focusable="false">
       <defs>
         <symbol id="ico-hub" viewBox="0 0 24 24">
@@ -149,6 +172,7 @@
         </div>
 
         <div class="sidebar-section-sep"><span>보조 학습</span></div>
+        <button class="mode-button" id="leaderboardNavBtn" data-mode="leaderboard">포인트 랭킹</button>
         <button class="mode-button verb-mode-button" id="verbNavBtn" data-mode="verb">동사 3단 변화</button>
         <button class="mode-button" id="bqNavBtn" data-mode="bookquiz">북퀴즈 핵심단어</button>
       </aside>
@@ -166,19 +190,42 @@
         </header>
 
         <section class="student-dashboard" id="studentDashboard" aria-label="오늘의 학습 현황">
+          <button class="daily-course-cta" id="dailyCourseCta" type="button">
+            <span class="daily-course-eyebrow" id="dailyCourseEyebrow">오늘의 학습 · 약 10분</span>
+            <strong id="dailyCourseTitle">패턴영어</strong>
+            <span id="dailyCourseStep">새 표현 배우기</span>
+            <span class="daily-course-progress" aria-label="오늘 학습 진행률"><i id="dailyCourseProgress"></i></span>
+            <b id="dailyCourseCtaLabel">오늘의 10분 학습</b>
+          </button>
+
+          <div class="learning-section-grid" aria-label="학습 섹션">
+            <button type="button" data-course-section="pattern">
+              <span aria-hidden="true">💬</span><strong>패턴영어</strong><small>표현·퀴즈·통역</small>
+            </button>
+            <button type="button" data-course-section="bookquiz">
+              <span aria-hidden="true">📚</span><strong>북퀴즈 질문학습</strong><small>핵심 단어·질문 패턴</small>
+            </button>
+            <button type="button" data-course-section="verb">
+              <span aria-hidden="true">🔄</span><strong>3단 동사변화 학습</strong><small>원형·과거형·과거분사</small>
+            </button>
+          </div>
+
+          <div class="daily-course-metrics" aria-label="오늘의 학습 기록">
+            <span><b id="dailyMinutes">0분</b><small>오늘 학습</small></span>
+            <span><b id="dailyStars">0</b><small>별</small></span>
+            <span><b id="dailyAccuracy">0%</b><small>정답률</small></span>
+          </div>
+
           <div class="dashboard-main">
             <div class="dashboard-copy">
               <span class="eyebrow">Today Mission</span>
               <h2 id="dashboardGreeting">오늘의 학습을 시작해요</h2>
-              <p id="dashboardFocus">카드 5개로 오늘 학습을 시작해요.</p>
+              <p id="dashboardFocus">카드 3개로 오늘 학습을 시작해요.</p>
             </div>
-            <div class="progress-card">
-              <div class="progress-card-head">
+            <div class="progress-card compact-progress-card">
+              <div class="dashboard-progress-ring" id="dashboardProgressRing" style="--p: 0" aria-label="전체 학습 진도">
                 <span>전체 진도</span>
                 <strong id="dashboardProgressText">0%</strong>
-              </div>
-              <div class="dashboard-progress-track" aria-hidden="true">
-                <span id="dashboardProgressBar"></span>
               </div>
               <p id="dashboardProgressDetail">0 / 1189 표현 마스터</p>
             </div>
@@ -191,35 +238,24 @@
               <small id="dashboardCategoryCount">0개 표현</small>
             </div>
             <div>
-              <span>복습 상자</span>
-              <strong id="dashboardReviewCount">0</strong>
-              <small>다시 볼 표현</small>
-            </div>
-            <div>
               <span>누적 포인트</span>
               <strong id="dashboardScore">0</strong>
-              <small id="dashboardStreak">0 연속 정답</small>
+              <small>학습 포인트</small>
+            </div>
+            <div>
+              <span>현재 콤보</span>
+              <strong id="dashboardStreak">0</strong>
+              <small>연속 정답</small>
             </div>
           </div>
 
-          <div class="routine-card">
-            <div>
-              <span class="eyebrow">Daily Routine</span>
-              <h3>추천 학습 루틴</h3>
-            </div>
-            <div id="routineSteps" class="routine-steps"></div>
-          </div>
         </section>
 
         <nav class="pattern-mode-bar" id="patternModeBar" aria-label="학습 모드">
           <button class="pmode-btn active" data-pmode="hub"><svg class="pmode-ico"><use href="#ico-hub" /></svg>허브</button>
           <button class="pmode-btn" data-pmode="study"><svg class="pmode-ico"><use href="#ico-card" /></svg>카드학습</button>
           <button class="pmode-btn" data-pmode="quiz"><svg class="pmode-ico"><use href="#ico-quiz" /></svg>퀴즈</button>
-          <button class="pmode-btn" data-pmode="match"><svg class="pmode-ico"><use href="#ico-match" /></svg>매칭</button>
-          <button class="pmode-btn" data-pmode="blast"><svg class="pmode-ico"><use href="#ico-blast" /></svg>블래스트</button>
-          <button class="pmode-btn" data-pmode="review"><svg class="pmode-ico"><use href="#ico-review" /></svg>복습<span class="pmode-count hidden" id="pmodeReviewCount">0</span></button>
-          <button class="pmode-btn" data-pmode="leaderboard"><svg class="pmode-ico"><use href="#ico-rank" /></svg>랭킹</button>
-          <button class="pmode-btn" data-pmode="interpret"><svg class="pmode-ico"><use href="#ico-speak" /></svg>통역 테스트<span class="pmode-lock hidden" id="pmodeInterpretLock">잠김</span></button>
+          <button class="pmode-btn" data-pmode="interpret"><svg class="pmode-ico"><use href="#ico-speak" /></svg>통역 테스트</button>
         </nav>
 
         <section id="hubView" class="view active">
@@ -245,14 +281,6 @@
               </div>
             </div>
 
-            <div class="hub-routine">
-              <div class="hub-routine-head">
-                <span class="eyebrow">Daily Routine</span>
-                <h3>추천 학습 루틴</h3>
-              </div>
-              <div id="hubRoutineSteps" class="routine-steps"></div>
-            </div>
-
             <div class="hub-toolbar">
               <div class="hub-section-title">
                 <span class="eyebrow">Learning Path</span>
@@ -275,15 +303,7 @@
         </section>
 
         <section id="interpretView" class="view">
-          <div class="interpret-shell communication-console is-idle" data-interpret-phase="idle">
-            <div class="interpret-locked hidden" id="interpretLocked">
-              <span class="interpret-eyebrow">Locked</span>
-              <h2>아직 잠겨 있어요</h2>
-              <p id="interpretLockedMsg">카드 학습을 100% 마치면 통역 테스트가 열립니다.</p>
-              <div class="interpret-lock-track" aria-hidden="true"><span id="interpretLockBar"></span></div>
-              <button class="primary" id="interpretGoStudy" type="button">카드 학습으로 가기</button>
-            </div>
-
+          <div class="interpret-shell game-surface communication-console is-idle" data-interpret-phase="idle">
             <div class="interpret-intro hidden" id="interpretIntro">
               <span class="interpret-eyebrow">Final Test</span>
               <h2 id="interpretIntroTitle">통역 테스트</h2>
@@ -330,16 +350,13 @@
             </div>
 
             <div class="interpret-result hidden" id="interpretResult">
+              <div class="confetti-burst" id="confettiBurst" aria-hidden="true"></div>
               <div class="interpret-result-ring" id="interpretResultRing" style="--p: 0">
                 <strong id="interpretResultPercent">0%</strong>
               </div>
               <h2 id="interpretResultTitle">결과</h2>
               <p id="interpretResultDetail"></p>
               <div class="interpret-missed" id="interpretMissed"></div>
-              <div class="interpret-result-actions">
-                <button class="primary" id="interpretRetryBtn" type="button">다시 도전</button>
-                <button class="ghost" id="interpretBackBtn" type="button">허브로 돌아가기</button>
-              </div>
             </div>
           </div>
         </section>
@@ -368,25 +385,14 @@
                   </div>
                 </div>
               </div>
-              <div class="study-mark-buttons">
-                <button class="study-mark-btn know action-know" id="markKnownBtn" type="button">
-                  <span>알아요</span><small>마스터에 담고 다음 카드</small>
-                </button>
-                <button class="study-mark-btn unsure action-review" id="markUnsureBtn" type="button">
-                  <span>헷갈려요</span><small>복습 상자에 담기</small>
-                </button>
-              </div>
-              <div class="study-actions">
-                <button id="speakButton" class="primary" title="자연스러운 영어 발음 듣기">원어민 발음 듣기</button>
-              </div>
+              <p class="sr-only">새 카드가 표시되면 영어 발음이 자동으로 재생되고, 잠시 후 다음 카드로 자동으로 넘어갑니다.</p>
               <div class="nav-buttons">
                 <button id="prevButton" class="ghost">이전</button>
                 <span id="cardIndexDisplay" class="card-index-display"></span>
                 <button id="nextButton" class="ghost">다음</button>
               </div>
               <p class="study-shortcuts">
-                <kbd>←</kbd><kbd>→</kbd> 카드 이동 · <kbd>Space</kbd> 뒤집기 · <kbd>S</kbd> 발음 ·
-                <kbd>1</kbd> 알아요 · <kbd>2</kbd> 헷갈려요
+                <kbd>←</kbd><kbd>→</kbd> 카드 이동 · <kbd>Space</kbd> 뒤집기 · <kbd>S</kbd> 발음
               </p>
               <div class="section-done-banner hidden" id="sectionDoneBanner">
                 <div>
@@ -401,10 +407,6 @@
 
         <section id="quizView" class="view">
           <div class="panel quiz-panel game-surface mg-surface">
-            <div class="quiz-tabs" aria-label="퀴즈 종류">
-              <button class="quiz-tab active" data-quiz-type="section" type="button">섹션퀴즈</button>
-              <button class="quiz-tab" data-quiz-type="cumulative" type="button">누적퀴즈</button>
-            </div>
             <div class="panel-head">
               <span id="quizCount">섹션퀴즈 · 문제 1</span>
               <button id="newQuizButton" class="ghost small">새 문제</button>
@@ -417,55 +419,8 @@
           </div>
         </section>
 
-        <section id="matchView" class="view">
-          <div class="panel">
-            <div class="panel-head">
-              <div>
-                <h2>영어와 뜻을 클릭해 짝을 맞춰보세요</h2>
-                <p id="matchStatus">영어와 뜻을 찾아서 클릭하세요.</p>
-              </div>
-              <button id="resetMatchButton" class="ghost small">다시 놓기</button>
-            </div>
-            <div class="match-columns">
-              <div id="englishColumn" class="match-column"></div>
-              <div id="koreanColumn" class="match-column"></div>
-            </div>
-            <div id="mahjongBoard" class="mahjong-board hidden"></div>
-          </div>
-        </section>
-
-        <section id="blastView" class="view">
-          <div class="blast-shell">
-            <div class="blast-hud">
-              <strong id="blastScoreText">0</strong>
-              <span id="blastWaveText">Wave 1</span>
-              <div id="blastLivesText" class="blast-lives"></div>
-            </div>
-            <div id="blastArena" class="blast-arena">
-              <div id="blastOverlay" class="blast-overlay">
-                <h2 id="blastOverlayTitle">블래스트!</h2>
-                <p id="blastOverlayMsg">떨어지는 뜻을 보고 맞는 영어 표현을 눌러 격파하세요.</p>
-                <button id="blastStartBtn" class="primary">게임 시작</button>
-              </div>
-            </div>
-            <div id="blastOptions" class="blast-options"></div>
-          </div>
-        </section>
-
-        <section id="reviewView" class="view">
-          <div class="panel">
-            <div class="panel-head">
-              <div>
-                <h2>오답 복습 상자</h2>
-                <p id="reviewSummary">아직 복습할 표현이 없습니다.</p>
-              </div>
-            </div>
-            <div id="reviewList" class="review-list"></div>
-          </div>
-        </section>
-
         <section id="leaderboardView" class="view">
-          <div class="panel">
+          <div class="panel leaderboard-panel">
             <div class="panel-head">
               <div>
                 <h2>포인트 랭킹 TOP 10</h2>
@@ -473,12 +428,31 @@
               </div>
               <button id="refreshLeaderboardButton" class="ghost small" type="button">새로고침</button>
             </div>
-            <div id="leaderboardList" class="leaderboard-list"></div>
+            <div id="leaderboardPodium" class="leaderboard-podium space-podium" aria-label="상위 3명"></div>
+            <div id="leaderboardList" class="leaderboard-list explorer-ranking" aria-label="4위부터 10위"></div>
           </div>
         </section>
 
         <section id="bookquizView" class="view">
           <div class="bookquiz-shell">
+            <section class="bookquiz-map-panel" aria-labelledby="bookquizRoundLabel">
+              <div class="bookquiz-map-head">
+                <div>
+                  <span class="bookquiz-map-eyebrow">BOOKQUIZ LEARNING PATH</span>
+                  <strong id="bookquizRoundLabel">1회독</strong>
+                </div>
+                <span id="bookquizMapProgress">0 / 4 단계 완료</span>
+              </div>
+              <ol id="bookquizLearningMap" class="bookquiz-learning-map" aria-label="북퀴즈 순차 학습 지도">
+                <li><button type="button" data-bookquiz-node="word-study"><b>1</b><span>핵심 단어 카드학습</span><small>현재 단계</small></button></li>
+                <li><button type="button" data-bookquiz-node="word-quiz"><b>2</b><span>핵심 단어 퀴즈</span><small>잠김</small></button></li>
+                <li><button type="button" data-bookquiz-node="pattern-study"><b>3</b><span>질문 패턴 카드학습</span><small>잠김</small></button></li>
+                <li><button type="button" data-bookquiz-node="pattern-quiz"><b>4</b><span>질문 패턴 퀴즈</span><small>잠김</small></button></li>
+              </ol>
+              <p id="bookquizMapStatus" class="sr-only" aria-live="polite"></p>
+              <button id="bookquizSecondRoundBtn" class="primary hidden" type="button">2회독 시작</button>
+              <p id="bookquizFinalComplete" class="hidden">2회독 학습을 모두 완료했습니다. 완료한 단계를 자유롭게 복습할 수 있어요.</p>
+            </section>
             <div class="bq-control-row">
               <button class="bqtype-btn active" data-bqtype="word">핵심 단어 (21)</button>
               <button class="bqtype-btn" data-bqtype="pattern">질문 패턴 (22)</button>
@@ -486,26 +460,20 @@
             <div class="bq-control-row">
               <button class="bqmode-btn active" data-bqmode="card">카드학습</button>
               <button class="bqmode-btn" data-bqmode="quiz">퀴즈</button>
-              <button class="bqmode-btn" data-bqmode="match">카드맞추기</button>
-              <button class="bqmode-btn" data-bqmode="blast">블래스트</button>
             </div>
 
             <div id="bqCardArea" class="bq-area">
               <div class="bq-card-wrap">
-                <div class="bq-card" id="bqCard" tabindex="0" role="button" aria-label="카드를 뒤집어 뜻 확인">
+                <article id="bqCard" class="bq-card study-board book-quest" aria-label="북퀴즈 단어 학습판">
                   <div class="bq-face bq-front">
                     <div id="bqCardMeta" class="bq-card-meta">1 / 21</div>
                     <div class="bq-card-badge" id="bqCardBadge">핵심 단어</div>
                     <h2 id="bqCardEnglish">What</h2>
-                    <p id="bqCardBackEnglish">What</p>
-                    <button class="primary bq-speak-btn" id="bqSpeakBtn" type="button">원어민 발음 듣기</button>
-                    <small>카드를 클릭하면 뜻을 확인할 수 있어요.</small>
+                    <div class="bq-board-divider" aria-hidden="true"></div>
+                    <h3 id="bqCardKorean" class="bq-card-korean">무엇 / 어떤</h3>
+                    <p class="sr-only">새 카드가 표시되면 영어 발음이 자동으로 한 번 재생됩니다.</p>
                   </div>
-                  <div class="bq-face bq-back">
-                    <h2 id="bqCardKorean">무엇 / 어떤</h2>
-                    <p>다시 클릭하면 영어 표현으로 돌아갑니다.</p>
-                  </div>
-                </div>
+                </article>
               </div>
               <div class="nav-buttons">
                 <button id="bqPrevBtn" class="ghost">이전</button>
@@ -515,51 +483,23 @@
             </div>
 
             <div id="bqQuizArea" class="bq-area hidden">
-              <div class="panel">
-                <div class="panel-head">
+              <div class="panel bq-quest-card game-surface">
+                <div class="panel-head bq-quest-head">
                   <span id="bqQuizCount">문제 1</span>
+                  <span class="bq-quest-stars" aria-label="도전 별 3개">★ ★ ★</span>
                   <button id="newBQQuizBtn" class="ghost small" type="button">새 문제</button>
                 </div>
-                <h2 id="bqQuizPrompt">뜻에 맞는 영어 표현은?</h2>
-                <div class="bq-quiz-question-wrap">
-                  <div id="bqQuizQuestion" class="quiz-question">무엇 / 어떤</div>
-                  <button class="bq-quiz-speak-btn" id="bqQuizSpeakBtn" type="button" title="발음 듣기">듣기</button>
+                <div class="bq-question-stage">
+                  <div class="bq-question-bubble">
+                    <h2 id="bqQuizPrompt">뜻에 맞는 영어 표현은?</h2>
+                    <div id="bqQuizQuestion" class="quiz-question">무엇 / 어떤</div>
+                  </div>
                 </div>
                 <div id="bqQuizOptions" class="options"></div>
                 <p id="bqQuizFeedback" class="feedback"></p>
               </div>
             </div>
 
-            <div id="bqMatchArea" class="bq-area hidden">
-              <div class="panel">
-                <div class="panel-head">
-                  <div>
-                    <h2>영어와 뜻을 클릭해 짝을 맞춰보세요</h2>
-                    <p id="bqMatchStatus">영어와 뜻을 찾아서 클릭하세요.</p>
-                  </div>
-                  <button id="resetBQMatchBtn" class="ghost small">다시 놓기</button>
-                </div>
-                <div id="bqMatchBoard" class="bq-match-board"></div>
-              </div>
-            </div>
-
-            <div id="bqBlastArea" class="bq-area hidden">
-              <div class="blast-shell">
-                <div class="blast-hud">
-                  <strong id="bqBlastScoreText">0</strong>
-                  <span id="bqBlastWaveText">Wave 1</span>
-                  <div id="bqBlastLivesText" class="blast-lives"></div>
-                </div>
-                <div id="bqBlastArena" class="blast-arena">
-                  <div id="bqBlastOverlay" class="blast-overlay">
-                    <h2>북퀴즈 블래스트!</h2>
-                    <p id="bqBlastOverlayMsg">떨어지는 뜻을 보고 맞는 영어 표현을 눌러 격파하세요.</p>
-                    <button id="bqBlastStartBtn" class="primary">게임 시작</button>
-                  </div>
-                </div>
-                <div id="bqBlastOptions" class="blast-options"></div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -576,42 +516,37 @@
             <div class="verb-mode-bar">
               <button class="vmode-btn active" data-vmode="card">카드학습</button>
               <button class="vmode-btn" data-vmode="quiz">빈칸퀴즈</button>
-              <button class="vmode-btn" data-vmode="blast">블래스트</button>
             </div>
 
             <div id="verbCardArea" class="verb-area">
-              <div class="verb-card" id="verbCard" tabindex="0" role="button" aria-label="카드 뒤집기">
+              <article id="verbCard" class="verb-card study-board" aria-label="동사 3단 변화 학습판">
                 <div class="verb-face verb-front">
                   <div id="verbCardMeta" class="verb-card-meta">1 / 1</div>
                   <div id="verbTypeBadge" class="verb-badge">규칙 동사</div>
                   <h2 id="verbMeaningDisplay">하다</h2>
                   <div class="verb-forms">
-                    <div>
+                    <div class="verb-orb">
                       <span class="vf-label">원형</span>
                       <strong id="verbBaseDisplay">play</strong>
-                      <button class="vf-speak-btn" data-vf="base" type="button" title="발음 듣기">듣기</button>
                     </div>
-                    <div>
+                    <div class="verb-orb">
                       <span class="vf-label">과거형</span>
                       <strong id="verbPastDisplay">played</strong>
-                      <button class="vf-speak-btn" data-vf="past" type="button" title="발음 듣기">듣기</button>
                     </div>
-                    <div>
+                    <div class="verb-orb">
                       <span class="vf-label">과거분사</span>
                       <strong id="verbPPDisplay">played</strong>
-                      <button class="vf-speak-btn" data-vf="pp" type="button" title="발음 듣기">듣기</button>
                     </div>
                   </div>
                   <button class="vf-all-btn" type="button" id="verbAllSpeakBtn" title="원형, 과거형, 과거분사 순서로 듣기">원형부터 3단 모두 듣기</button>
-                  <small>카드를 클릭하면 예문을 볼 수 있어요.</small>
+                  <section class="verb-examples quest-journal" aria-label="시제별 예문">
+                    <span class="verb-example-title">예문으로 한 번 더 확인</span>
+                    <p id="verbEx1">I play soccer.</p>
+                    <p id="verbEx2">I played soccer.</p>
+                    <p id="verbEx3">I have played soccer.</p>
+                  </section>
                 </div>
-                <div class="verb-face verb-back">
-                  <div id="verbTypeBadge2" class="verb-badge">규칙 동사</div>
-                  <p id="verbEx1">I play soccer.</p>
-                  <p id="verbEx2">I played soccer.</p>
-                  <p id="verbEx3">I have played soccer.</p>
-                </div>
-              </div>
+              </article>
               <div class="nav-buttons">
                 <button id="verbPrevBtn" class="ghost">이전</button>
                 <span id="verbIndexDisplay">1 / 1</span>
@@ -626,30 +561,31 @@
                   <button id="newVerbQuizBtn" class="ghost small" type="button">새 문제</button>
                 </div>
                 <h2 id="verbQuizPrompt">다음 동사의 과거형은?</h2>
-                <div id="verbQuizBase" class="quiz-question">play</div>
+                <div id="verbQuizForms" class="verb-quiz-forms quiz-question" aria-label="동사 3단 변화 빈칸 문제">
+                  <span id="verbQuizBase">play</span>
+                  <span aria-hidden="true">→</span>
+                  <span id="verbQuizPast">_____</span>
+                  <span aria-hidden="true">→</span>
+                  <span id="verbQuizPP">played</span>
+                </div>
                 <p id="verbQuizMeaning">하다</p>
                 <div id="verbQuizOptions" class="options"></div>
                 <p id="verbQuizFeedback" class="feedback"></p>
               </div>
             </div>
 
-            <div id="verbBlastArea" class="verb-area hidden">
-              <div class="blast-shell">
-                <div class="blast-hud">
-                  <strong id="verbBlastScoreText">0</strong>
-                  <span id="verbBlastWaveText">Wave 1</span>
-                  <div id="verbBlastLivesText" class="blast-lives"></div>
-                </div>
-                <div id="verbBlastArena" class="blast-arena">
-                  <div id="verbBlastOverlay" class="blast-overlay">
-                    <h2>동사 블래스트!</h2>
-                    <p>떨어지는 동사의 원형을 보고 맞는 과거분사(PP)를 눌러 격파하세요.</p>
-                    <button id="verbBlastStartBtn" class="primary">게임 시작</button>
-                  </div>
-                </div>
-                <div id="verbBlastOptions" class="blast-options"></div>
-              </div>
-            </div>
+          </div>
+        </section>
+
+        <section id="rewardView" class="view">
+          <div class="course-reward-panel" aria-live="polite">
+            <span class="course-reward-trophy" aria-hidden="true">🏆</span>
+            <p class="eyebrow">Daily Mission Complete</p>
+            <h2>오늘의 학습을 완료했어요!</h2>
+            <p id="courseRewardSummary">틀린 문제까지 다시 확인했어요.</p>
+            <strong id="courseRewardStars">+20 ⭐</strong>
+            <p id="courseRewardBadge" class="hidden"></p>
+            <button class="primary" id="courseRewardDoneBtn" type="button">보상 받고 홈으로</button>
           </div>
         </section>
       </main>
@@ -689,10 +625,16 @@
     <script src="data/verbs.js"></script>
     <script src="data/bookquiz.js"></script>
     <script src="learning-dashboard-model.js?v=20260627-dashboard"></script>
-    <script src="pattern-hub-model.js?v=20260818-path"></script>
+    <script src="daily-learning-model.js?v=20260823"></script>
+    <script src="auto-pronunciation-model.js?v=20260823"></script>
+    <script src="bookquiz-map-model.js?v=20260823"></script>
+    <script src="leaderboard-model.js?v=20260821-podium"></script>
+    <script src="pattern-hub-model.js?v=20260819-open-interpret"></script>
     <script src="interpretation-model.js?v=20260818-path"></script>
     <script src="game-ui-model.js?v=20260821"></script>
     <script src="game-ui.js?v=20260821"></script>
-    <script src="app.js?v=20260818-calm"></script>
+    <script src="offline-sync-model.js?v=20260823"></script>
+    <script src="pwa-controller.js?v=20260823"></script>
+    <script src="app.js?v=20260829-fix-lastcard-autoadvance"></script>
   </body>
 </html>

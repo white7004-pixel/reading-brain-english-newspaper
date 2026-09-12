@@ -4,8 +4,52 @@ const bqPatterns = window.BOOKQUIZ_PATTERNS || [];
 const bqWords = window.BOOKQUIZ_WORDS || [];
 const learningModel = window.ReadingBrainLearningModel || {};
 const patternHub = window.ReadingBrainPatternHub || {};
+const leaderboardModel = window.ReadingBrainLeaderboardModel || {};
 const interpretation = window.ReadingBrainInterpretation || {};
 const wordGames = window.ReadingBrainWordGames || {};
+const dailyLearning = window.ReadingBrainDailyLearning || {};
+const offlineSync = window.ReadingBrainOfflineSync || {
+  normalizeQueue(value) { return Array.isArray(value) ? value : []; },
+  enqueue(queue, event) { return [...this.normalizeQueue(queue), event]; },
+  acknowledge(queue) { return this.normalizeQueue(queue); },
+  nextBatch(queue, limit) { return this.normalizeQueue(queue).slice(0, limit || 1); },
+  createEventId(deviceId, sessionId, sequence) { return `${deviceId}:${sessionId}:${sequence}`; },
+};
+const pwaApi = window.ReadingBrainPwa || {};
+const autoPronunciation = window.ReadingBrainAutoPronunciation || {};
+const bookquizMapModel = window.ReadingBrainBookquizMap || {};
+const cardPronunciationGuard = autoPronunciation.createPronunciationGuard?.();
+let pwaController = null;
+
+const LEARNING_PROFILE_KEY = "rb-learning-profile-v1";
+const OFFLINE_DEVICE_KEY = "rb-offline-device-v1";
+const offlineSessionId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+let offlineSequence = 0;
+let progressSyncPromise = null;
+const answerAdvance = dailyLearning.createAdvanceGuard?.() || {
+  run(_token, callback) { callback(); return true; },
+  cancel() {},
+};
+let answerAdvanceTimer = null;
+
+function scheduleCardPronunciation({ section, stage, item, round }) {
+  const token = autoPronunciation.createToken?.({ section, stage, itemId: item?.id, round });
+  if (!cardPronunciationGuard?.shouldPlay(token, navigator.onLine !== false)) return false;
+  queueMicrotask(() => {
+    const play = section === "bookquiz" ? speakBookquizItem(item) : speakExpression(item, 1);
+    Promise.resolve(play).catch(() => {});
+  });
+  return true;
+}
+
+function scheduleVerbFormsPronunciation(verb) {
+  const token = autoPronunciation.createToken?.({ section: "verb", stage: "study", itemId: verb?.id });
+  if (!cardPronunciationGuard?.shouldPlay(token, navigator.onLine !== false)) return false;
+  queueMicrotask(() => {
+    Promise.resolve(speakAllVerbForms(null, verb)).catch(() => {});
+  });
+  return true;
+}
 
 const state = {
   mode: "hub",
@@ -22,12 +66,12 @@ const state = {
   navOpenGroups: { basic: true, training: false },
   daily: null,
   cleared: new Set(),
+  flowProgress: JSON.parse(localStorage.getItem("rb-flow-progress") || "{}"),
   interpret: null,
   interpretShowingResult: false,
   quizItem: null,
   quizAnswer: null,
   quizCount: 1,
-  quizType: "section",
   matchPairs: [],
   selectedEnglish: null,
   selectedKorean: null,
@@ -42,6 +86,7 @@ const state = {
   bqIndex: 0,
   bqQuizItem: null,
   bqQuizCount: 1,
+  bqWordSession: null,
   bqAskDir: "toEn",
   wordGameTab: "roulette",
   wgWords: [],
@@ -64,6 +109,7 @@ const state = {
   wgSentencePicked: [],
   wgDictationIndex: 0,
   wgSpellingIndex: 0,
+  learningProfile: null,
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -93,24 +139,18 @@ const elements = {
   quizQuestion: $("#quizQuestion"),
   quizOptions: $("#quizOptions"),
   quizFeedback: $("#quizFeedback"),
-  englishColumn: $("#englishColumn"),
-  koreanColumn: $("#koreanColumn"),
-  matchStatus: $("#matchStatus"),
-  reviewSummary: $("#reviewSummary"),
-  reviewList: $("#reviewList"),
   leaderboardSummary: $("#leaderboardSummary"),
+  leaderboardPodium: $("#leaderboardPodium"),
   leaderboardList: $("#leaderboardList"),
   dashboardGreeting: $("#dashboardGreeting"),
   dashboardFocus: $("#dashboardFocus"),
   dashboardProgressText: $("#dashboardProgressText"),
-  dashboardProgressBar: $("#dashboardProgressBar"),
+  dashboardProgressRing: $("#dashboardProgressRing"),
   dashboardProgressDetail: $("#dashboardProgressDetail"),
   dashboardCategory: $("#dashboardCategory"),
   dashboardCategoryCount: $("#dashboardCategoryCount"),
-  dashboardReviewCount: $("#dashboardReviewCount"),
   dashboardScore: $("#dashboardScore"),
   dashboardStreak: $("#dashboardStreak"),
-  routineSteps: $("#routineSteps"),
   wgTotalCorrect: $("#wgTotalCorrect"),
 };
 
@@ -289,18 +329,138 @@ function saveState() {
   localStorage.setItem("rb-score", String(state.score));
   localStorage.setItem("rb-mastered", JSON.stringify([...state.mastered]));
   localStorage.setItem("rb-review", JSON.stringify([...state.review]));
-  if (state.token) {
-    apiRequest("/api/progress", {
-      method: "POST",
-      body: JSON.stringify(progressPayload()),
-    })
-      .then(() => {
-        if (state.mode === "leaderboard") renderLeaderboard();
-      })
-      .catch((error) => {
-        if (elements.loginMessage) elements.loginMessage.textContent = error.message;
-      });
+  saveLearningProfile();
+  if (state.token) queueProgressEvent(progressPayload());
+}
+
+function learningCatalog() {
+  return {
+    pattern: new Set(expressions.map((item) => item.id)),
+    bookquiz: new Set([...bqWords, ...bqPatterns].map((item) => item.id)),
+    verb: new Set(
+      (dailyLearning.elementaryVerbs ? dailyLearning.elementaryVerbs(verbs) : verbs).map((item) => item.id),
+    ),
+  };
+}
+
+function loadLearningProfile() {
+  const parse = dailyLearning.parseLearningProfile;
+  if (!parse) return { version: 1, grade: 3, activeCourse: null, dailyStats: {}, stars: 0, badges: [], streakDays: 0, pendingSync: [] };
+  return parse(localStorage.getItem(LEARNING_PROFILE_KEY), learningCatalog());
+}
+
+function saveLearningProfile() {
+  if (!state.learningProfile) return;
+  localStorage.setItem(LEARNING_PROFILE_KEY, JSON.stringify(state.learningProfile));
+}
+
+function queueProgressEvent(payload) {
+  if (!state.learningProfile) state.learningProfile = loadLearningProfile();
+  let deviceId = localStorage.getItem(OFFLINE_DEVICE_KEY);
+  if (!deviceId) {
+    deviceId = globalThis.crypto?.randomUUID?.() || `device-${Date.now().toString(36)}`;
+    localStorage.setItem(OFFLINE_DEVICE_KEY, deviceId);
   }
+  const event = {
+    id: offlineSync.createEventId(deviceId, offlineSessionId, ++offlineSequence),
+    createdAt: new Date().toISOString(),
+    type: "progress",
+    payload: { ...payload },
+  };
+  state.learningProfile.pendingSync = offlineSync.enqueue(state.learningProfile.pendingSync, event);
+  saveLearningProfile();
+  if (navigator.onLine !== false) syncPendingProgress().catch(() => {});
+  return event;
+}
+
+function syncPendingProgress() {
+  if (progressSyncPromise) return progressSyncPromise;
+  progressSyncPromise = (async () => {
+    let synced = 0;
+    while (state.token && navigator.onLine !== false) {
+      const [event] = offlineSync.nextBatch(state.learningProfile?.pendingSync, 1);
+      if (!event) break;
+      const result = await apiRequest("/api/progress", {
+        method: "POST",
+        body: JSON.stringify({ ...event.payload, eventId: event.id }),
+      });
+      const acknowledgedEventIds = Array.isArray(result.acknowledgedEventIds)
+        ? result.acknowledgedEventIds
+        : [];
+      if (!acknowledgedEventIds.includes(event.id)) break;
+      state.learningProfile.pendingSync = offlineSync.acknowledge(
+        state.learningProfile.pendingSync,
+        acknowledgedEventIds,
+      );
+      saveLearningProfile();
+      synced += 1;
+    }
+    if (synced && state.mode === "leaderboard") renderLeaderboard();
+    return { synced, remaining: state.learningProfile?.pendingSync?.length || 0 };
+  })().finally(() => { progressSyncPromise = null; });
+  return progressSyncPromise;
+}
+
+function renderPwaState(pwaState) {
+  const host = $("#pwaStatus");
+  const text = $("#pwaStatusText");
+  const install = $("#pwaInstallButton");
+  const update = $("#pwaUpdateButton");
+  if (!host || !text || !install || !update) return;
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
+  const isStandalone = window.matchMedia?.("(display-mode: standalone)")?.matches;
+  install.hidden = !pwaState.installAvailable;
+  update.hidden = !pwaState.updateReady;
+  if (!pwaState.online) {
+    text.textContent = "오프라인 학습 중 · 진도는 연결되면 저장돼요.";
+    host.dataset.kind = "offline";
+    host.hidden = false;
+  } else if (pwaState.updateReady) {
+    text.textContent = "새 버전이 준비됐어요.";
+    host.dataset.kind = "ready";
+    host.hidden = false;
+  } else if (pwaState.installAvailable) {
+    text.textContent = "이 기기에 리딩브레인을 설치할 수 있어요.";
+    host.dataset.kind = "ready";
+    host.hidden = false;
+  } else if (isIos && !isStandalone && pwaState.offlineReady) {
+    text.textContent = "공유 버튼에서 ‘홈 화면에 추가’를 선택하면 설치할 수 있어요.";
+    host.dataset.kind = "ready";
+    host.hidden = false;
+  } else {
+    host.hidden = true;
+  }
+}
+
+async function initPwa() {
+  if (!pwaApi.createPwaController || location.protocol === "file:") return;
+  pwaController = pwaApi.createPwaController({ window, navigator, onStateChange: renderPwaState });
+  $("#pwaInstallButton")?.addEventListener("click", () => pwaController.promptInstall());
+  $("#pwaUpdateButton")?.addEventListener("click", () => {
+    saveLearningProfile();
+    pwaController.applyUpdate();
+  });
+  try {
+    await pwaController.start();
+  } catch {
+    renderPwaState({ online: navigator.onLine !== false, updateReady: false, installAvailable: false });
+  }
+}
+
+function cancelScheduledCourseAdvance() {
+  if (answerAdvanceTimer !== null) window.clearTimeout(answerAdvanceTimer);
+  answerAdvanceTimer = null;
+  answerAdvance.cancel();
+}
+
+function scheduleCourseAdvance(token, delay, next) {
+  return answerAdvance.run(token, () => {
+    answerAdvanceTimer = window.setTimeout(() => {
+      answerAdvanceTimer = null;
+      answerAdvance.cancel();
+      next();
+    }, delay);
+  });
 }
 
 function shuffle(items) {
@@ -336,10 +496,19 @@ function gameItems(items = filteredItems()) {
   return uniqueItems.length ? uniqueItems : items;
 }
 
+function currentStudyCards() {
+  const course = activeDailyCourse("pattern");
+  if (course && dailyLearning.courseItems) {
+    const items = dailyLearning.courseItems(course, expressions);
+    if (items.length) return items;
+  }
+  return filteredItems().slice(0, PATTERN_SESSION_SIZE);
+}
+
 function currentItem() {
-  const items = filteredItems();
-  state.index = ((state.index % items.length) + items.length) % items.length;
-  return items[state.index];
+  const cards = currentStudyCards();
+  state.index = ((state.index % cards.length) + cards.length) % cards.length;
+  return cards[state.index];
 }
 
 function dashboardSnapshot() {
@@ -366,9 +535,164 @@ function dashboardSnapshot() {
   });
 }
 
-function routineSteps() {
-  const getRoutineSteps = learningModel.getRoutineSteps || (() => []);
-  return getRoutineSteps({ reviewCount: state.review.size });
+function dailyHomeSnapshot() {
+  const build = learningModel.buildDailyHome;
+  if (!build) return null;
+  const profile = state.learningProfile || loadLearningProfile();
+  const stats = profile.dailyStats?.[todayKey()] || {};
+  return build({
+    activeCourse: profile.activeCourse,
+    todayMinutes: stats.minutes,
+    stars: profile.stars,
+    correct: stats.correct,
+    attempted: stats.attempted,
+  });
+}
+
+const PATTERN_SESSION_SIZE = 3;
+
+function dailyCourseItemIds(section) {
+  if (section === "bookquiz") return bqWords.slice(0, 5).map((item) => item.id);
+  if (section === "verb") {
+    const elementary = dailyLearning.elementaryVerbs ? dailyLearning.elementaryVerbs(verbs) : verbs;
+    return elementary.slice(0, 5).map((item) => item.id);
+  }
+  return gameItems().slice(0, PATTERN_SESSION_SIZE).map((item) => item.id);
+}
+
+function activeDailyCourse(section) {
+  const course = state.learningProfile?.activeCourse;
+  return course && !course.completed && course.section === section ? course : null;
+}
+
+function setActiveDailyCourse(course) {
+  if (!state.learningProfile) state.learningProfile = loadLearningProfile();
+  state.learningProfile = { ...state.learningProfile, activeCourse: course };
+  saveLearningProfile();
+  renderDashboard();
+}
+
+function progressDailyAnswer(section, result) {
+  const course = activeDailyCourse(section);
+  if (!course || !dailyLearning.advanceAfterAnswer) return { accepted: false, course, stageChanged: false };
+  const transition = dailyLearning.advanceAfterAnswer(course, result);
+  if (!transition.accepted) return { ...transition, stageChanged: false };
+  let nextCourse = transition.course;
+  const stageChanged = nextCourse.stage !== course.stage;
+  if (section === "bookquiz" && stageChanged && bookquizMapModel.NODES?.includes(course.stage)) {
+    state.bookquizMap = bookquizMapModel.completeNode?.(state.bookquizMap || course.bookquizMap, course.stage) || state.bookquizMap;
+    if (state.bookquizMap?.roundCompleted) {
+      nextCourse = { ...course, bookquizMap: state.bookquizMap };
+    } else {
+      nextCourse = { ...nextCourse, bookquizMap: state.bookquizMap };
+    }
+  }
+  if (section === "bookquiz" && stageChanged && nextCourse.stage === "pattern-study") {
+    nextCourse = { ...nextCourse, itemIds: bqPatterns.slice(0, 5).map((item) => item.id), itemIndex: 0 };
+  }
+  if (stageChanged && nextCourse.stage === "review" && dailyLearning.prepareReview) {
+    nextCourse = dailyLearning.prepareReview(nextCourse);
+  }
+  setActiveDailyCourse(nextCourse);
+  if (section === "bookquiz" && stageChanged) {
+    persistBookquizMap();
+    renderBookquizMap();
+  }
+  return { accepted: true, course: nextCourse, stageChanged, roundCompleted: section === "bookquiz" && Boolean(state.bookquizMap?.roundCompleted) };
+}
+
+function continueDailyCourseOr(section, progress, fallback) {
+  if (progress.accepted && progress.stageChanged) openDailyCourse(progress.course);
+  else fallback();
+}
+
+function renderCourseReward() {
+  const course = state.learningProfile?.activeCourse;
+  if (!course || course.stage !== "reward") return;
+  const retries = course.reviewIds.length;
+  $("#courseRewardSummary").textContent = retries
+    ? `오답 ${retries}개를 다시 연습했어요.`
+    : "한 번에 모두 잘 풀었어요.";
+  $("#courseRewardStars").textContent = `+${20 + retries * 5} ⭐`;
+  const badge = $("#courseRewardBadge");
+  badge.classList.add("hidden");
+}
+
+function finishDailyCourse() {
+  const profile = state.learningProfile;
+  const course = profile?.activeCourse;
+  if (!course || course.stage !== "reward" || !dailyLearning.advanceStage) return;
+  const completed = dailyLearning.advanceStage(course);
+  const nextStreak = Math.max(1, Number(profile.streakDays) || 0);
+  const reward = dailyLearning.rewardForCourse(completed, {
+    retrySuccesses: course.reviewIds.length,
+    streakDays: nextStreak,
+  });
+  const badges = reward.badgeId ? [...new Set([...profile.badges, reward.badgeId])] : profile.badges.slice();
+  state.learningProfile = {
+    ...profile,
+    activeCourse: null,
+    stars: profile.stars + reward.stars,
+    badges,
+    streakDays: reward.streakDays,
+  };
+  saveLearningProfile();
+  setMode("hub");
+  renderDashboard();
+}
+
+function openDailyCourse(course) {
+  if (!course) return;
+  if (course.stage === "reward") {
+    setMode("reward");
+    renderCourseReward();
+    return;
+  }
+  if (course.section === "bookquiz") {
+    setMode("bookquiz");
+    const patternStage = course.stage.startsWith("pattern") || (course.stage === "review" && course.itemIds[0] >= 9000);
+    setBQType(patternStage ? "pattern" : "word");
+    setBQSubMode(course.stage.includes("quiz") ? "quiz" : "card");
+    return;
+  }
+  if (course.section === "verb") {
+    setMode("verb");
+    setVerbMode(course.stage === "quiz" || course.stage === "review" ? "quiz" : "card");
+    return;
+  }
+
+  const firstItem = expressions.find((item) => item.id === course.itemIds[0]);
+  if (firstItem?.category) {
+    state.category = firstItem.category;
+    if (elements.categorySelect) elements.categorySelect.value = firstItem.category;
+  }
+  if (course.stage === "interpret") setMode("interpret");
+  else setMode(course.stage === "quiz" || course.stage === "review" ? "quiz" : "study");
+}
+
+function startDailyCourse(section = "pattern") {
+  const create = dailyLearning.createCourse;
+  if (!create) return;
+  const profile = state.learningProfile || loadLearningProfile();
+  let course = create(section, dailyCourseItemIds(section), { grade: profile.grade });
+  if (!course) return;
+  if (section === "bookquiz") {
+    state.bookquizMap = bookquizMapModel.createMap?.() || null;
+    course = { ...course, bookquizMap: state.bookquizMap };
+  }
+  state.learningProfile = { ...profile, activeCourse: course };
+  saveLearningProfile();
+  renderDashboard();
+  openDailyCourse(course);
+}
+
+function resumeDailyCourse() {
+  const profile = state.learningProfile || loadLearningProfile();
+  if (!profile.activeCourse || profile.activeCourse.completed) {
+    startDailyCourse("pattern");
+    return;
+  }
+  openDailyCourse(profile.activeCourse);
 }
 
 function renderDashboard() {
@@ -378,46 +702,33 @@ function renderDashboard() {
   elements.dashboardGreeting.textContent = `${state.studentName}님, 오늘은 짧게 한 바퀴 돌아볼까요?`;
   elements.dashboardFocus.textContent = snapshot.focusMessage;
   elements.dashboardProgressText.textContent = `${snapshot.progressPercent}%`;
-  elements.dashboardProgressBar.style.width = `${snapshot.progressPercent}%`;
+  elements.dashboardProgressRing.style.setProperty("--p", snapshot.progressPercent);
   elements.dashboardProgressDetail.textContent =
     `${snapshot.masteredCount} / ${snapshot.totalExpressions} 표현 마스터`;
   elements.dashboardCategory.textContent = snapshot.categoryLabel;
   elements.dashboardCategoryCount.textContent = `${snapshot.categorySize}개 표현`;
-  elements.dashboardReviewCount.textContent = snapshot.reviewCount;
   elements.dashboardScore.textContent = snapshot.scoreText;
-  elements.dashboardStreak.textContent = `${snapshot.streakText} 콤보`;
+  elements.dashboardStreak.textContent = snapshot.streakText;
 
-  const steps = routineSteps();
-  [elements.routineSteps, $("#hubRoutineSteps")].forEach((host) => {
-    if (host) renderRoutineInto(host, steps);
-  });
-}
+  const dailyHome = dailyHomeSnapshot();
+  if (dailyHome) {
+    $("#dailyCourseTitle").textContent = dailyHome.sectionLabel;
+    $("#dailyCourseStep").textContent = dailyHome.stepLabel;
+    $("#dailyCourseCtaLabel").textContent = dailyHome.ctaLabel;
+    $("#dailyCourseCta").dataset.ctaMode = dailyHome.ctaMode;
+    $("#dailyCourseProgress").style.width = `${dailyHome.percent}%`;
+    $("#dailyMinutes").textContent = `${dailyHome.metrics.todayMinutes}분`;
+    $("#dailyStars").textContent = String(dailyHome.metrics.stars);
+    $("#dailyAccuracy").textContent = `${dailyHome.metrics.accuracy}%`;
+  }
 
-function renderRoutineInto(host, steps) {
-  host.innerHTML = "";
-  steps.forEach((step, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `routine-step ${step.primary ? "primary-routine" : ""}`;
-    button.disabled = Boolean(step.disabled);
-    button.dataset.mode = step.mode;
-    button.innerHTML = `
-      <span class="routine-number">${index + 1}</span>
-      <span class="routine-content">
-        <strong>${step.title}</strong>
-        <small>${step.detail}</small>
-      </span>
-      <span class="routine-badge">${step.badge}</span>
-    `;
-    button.addEventListener("click", () => setMode(step.mode));
-    host.appendChild(button);
-  });
 }
 
 // ──────────── 패턴 영어 허브 ────────────
 
 const DAILY_GOAL = { cards: 20, correct: 10 };
 const UNIT_SIZE = 6;
+const SECTION_QUIZ_TARGET = PATTERN_SESSION_SIZE;
 const HUB_STATUS_LABEL = { new: "시작 전", learning: "학습 중", done: "완료" };
 const PATH_STATUS_LABEL = {
   locked: "잠김",
@@ -502,6 +813,22 @@ function markSectionCleared(key) {
   if (!key || state.cleared.has(key)) return;
   state.cleared.add(key);
   saveCleared();
+}
+
+function sectionFlow(key = state.category) {
+  if (!key || key === "all") return {};
+  return state.flowProgress[key] || {};
+}
+
+function completeFlowStep(mode, key = state.category) {
+  if (!key || key === "all") return;
+  state.flowProgress[key] = { ...sectionFlow(key), [mode]: true };
+  localStorage.setItem("rb-flow-progress", JSON.stringify(state.flowProgress));
+}
+
+function flowModeUnlocked(mode, key = state.category) {
+  if (!patternHub.isLearningModeUnlocked) return true;
+  return patternHub.isLearningModeUnlocked(mode, sectionFlow(key));
 }
 
 // 경로 상태(잠김 / 진행 / 클리어)까지 입힌 섹션 목록.
@@ -781,18 +1108,26 @@ function interpretLater(fn, delay) {
   run.timers.push(setTimeout(fn, delay));
 }
 
+let interpretResultTimer = null;
+
+function clearInterpretResultTimer() {
+  if (interpretResultTimer !== null) window.clearTimeout(interpretResultTimer);
+  interpretResultTimer = null;
+}
+
 function stopInterpret() {
   clearInterpretTimers();
+  clearInterpretResultTimer();
   state.interpret = null;
   state.interpretShowingResult = false;
 }
 
 function interpretSectionItems(section) {
-  return expressions.filter((item) => item.category === section.key);
+  return expressions.filter((item) => item.category === section.key).slice(0, PATTERN_SESSION_SIZE);
 }
 
 function showInterpretPane(name) {
-  ["interpretLocked", "interpretIntro", "interpretRun", "interpretResult"].forEach((id) => {
+  ["interpretIntro", "interpretRun", "interpretResult"].forEach((id) => {
     const el = $(`#${id}`);
     if (el) el.classList.toggle("hidden", id !== name);
   });
@@ -800,37 +1135,17 @@ function showInterpretPane(name) {
 
 function renderInterpretEntry(sections) {
   const section = sectionByKey(sections, state.category);
-  const unlocked = interpretation.isSectionUnlocked
-    ? interpretation.isSectionUnlocked(section)
-    : false;
-
-  const lock = $("#pmodeInterpretLock");
-  if (lock) lock.classList.toggle("hidden", unlocked);
-
   if (state.mode !== "interpret") return;
   if (state.interpret) return; // 진행 중에는 화면을 갈아끼우지 않는다
   if (state.interpretShowingResult) return; // 결과 화면을 덮지 않는다
   setInterpretConsoleState("idle");
-
-  if (!unlocked) {
-    showInterpretPane("interpretLocked");
-    const msg = $("#interpretLockedMsg");
-    if (msg && section) {
-      msg.textContent =
-        `${sectionLabel(section)} 카드 학습이 ${section.mastered} / ${section.total} 입니다. ` +
-        "모두 마치면 통역 테스트가 열려요.";
-    }
-    const bar = $("#interpretLockBar");
-    if (bar) bar.style.width = `${section ? section.percent : 0}%`;
-    return;
-  }
 
   showInterpretPane("interpretIntro");
   const title = $("#interpretIntroTitle");
   if (title) title.textContent = `${sectionLabel(section)} 통역 테스트`;
   const desc = $("#interpretIntroDesc");
   if (desc) {
-    desc.textContent = `${section.total}문장을 한글만 보고 영어로 말합니다.` +
+    desc.textContent = `${interpretSectionItems(section).length}문장을 한글만 보고 영어로 말합니다.` +
       (section.cleared ? " 이미 클리어한 섹션이에요. 다시 도전할 수 있습니다." : "");
   }
 
@@ -842,16 +1157,24 @@ function renderInterpretEntry(sections) {
       note.textContent =
         "이 브라우저는 음성 인식을 지원하지 않아 자가 채점으로 진행합니다. " +
         "정답을 보고 스스로 맞췄는지 눌러 주세요.";
+      note.classList.add("mg-error-state");
+      window.ReadingBrainGameUI?.setMascot?.(
+        "wrong",
+        "이 기기에서는 음성 인식을 사용할 수 없어 자가 채점으로 진행해요.",
+      );
+    } else {
+      note.classList.remove("mg-error-state");
     }
   }
 }
 
-function startInterpretRun() {
+function startInterpretRun(retryItems) {
   const sections = patternSections();
   const section = sectionByKey(sections, state.category);
   if (!section) return;
 
-  const items = shuffle(interpretSectionItems(section));
+  const pool = Array.isArray(retryItems) && retryItems.length ? retryItems : interpretSectionItems(section);
+  const items = shuffle(pool);
   if (!items.length) return;
 
   state.interpretShowingResult = false;
@@ -1080,6 +1403,25 @@ function advanceInterpret() {
   beginInterpretQuestion();
 }
 
+const CONFETTI_COLORS = ["var(--mg-mint)", "var(--mg-sky)", "var(--mg-star)", "var(--mg-coral)"];
+
+// 섹션 클리어 축하 폭죽. 정리는 애니메이션이 끝난 뒤 스스로 한다.
+function burstConfetti(count = 60) {
+  const host = $("#confettiBurst");
+  if (!host) return;
+  host.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+    piece.style.setProperty("--confetti-duration", `${1800 + Math.random() * 1200}ms`);
+    piece.style.animationDelay = `${Math.random() * 300}ms`;
+    host.appendChild(piece);
+  }
+  window.setTimeout(() => { host.innerHTML = ""; }, 3200);
+}
+
 function finishInterpretRun() {
   const run = state.interpret;
   if (!run) return;
@@ -1087,11 +1429,12 @@ function finishInterpretRun() {
   const summary = interpretation.summarizeRun(run.results, interpretation.SECTION_PASS_RATE);
   const sectionKey = run.section.key;
   const missed = run.results.filter((result) => result.verdict !== "pass");
+  const missedItems = run.items.filter((item, index) => run.results[index]?.verdict !== "pass");
 
   clearInterpretTimers();
   state.interpret = null;
 
-  if (summary.cleared) markSectionCleared(sectionKey);
+  if (summary.cleared) completeFlowStep("interpret", sectionKey);
 
   state.interpretShowingResult = true;
   showInterpretPane("interpretResult");
@@ -1104,9 +1447,9 @@ function finishInterpretRun() {
   $("#interpretResultTitle").textContent = summary.cleared
     ? "섹션 클리어!"
     : `${summary.threshold}% 를 넘기면 클리어예요`;
-  $("#interpretResultDetail").textContent =
-    `${summary.total}문장 중 ${summary.passed}문장 통과`
-    + (summary.cleared ? " · 다음 섹션이 열렸어요" : "");
+  $("#interpretResultDetail").textContent = summary.cleared
+    ? `${summary.total}문장 중 ${summary.passed}문장 통과 · 다음 섹션이 열렸어요`
+    : `${summary.total}문장 중 ${summary.passed}문장 통과 · 놓친 ${missed.length}문장을 다시 테스트할게요`;
 
   const missedBox = $("#interpretMissed");
   if (missedBox) {
@@ -1127,7 +1470,23 @@ function finishInterpretRun() {
 
   saveState();
   updateStats();
+  if (summary.cleared) {
+    markSectionCleared(sectionKey);
+    burstConfetti();
+  }
   setInterpretConsoleState("complete");
+
+  // 클리어했으면 버튼 없이 허브(다음 섹션이 열린 지도)로 자동 복귀하고,
+  // 80%(3문장 기준 전부)를 못 넘겼으면 놓친 문장만 모아 바로 재시험한다.
+  clearInterpretResultTimer();
+  interpretResultTimer = window.setTimeout(() => {
+    interpretResultTimer = null;
+    if (summary.cleared || !missedItems.length) {
+      setMode("hub");
+    } else {
+      startInterpretRun(missedItems);
+    }
+  }, summary.cleared ? 2600 : 2200);
 }
 
 function renderStudyContext(sections) {
@@ -1215,6 +1574,7 @@ async function loginStudent(event) {
     applyStudent(data.student);
     setLoggedIn(true);
     renderStudy();
+    syncPendingProgress().catch(() => {});
     elements.loginMessage.textContent = "로그인되었습니다.";
   } catch (error) {
     console.error("[login error]", error);
@@ -1234,6 +1594,7 @@ async function restoreSession() {
     const data = await apiRequest("/api/progress");
     applyStudent(data.student);
     setLoggedIn(true);
+    syncPendingProgress().catch(() => {});
   } catch {
     state.token = "";
     localStorage.removeItem("rb-token");
@@ -1279,40 +1640,66 @@ function renderNewWords(item) {
 
 function renderStudy() {
   const item = currentItem();
-  const items = filteredItems();
+  const cards = currentStudyCards();
   elements.flashcard.classList.remove("flipped");
   elements.cardMeta.textContent = `${item.category}`;
   const indexEl = $("#cardIndexDisplay");
-  if (indexEl) indexEl.textContent = `${state.index + 1} / ${items.length}`;
+  if (indexEl) indexEl.textContent = `${state.index + 1} / ${cards.length}`;
   renderNewWords(item);
   elements.cardEnglish.textContent = item.english;
   elements.cardKorean.textContent = item.korean;
+  scheduleCardPronunciation({ section: "pattern", stage: "study", item });
   saveLastPosition();
   updateStats();
+  scheduleStudyCardAdvance();
+}
+
+const STUDY_CARD_AUTO_ADVANCE_DELAY = 3200;
+let studyCardAdvanceTimer = null;
+
+function cancelStudyCardAdvance() {
+  if (studyCardAdvanceTimer !== null) window.clearTimeout(studyCardAdvanceTimer);
+  studyCardAdvanceTimer = null;
+}
+
+// 발음을 듣고 읽을 시간을 준 뒤, 학생이 직접 "다음"을 누르지 않아도 다음 카드로 넘어간다.
+// 마지막 카드에서도 그대로 예약하면 moveCard(1)이 알아서 퀴즈로 넘겨준다.
+function scheduleStudyCardAdvance() {
+  cancelStudyCardAdvance();
+  const cards = currentStudyCards();
+  if (!cards.length) return;
+  studyCardAdvanceTimer = window.setTimeout(() => {
+    studyCardAdvanceTimer = null;
+    if (state.mode === "study") moveCard(1);
+  }, STUDY_CARD_AUTO_ADVANCE_DELAY);
 }
 
 function moveCard(step = 1) {
-  const items = filteredItems();
+  const cards = currentStudyCards();
+  const dailyCourse = activeDailyCourse("pattern");
+  if (dailyCourse && step > 0) {
+    const item = cards[dailyCourse.itemIndex % cards.length];
+    const progress = progressDailyAnswer("pattern", {
+      token: `pattern:${dailyCourse.stage}:${item.id}`,
+      correct: true,
+      itemId: item.id,
+    });
+    if (progress.accepted) {
+      state.index = progress.course.itemIndex;
+      if (progress.roundCompleted) renderBookquizMap();
+      else if (progress.stageChanged) openDailyCourse(progress.course);
+      else renderStudy();
+      return;
+    }
+  }
   const newIndex = state.index + step;
   if (newIndex < 0) return;
   if (step > 0) bumpDaily("cards");
-  // 섹션 마지막 카드를 넘기면 다음 섹션으로 이어간다. 다만 학습 경로에서
-  // 아직 잠긴 섹션으로는 넘어가지 않고 마지막 카드에 머문다 —
-  // 그 자리에서 통역 테스트 안내 배너가 뜬다.
-  if (step > 0 && newIndex >= items.length && state.category !== "all") {
-    const sections = patternSections();
-    const next = patternHub.findNextSection
-      ? patternHub.findNextSection(sections, state.category)
-      : null;
-    if (next && next.unlocked !== false) {
-      state.category = next.key;
-      state.index = 0;
-      elements.categorySelect.value = state.category;
-      renderStudy();
-      return;
-    }
-    state.index = items.length - 1;
-    renderStudy();
+  // 마지막 카드에서 "다음"을 누르면 바로 퀴즈로 이어간다.
+  if (step > 0 && newIndex >= cards.length) {
+    state.index = cards.length - 1;
+    state.quizCount = 1;
+    setMode("quiz");
     return;
   }
   state.index = newIndex;
@@ -1331,6 +1718,28 @@ function markKnown(known) {
     state.streak = 0;
   }
   saveState();
+  const dailyCourse = activeDailyCourse("pattern");
+  if (dailyCourse) {
+    const progress = progressDailyAnswer("pattern", {
+      token: `pattern:${dailyCourse.stage}:${item.id}`,
+      correct: known,
+      itemId: item.id,
+    });
+    if (progress.accepted) {
+      state.index = progress.course.itemIndex;
+      if (progress.stageChanged) openDailyCourse(progress.course);
+      else renderStudy();
+      window.ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong");
+      return;
+    }
+  }
+  if (known && currentStudyCards().every((entry) => state.mastered.has(entry.id))) {
+    completeFlowStep("study");
+    renderStudy();
+    renderPatternSurfaces();
+    window.ReadingBrainGameUI?.setMascot?.("complete");
+    return;
+  }
   moveCard(1);
   window.ReadingBrainGameUI?.setMascot?.(known ? "correct" : "wrong");
 }
@@ -1342,7 +1751,7 @@ async function speakCurrent() {
 
 const SPEECH_RATE = 0.9;
 const SPEECH_PITCH = 1;
-const NATIVE_AUDIO_MODE = "native";
+const NATIVE_AUDIO_MODE = "tts";
 
 function audioPathFor(item) {
   return `assets/native-audio/${String(item.id).padStart(3, "0")}.mp3`;
@@ -1527,7 +1936,27 @@ function playNativeAudio(item, repeat = 1) {
   });
 }
 
+function canUseOnlineSpeech() {
+  return navigator.onLine !== false;
+}
+
+function showOfflineSpeechMessage() {
+  const message = "음성은 인터넷 연결 시 이용할 수 있어요.";
+  const status = $("#pwaStatus");
+  const statusText = $("#pwaStatusText");
+  if (status && statusText) {
+    statusText.textContent = message;
+    status.dataset.kind = "offline";
+    status.hidden = false;
+  }
+  window.ReadingBrainGameUI?.setMascot?.("guide", message);
+}
+
 async function speakExpression(item, repeat = 1) {
+  if (!canUseOnlineSpeech()) {
+    showOfflineSpeechMessage();
+    return false;
+  }
   const text = cleanSpeechText(item?.english || "");
   if (!text) return;
 
@@ -1603,14 +2032,15 @@ async function speakEnglish(text, repeat = 1) {
 
   // 서버가 Microsoft Ava Neural 음원을 생성해 캐시한다.
   // 이 PC의 로컬 영어 음성은 오래된 Zira Desktop뿐이므로 Neural 음원을 우선한다.
+  // 네트워크 순간 지연 등 일시적 실패로 로봇 음성까지 떨어지지 않도록 한 번 재시도한다.
   try {
     for (let i = 0; i < repeat; i++) {
-      await playNeuralTTS(spokenText);
+      await playNeuralTTSWithRetry(spokenText);
       if (i < repeat - 1) await new Promise((r) => setTimeout(r, 350));
     }
     return true;
   } catch (_) {
-    // 서버 음원 생성이 막힌 경우에만 설치된 미국 영어 음성을 사용한다.
+    // 서버 음원 생성이 재시도까지 막힌 경우에만 설치된 미국 영어 음성을 사용한다.
   }
 
   if (window.speechSynthesis) {
@@ -1652,18 +2082,55 @@ async function speakEnglish(text, repeat = 1) {
       if (spoken) return true;
     }
   }
+  window.ReadingBrainGameUI?.setMascot?.("wrong", "발음을 재생하지 못했어요. 잠시 후 다시 눌러 주세요.");
   return false;
+}
+
+let activeCardAudioEl = null;
+
+// 발음 버튼을 연타하거나 카드가 바뀌는 순간 이전 재생과 겹쳐 소리가 끊기는 것을 막는다.
+function stopActiveCardAudio() {
+  if (!activeCardAudioEl) return;
+  activeCardAudioEl.onended = null;
+  activeCardAudioEl.onerror = null;
+  activeCardAudioEl.pause();
+  activeCardAudioEl = null;
 }
 
 function playNeuralTTS(word) {
   return new Promise((resolve, reject) => {
+    stopActiveCardAudio();
     const url = `/api/tts?text=${encodeURIComponent(word)}`;
     const audio = new Audio(url);
     audio.preload = "auto";
-    audio.onended = () => resolve(true);
-    audio.onerror = () => reject(new Error("gtts-failed"));
-    audio.play().catch(reject);
+    activeCardAudioEl = audio;
+    audio.onended = () => {
+      if (activeCardAudioEl === audio) activeCardAudioEl = null;
+      resolve(true);
+    };
+    audio.onerror = () => {
+      if (activeCardAudioEl === audio) activeCardAudioEl = null;
+      reject(new Error("gtts-failed"));
+    };
+    audio.play().catch((error) => {
+      if (activeCardAudioEl === audio) activeCardAudioEl = null;
+      reject(error);
+    });
   });
+}
+
+// 새 음원 생성이 순간적으로 실패해도 로봇 음성으로 떨어지기 전에 한 번 더 시도한다.
+async function playNeuralTTSWithRetry(word, attempts = 2) {
+  let lastError;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await playNeuralTTS(word);
+    } catch (error) {
+      lastError = error;
+      if (i < attempts - 1) await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+  }
+  throw lastError;
 }
 
 function playBookquizAudio(item) {
@@ -1682,6 +2149,10 @@ function playBookquizAudio(item) {
 
 async function speakBookquizItem(item) {
   if (!item) return;
+  if (!canUseOnlineSpeech()) {
+    showOfflineSpeechMessage();
+    return false;
+  }
   try {
     await playBookquizAudio(item);
   } catch {
@@ -1705,6 +2176,10 @@ function playVerbAudio(verb, form) {
 
 async function speakVerb(verb, form) {
   if (!verb) return;
+  if (!canUseOnlineSpeech()) {
+    showOfflineSpeechMessage();
+    return false;
+  }
   try {
     await playVerbAudio(verb, form);
   } catch {
@@ -1712,8 +2187,11 @@ async function speakVerb(verb, form) {
   }
 }
 
-async function speakAllVerbForms(button = null) {
-  const verb = currentVerb();
+async function speakAllVerbForms(button = null, verb = currentVerb()) {
+  if (!canUseOnlineSpeech()) {
+    showOfflineSpeechMessage();
+    return false;
+  }
   if (!verb) return;
   if (button?.disabled) return;
 
@@ -1757,45 +2235,35 @@ function makeOptions(answer, key, sourceItems = expressions) {
   }));
 }
 
-function cumulativeItems() {
-  const learnedIds = new Set([...state.mastered, ...state.review]);
-  const scope = gameItems();
-  const learned = scope.filter((item) => learnedIds.has(item.id));
-  return learned.length ? learned : scope;
-}
-
 function quizItems() {
-  return state.quizType === "cumulative" ? cumulativeItems() : gameItems();
+  return currentStudyCards();
 }
 
 function quizTitle() {
-  return state.quizType === "cumulative" ? "누적퀴즈" : "섹션퀴즈";
-}
-
-function updateQuizTabs() {
-  $$(".quiz-tab").forEach((button) => {
-    button.classList.toggle("active", button.dataset.quizType === state.quizType);
-  });
+  return "섹션퀴즈";
 }
 
 function newQuiz() {
   const pool = quizItems();
-  const item = shuffle(pool)[0];
+  const dailyCourse = activeDailyCourse("pattern");
+  const dailyItems = dailyCourse && dailyLearning.courseItems
+    ? dailyLearning.courseItems(dailyCourse, pool)
+    : [];
+  const item = dailyItems.length
+    ? dailyItems[dailyCourse.itemIndex % dailyItems.length]
+    : pool[(state.quizCount - 1) % pool.length];
   const askKorean = Math.random() > 0.45;
   state.quizItem = item;
   state.quizAnswer = item.id;
   elements.quizFeedback.textContent = "";
   elements.quizCount.textContent = `${quizTitle()} · 문제 ${state.quizCount}`;
-  elements.quizScopeText.textContent =
-    state.quizType === "cumulative"
-      ? `현재 선택 범위 안에서 누적 학습한 표현 ${cumulativeItems().length}개에서 출제됩니다.`
-      : `현재 패턴 섹션 ${pool.length}개 표현에서 출제됩니다.`;
+  elements.quizScopeText.textContent = `현재 패턴 섹션 ${pool.length}개 표현에서 출제됩니다.`;
   elements.quizPrompt.textContent = askKorean ? "뜻에 맞는 영어 표현은?" : "영어 표현의 뜻은?";
   elements.quizQuestion.textContent = askKorean ? item.korean : item.english;
 
   const optionKey = askKorean ? "english" : "korean";
   elements.quizOptions.innerHTML = "";
-  makeOptions(item, optionKey, pool).forEach((option) => {
+  makeOptions(item, optionKey, gameItems()).forEach((option) => {
     const button = document.createElement("button");
     button.className = "answer-card";
     button.textContent = option.text;
@@ -1830,8 +2298,23 @@ function checkQuiz(button, id) {
 
   saveState();
   updateStats();
+  const activePatternCourse = activeDailyCourse("pattern");
+  const advanceToken = `pattern:${state.quizCount}:${state.quizAnswer}`;
+  const courseProgress = progressDailyAnswer("pattern", {
+    token: advanceToken,
+    correct: id === state.quizAnswer,
+    itemId: state.quizItem.id,
+  });
+  if (!activePatternCourse && (!state.quizType || state.quizType === "section") && state.quizCount >= SECTION_QUIZ_TARGET) {
+    elements.quizFeedback.textContent += ` ${SECTION_QUIZ_TARGET}문제를 완료했습니다! 통역 테스트로 이동합니다.`;
+    completeFlowStep("quiz");
+    window.ReadingBrainGameUI?.setMascot?.("complete");
+    scheduleCourseAdvance(advanceToken, 1400, () => setMode("interpret"));
+    return;
+  }
   state.quizCount += 1;
-  setTimeout(newQuiz, 950);
+  const nextQuizDelay = id === state.quizAnswer ? 0 : 950;
+  scheduleCourseAdvance(advanceToken, nextQuizDelay, () => continueDailyCourseOr("pattern", courseProgress, newQuiz));
   window.ReadingBrainGameUI?.setMascot?.(mascotState);
 }
 
@@ -1900,7 +2383,9 @@ function handleMahjong(el, card) {
       saveState();
       updateStats();
       elements.matchStatus.textContent = "완성! 보너스 50점 · 새 판이 시작됩니다";
-      setTimeout(renderMatch, 2200);
+      elements.matchStatus.textContent = "매칭 완료! 통역 테스트로 이동합니다.";
+      completeFlowStep("match");
+      setTimeout(() => setMode("interpret"), 1200);
     }
   } else {
     mahjong.locked = true;
@@ -2105,6 +2590,15 @@ function verbBlastGameOver() {
   state.score += verbBlast.score;
   saveState();
   updateStats();
+  const dailyCourse = activeDailyCourse("pattern");
+  if (dailyCourse?.stage === "interpret" && dailyLearning.advanceStage) {
+    let nextCourse = dailyLearning.advanceStage(dailyCourse);
+    if (nextCourse.stage === "review" && dailyLearning.prepareReview) {
+      nextCourse = dailyLearning.prepareReview(nextCourse);
+    }
+    setActiveDailyCourse(nextCourse);
+    window.setTimeout(() => openDailyCourse(nextCourse), 1400);
+  }
 }
 
 // ── 블래스트 게임 ──────────────────────────────────────────────
@@ -2244,32 +2738,16 @@ function blastGameOver() {
     $("#blastOverlayTitle").textContent = "게임 오버!";
     $("#blastOverlayMsg").textContent = `${blast.score}점을 획득했어요!\n다시 해볼까요?`;
   }
+  completeFlowStep("blast");
+  if (flowModeUnlocked("blast")) markSectionCleared(state.category);
   state.score += blast.score;
   saveState();
   updateStats();
 }
 
-function renderReview() {
-  const scope = filteredItems();
-  const items = scope.filter((item) => state.review.has(item.id));
-  elements.reviewSummary.textContent = items.length
-    ? `${state.category} 안에서 ${items.length}개의 표현을 다시 보면 좋아요.`
-    : `${state.category} 안에는 아직 복습할 표현이 없습니다.`;
-  elements.reviewList.innerHTML = items
-    .slice(0, 40)
-    .map(
-      (item) => `
-        <div class="review-row">
-          <strong>${item.english}</strong>
-          <span>${item.korean}</span>
-        </div>
-      `,
-    )
-    .join("");
-}
-
 async function renderLeaderboard() {
   elements.leaderboardSummary.textContent = "랭킹을 불러오는 중입니다...";
+  elements.leaderboardPodium.innerHTML = "";
   elements.leaderboardList.innerHTML = "";
   try {
     const data = await apiRequest("/api/leaderboard");
@@ -2277,26 +2755,41 @@ async function renderLeaderboard() {
     elements.leaderboardSummary.textContent = leaders.length
       ? "로그인한 학생들의 누적 포인트 순위입니다."
       : "아직 랭킹에 표시할 학생 데이터가 없습니다.";
-    elements.leaderboardList.innerHTML = leaders
-      .map(
-        (student, index) => `
-          <div class="leaderboard-row ${index < 3 ? "top-rank" : ""}">
-            <div class="rank-number">${index + 1}</div>
-            <div class="rank-student">
-              <strong>${student.name}</strong>
-              <span>마스터 ${student.masteredCount}개 · 오답 ${student.reviewCount}개</span>
-            </div>
-            <div class="rank-points">${student.points.toLocaleString()} P</div>
+    const view = leaderboardModel.buildLeaderboardView?.(leaders, state.studentName) || { podium: [], ranking: [] };
+    const podiumOrder = [view.podium[1], view.podium[0], view.podium[2]].filter(Boolean);
+    elements.leaderboardPodium.innerHTML = podiumOrder
+      .map((student) => `
+        <article class="podium-card rank-${student.rank} ${student.isCurrent ? "is-current" : ""}">
+          <span class="podium-medal" aria-label="${student.rank}위">${student.rank}</span>
+          <strong>${escapeHtml(student.displayName)}</strong>
+          <b>${escapeHtml(student.pointsText)}</b>
+          <small>${escapeHtml(student.progressText)}</small>
+          ${student.isCurrent ? '<span class="current-student-badge">나의 순위</span>' : ""}
+        </article>
+      `)
+      .join("");
+    elements.leaderboardList.innerHTML = view.ranking
+      .map((student) => `
+        <article class="leaderboard-row ${student.isCurrent ? "is-current" : ""}">
+          <div class="rank-number">${student.rank}</div>
+          <div class="rank-student">
+            <strong>${escapeHtml(student.displayName)}</strong>
+            <span>${escapeHtml(student.progressText)}</span>
           </div>
-        `,
-      )
+          <div class="rank-points">${escapeHtml(student.pointsText)}</div>
+          ${student.isCurrent ? '<span class="current-student-badge">나의 순위</span>' : ""}
+        </article>
+      `)
       .join("");
   } catch (error) {
-    elements.leaderboardSummary.textContent = error.message;
+    const message = "랭킹을 불러오지 못했어요. 새로고침을 눌러 다시 시도해 주세요.";
+    elements.leaderboardSummary.textContent = message;
+    elements.leaderboardSummary.classList.add("mg-error-state");
+    window.ReadingBrainGameUI?.setMascot?.("wrong", message);
   }
 }
 
-const PATTERN_MODES = ["hub", "study", "quiz", "match", "blast", "review", "leaderboard", "interpret"];
+const PATTERN_MODES = ["hub", "study", "quiz", "interpret"];
 
 function syncMobileBottomNav(mode) {
   $$("[data-mobile-mode]").forEach((button) => {
@@ -2306,7 +2799,17 @@ function syncMobileBottomNav(mode) {
 }
 
 function setMode(mode) {
+  cancelScheduledCourseAdvance();
+  cancelStudyCardAdvance();
   if (mode === "wordgames" || !$(`#${mode}View`)) mode = "study";
+  if (mode === "interpret" && state.category === "all") {
+    const sections = patternSections();
+    const currentSection = patternHub.findCurrentSection?.(sections) || sections[0];
+    if (currentSection) {
+      state.category = currentSection.key;
+      if (elements.categorySelect) elements.categorySelect.value = currentSection.key;
+    }
+  }
   state.mode = mode;
   $$(".mode-button").forEach((button) => button.classList.toggle("active", button.dataset.mode === mode));
   $$(".guide-step").forEach((step) => step.classList.toggle("active", step.dataset.guideMode === mode));
@@ -2316,7 +2819,7 @@ function setMode(mode) {
     $$(".pmode-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.pmode === mode));
   }
   const dashboard = $("#studentDashboard");
-  if (dashboard) dashboard.classList.toggle("hidden", mode === "hub");
+  if (dashboard) dashboard.classList.toggle("hidden", mode !== "hub");
   $$(".view").forEach((view) => view.classList.remove("active"));
   $(`#${mode}View`).classList.add("active");
   elements.screenTitle.textContent = {
@@ -2324,12 +2827,10 @@ function setMode(mode) {
     interpret: "통역 테스트",
     study: "카드 학습",
     quiz: "퀴즈",
-    match: "매칭 게임",
-    review: "오답 복습",
     leaderboard: "포인트 랭킹",
     verb: "동사 3단 변화",
-    blast: "블래스트 게임",
     bookquiz: "북퀴즈 학습",
+    reward: "오늘의 학습 완료",
   }[mode];
   const mobileTitle = $("#mobileTitle");
   if (mobileTitle) mobileTitle.textContent = elements.screenTitle.textContent;
@@ -2341,14 +2842,10 @@ function setMode(mode) {
   if (mode === "interpret") renderInterpretEntry(patternSections());
   if (mode === "study") renderStudy();
   if (mode === "quiz") {
-    updateQuizTabs();
     newQuiz();
   }
-  if (mode === "match") renderMatch();
-  if (mode === "review") renderReview();
   if (mode === "leaderboard") renderLeaderboard();
   if (mode === "verb") initVerbMode();
-  if (mode === "blast") initBlastScreen();
   if (mode === "bookquiz") initBookquizMode();
   stopWordGameTimer();
   if (mode !== "blast") stopBlast();
@@ -2416,7 +2913,7 @@ function bindPatternHubEvents() {
   const hubPath = $("#hubPath");
   if (hubPath) {
     hubPath.addEventListener("click", (event) => {
-      const node = event.target.closest(".path-btn");
+      const node = event.target.closest(".planet-button");
       if (node && !node.disabled) selectSection(node.dataset.section, "study");
     });
   }
@@ -2427,11 +2924,6 @@ function bindPatternHubEvents() {
       selectSection(resume.dataset.section, "study", resume.dataset.index);
     });
   }
-
-  const knownBtn = $("#markKnownBtn");
-  if (knownBtn) knownBtn.addEventListener("click", () => markKnown(true));
-  const unsureBtn = $("#markUnsureBtn");
-  if (unsureBtn) unsureBtn.addEventListener("click", () => markKnown(false));
 
   const doneBtn = $("#sectionDoneBtn");
   if (doneBtn) {
@@ -2498,15 +2990,6 @@ function bindInterpretEvents() {
   const start = $("#interpretStartBtn");
   if (start) start.addEventListener("click", startInterpretRun);
 
-  const retry = $("#interpretRetryBtn");
-  if (retry) retry.addEventListener("click", startInterpretRun);
-
-  const back = $("#interpretBackBtn");
-  if (back) back.addEventListener("click", () => setMode("hub"));
-
-  const goStudy = $("#interpretGoStudy");
-  if (goStudy) goStudy.addEventListener("click", () => setMode("study"));
-
   const stop = $("#interpretStopBtn");
   if (stop) {
     stop.addEventListener("click", () => {
@@ -2543,13 +3026,9 @@ function handleStudyShortcut(event) {
   const selfHandled = event.key === " " || event.key === "Enter";
   if (selfHandled && canMatch && target.closest("button, #flashcard")) return;
 
-  const key = event.key.toLowerCase();
   if (event.key === "ArrowLeft") { moveCard(-1); }
-  else if (event.key === "ArrowRight") { moveCard(1); }
+  else if (event.key === "ArrowRight") { markKnown(true); }
   else if (event.key === " " || event.key === "Enter") { elements.flashcard.classList.toggle("flipped"); }
-  else if (key === "s") { speakCurrent(); }
-  else if (event.key === "1") { markKnown(true); }
-  else if (event.key === "2") { markKnown(false); }
   else return;
 
   event.preventDefault();
@@ -2558,6 +3037,14 @@ function handleStudyShortcut(event) {
 function bindEvents() {
   elements.loginForm.addEventListener("submit", loginStudent);
   elements.logoutButton.addEventListener("click", logoutStudent);
+  $("#dailyCourseCta")?.addEventListener("click", () => {
+    if ($("#dailyCourseCta").dataset.ctaMode === "resume") resumeDailyCourse();
+    else startDailyCourse("pattern");
+  });
+  $$('[data-course-section]').forEach((button) => {
+    button.addEventListener("click", () => startDailyCourse(button.dataset.courseSection));
+  });
+  $("#courseRewardDoneBtn")?.addEventListener("click", finishDailyCourse);
 
   $$(".guide-step").forEach((step) => {
     step.addEventListener("click", () => setMode(step.dataset.guideMode));
@@ -2571,6 +3058,7 @@ function bindEvents() {
   });
   $("#verbNavBtn").addEventListener("click", () => setMode("verb"));
   $("#bqNavBtn").addEventListener("click", () => setMode("bookquiz"));
+  $("#leaderboardNavBtn").addEventListener("click", () => setMode("leaderboard"));
   bindPatternHubEvents();
 
   elements.flashcard.addEventListener("click", () => elements.flashcard.classList.toggle("flipped"));
@@ -2579,20 +3067,10 @@ function bindEvents() {
   });
   $("#prevButton").addEventListener("click", () => moveCard(-1));
   $("#nextButton").addEventListener("click", () => moveCard(1));
-  $("#speakButton").addEventListener("click", speakCurrent);
-  $$(".quiz-tab").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.quizType = button.dataset.quizType;
-      state.quizCount = 1;
-      updateQuizTabs();
-      newQuiz();
-    });
-  });
   $("#refreshLeaderboardButton").addEventListener("click", renderLeaderboard);
   $("#newQuizButton").addEventListener("click", newQuiz);
-  $("#resetMatchButton").addEventListener("click", renderMatch);
-  $("#blastStartBtn").addEventListener("click", startBlast);
-  $("#verbBlastStartBtn").addEventListener("click", startVerbBlast);
+  $("#blastStartBtn")?.addEventListener("click", startBlast);
+  $("#verbBlastStartBtn")?.addEventListener("click", startVerbBlast);
   elements.categorySelect.addEventListener("change", (event) => {
     state.category = event.target.value;
     state.index = 0;
@@ -2602,23 +3080,8 @@ function bindEvents() {
 
   $$(".vtype-btn").forEach((btn) => btn.addEventListener("click", () => setVerbType(btn.dataset.vtype)));
   $$(".vmode-btn").forEach((btn) => btn.addEventListener("click", () => setVerbMode(btn.dataset.vmode)));
-  $("#verbPrevBtn").addEventListener("click", () => { state.verbIndex--; renderVerbCard(); setTimeout(speakAllVerbForms, 150); });
-  $("#verbNextBtn").addEventListener("click", () => { state.verbIndex++; renderVerbCard(); setTimeout(speakAllVerbForms, 150); });
-  $("#verbCard").addEventListener("click", (e) => {
-    if (e.target.closest("button")) return;
-    $("#verbCard").classList.toggle("flipped");
-  });
-  $("#verbCard").addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") $("#verbCard").classList.toggle("flipped");
-  });
-  $$(".vf-speak-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const verb = currentVerb();
-      const form = btn.dataset.vf;
-      speakVerb(verb, form);
-    });
-  });
+  $("#verbPrevBtn").addEventListener("click", () => moveVerbCard(-1));
+  $("#verbNextBtn").addEventListener("click", () => moveVerbCard(1));
   const verbAllBtn = $("#verbAllSpeakBtn");
   if (verbAllBtn) {
     verbAllBtn.addEventListener("click", async (e) => {
@@ -2630,26 +3093,14 @@ function bindEvents() {
 
   $$(".bqtype-btn").forEach((btn) => btn.addEventListener("click", () => setBQType(btn.dataset.bqtype)));
   $$(".bqmode-btn").forEach((btn) => btn.addEventListener("click", () => setBQSubMode(btn.dataset.bqmode)));
-  $("#bqPrevBtn").addEventListener("click", () => { state.bqIndex--; renderBQCard(); });
-  $("#bqNextBtn").addEventListener("click", () => { state.bqIndex++; renderBQCard(); });
-  $("#bqCard").addEventListener("click", (event) => {
-    if (event.target.closest("#bqSpeakBtn")) return;
-    $("#bqCard").classList.toggle("flipped");
+  $$("[data-bookquiz-node]").forEach((btn) => {
+    btn.addEventListener("click", () => openBookquizNode(btn.dataset.bookquizNode, { review: state.bookquizMap?.allRoundsCompleted }));
   });
-  $("#bqCard").addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      $("#bqCard").classList.toggle("flipped");
-    }
-  });
-  $("#bqSpeakBtn").addEventListener("click", (event) => {
-    event.stopPropagation();
-    speakBQCard();
-  });
-  $("#bqQuizSpeakBtn").addEventListener("click", speakBQQuizQuestion);
+  $("#bookquizSecondRoundBtn")?.addEventListener("click", startBookquizSecondRound);
+  $("#bqPrevBtn").addEventListener("click", () => moveBQCard(-1));
+  $("#bqNextBtn").addEventListener("click", () => moveBQCard(1));
   $("#newBQQuizBtn").addEventListener("click", () => { state.bqQuizCount++; newBQQuiz(); });
-  $("#resetBQMatchBtn").addEventListener("click", renderBQMatch);
-  $("#bqBlastStartBtn").addEventListener("click", startBQBlast);
+  $("#bqBlastStartBtn")?.addEventListener("click", startBQBlast);
 
   if ($("#wgStartRouletteBtn")) {
   $$(".wg-tab").forEach((btn) => btn.addEventListener("click", () => setWordGameTab(btn.dataset.wgTab)));
@@ -2792,6 +3243,11 @@ function verbBadgeClass(type) {
 }
 
 function filteredVerbs() {
+  const course = activeDailyCourse("verb");
+  if (course && dailyLearning.courseItems) {
+    const items = dailyLearning.courseItems(course, verbs);
+    if (items.length) return items;
+  }
   return verbs.filter((v) => v.type === state.verbType);
 }
 
@@ -2815,7 +3271,6 @@ function verbExamples(v) {
 function renderVerbCard() {
   const pool = filteredVerbs();
   const verb = currentVerb();
-  $("#verbCard").classList.remove("flipped");
   const count = `${state.verbIndex + 1} / ${pool.length}`;
   $("#verbCardMeta").textContent = count;
   $("#verbIndexDisplay").textContent = count;
@@ -2827,25 +3282,44 @@ function renderVerbCard() {
   $("#verbPastDisplay").textContent = verb.past;
   $("#verbPPDisplay").textContent = verb.pp;
   $("#verbMeaningDisplay").textContent = verb.meaning;
-  $("#verbTypeBadge2").textContent = badge;
-  $("#verbTypeBadge2").className = cls;
   const [ex1, ex2, ex3] = verbExamples(verb);
   $("#verbEx1").innerHTML = ex1;
   $("#verbEx2").innerHTML = ex2;
   $("#verbEx3").innerHTML = ex3;
+  scheduleVerbFormsPronunciation(verb);
+}
+
+function renderVerbQuizForms(item, ask) {
+  const forms = [
+    ["base", $("#verbQuizBase")],
+    ["past", $("#verbQuizPast")],
+    ["pp", $("#verbQuizPP")],
+  ];
+  forms.forEach(([form, element]) => {
+    const isBlank = form === ask;
+    element.textContent = isBlank ? "_____" : item[form];
+    element.classList.toggle("verb-quiz-blank", isBlank);
+    element.removeAttribute("data-answer-state");
+    if (isBlank) element.dataset.verbQuizBlank = "true";
+    else delete element.dataset.verbQuizBlank;
+  });
 }
 
 function newVerbQuiz() {
-  const pool = filteredVerbs();
+  const dailyCourse = activeDailyCourse("verb");
+  const dailyItems = dailyCourse && dailyLearning.courseItems
+    ? dailyLearning.courseItems(dailyCourse, verbs)
+    : [];
+  const pool = dailyItems.length ? dailyItems : filteredVerbs();
   if (!pool.length) return;
-  const item = shuffle(pool)[0];
+  const item = dailyCourse ? pool[dailyCourse.itemIndex % pool.length] : shuffle(pool)[0];
   const askPP = Math.random() > 0.5;
   state.verbQuizItem = item;
   state.verbQuizAsk = askPP ? "pp" : "past";
   $("#verbQuizFeedback").textContent = "";
   $("#verbQuizCount").textContent = `문제 ${state.verbQuizCount}`;
   $("#verbQuizPrompt").textContent = askPP ? "다음 동사의 과거분사형(P.P.)은?" : "다음 동사의 과거형(Past)은?";
-  $("#verbQuizBase").textContent = item.base;
+  renderVerbQuizForms(item, state.verbQuizAsk);
   $("#verbQuizMeaning").textContent = item.meaning;
 
   const correctKey = askPP ? "pp" : "past";
@@ -2870,6 +3344,11 @@ function newVerbQuiz() {
 
 function checkVerbQuiz(button, answer) {
   const correct = state.verbQuizItem[state.verbQuizAsk];
+  const verbQuizBlank = $("[data-verb-quiz-blank]");
+  if (verbQuizBlank) {
+    verbQuizBlank.textContent = answer;
+    verbQuizBlank.dataset.answerState = answer === correct ? "correct" : "wrong";
+  }
   $$("#verbQuizOptions button").forEach((btn) => {
     btn.disabled = true;
     if (btn.textContent === correct) btn.classList.add("correct");
@@ -2887,8 +3366,14 @@ function checkVerbQuiz(button, answer) {
   }
   saveState();
   updateStats();
+  const advanceToken = `verb:${state.verbQuizCount}:${state.verbQuizItem.id}`;
+  const courseProgress = progressDailyAnswer("verb", {
+    token: advanceToken,
+    correct: answer === correct,
+    itemId: state.verbQuizItem.id,
+  });
   state.verbQuizCount += 1;
-  setTimeout(newVerbQuiz, 1300);
+  scheduleCourseAdvance(advanceToken, 1300, () => continueDailyCourseOr("verb", courseProgress, newVerbQuiz));
 }
 
 function setVerbType(type) {
@@ -2904,11 +3389,9 @@ function setVerbMode(mode) {
   $$(".vmode-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.vmode === mode));
   $("#verbCardArea").classList.toggle("hidden", mode !== "card");
   $("#verbQuizArea").classList.toggle("hidden", mode !== "quiz");
-  $("#verbBlastArea").classList.toggle("hidden", mode !== "blast");
-  if (mode !== "blast") stopVerbBlast();
+  stopVerbBlast();
   if (mode === "card") renderVerbCard();
   else if (mode === "quiz") { state.verbQuizCount = 1; newVerbQuiz(); }
-  else if (mode === "blast") initVerbBlastScreen();
 }
 
 function initVerbMode() {
@@ -2921,7 +3404,6 @@ function initVerbMode() {
   });
   $("#verbCardArea").classList.remove("hidden");
   $("#verbQuizArea").classList.add("hidden");
-  $("#verbBlastArea").classList.add("hidden");
   stopVerbBlast();
   renderVerbCard();
 }
@@ -2932,7 +3414,22 @@ function bqPool() {
   return state.bqType === "pattern" ? bqPatterns : bqWords;
 }
 
+const BQ_WORD_SESSION_SIZE = 5;
+
+// 자유 학습(데일리 코스 밖)에서 핵심 단어 퀴즈를 매번 21개 전체가 아니라
+// 고정된 5개 세트로 돌게 해, 패턴 섹션처럼 "다 풀면 다음 단계로" 진행할 수 있게 한다.
+function bqWordSessionItems() {
+  if (!state.bqWordSession || !state.bqWordSession.length) {
+    state.bqWordSession = shuffle(bqWords).slice(0, Math.min(BQ_WORD_SESSION_SIZE, bqWords.length));
+  }
+  return state.bqWordSession;
+}
+
 function initBookquizMode() {
+  const savedMap = state.learningProfile?.activeCourse?.section === "bookquiz"
+    ? state.learningProfile.activeCourse.bookquizMap
+    : state.learningProfile?.bookquizCompletion;
+  state.bookquizMap = bookquizMapModel.resumeMap?.(savedMap || state.bookquizMap || {}) || state.bookquizMap;
   state.bqType = "word";
   state.bqSubMode = "card";
   state.bqIndex = 0;
@@ -2940,10 +3437,111 @@ function initBookquizMode() {
   $$(".bqmode-btn").forEach((b) => b.classList.toggle("active", b.dataset.bqmode === "card"));
   $("#bqCardArea").classList.remove("hidden");
   $("#bqQuizArea").classList.add("hidden");
-  $("#bqMatchArea").classList.add("hidden");
-  $("#bqBlastArea").classList.add("hidden");
   stopBQBlast();
+  renderBookquizMap();
   renderBQCard();
+}
+
+function renderBookquizMap() {
+  if (!state.bookquizMap) state.bookquizMap = bookquizMapModel.createMap?.() || null;
+  const map = state.bookquizMap;
+  if (!map) return;
+  $("#bookquizRoundLabel").textContent = `${map.round}회독`;
+  $("#bookquizMapProgress").textContent = `${map.completedStageIds.length} / 4 단계 완료`;
+  $$("[data-bookquiz-node]").forEach((button) => {
+    const node = button.dataset.bookquizNode;
+    const complete = map.completedStageIds.includes(node) || map.allRoundsCompleted;
+    const current = node === map.currentNode && !map.roundCompleted;
+    const reviewing = map.allRoundsCompleted && node === map.reviewNode;
+    button.disabled = !bookquizMapModel.canOpenNode?.(map, node);
+    button.dataset.state = reviewing ? "review" : complete ? "complete" : current ? "current" : "locked";
+    if (current) button.setAttribute("aria-current", "step");
+    else button.removeAttribute("aria-current");
+    button.querySelector("small").textContent = reviewing
+      ? "복습 중"
+      : complete
+      ? "완료 · 복습 가능"
+      : current ? "현재 단계" : "이전 단계를 먼저 완료하세요";
+  });
+  $("#bookquizSecondRoundBtn").classList.toggle("hidden", !(map.round === 1 && map.roundCompleted));
+  $("#bookquizFinalComplete").classList.toggle("hidden", !map.allRoundsCompleted);
+}
+
+function persistBookquizMap() {
+  if (!state.bookquizMap || !state.learningProfile) return;
+  const activeCourse = state.learningProfile.activeCourse;
+  state.learningProfile = {
+    ...state.learningProfile,
+    activeCourse: activeCourse?.section === "bookquiz" ? { ...activeCourse, bookquizMap: state.bookquizMap } : activeCourse,
+    bookquizCompletion: state.bookquizMap.allRoundsCompleted
+      ? { ...state.bookquizMap, completedAt: state.learningProfile.bookquizCompletion?.completedAt || new Date().toISOString() }
+      : state.learningProfile.bookquizCompletion,
+  };
+  saveLearningProfile();
+}
+
+function openBookquizNode(nodeId, { review = false } = {}) {
+  const map = state.bookquizMap || bookquizMapModel.createMap?.();
+  if (!map || !bookquizMapModel.canOpenNode?.(map, nodeId)) return false;
+  state.bookquizMap = review || map.allRoundsCompleted
+    ? bookquizMapModel.openReview(map, nodeId)
+    : { ...map, currentNode: nodeId, reviewNode: "" };
+  persistBookquizMap();
+  const pattern = nodeId.startsWith("pattern-");
+  const quiz = nodeId.endsWith("-quiz");
+  state.bqType = pattern ? "pattern" : "word";
+  state.bqIndex = 0;
+  state.bqQuizCount = 1;
+  setBQType(state.bqType);
+  setBQSubMode(quiz ? "quiz" : "card");
+  renderBookquizMap();
+  return true;
+}
+
+function completeBookquizNode(nodeId) {
+  const before = state.bookquizMap || bookquizMapModel.createMap?.();
+  if (!before) return false;
+  const after = bookquizMapModel.completeNode?.(before, nodeId) || before;
+  if (after.currentNode === before.currentNode && after.roundCompleted === before.roundCompleted) return false;
+  state.bookquizMap = after;
+  persistBookquizMap();
+  renderBookquizMap();
+  if (after.allRoundsCompleted) finishBookquizTwoPassCourse();
+  else if (!after.roundCompleted) openBookquizNode(after.currentNode);
+  return true;
+}
+
+function startBookquizSecondRound() {
+  const next = bookquizMapModel.startSecondRound?.(state.bookquizMap);
+  if (!next || next.round !== 2 || next === state.bookquizMap) return false;
+  state.bookquizMap = next;
+  const profile = state.learningProfile || loadLearningProfile();
+  const fresh = dailyLearning.createCourse?.("bookquiz", shuffle(bqWords.slice(0, 5)).map((item) => item.id), { grade: profile.grade });
+  state.learningProfile = { ...profile, activeCourse: fresh ? { ...fresh, bookquizMap: next } : profile.activeCourse };
+  persistBookquizMap();
+  openBookquizNode("word-study");
+  return true;
+}
+
+function finishBookquizTwoPassCourse() {
+  let map = state.bookquizMap;
+  if (!map?.allRoundsCompleted) return false;
+  if (!map.rewardApplied) {
+    const profile = state.learningProfile || loadLearningProfile();
+    map = { ...map, rewardApplied: true };
+    state.bookquizMap = map;
+    state.learningProfile = {
+      ...profile,
+      stars: (Number(profile.stars) || 0) + 40,
+      activeCourse: profile.activeCourse?.section === "bookquiz"
+        ? { ...profile.activeCourse, bookquizMap: map }
+        : profile.activeCourse,
+    };
+  }
+  persistBookquizMap();
+  renderBookquizMap();
+  $("#bookquizMapStatus").textContent = "2회독을 모두 완료했습니다. 완료한 단계를 자유롭게 복습할 수 있습니다.";
+  return true;
 }
 
 const WG_ZONE_LABELS = {
@@ -3499,8 +4097,6 @@ function setBQType(type) {
   if ($("#bqCardBadge")) $("#bqCardBadge").textContent = badge;
   if (state.bqSubMode === "card") renderBQCard();
   else if (state.bqSubMode === "quiz") { state.bqQuizCount = 1; newBQQuiz(); }
-  else if (state.bqSubMode === "match") renderBQMatch();
-  else if (state.bqSubMode === "blast") initBQBlastScreen();
 }
 
 function setBQSubMode(mode) {
@@ -3509,59 +4105,116 @@ function setBQSubMode(mode) {
   $$(".bqmode-btn").forEach((b) => b.classList.toggle("active", b.dataset.bqmode === mode));
   $("#bqCardArea").classList.toggle("hidden", mode !== "card");
   $("#bqQuizArea").classList.toggle("hidden", mode !== "quiz");
-  $("#bqMatchArea").classList.toggle("hidden", mode !== "match");
-  $("#bqBlastArea").classList.toggle("hidden", mode !== "blast");
   if (mode === "card") renderBQCard();
   else if (mode === "quiz") { state.bqQuizCount = 1; newBQQuiz(); }
-  else if (mode === "match") renderBQMatch();
-  else if (mode === "blast") initBQBlastScreen();
 }
 
 function renderBQCard() {
-  const pool = bqPool();
+  const course = activeDailyCourse("bookquiz");
+  const selected = course && dailyLearning.courseItems ? dailyLearning.courseItems(course, bqPool()) : [];
+  const pool = selected.length ? selected : bqPool();
   const total = pool.length;
   state.bqIndex = ((state.bqIndex % total) + total) % total;
   const item = pool[state.bqIndex];
   $("#bqCardEnglish").textContent = item.english;
   $("#bqCardKorean").textContent = item.korean;
-  $("#bqCardBackEnglish").textContent = item.english;
-  $("#bqCard").classList.remove("flipped");
   $("#bqCardMeta").textContent = `${state.bqIndex + 1} / ${total}`;
   $("#bqIndexDisplay").textContent = `${state.bqIndex + 1} / ${total}`;
   $("#bqCardBadge").textContent = state.bqType === "pattern" ? "질문 패턴" : "핵심 단어";
+  scheduleCardPronunciation({
+    section: "bookquiz",
+    stage: state.bqType === "pattern" ? "pattern-study" : "word-study",
+    item,
+    round: state.bookquizMap?.round || 1,
+  });
+}
+
+function moveBQCard(step) {
+  const course = activeDailyCourse("bookquiz");
+  if (course && step > 0) {
+    const pool = dailyLearning.courseItems(course, bqPool());
+    const item = pool[course.itemIndex % pool.length];
+    const progress = progressDailyAnswer("bookquiz", {
+      token: `bookquiz:${course.stage}:${item.id}`,
+      correct: true,
+      itemId: item.id,
+    });
+    if (progress.accepted) {
+      state.bqIndex = progress.course.itemIndex;
+      if (progress.stageChanged) openDailyCourse(progress.course);
+      else renderBQCard();
+      return;
+    }
+  }
+  state.bqIndex += step;
+  renderBQCard();
+}
+
+function moveVerbCard(step) {
+  const course = activeDailyCourse("verb");
+  if (course && step > 0) {
+    const pool = dailyLearning.courseItems(course, verbs);
+    const item = pool[course.itemIndex % pool.length];
+    const progress = progressDailyAnswer("verb", {
+      token: `verb:${course.stage}:${item.id}`,
+      correct: true,
+      itemId: item.id,
+    });
+    if (progress.accepted) {
+      state.verbIndex = progress.course.itemIndex;
+      if (progress.stageChanged) openDailyCourse(progress.course);
+      else renderVerbCard();
+      return;
+    }
+  }
+  state.verbIndex += step;
+  renderVerbCard();
 }
 
 function speakBQCard() {
   speakBookquizItem(bqPool()[state.bqIndex]);
 }
 
-function speakBQQuizQuestion() {
-  const item = state.bqQuizItem;
-  if (!item) return;
-  // 문제 방향과 관계없이 학습할 영어 표현을 미국 영어로 들려준다.
-  speakBookquizItem(item);
-}
-
 function newBQQuiz() {
-  const pool = bqPool();
+  window.ReadingBrainGameUI?.setMascot?.("guide", "문제를 읽고 알맞은 답을 골라 보세요.");
+  const activeCourse = activeDailyCourse("bookquiz");
+  const pool = activeCourse?.stage === "review" ? [...bqWords, ...bqPatterns] : bqPool();
   if (!pool.length) {
-    $("#bqQuizQuestion").textContent = "학습 데이터가 없습니다.";
+    const message = "학습 데이터가 없어요. 다른 학습 유형을 선택해 주세요.";
+    $("#bqQuizQuestion").textContent = message;
+    $("#bqQuizQuestion").classList.add("mg-empty-state");
     $("#bqQuizOptions").innerHTML = "";
+    window.ReadingBrainGameUI?.setMascot?.("wrong", message);
     return;
   }
-  const item = shuffle([...pool])[0];
+  $("#bqQuizQuestion").classList.remove("mg-empty-state");
+  const dailyCourse = activeCourse;
+  const dailyItems = dailyCourse && dailyLearning.courseItems
+    ? dailyLearning.courseItems(dailyCourse, pool)
+    : [];
+  const item = dailyItems.length
+    ? dailyItems[dailyCourse.itemIndex % dailyItems.length]
+    : !activeCourse && state.bqType === "word"
+      ? bqWordSessionItems()[(state.bqQuizCount - 1) % bqWordSessionItems().length]
+      : shuffle([...pool])[0];
   state.bqQuizItem = item;
   const askKorean = Math.random() < 0.5;
   state.bqAskDir = askKorean ? "toEn" : "toKo";
   $("#bqQuizFeedback").textContent = "";
   $("#bqQuizCount").textContent = `문제 ${state.bqQuizCount}`;
-  $("#bqQuizPrompt").textContent = askKorean ? "뜻에 맞는 영어 표현은?" : "영어 표현의 뜻은?";
+  const isPattern = item.id >= 9000;
+  state.bqType = isPattern ? "pattern" : "word";
+  $("#bqQuizPrompt").textContent = isPattern
+    ? (askKorean ? "뜻에 맞는 영어 표현은?" : "이 영어 표현의 뜻은?")
+    : (askKorean ? "뜻에 맞는 영어 단어는?" : "이 영어 단어의 뜻은?");
   const questionText = askKorean ? item.korean : item.english;
   $("#bqQuizQuestion").textContent = questionText;
-  if (!askKorean) speakBookquizItem(item);
+  // 버튼 없이, 문제가 뜨자마자 영어 발음을 바로 들려준다.
+  speakBookquizItem(item);
 
   const ansKey = askKorean ? "english" : "korean";
-  const distractors = shuffle(pool.filter((p) => p.id !== item.id && p[ansKey] !== item[ansKey])).slice(0, 3);
+  const sameKindPool = pool.filter((candidate) => (candidate.id >= 9000) === isPattern);
+  const distractors = shuffle(sameKindPool.filter((p) => p.id !== item.id && p[ansKey] !== item[ansKey])).slice(0, 3);
   const options = shuffle([item, ...distractors]);
 
   const optEl = $("#bqQuizOptions");
@@ -3800,6 +4453,7 @@ function bqBlastGameOver() {
 }
 
 function checkBQAnswer(clickedBtn, selectedId, correctId, ansKey) {
+  window.ReadingBrainGameUI?.setMascot?.(selectedId === correctId ? "correct" : "wrong");
   const buttons = $$("#bqQuizOptions button");
   const correctItem = bqPool().find((p) => p.id === correctId);
   buttons.forEach((b) => {
@@ -3819,6 +4473,31 @@ function checkBQAnswer(clickedBtn, selectedId, correctId, ansKey) {
   }
   saveState();
   updateStats();
+  const advanceToken = `bookquiz:${state.bqType}:${state.bqQuizCount}:${correctId}`;
+  const activeBqCourse = activeDailyCourse("bookquiz");
+  const courseProgress = progressDailyAnswer("bookquiz", {
+    token: advanceToken,
+    correct: selectedId === correctId,
+    itemId: correctId,
+  });
+  if (!activeBqCourse && state.bqType === "word" && state.bqQuizCount >= BQ_WORD_SESSION_SIZE) {
+    $("#bqQuizFeedback").textContent += ` ${BQ_WORD_SESSION_SIZE}문제를 완료했습니다!`;
+    state.bqWordSession = null;
+    scheduleCourseAdvance(advanceToken, 1400, () => {
+      burstConfetti();
+      completeBookquizNode("word-quiz");
+    });
+    return;
+  }
+  state.bqQuizCount += 1;
+  scheduleCourseAdvance(advanceToken, 1100, () => {
+    if (courseProgress.roundCompleted) {
+      renderBookquizMap();
+      if (state.bookquizMap?.allRoundsCompleted) finishBookquizTwoPassCourse();
+      return;
+    }
+    continueDailyCourseOr("bookquiz", courseProgress, newBQQuiz);
+  });
 }
 
 async function init() {
@@ -3827,6 +4506,9 @@ async function init() {
     window.speechSynthesis.addEventListener("voiceschanged", () => { _cachedVoice = null; });
   }
   state.cleared = loadCleared();
+  state.learningProfile = loadLearningProfile();
+  window.addEventListener("online", () => syncPendingProgress().catch(() => {}));
+  initPwa();
   renderCategories();
   bindEvents();
   updateStats();
@@ -3845,4 +4527,3 @@ async function init() {
 }
 
 init();
-

@@ -11,8 +11,12 @@ data/students.json
 *.log
 test-results/
 page-check.png
+palette-check.png
 node_modules/
 __pycache__/
 tools/out.txt
 tools/err.txt
 .worktrees/
+
+# 팔레트 확인용 임시 Chrome 프로필
+.chrome-palette-check/

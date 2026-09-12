@@ -16,6 +16,491 @@
   --radius: 12px;
 }
 
+/* LARGE STUDY BOARDS — 2026-08-20 */
+#verbView .verb-shell,
+#bookquizView .bq-shell {
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.study-board {
+  width: 100%;
+  cursor: default;
+  transform: none !important;
+  perspective: none;
+}
+
+#verbCard.verb-card {
+  min-height: 0;
+  height: auto;
+  border: 1.5px solid var(--line);
+  border-radius: 24px;
+  background: var(--white);
+  box-shadow: 0 8px 24px rgba(21, 40, 54, 0.09);
+  overflow: hidden;
+}
+
+#verbCard .verb-face,
+#bqCard .bq-face {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-height: 0;
+  transform: none;
+  backface-visibility: visible;
+}
+
+#verbCard .verb-front {
+  align-items: stretch;
+  gap: 20px;
+  padding: clamp(24px, 5vw, 44px);
+  border: 0;
+  box-shadow: none;
+}
+
+#verbCard .verb-card-meta {
+  position: static;
+  align-self: flex-end;
+  font-size: 15px;
+}
+
+#verbCard #verbTypeBadge {
+  align-self: center;
+  font-size: 14px;
+  padding: 7px 16px;
+}
+
+#verbCard #verbMeaningDisplay {
+  margin: -4px 0 2px;
+  color: var(--ink-2);
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.25;
+}
+
+#verbCard .verb-forms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#verbCard .verb-forms > div {
+  min-height: 168px;
+  padding: 18px 12px;
+  border: 2px solid #dde9f1;
+  border-radius: 18px;
+  background: #f7fbfd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+#verbCard .verb-forms .vf-label {
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+#verbCard .verb-forms strong {
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+#verbCard .verb-forms .vf-speak-btn {
+  min-width: 72px;
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+#verbCard .vf-all-btn {
+  min-height: 52px;
+  font-size: 16px;
+}
+
+#verbCard .verb-example-title {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+#verbCard .verb-examples {
+  gap: 10px;
+  padding-top: 6px;
+}
+
+#verbCard .verb-examples p {
+  padding: 14px 18px;
+  border-left: 5px solid var(--mint);
+  border-radius: 12px;
+  background: #f2f8f7;
+  color: var(--ink);
+  font-size: clamp(18px, 2.7vw, 24px);
+  line-height: 1.5;
+  text-align: left;
+}
+
+#verbCard .verb-examples p strong {
+  color: #14655b;
+  font-size: 1.08em;
+}
+
+/* 핵심단어 퀴즈의 "3D 퀘스트 카드" 디자인을 카드학습에도 그대로 적용한다. */
+#bqCard.bq-card {
+  position: relative;
+  max-width: 760px;
+  min-height: 0;
+  border: 3px solid #cbd4ff;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255,255,255,.9) 0 5%, transparent 6%),
+    radial-gradient(circle at 88% 14%, rgba(255,218,101,.55) 0 4%, transparent 5%),
+    linear-gradient(145deg, #eef8ff 0%, #e7e9ff 55%, #fff3d6 100%);
+  box-shadow: 0 10px 0 #aeb9ef, 0 18px 36px rgba(58, 73, 145, .18);
+  overflow: hidden;
+}
+
+#bqCard.bq-card::before,
+#bqCard.bq-card::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.3);
+  pointer-events: none;
+}
+
+#bqCard.bq-card::before { top: -52px; left: -28px; }
+#bqCard.bq-card::after { right: -38px; bottom: -58px; }
+
+#bqCard .bq-front {
+  position: relative;
+  z-index: 1;
+  gap: 16px;
+  padding: clamp(32px, 7vw, 64px) clamp(24px, 6vw, 56px);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+#bqCard .bq-card-english {
+  max-width: 16ch;
+  font-size: clamp(32px, 7vw, 56px);
+  line-height: 1.2;
+}
+
+#bqCard .bq-board-divider {
+  width: min(180px, 48%);
+  height: 3px;
+  margin: 6px 0;
+  border-radius: 999px;
+  background: #dde5ff;
+}
+
+#bqCard .bq-card-korean {
+  margin: 0;
+  color: var(--accent, #4f67f5);
+  font-size: clamp(22px, 5vw, 38px);
+  line-height: 1.35;
+}
+
+#bqCard .bq-speak-btn {
+  min-height: 52px;
+  padding: 12px 22px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+#verbCardArea .nav-buttons,
+#bqCardArea .nav-buttons {
+  margin-top: 18px;
+  gap: 16px;
+}
+
+#verbCardArea .nav-buttons button,
+#bqCardArea .nav-buttons button {
+  min-width: 132px;
+  min-height: 50px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  #verbCard .verb-front,
+  #bqCard .bq-front {
+    padding: 22px 16px;
+  }
+
+  #verbCard .verb-forms {
+    grid-template-columns: 1fr;
+  }
+
+  #verbCard .verb-forms > div {
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) 64px;
+    gap: 8px;
+  }
+
+  #verbCard .verb-forms strong {
+    font-size: clamp(26px, 9vw, 36px);
+  }
+
+  #verbCardArea .nav-buttons button,
+  #bqCardArea .nav-buttons button {
+    min-width: 0;
+    flex: 1;
+  }
+}
+
+/* BOOKQUIZ 3D QUEST — 2026-08-21 */
+#bqQuizArea .bq-quest-card {
+  position: relative;
+  width: min(100%, 860px);
+  padding: clamp(22px, 4vw, 38px);
+  overflow: hidden;
+  border: 3px solid #cbd4ff;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255,255,255,.9) 0 5%, transparent 6%),
+    radial-gradient(circle at 88% 14%, rgba(255,218,101,.55) 0 4%, transparent 5%),
+    linear-gradient(145deg, #eef8ff 0%, #e7e9ff 55%, #fff3d6 100%);
+  box-shadow: 0 10px 0 #aeb9ef, 0 18px 36px rgba(58, 73, 145, .18);
+}
+
+#bqQuizArea .bq-quest-card::before,
+#bqQuizArea .bq-quest-card::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.3);
+  pointer-events: none;
+}
+
+#bqQuizArea .bq-quest-card::before { top: -52px; left: -28px; }
+#bqQuizArea .bq-quest-card::after { right: -38px; bottom: -58px; }
+
+.bq-quest-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.bq-quest-head #bqQuizCount {
+  justify-self: start;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: #fff;
+  background: #5965d8;
+  box-shadow: 0 4px 0 #414bad;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.bq-quest-stars {
+  color: #ffc232;
+  font-size: clamp(20px, 4vw, 28px);
+  letter-spacing: 4px;
+  text-shadow: 0 3px 0 #d79b13;
+}
+
+.bq-quest-head #newBQQuizBtn { justify-self: end; }
+
+.bq-question-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.bq-book-mascot {
+  display: grid;
+  justify-items: center;
+  transform: translateZ(0);
+  transition: transform .2s ease;
+}
+
+.bq-book-mascot svg {
+  width: min(180px, 100%);
+  filter: drop-shadow(0 10px 7px rgba(42, 52, 102, .22));
+}
+
+.bq-book-mascot strong {
+  margin-top: -5px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  color: #fff;
+  background: #5965d8;
+  box-shadow: 0 4px 0 #414bad;
+  font-size: 15px;
+}
+
+.bq-book-mascot.is-correct { animation: bqMascotCelebrate .55s ease; }
+.bq-book-mascot.is-wrong { animation: bqMascotTryAgain .36s ease; }
+.bq-book-mascot.is-correct .mascot-eye { fill: #17806f; }
+.bq-book-mascot.is-wrong .mascot-mouth { transform: translateY(12px) scaleY(-1); transform-origin: center; }
+
+.bq-question-bubble {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: clamp(22px, 4vw, 34px);
+  border: 3px solid #d8dcf2;
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: 0 8px 0 #c6cbe8, 0 15px 28px rgba(55, 69, 130, .12);
+  text-align: center;
+}
+
+.bq-question-bubble::before {
+  content: "";
+  position: absolute;
+  left: -17px;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  border-left: 3px solid #d8dcf2;
+  border-bottom: 3px solid #d8dcf2;
+  background: #fff;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+#bqQuizArea #bqQuizPrompt {
+  margin: 0;
+  color: #5965d8;
+  font-size: clamp(18px, 3vw, 24px);
+  line-height: 1.35;
+}
+
+#bqQuizArea #bqQuizQuestion {
+  width: min(100%, 24ch);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #303657;
+  font-size: clamp(25px, 5vw, 40px);
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+}
+
+#bqQuizArea .bq-quiz-speak-btn {
+  min-height: 48px;
+  padding: 10px 18px;
+  border: 2px solid #178dcc;
+  border-radius: 15px;
+  color: #fff;
+  background: #1cb0f6;
+  box-shadow: 0 5px 0 #1680b8;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+#bqQuizArea .bq-quiz-speak-btn:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+#bqQuizArea #bqQuizOptions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+#bqQuizArea #bqQuizOptions button {
+  min-height: 68px;
+  padding: 14px 18px;
+  border: 3px solid #d8dbe8;
+  border-radius: 18px;
+  color: #3c3c3c;
+  background: #fff;
+  box-shadow: 0 6px 0 #c5c9d8;
+  font-size: clamp(16px, 2.4vw, 19px);
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center !important;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+#bqQuizArea #bqQuizOptions button:hover { border-color: #7b84d8; }
+#bqQuizArea #bqQuizOptions button:active { transform: translateY(6px); box-shadow: none; }
+#bqQuizArea #bqQuizOptions button.correct {
+  color: #0a5a3e;
+  border-color: #45b996;
+  background: #ddf7ee;
+  box-shadow: 0 6px 0 #45a989;
+}
+#bqQuizArea #bqQuizOptions button.wrong {
+  color: #8a1e2a;
+  border-color: #e0707b;
+  background: #ffe5e8;
+  box-shadow: 0 6px 0 #c75a65;
+}
+
+#bqQuizArea #bqQuizFeedback {
+  min-height: 32px;
+  margin: 22px 0 0;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+
+@keyframes bqMascotCelebrate {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(-14px) rotate(-5deg); }
+  70% { transform: translateY(-6px) rotate(5deg); }
+}
+
+@keyframes bqMascotTryAgain {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(-7px); }
+  70% { transform: translateX(7px); }
+}
+
+@media (max-width: 640px) {
+  #bqQuizArea .bq-quest-card { padding: 18px 14px 24px; border-radius: 24px; }
+  .bq-quest-head { grid-template-columns: 1fr auto; }
+  .bq-quest-stars { grid-row: 2; grid-column: 1 / -1; margin-top: 14px; }
+  .bq-question-stage { grid-template-columns: 1fr; gap: 10px; }
+  .bq-book-mascot svg { width: 124px; }
+  .bq-question-bubble::before {
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%) rotate(135deg);
+  }
+  #bqQuizArea #bqQuizOptions { grid-template-columns: 1fr; }
+  #bqQuizArea #bqQuizOptions button { min-height: 68px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bq-book-mascot,
+  #bqQuizArea #bqQuizOptions button,
+  #bqQuizArea .bq-quiz-speak-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -1061,6 +1546,34 @@ main { padding: 26px clamp(16px, 3.5vw, 48px); }
   color: var(--muted);
   font-size: 13px;
   font-weight: 600;
+}
+
+.quiz-panel {
+  max-width: 760px;
+  padding: clamp(24px, 4vw, 40px);
+  row-gap: clamp(18px, 2.5vw, 26px);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.quiz-panel .quiz-tabs,
+.quiz-panel .panel-head,
+.quiz-panel .quiz-scope {
+  margin: 0;
+}
+
+.quiz-panel #quizPrompt {
+  margin: 0;
+  line-height: 1.45;
+  text-align: center;
+  font-size: clamp(19px, 2.6vw, 24px);
+}
+
+.quiz-panel .quiz-question {
+  padding-block: clamp(22px, 4vw, 34px);
+  line-height: 1.55;
 }
 
 /* ─── PRONUNCIATION ───────────────────────── */
@@ -3292,21 +3805,6 @@ main { padding: 26px clamp(16px, 3.5vw, 48px); }
   line-height: 1.5;
 }
 
-.bq-meaning-label {
-  color: var(--accent, #4f67f5);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.bq-card-back-english {
-  margin: 0;
-  color: var(--muted);
-  font-size: 16px;
-  font-weight: 600;
-}
-
 .bq-card-actions {
   display: flex;
   align-items: center;
@@ -3477,6 +3975,41 @@ main { padding: 26px clamp(16px, 3.5vw, 48px); }
   border-radius: 12px;
   text-align: center;
   color: var(--ink);
+}
+
+.verb-quiz-forms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 18px);
+  flex-wrap: wrap;
+}
+
+.verb-quiz-forms > span:not([aria-hidden]) {
+  min-width: 92px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid var(--line);
+}
+
+.verb-quiz-forms .verb-quiz-blank {
+  color: var(--accent, #4f67f5);
+  border-style: dashed;
+  border-color: var(--accent, #4f67f5);
+  background: #f2f4ff;
+}
+
+.verb-quiz-forms .verb-quiz-blank[data-answer-state="correct"] {
+  color: #0a4a37;
+  border-color: #68c9ae;
+  background: #ddf4ec;
+}
+
+.verb-quiz-forms .verb-quiz-blank[data-answer-state="wrong"] {
+  color: #7b1620;
+  border-color: #d6848d;
+  background: #f7dfe1;
 }
 
 /* .options = .option-grid 동일 스타일 */
@@ -5550,4 +6083,1378 @@ main { min-width: 0; max-width: 100%; }
   .hub-toolbar { flex-direction: column; align-items: stretch; }
   .hub-group-tabs { display: grid; grid-template-columns: 1fr 1fr; }
   .hub-search { width: 100%; min-width: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SOFT INDIGO PALETTE — 2026-08-18
+
+   골드와 청록을 걷어내고 강조색을 그린 하나로 모은다.
+   파랑은 보조(루틴 번호 · 카운트다운 · '지금 여기')로만,
+   빨강은 오답과 목숨에만 쓴다.
+
+   진행과 완료는 색이 아니라 채움으로 구분한다.
+   진행 = 흰 바탕 + 그린 링, 완료 = 그린으로 꽉 채움, 잠김 = 회색.
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* 기존 브랜드 변수를 새 팔레트로 재정의한다.
+     이 변수들을 쓰던 규칙이 전부 한 번에 따라온다. */
+  --gold: #5965d8;
+  --mint: #5965d8;
+  --wine: #c76067;
+  --ink: #30364b;
+  --ink-2: #444b63;
+  --paper: #f8f8fa;
+  --line: #d8dbe8;
+  --muted: #74798d;
+
+  --joy-green: #5965d8;
+  --joy-green-dark: #434cad;
+  --joy-blue: #7b84d8;
+  --joy-blue-dark: #5962b4;
+  --joy-yellow: #5965d8;
+  --joy-yellow-dark: #434cad;
+  --joy-red: #c76067;
+  --joy-red-dark: #a94c54;
+  --joy-grey: #d8dbe8;
+  --joy-grey-dark: #bdc1d2;
+
+  --ok: #4f8a68;
+  --ok-soft: #edf5f0;
+  --warn-soft: #f1f2fb;
+  --warn-ink: #5962b4;
+  --locked: #9ca1b4;
+
+  --shadow-sm: 0 1px 3px rgba(48,54,75,0.05), 0 2px 8px rgba(48,54,75,0.04);
+  --shadow: 0 4px 16px rgba(48,54,75,0.07);
+  --shadow-lg: 0 12px 40px rgba(48,54,75,0.12);
+}
+
+/* ─── 상단 바 · 로고 ────────────────────────── */
+.program-tagline { border-bottom-color: var(--joy-green); }
+.tagline-brand { color: var(--joy-green); }
+
+/* ─── 사이드바 ──────────────────────────────── */
+.pattern-nav {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-top: 2px solid var(--joy-green);
+}
+.pattern-nav-eyebrow { color: #c7cbf4; }
+.pattern-nav-total { color: var(--white); background: var(--joy-green); }
+
+.pattern-hub-btn {
+  color: var(--white);
+  background: var(--joy-green);
+  box-shadow: 0 var(--lip) 0 var(--joy-green-dark);
+}
+.pattern-hub-btn:hover { background: #6570dc; }
+.pattern-hub-btn small { opacity: 0.85; }
+
+.pnav-row.active {
+  background: rgba(89,101,216,0.2);
+  border-left-color: var(--joy-green);
+}
+.pnav-row.active .pnav-row-no { color: #c7cbf4; }
+.pnav-row.status-cleared .pnav-row-no,
+.pnav-row.status-cleared .pnav-row-mark { color: #c7cbf4; }
+.pnav-caret { color: #c7cbf4; }
+.sidebar-section-sep span { color: rgba(255,255,255,0.42); }
+
+.verb-mode-button {
+  background: rgba(123,132,216,0.16) !important;
+  border: 1px solid rgba(123,132,216,0.38) !important;
+}
+.verb-mode-button.active,
+.verb-mode-button:hover {
+  background: var(--joy-blue) !important;
+  color: var(--white) !important;
+}
+
+.profile-panel { border-left-color: var(--joy-green); }
+
+/* ─── 모드바 ────────────────────────────────── */
+.pmode-btn.active { color: var(--white); background: var(--joy-green); }
+.pmode-btn:hover:not(.active) { color: var(--joy-green-dark); background: #f1f2fb; }
+.pmode-count { background: var(--joy-red); }
+
+/* ─── 허브 상단 ─────────────────────────────── */
+.hub-resume {
+  background: var(--joy-green);
+  box-shadow: 0 var(--lip) 0 var(--joy-green-dark);
+}
+.hub-resume:hover { background: #6570dc; }
+.hub-resume-label,
+.hub-resume-cta { color: #f3f4ff; }
+.hub-resume-detail { color: rgba(255,255,255,0.88); }
+.hub-resume-track { background: rgba(255,255,255,0.3); }
+.hub-resume-track i { background: var(--white); }
+
+.hub-goal-ring {
+  border: 3px solid var(--joy-grey);
+  background:
+    radial-gradient(closest-side, var(--white) 74%, transparent 75%),
+    conic-gradient(var(--joy-green) calc(var(--p, 0) * 1%), var(--joy-grey) 0);
+}
+.hub-goal-ring.done { border-color: var(--joy-green-dark); }
+
+.hub-tab.active {
+  background: var(--joy-green);
+  border-color: var(--joy-green);
+  box-shadow: 0 var(--lip) 0 var(--joy-green-dark);
+}
+.hub-tab.active small { color: #f3f4ff; }
+
+.routine-number { background: var(--joy-blue); }
+.routine-step.primary-routine { border-color: var(--joy-blue); background: #f1f2fb; }
+.routine-step:hover:not(:disabled) { border-color: var(--joy-green); background: #f4f4fb; }
+
+/* ─── 학습 경로 ─────────────────────────────── */
+/* 진행 중은 흰 바탕에 그린 링, 완료는 그린으로 꽉 채운다. */
+.path-ring {
+  border: 3px solid var(--joy-grey);
+  background:
+    radial-gradient(closest-side, var(--white) 76%, transparent 77%),
+    conic-gradient(var(--joy-green) calc(var(--p, 0) * 1%), var(--joy-grey) 0);
+  box-shadow: 0 5px 0 var(--joy-grey-dark);
+  color: var(--ink);
+}
+
+.path-node.status-available .path-ring,
+.path-node.status-learning .path-ring {
+  border-color: var(--joy-green);
+  box-shadow: 0 5px 0 var(--joy-green-dark);
+}
+
+.path-node.status-cleared .path-ring {
+  background: var(--joy-green);
+  border-color: var(--joy-green-dark);
+  box-shadow: 0 5px 0 var(--joy-green-dark);
+  color: var(--white);
+}
+
+.path-node.status-locked .path-ring {
+  background: var(--joy-grey);
+  border-color: var(--joy-grey-dark);
+  box-shadow: 0 5px 0 var(--joy-grey-dark);
+  color: var(--locked);
+}
+
+.path-node.current .path-ring { box-shadow: 0 5px 0 var(--joy-green-dark); }
+.path-node.current::after { color: var(--white); background: var(--joy-blue); }
+.path-unit-label { color: var(--joy-green-dark); }
+
+/* ─── 카드 ──────────────────────────────────── */
+/* 카드 옆 띠도 그라디언트를 버리고 단색으로 */
+.card-face::after { background: var(--joy-green); }
+.card-back::after { background: var(--joy-blue); }
+.card-face::before { border-color: rgba(89,101,216,0.14); }
+.card-face span { color: var(--joy-green-dark); }
+.card-back { background: #f7f7fc; }
+
+.new-words span { background: #f1f2fb; border-color: #d5d8f2; }
+.new-words strong { color: var(--joy-green-dark); }
+
+.study-context-chip { color: var(--white); background: var(--joy-green); }
+.section-done-banner { border-color: var(--joy-green); background: #f3f3fb; }
+
+/* ─── 통역 테스트 ───────────────────────────── */
+.interpret-eyebrow { color: var(--joy-green-dark); }
+.interpret-count {
+  border-color: var(--joy-blue);
+  background: #f1f2fb;
+  color: var(--joy-blue-dark);
+}
+.interpret-status.listening::before {
+  background: rgba(123,132,216,0.12);
+  border-color: var(--joy-blue);
+}
+.interpret-status.listening .interpret-status-text { color: var(--joy-blue-dark); }
+.interpret-status.retry .interpret-status-text { color: var(--joy-blue-dark); }
+
+.interpret-verdict.pass { background: var(--ok-soft); border-color: var(--ok); }
+.interpret-verdict.pass strong { color: var(--ok); }
+
+.interpret-result-ring {
+  border: 4px solid var(--joy-grey);
+  background:
+    radial-gradient(closest-side, var(--white) 74%, transparent 75%),
+    conic-gradient(var(--joy-green) calc(var(--p, 0) * 1%), var(--joy-grey) 0);
+}
+.interpret-result-ring.cleared { border-color: var(--joy-green-dark); }
+.interpret-support { color: var(--joy-blue-dark) !important; background: #f1f2fb; }
+
+/* ─── 퀴즈 · 게임 ───────────────────────────── */
+.option-grid button:hover,
+.match-item:hover { border-color: var(--joy-green); background: #f4f4fb; }
+
+.blast-heart { color: rgba(255,255,255,0.26); }
+.blast-heart.on { color: var(--joy-red); fill: var(--joy-red); stroke: var(--joy-red); }
+
+/* ─── 로그인 ────────────────────────────────── */
+.login-card > span { color: var(--joy-green-dark); }
+.login-card input:focus { border-color: var(--joy-green); }
+.admin-entry:hover { color: var(--joy-green-dark); }
+
+/* ─── 진도바는 전부 그린 ────────────────────── */
+.dashboard-progress-track span,
+.study-context-track span,
+.interpret-track span,
+.interpret-lock-track span,
+.progress-track span,
+.pnav-row-track i { background: var(--joy-green); }
+
+/* ─── 동사 학습 · 대시보드 ─────────────────── */
+.vtype-btn:hover {
+  color: var(--joy-green-dark);
+  border-color: var(--joy-green);
+  background: #f4f4fb;
+}
+.vtype-btn.active,
+.vmode-btn.active {
+  color: var(--white);
+  background: var(--joy-green);
+  border-color: var(--joy-green);
+}
+.verb-card::after { background: var(--joy-green); }
+.verb-card-back::after { background: var(--joy-blue); }
+.verb-principal-part strong,
+.dashboard-copy h2,
+.dashboard-metrics strong { color: var(--ink); }
+.dashboard-copy,
+.dashboard-metrics > div {
+  background: var(--white);
+  border-color: var(--line);
+}
+.dashboard-metrics > div:first-child { border-top-color: var(--joy-green); }
+
+/* ─── 퀴즈의 선택 · 정답 · 오답 상태 ───────── */
+.option-grid button,
+.match-item {
+  color: var(--ink);
+  background: var(--white);
+  border-color: var(--line);
+}
+.match-item.selected {
+  color: var(--joy-blue-dark);
+  background: #f1f2fb;
+  border-color: var(--joy-blue);
+}
+.option-grid button.correct,
+.match-item.matched {
+  color: var(--joy-green-dark);
+  background: var(--ok-soft);
+  border-color: var(--joy-green);
+}
+.option-grid button.wrong {
+  color: var(--joy-red-dark);
+  background: #fcebec;
+  border-color: var(--joy-red);
+}
+
+/* ─── 통역 결과 · 공통 행동 버튼 ───────────── */
+.interpret-verdict.fail {
+  color: var(--joy-red-dark);
+  background: #fcebec;
+  border-color: var(--joy-red);
+}
+.interpret-verdict.fail strong { color: var(--joy-red-dark); }
+.interpret-result-actions .btn-primary,
+.login-card button {
+  color: var(--white);
+  background: var(--joy-green);
+  border-color: var(--joy-green);
+  box-shadow: 0 var(--lip) 0 var(--joy-green-dark);
+}
+.interpret-result-actions .btn-primary:hover,
+.login-card button:hover { background: #6570dc; }
+.interpret-result-actions .btn-secondary {
+  color: var(--joy-blue-dark);
+  background: var(--white);
+  border-color: var(--joy-blue);
+}
+
+/* ─── 보조 알림과 비활성 상태 ──────────────── */
+.toast.success { background: var(--joy-green-dark); }
+.toast.error { background: var(--joy-red-dark); }
+button:disabled,
+.is-locked {
+  color: var(--locked);
+  border-color: var(--joy-grey-dark);
+}
+
+/* 퀴즈·매칭·블래스트 선택지를 카드 중앙에 균형 배치한다. */
+.option-grid button,
+.match-item,
+.blast-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* 섹션퀴즈와 매칭의 문장 배치를 하나의 시각 규칙으로 정돈한다. */
+.quiz-panel .options button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(68px, 8vw, 84px);
+  padding: 16px 20px;
+  text-align: center;
+  text-wrap: balance;
+  word-break: keep-all;
+  line-height: 1.5;
+}
+
+.match-panel {
+  max-width: 860px;
+  padding: clamp(24px, 4vw, 40px);
+  row-gap: clamp(20px, 3vw, 30px);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.match-panel .panel-head {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-height: 42px;
+  margin: 0;
+  padding-inline: 110px;
+  text-align: center;
+}
+
+.match-panel .panel-head > div {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.match-panel .panel-head h2,
+.match-panel .panel-head p {
+  margin: 0;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.match-panel .panel-head h2 {
+  line-height: 1.45;
+  font-size: clamp(19px, 2.6vw, 24px);
+}
+
+.match-panel .panel-head p {
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.match-panel #resetMatchButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.match-panel .match-columns {
+  display: none;
+}
+
+.match-panel .mahjong-board {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 1.8vw, 16px);
+}
+
+.match-panel .mj-card.mj-direct {
+  min-width: 0;
+  min-height: clamp(82px, 9vw, 104px);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 var(--joy-grey-dark);
+  font-size: clamp(14px, 1.5vw, 17px);
+  line-height: 1.5;
+  text-wrap: balance;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+  .match-panel .mahjong-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE DUOLINGO UI — 2026-08-20
+   모바일 우선 게임형 학습 인터페이스의 최종 스타일 레이어.
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --game-green: #58cc02;
+  --game-green-dark: #46a302;
+  --game-blue: #1cb0f6;
+  --game-blue-dark: #168dcc;
+  --game-red: #ff4b4b;
+  --game-red-dark: #d93d3d;
+  --game-yellow: #ffc800;
+  --game-bg: #f7f7f7;
+  --game-surface: #ffffff;
+  --game-line: #e5e5e5;
+  --game-ink: #3c3c3c;
+  --game-muted: #777777;
+  --game-lip: 4px;
+  --bottom-nav-height: 72px;
+}
+
+body {
+  color: var(--game-ink);
+  background: var(--game-bg);
+}
+
+.game-surface {
+  width: min(860px, 100%);
+  margin-inline: auto;
+  padding: clamp(20px, 4vw, 36px);
+  background: var(--game-surface);
+  border: 2px solid var(--game-line);
+  border-radius: 24px;
+  box-shadow: 0 4px 0 #d7d7d7;
+}
+
+.primary,
+.ghost,
+.quiz-tab,
+.mobile-bottom-item {
+  min-height: 48px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  font-weight: 800;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.primary {
+  color: #fff;
+  background: var(--game-green);
+  border-color: var(--game-green-dark);
+  box-shadow: 0 var(--game-lip) 0 var(--game-green-dark);
+}
+
+.ghost {
+  color: var(--game-blue-dark);
+  background: #fff;
+  border-color: var(--game-line);
+  box-shadow: 0 var(--game-lip) 0 #d7d7d7;
+}
+
+.primary:active,
+.ghost:active,
+.quiz-tab:active,
+.mobile-bottom-item:active {
+  transform: translateY(var(--game-lip));
+  box-shadow: none;
+}
+
+.quiz-tab.active,
+.pmode-btn.active {
+  color: #fff;
+  background: var(--game-green);
+  border-color: var(--game-green-dark);
+}
+
+.mobile-bottom-nav {
+  display: none;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-bottom-item {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 5px 2px;
+  color: var(--game-muted);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  font-size: 11px;
+}
+
+.mobile-bottom-item .pmode-ico {
+  width: 23px;
+  height: 23px;
+}
+
+.mobile-bottom-item.active {
+  color: var(--game-green-dark);
+  background: #efffdc;
+  border-color: #b8ed8d;
+  box-shadow: 0 3px 0 #9bd56d;
+}
+
+#quizView .quiz-panel {
+  row-gap: clamp(18px, 4vw, 26px);
+}
+
+#quizView :is(#quizCount, #quizScopeText, #quizPrompt, #quizQuestion, #quizFeedback),
+#quizView #quizOptions button {
+  text-align: center !important;
+}
+
+#quizView #quizOptions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 15px 18px;
+  border: 2px solid var(--game-line);
+  border-radius: 14px;
+  box-shadow: 0 var(--game-lip) 0 #d7d7d7;
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.45;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+#quizView #quizOptions button.correct {
+  color: #fff;
+  background: var(--game-green);
+  border-color: var(--game-green-dark);
+  box-shadow: 0 var(--game-lip) 0 var(--game-green-dark);
+}
+
+#quizView #quizOptions button.wrong {
+  color: #fff;
+  background: var(--game-red);
+  border-color: var(--game-red-dark);
+  box-shadow: 0 var(--game-lip) 0 var(--game-red-dark);
+}
+
+#matchView .panel-head,
+#matchView .panel-head > div {
+  justify-items: center;
+  text-align: center;
+}
+
+#matchView .mahjong-board {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#matchView .mj-card.mj-direct {
+  border: 2px solid var(--game-blue);
+  border-radius: 14px;
+  box-shadow: 0 var(--game-lip) 0 var(--game-blue-dark);
+  text-align: center;
+}
+
+#matchView .mj-card.mj-direct.mj-selected {
+  border-color: var(--game-yellow);
+  box-shadow: 0 var(--game-lip) 0 #d7a900, 0 0 0 3px rgba(255, 200, 0, 0.2);
+}
+
+#matchView .mj-card.mj-direct.mj-matched {
+  color: #fff;
+  background: var(--game-green);
+  border-color: var(--game-green-dark);
+  box-shadow: 0 var(--game-lip) 0 var(--game-green-dark);
+}
+
+.feedback,
+.interpret-verdict,
+.review-panel,
+.leaderboard-panel {
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  main {
+    padding: 14px 12px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 24px);
+  }
+
+  .topbar {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
+
+  .student-dashboard {
+    margin-bottom: 14px;
+  }
+
+  .pattern-mode-bar {
+    display: none !important;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    min-height: var(--bottom-nav-height);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 2px solid var(--game-line);
+    box-shadow: 0 -6px 20px rgba(60, 60, 60, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .game-surface {
+    padding: 20px 16px;
+    border-radius: 24px;
+  }
+
+  #quizView #newQuizButton,
+  #matchView #resetMatchButton {
+    position: static;
+    width: 100%;
+  }
+
+  #quizView .panel-head,
+  #matchView .panel-head {
+    display: grid;
+    gap: 12px;
+    padding-inline: 0;
+  }
+
+  #quizView .options {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  #matchView .mahjong-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+/* 세 문장을 하나의 패턴 카드로 읽을 수 있게 묶는다. */
+.study-sentence-list {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  margin: 12px auto;
+}
+
+.study-sentence-list p {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 16px;
+  background: #fff;
+  border: 2px solid var(--game-line);
+  border-radius: 14px;
+  color: var(--game-ink);
+  font-size: clamp(17px, 2.6vw, 23px);
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.study-sentence-list p b {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  background: var(--game-green);
+  border-radius: 50%;
+  box-shadow: 0 3px 0 var(--game-green-dark);
+  font-size: 14px;
+}
+
+.study-sentence-list p span {
+  text-align: center;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.study-sentence-list-sub p {
+  grid-template-columns: 1fr;
+  padding: 8px 12px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--game-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .study-sentence-list p {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px 10px;
+    font-size: 16px;
+  }
+
+  .study-sentence-list p b {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  #matchView .mahjong-board {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-bottom-item {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 실제 패턴 퀴즈 화면은 기존 공통 규칙보다 강하게 중앙축을 유지한다. */
+#quizView .panel-head {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-height: 38px;
+  margin: 0;
+  text-align: center;
+}
+
+#quizView #quizCount {
+  text-align: center;
+}
+
+#quizView #newQuizButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#quizView :is(#quizScopeText, #quizPrompt) {
+  width: 100%;
+  margin: 0;
+  text-align: center !important;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+#quizView #quizOptions button {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  text-align: center !important;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+#matchView .panel-head,
+#matchView .panel-head h2,
+#matchView .panel-head p,
+#matchView .mj-card,
+#matchView .mj-card span {
+  text-align: center !important;
+}
+
+@media (max-width: 520px) {
+  #quizView .panel-head {
+    display: grid;
+    gap: 10px;
+  }
+
+  #quizView #newQuizButton {
+    position: static;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .quiz-panel,
+  .match-panel {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .match-panel .panel-head {
+    padding-inline: 0;
+  }
+
+  .match-panel #resetMatchButton {
+    position: static;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .match-panel .mj-card.mj-direct {
+    min-height: 78px;
+    padding: 13px 10px;
+    font-size: 14px;
+  }
+}
+
+/* GAME UI FINAL OVERRIDES: legacy mobile rules 아래에서 새 표면 규격을 확정한다. */
+@media (max-width: 760px) {
+  .game-surface,
+  .quiz-panel,
+  .match-panel {
+    padding: 20px 16px;
+    border-radius: 24px;
+  }
+
+  #quizView #quizOptions button {
+    min-height: 64px;
+    text-align: center !important;
+  }
+
+  #matchView .mahjong-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 360px) {
+  #matchView .mahjong-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══ FULL CENTERED TYPOGRAPHY — 2026-08-20 ═══
+   모든 학습 화면의 정보와 행동을 하나의 중앙축으로 통일한다. */
+main :is(.topbar, .student-dashboard, .view) {
+  text-align: center !important;
+}
+
+main :is(
+  h1, h2, h3, h4, p, span, strong, small,
+  .eyebrow, .label, .feedback, .quiz-question,
+  .interpret-status-text, .study-context-chip,
+  .study-context-count, .verb-meaning
+) {
+  text-align: center;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+main .topbar {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+main .topbar > div,
+main .dashboard-copy,
+main .progress-card,
+main .dashboard-metrics > div,
+main .routine-card,
+main .study-context,
+main .interpret-intro,
+main .interpret-run,
+main .interpret-result {
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+}
+
+main .stats,
+main .progress-card-head,
+main .study-context-top,
+main .study-actions,
+main .navigation,
+main .bq-control-row,
+main .verb-controls,
+main .interpret-result-actions,
+main .review-actions {
+  justify-content: center !important;
+  align-items: center;
+}
+
+.dashboard-main,
+.dashboard-metrics {
+  grid-template-columns: 1fr !important;
+}
+
+main .dashboard-copy {
+  border-left: 2px solid var(--game-line);
+  border-top: 5px solid var(--game-green);
+}
+
+main .panel-head {
+  display: grid !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: center !important;
+  gap: 12px;
+  padding-inline: 0 !important;
+  text-align: center !important;
+}
+
+main .panel-head > div {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+main :is(#newQuizButton, #resetMatchButton, #newBQQuizBtn, #newVerbQuizBtn) {
+  position: static !important;
+  inset: auto !important;
+  justify-self: center;
+}
+
+main :is(.options button, .option-grid button, .mj-card, .match-item) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center !important;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+main :is(.quiz-tabs, .pattern-mode-bar, .bq-control-row, .verb-controls) button {
+  text-align: center !important;
+}
+
+main :is(.card-face, .card-back, .verb-card, .bq-card, .quiz-panel, .match-panel) {
+  text-align: center !important;
+}
+
+main :is(.card-face, .card-back, .verb-card, .bq-card) > * {
+  margin-inline: auto;
+}
+
+main :is(.options, .option-grid, .mahjong-board, .match-columns) {
+  width: 100%;
+  margin-inline: auto;
+}
+
+@media (max-width: 760px) {
+  main :is(#newQuizButton, #resetMatchButton, #newBQQuizBtn, #newVerbQuizBtn) {
+    width: min(100%, 320px);
+  }
+
+  main .stats {
+    width: 100%;
+  }
+
+  main .stats span {
+    flex: 1 1 120px;
+  }
+}
+/* ─── COMPACT LEARNING DASHBOARD ───────────────────────────── */
+.student-dashboard {
+  padding: 16px !important;
+  gap: 12px !important;
+}
+
+.student-dashboard .dashboard-main {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.student-dashboard .dashboard-copy {
+  min-width: 0;
+  text-align: left !important;
+}
+
+.student-dashboard .dashboard-copy .eyebrow {
+  margin-bottom: 3px;
+  font-size: 11px;
+}
+
+.student-dashboard .dashboard-copy h2 {
+  margin: 0 !important;
+  font-size: clamp(17px, 2.2vw, 22px) !important;
+  line-height: 1.25 !important;
+}
+
+.student-dashboard .dashboard-copy p {
+  margin: 4px 0 0 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
+
+.compact-progress-card {
+  min-width: 96px;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: grid !important;
+  justify-items: center;
+  gap: 5px !important;
+}
+
+.dashboard-progress-ring {
+  --p: 0;
+  width: 78px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background:
+    radial-gradient(circle closest-side, #fff 73%, transparent 74% 99%, #fff 100%),
+    conic-gradient(var(--joy-green) calc(var(--p) * 1%), #e7e9f2 0);
+}
+
+.dashboard-progress-ring span {
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.dashboard-progress-ring strong {
+  color: var(--joy-green-dark);
+  font-size: 18px;
+  line-height: 1.05;
+}
+
+.compact-progress-card > p {
+  margin: 0 !important;
+  color: var(--ink-soft);
+  font-size: 9px !important;
+  white-space: nowrap;
+}
+
+.student-dashboard .dashboard-metrics {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.student-dashboard .dashboard-metrics > div {
+  min-height: 66px !important;
+  padding: 9px 10px !important;
+  border: 1px solid #e2e4ee !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 3px 0 #e2e4ee !important;
+  display: grid !important;
+  place-content: center !important;
+  gap: 1px !important;
+  text-align: center !important;
+}
+
+.student-dashboard .dashboard-metrics span,
+.student-dashboard .dashboard-metrics small {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.student-dashboard .dashboard-metrics strong {
+  margin: 1px 0 !important;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .student-dashboard {
+    margin-bottom: 10px !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .student-dashboard .dashboard-main {
+    gap: 10px !important;
+  }
+
+  .student-dashboard .dashboard-copy h2 {
+    font-size: 16px !important;
+  }
+
+  .student-dashboard .dashboard-copy p {
+    max-width: 24ch;
+    font-size: 11px !important;
+  }
+
+  .dashboard-progress-ring {
+    width: 66px;
+  }
+
+  .dashboard-progress-ring strong {
+    font-size: 16px;
+  }
+
+  .compact-progress-card > p {
+    display: none;
+  }
+
+  .student-dashboard .dashboard-metrics {
+    gap: 6px !important;
+  }
+
+  .student-dashboard .dashboard-metrics > div {
+    min-height: 57px !important;
+    padding: 7px 6px !important;
+    border-radius: 12px !important;
+  }
+
+  .student-dashboard .dashboard-metrics strong {
+    font-size: 13px !important;
+  }
+}
+
+/* POINT RANKING PODIUM — 2026-08-21 */
+#leaderboardView .leaderboard-panel {
+  width: min(100%, 920px);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 42px);
+  border-radius: 24px;
+}
+
+#leaderboardView .panel-head {
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+#leaderboardView .panel-head h2 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 38px);
+}
+
+#leaderboardView #leaderboardSummary {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.leaderboard-podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.podium-card {
+  position: relative;
+  min-height: 220px;
+  padding: 28px 16px 20px;
+  border: 2px solid #e3e6f1;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fff, #f7f8fc);
+  box-shadow: 0 7px 0 #e3e6f1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.podium-card.rank-1 {
+  min-height: 258px;
+  border-color: #f0c85a;
+  background: linear-gradient(180deg, #fffdf4, #fff5cf);
+  box-shadow: 0 8px 0 #e0b842;
+}
+
+.podium-card.rank-2 {
+  border-color: #bcc5d6;
+  box-shadow: 0 7px 0 #aeb8ca;
+}
+
+.podium-card.rank-3 {
+  border-color: #d8aa84;
+  background: linear-gradient(180deg, #fff, #fff3e9);
+  box-shadow: 0 7px 0 #c99670;
+}
+
+.podium-medal {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  color: #fff;
+  background: #8390aa;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.rank-1 .podium-medal { background: #e7b62c; }
+.rank-2 .podium-medal { background: #8d9bb3; }
+.rank-3 .podium-medal { background: #bd7c4f; }
+
+.podium-card strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(19px, 2.8vw, 25px);
+  white-space: nowrap;
+}
+
+.podium-card b {
+  color: var(--wine);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 900;
+}
+
+.podium-card small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.leaderboard-list {
+  gap: 11px;
+}
+
+#leaderboardView .leaderboard-row {
+  position: relative;
+  min-height: 78px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 0 #e5e7ef;
+}
+
+#leaderboardView .rank-number {
+  width: 46px;
+  height: 46px;
+  font-size: 17px;
+}
+
+#leaderboardView .rank-student strong { font-size: 18px; }
+#leaderboardView .rank-student span { font-size: 13px; }
+#leaderboardView .rank-points { font-size: clamp(20px, 3vw, 27px); }
+
+#leaderboardView .is-current {
+  border-color: var(--mint);
+  background: #eef9f6;
+  box-shadow: 0 4px 0 #8cc8bd;
+}
+
+.current-student-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #fff;
+  background: #238678;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+#leaderboardView #refreshLeaderboardButton {
+  min-height: 46px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+
+@media (max-width: 640px) {
+  #leaderboardView .leaderboard-panel { padding: 20px 14px; }
+
+  #leaderboardView .panel-head {
+    align-items: center;
+    gap: 14px;
+  }
+
+  .leaderboard-podium {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .podium-card,
+  .podium-card.rank-1 {
+    min-height: 150px;
+    padding: 20px 14px;
+  }
+
+  .podium-card.rank-1 { order: -1; }
+
+  #leaderboardView .leaderboard-row {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 10px;
+    padding: 14px;
+  }
+
+  #leaderboardView .rank-points {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  #leaderboardView .rank-student strong { font-size: 17px; }
+}
+
+/* CARD CONTENT ALIGNMENT — 2026-08-21 */
+main :is(.card-face, .quiz-panel, .verb-front, .bq-front) {
+  align-items: center;
+  text-align: center;
+}
+
+main :is(.card-face, .quiz-panel, .verb-front, .bq-front) >
+  :is(h2, h3, p, span, strong, small, .quiz-question) {
+  margin-inline: auto;
+}
+
+main :is(#cardEnglish, #quizQuestion, #verbMeaningDisplay, #bqCardEnglish) {
+  width: min(100%, 22ch);
+  max-width: 22ch;
+  margin-block: 0;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+main :is(#cardKorean, #quizPrompt, #verbMeaningDisplay, #bqCardKorean) {
+  width: min(100%, 32ch);
+  margin-inline: auto;
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+main :is(.card-meta, .verb-card-meta, .bq-card-meta) {
+  line-height: 1.2;
+}
+
+main :is(.card-pronunciation, .nav-buttons, .verb-forms, .verb-examples, .options) {
+  width: 100%;
+  margin-inline: auto;
+}
+
+main :is(.verb-examples p, .review-row, .rank-student) {
+  text-align: left;
+}
+
+main :is(.quiz-panel, .verb-front, .bq-front) {
+  row-gap: clamp(16px, 3vw, 24px);
+}
+
+main .nav-buttons {
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  main :is(.card-face, .quiz-panel, .verb-front, .bq-front) {
+    padding-inline: 16px;
+  }
+
+  main :is(#cardEnglish, #quizQuestion, #verbMeaningDisplay, #bqCardEnglish) {
+    max-width: 18ch;
+  }
 }

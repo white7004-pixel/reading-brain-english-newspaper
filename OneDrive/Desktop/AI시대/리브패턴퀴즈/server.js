@@ -8,7 +8,7 @@ const { promisify } = require("node:util");
 
 const root = __dirname;
 const dataDir = path.join(root, "data");
-const studentsPath = path.join(dataDir, "students.json");
+const studentsPath = process.env.STUDENTS_PATH || path.join(dataDir, "students.json");
 const port = Number(process.env.PORT || 4174);
 const adminPin = String(process.env.ADMIN_PIN || "0000");
 const sessions = new Map();
@@ -22,6 +22,7 @@ const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
@@ -336,6 +337,17 @@ async function handleApi(req, res) {
     const store = readStore();
     const student = store.students[key];
     const now = new Date().toISOString();
+    const eventId = typeof body.eventId === "string" ? body.eventId.trim().slice(0, 160) : "";
+    student.processedEventIds = Array.isArray(student.processedEventIds) ? student.processedEventIds : [];
+    if (eventId && student.processedEventIds.includes(eventId)) {
+      sendJson(res, 200, {
+        ok: true,
+        duplicate: true,
+        acknowledgedEventIds: [eventId],
+        student: safeStudent(student),
+      });
+      return;
+    }
     student.score = Number(body.score || 0);
     student.streak = Number(body.streak || 0);
     student.mastered = Array.isArray(body.mastered) ? body.mastered.map(Number) : [];
@@ -348,11 +360,17 @@ async function handleApi(req, res) {
         score: student.score,
         masteredCount: student.mastered.length,
         reviewCount: student.review.length,
+        ...(eventId ? { eventId } : {}),
       },
     ].slice(-500);
+    if (eventId) student.processedEventIds = [...student.processedEventIds, eventId].slice(-500);
     student.updatedAt = now;
     writeStore(store);
-    sendJson(res, 200, { student: safeStudent(student) });
+    sendJson(res, 200, {
+      ok: true,
+      acknowledgedEventIds: eventId ? [eventId] : [],
+      student: safeStudent(student),
+    });
     return;
   }
 
@@ -366,6 +384,7 @@ async function handleApi(req, res) {
     const leaders = Object.values(store.students)
       .map((student) => ({
         name: student.name,
+        displayName: student.displayName || student.name,
         points: Number(student.score || 0),
         masteredCount: Array.isArray(student.mastered) ? student.mastered.length : 0,
         reviewCount: Array.isArray(student.review) ? student.review.length : 0,

@@ -13,6 +13,11 @@ assert.match(
 );
 assert.ok(app.includes('data-section="${escapeHtml(section.key)}"'), "planet buttons must keep data-section");
 assert.ok(app.includes('disabled aria-disabled=\\"true\\"'), "locked planet buttons must preserve aria-disabled");
+assert.match(
+  app,
+  /const hubPath = \$\("#hubPath"\)[\s\S]*?event\.target\.closest\("\.planet-button"\)[\s\S]*?selectSection\(node\.dataset\.section, "study"\)/,
+  "clicking an unlocked planet must open its study section",
+);
 
 assert.match(
   app,
