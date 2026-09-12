@@ -10,8 +10,8 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <title>Reading Brain 영어표현 카드 게임</title>
-    <link rel="stylesheet" href="styles.css?v=20260912-space-map-3" />
-    <link rel="stylesheet" href="mint-galaxy.css?v=20260912-space-map-3" />
+    <link rel="stylesheet" href="styles.css?v=20260913-mascot-3" />
+    <link rel="stylesheet" href="mint-galaxy.css?v=20260913-mascot-3" />
     <style id="quizAlignmentGuard">
       #quizView .quiz-panel { text-align: center !important; }
       #quizView .quiz-panel :is(#quizCount, #quizScopeText, #quizPrompt, #quizQuestion, #quizFeedback),
@@ -608,6 +608,7 @@
         <path d="M31 91 14 78M149 91l17-13" stroke="#24345B" stroke-width="7" stroke-linecap="round" />
         <path d="m52 45 8-18 12 17M108 44l12-17 8 19" fill="#FFC857" stroke="#C9901C" stroke-width="4" />
       </svg>
+      <div class="liv-photo" aria-hidden="true"></div>
       <p id="livMessage">함께 시작해 볼까요?</p>
     </aside>
     <style>
@@ -627,7 +628,7 @@
       .liv-mascot { width: 54px; flex: 0 0 54px; filter: drop-shadow(0 3px 0 rgba(36, 52, 91, .12)); }
       .liv-guide p { margin: 0; font-weight: 800; line-height: 1.35; }
       .liv-guide[data-state="guide"], .liv-guide[data-state="listening"] { border-color: var(--mg-sky); }
-      .liv-guide[data-state="correct"] { border-color: var(--mg-mint); }
+      .liv-guide[data-state="correct"] { border-color: var(--game-green); }
       .liv-guide[data-state="wrong"] { border-color: var(--mg-coral); }
       .liv-guide[data-state="complete"] { border-color: var(--mg-star); }
       @media (max-width: 640px) { .liv-guide { right: 12px; bottom: 70px; } }
@@ -647,6 +648,6 @@
     <script src="game-ui.js?v=20260821"></script>
     <script src="offline-sync-model.js?v=20260823"></script>
     <script src="pwa-controller.js?v=20260823"></script>
-    <script src="app.js?v=20260912-space-map-3"></script>
+    <script src="app.js?v=20260913-mascot-3"></script>
   </body>
 </html>

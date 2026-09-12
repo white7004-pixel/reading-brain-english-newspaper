@@ -7742,3 +7742,78 @@ main:has(#hubView.view.active) .dashboard-metrics     { order: 7; }
 @media (prefers-reduced-motion: reduce) {
   .galaxy-map .planet-node.current .planet-core { animation: none; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   MASCOT REACTIONS — 상황에 반응하는 캐릭터
+
+   setMascot() 은 이미 .liv-guide 의 data-state 를 상황마다 바꾸고 있었다
+   (default · guide · listening · correct · wrong · complete, 13군데 호출).
+   그런데 그 상태에 반응하는 CSS 가 한 줄도 없어서, 말풍선 글자만 바뀌고
+   캐릭터는 미동도 하지 않았다. 표정과 움직임을 여기서 붙인다.
+   JS 는 건드리지 않는다 — 배선은 이미 되어 있다.
+   ═══════════════════════════════════════════════════════ */
+.liv-guide .liv-photo {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  background: center / contain no-repeat;
+  background-image: url("assets/mascot/default.webp");
+  transform-origin: 50% 85%;
+}
+/* 그림이 붙으면 예전 인라인 SVG 는 숨긴다.
+   assets/mascot/ 을 지우면 이 규칙만 빼고 옛 책 캐릭터로 돌아간다. */
+.liv-guide:has(.liv-photo) .liv-mascot { display: none; }
+
+.liv-guide[data-state="guide"]     .liv-photo { background-image: url("assets/mascot/guide.webp"); }
+.liv-guide[data-state="listening"] .liv-photo { background-image: url("assets/mascot/listening.webp"); }
+.liv-guide[data-state="correct"]   .liv-photo { background-image: url("assets/mascot/correct.webp"); }
+.liv-guide[data-state="wrong"]     .liv-photo { background-image: url("assets/mascot/wrong.webp"); }
+.liv-guide[data-state="complete"]  .liv-photo { background-image: url("assets/mascot/complete.webp"); }
+
+/* ─── 움직임 ────────────────────────────────── */
+/* 평소에는 숨 쉬듯 아주 약하게. 시선을 끌지 않을 만큼만. */
+@keyframes liv-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-2px) scale(1.02); }
+}
+/* 맞히면 폴짝 */
+@keyframes liv-hop {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-12px) scale(1.12); }
+  55%  { transform: translateY(0) scale(0.96); }
+  75%  { transform: translateY(-4px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+/* 틀리면 고개를 젓듯 좌우로 */
+@keyframes liv-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20%      { transform: translateX(-5px) rotate(-6deg); }
+  45%      { transform: translateX(4px) rotate(5deg); }
+  70%      { transform: translateX(-3px) rotate(-3deg); }
+}
+/* 다 끝내면 크게 한 번 */
+@keyframes liv-cheer {
+  0%   { transform: translateY(0) scale(1) rotate(0deg); }
+  25%  { transform: translateY(-16px) scale(1.16) rotate(-5deg); }
+  50%  { transform: translateY(-6px) scale(1.06) rotate(4deg); }
+  75%  { transform: translateY(-11px) scale(1.11) rotate(-3deg); }
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
+}
+/* 들을 때는 귀를 기울이듯 갸웃 */
+@keyframes liv-tilt {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+
+.liv-guide[data-state="default"]   .liv-photo { animation: liv-breathe 3200ms ease-in-out infinite; }
+.liv-guide[data-state="guide"]     .liv-photo { animation: liv-breathe 2200ms ease-in-out infinite; }
+.liv-guide[data-state="listening"] .liv-photo { animation: liv-tilt 1600ms ease-in-out infinite; }
+.liv-guide[data-state="correct"]   .liv-photo { animation: liv-hop 620ms ease-out; }
+.liv-guide[data-state="wrong"]     .liv-photo { animation: liv-shake 520ms ease-out; }
+.liv-guide[data-state="complete"]  .liv-photo { animation: liv-cheer 900ms ease-out; }
+
+/* 말풍선도 상황에 따라 테두리 색이 바뀌면 한눈에 읽힌다. */
+
+@media (prefers-reduced-motion: reduce) {
+  .liv-guide .liv-photo { animation: none !important; }
+}
