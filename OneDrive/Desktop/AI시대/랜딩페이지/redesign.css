@@ -1986,3 +1986,50 @@ body {
 }
 
 @media (max-width: 760px) { .roadmap-row { grid-template-columns: 1fr; } }
+
+/* ─── 23. 키보드 포커스 ────────────────────────────────────────────
+   탭으로 다닐 때 지금 어디인지 보이게 한다. 마우스로는 안 나온다.
+   챗봇 입력창은 outline:none 으로 지워져 있어 따로 되돌린다. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--brand-red, #E4212F);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.chatbot-form input:focus-visible { outline: 3px solid var(--brand-red, #E4212F); outline-offset: 1px; }
+
+/* ─── 24. 읽는 글자 키우기 ──────────────────────────────────────────
+   학부모가 실제로 읽는 문단만 13px → 15px 로 올린다.
+   라벨·번호·버튼·통계 밑단(11~13px)은 장식이라 그대로 둔다. */
+.original-effect-card p,
+.why-card p,
+.program-target,
+.diag-list li,
+.proof-body,
+.admissions-pillars p,
+.loc-text span,
+.roadmap-points span,
+.director-content p,
+.original-effects-note,
+.studyforce-summary-grid span {
+  font-size: 15px;
+}
+
+
+/* 11px 로 찍히던 설명 한 문장 — 읽으라고 쓴 글이라 올린다 */
+.ar-stat-tip { font-size: 13px; }
+
+/* 카드 안 상세 설명 — 본문(15px)보다 한 단 아래, 라벨(13px)보다 한 단 위 */
+.program-detail-list li,
+.track-list li,
+.sf-points li,
+.ep-top p,
+.ep-body p,
+.footer-brand-area p,
+.heidi-flow-card span,
+.heidi-homework__details span {
+  font-size: 14px;
+}
+
+/* 인라인 <style> 에 더 구체적인 규칙이 있어 같은 무게로 맞춘다 */
+.studyforce-center .studyforce-summary-grid span,
+.myuse-prep p { font-size: 14px; }
