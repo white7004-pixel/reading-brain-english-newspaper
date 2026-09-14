@@ -3503,8 +3503,21 @@ function renderBookquizMap() {
       ? "완료 · 복습 가능"
       : current ? "현재 단계" : "이전 단계를 먼저 완료하세요";
   });
+  placeBookquizOwl(map);
   $("#bookquizSecondRoundBtn").classList.toggle("hidden", !(map.round === 1 && map.roundCompleted));
   $("#bookquizFinalComplete").classList.toggle("hidden", !map.allRoundsCompleted);
+}
+
+// 부엉이는 지도 위의 "내 말"이다. 지금 할 단계 카드에 서 있고, 단계를 끝내면 다음 칸으로 옮겨 앉는다.
+// 다른 칸으로 옮길 때만 다시 붙이므로 착지 애니메이션도 그때만 재생된다.
+function placeBookquizOwl(map) {
+  const owl = $("#bookquizOwl");
+  if (!owl) return;
+  const buttons = $$("[data-bookquiz-node]");
+  const home = buttons.find((b) => b.dataset.state === "review" || b.dataset.state === "current")
+    || buttons[buttons.length - 1];
+  owl.dataset.pose = map.roundCompleted || map.allRoundsCompleted ? "complete" : "guide";
+  if (owl.parentElement !== home) home.appendChild(owl);
 }
 
 function persistBookquizMap() {

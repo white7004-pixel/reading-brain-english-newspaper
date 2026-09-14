@@ -7,7 +7,7 @@
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # setMascot() 이 쓰는 상태 이름과 같아야 한다 (game-ui-model.js)
 STATES = [
@@ -17,6 +17,7 @@ STATES = [
 
 WHITE_CUTOFF = 244  # 이 값보다 밝으면 배경으로 본다
 PADDING = 12        # 캐릭터 주위에 남길 여백(px)
+EDGE_THRESH = 28    # 가장자리에서 번져 나가며 투명하게 만들 흰색 허용 폭
 
 
 def trim_white(cell):
@@ -32,6 +33,23 @@ def trim_white(cell):
     right = min(cell.width, right + PADDING)
     bottom = min(cell.height, bottom + PADDING)
     return cell.crop((left, top, right, bottom))
+
+
+def clear_background(cell):
+    """테두리에 닿은 흰 배경만 투명하게 한다.
+
+    밝기로 한꺼번에 지우면 부엉이의 흰 배·눈까지 뚫리므로, 가장자리에서
+    이어진 흰 영역만 번지기(flood fill)로 지운다.
+    """
+    rgba = cell.convert("RGBA")
+    w, h = rgba.size
+    seeds = [(x, y) for x in range(0, w, 8) for y in (0, h - 1)]
+    seeds += [(x, y) for y in range(0, h, 8) for x in (0, w - 1)]
+    for seed in seeds:
+        r, g, b, a = rgba.getpixel(seed)
+        if a and min(r, g, b) >= WHITE_CUTOFF:
+            ImageDraw.floodfill(rgba, seed, (255, 255, 255, 0), thresh=EDGE_THRESH)
+    return rgba
 
 
 def main():
@@ -52,7 +70,7 @@ def main():
     for r, row in enumerate(STATES):
         for c, state in enumerate(row):
             cell = sheet.crop((c * cell_w, r * cell_h, (c + 1) * cell_w, (r + 1) * cell_h))
-            trimmed = trim_white(cell)
+            trimmed = clear_background(trim_white(cell))
             # 화면에서는 54~120px 로 쓴다. 고해상도 화면(2배)을 감안해도
             # 긴 변 280px 이면 충분하다. 오프라인 캐시에 들어가므로 webp 로 줄인다.
             trimmed.thumbnail((280, 280), Image.LANCZOS)
