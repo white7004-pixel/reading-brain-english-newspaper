@@ -1,4 +1,4 @@
-const CACHE_VERSION = "20260914-bq-owl-2";
+const CACHE_VERSION = "20260915-silent-start";
 const SHELL_CACHE = `rb-shell-${CACHE_VERSION}`;
 const CONTENT_CACHE = `rb-content-${CACHE_VERSION}`;
 const CACHE_PREFIXES = ["rb-shell-", "rb-content-"];
@@ -8,8 +8,8 @@ const SHELL_ASSETS = [
   "/index.html",
   "/offline.html",
   "/manifest.webmanifest",
-  "/styles.css?v=20260914-bq-owl-2",
-  "/mint-galaxy.css?v=20260914-bq-owl-2",
+  "/styles.css?v=20260915-silent-start",
+  "/mint-galaxy.css?v=20260915-silent-start",
   "/assets/reading-brain-logo.jpg",
   "/assets/icons/icon-192.png",
   "/assets/icons/icon-512.png",
@@ -29,7 +29,7 @@ const CONTENT_ASSETS = [
   "/game-ui-model.js?v=20260821",
   "/game-ui.js?v=20260821",
   "/offline-sync-model.js?v=20260823",
-  "/app.js?v=20260914-bq-owl-2",
+  "/app.js?v=20260915-silent-start",
   "/assets/mascot/default.webp",
   "/assets/mascot/guide.webp",
   "/assets/mascot/listening.webp",

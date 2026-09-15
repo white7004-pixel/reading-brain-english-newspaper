@@ -12,6 +12,16 @@ assert.doesNotMatch(html, /id="bqSpeakBtn"/);
 assert.match(html, /auto-pronunciation-model\.js/);
 assert.match(html, /bookquiz-map-model\.js/);
 assert.match(app, /function scheduleCardPronunciation\(/);
+assert.match(
+  app,
+  /function scheduleCardPronunciation\([^)]*\) \{\s*if \(!pronunciationViewVisible\(/,
+  "cards rendered behind the login or hub screen must stay silent",
+);
+assert.match(
+  app,
+  /function scheduleVerbFormsPronunciation\(verb\) \{\s*if \(!pronunciationViewVisible\("verb"\)\)/,
+  "verb cards rendered off-screen must stay silent",
+);
 assert.match(app, /const NATIVE_AUDIO_MODE = "tts";/, "pattern cards must speak the current sentence instead of a stale numbered MP3");
 assert.match(
   app,

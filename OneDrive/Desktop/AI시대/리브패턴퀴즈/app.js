@@ -32,7 +32,19 @@ const answerAdvance = dailyLearning.createAdvanceGuard?.() || {
 };
 let answerAdvanceTimer = null;
 
+// 카드는 화면에 나오기 전에도 미리 그려진다(init 의 renderStudy 등).
+// 학생이 보고 있지 않은 카드의 발음이 로그인·허브 화면에서 들리지 않게, 그 카드의 화면이 떠 있을 때만 읽는다.
+// 화면에 들어갈 때 setMode 가 카드를 다시 그리므로 그때 제대로 읽힌다.
+const PRONUNCIATION_VIEWS = { pattern: "study", bookquiz: "bookquiz", verb: "verb" };
+
+function pronunciationViewVisible(section) {
+  if (!elements.loginScreen?.classList.contains("hidden")) return false;
+  if (!$(`#${PRONUNCIATION_VIEWS[section]}View`)?.classList.contains("active")) return false;
+  return section !== "bookquiz" || !$("#bqCardArea")?.classList.contains("hidden");
+}
+
 function scheduleCardPronunciation({ section, stage, item, round }) {
+  if (!pronunciationViewVisible(section)) return false;
   const token = autoPronunciation.createToken?.({ section, stage, itemId: item?.id, round });
   if (!cardPronunciationGuard?.shouldPlay(token, navigator.onLine !== false)) return false;
   queueMicrotask(() => {
@@ -43,6 +55,7 @@ function scheduleCardPronunciation({ section, stage, item, round }) {
 }
 
 function scheduleVerbFormsPronunciation(verb) {
+  if (!pronunciationViewVisible("verb")) return false;
   const token = autoPronunciation.createToken?.({ section: "verb", stage: "study", itemId: verb?.id });
   if (!cardPronunciationGuard?.shouldPlay(token, navigator.onLine !== false)) return false;
   queueMicrotask(() => {
