@@ -1,0 +1,15 @@
+{
+  "name": "@edunap/exam-analysis",
+  "private": true,
+  "version": "0.1.0",
+  "description": "에듀냅 시험지 분석 시험판 — 영어 시험지 사진으로 학교 분석과 학생 리포트를 만듭니다.",
+  "type": "module",
+  "engines": { "node": ">=20.11" },
+  "scripts": {
+    "test": "node --test",
+    "local": "node --env-file-if-exists=.env.local scripts/local.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0"
+  }
+}
