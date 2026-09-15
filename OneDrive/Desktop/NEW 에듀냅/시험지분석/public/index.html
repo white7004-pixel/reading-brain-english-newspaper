@@ -4,16 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>에듀냅 시험지 분석 (시험판)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
 <script type="module" src="app.js"></script>
 </head>
 <body>
+<header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag">시험판</span></header>
 <main class="app">
-  <header class="top"><h1>시험지 분석 <small>영어 · 시험판</small></h1></header>
+  <div class="hero">
+    <p class="eyebrow">SUBJECT · 교과 입시</p>
+    <h1>시험지 분석</h1>
+    <p class="lede">영어 시험지 사진으로 학교 분석과 학생 리포트를 만듭니다</p>
+  </div>
 
   <section id="step-code" class="card" hidden>
-    <h2>접속 코드</h2>
+    <h2><span class="step">ACCESS</span>접속 코드</h2>
     <form id="code-form" class="row">
       <input id="code" required autocomplete="off" placeholder="안내받은 코드" aria-label="접속 코드">
       <button>시작</button>
@@ -21,11 +29,11 @@
   </section>
 
   <section id="step-academy" class="card" hidden>
-    <h2>1. 학원 정보 <small>이 브라우저에 기억됩니다</small></h2>
+    <h2><span class="step">STEP 01</span>학원 정보 <small>이 브라우저에 기억됩니다</small></h2>
     <form id="academy-form" class="grid">
       <label>학원 이름<input name="academyName" required placeholder="에듀냅학원"></label>
       <label>연락처<input name="phone" placeholder="031-000-0000"></label>
-      <label>대표 색<input name="color" type="color" value="#1f2a55"></label>
+      <label>대표 색<input name="color" type="color" value="#03392A"></label>
       <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
       <img id="logo-preview" alt="로고 미리보기" hidden>
       <button class="wide">저장하고 다음</button>
@@ -33,7 +41,7 @@
   </section>
 
   <section id="step-upload" class="card" hidden>
-    <h2>2. 시험지 올리기</h2>
+    <h2><span class="step">STEP 02</span>시험지 올리기</h2>
     <form id="upload-form" class="grid">
       <label>학교<input name="school" required placeholder="에듀냅중학교"></label>
       <label>학년
@@ -51,7 +59,7 @@
   </section>
 
   <section id="step-confirm" class="card" hidden>
-    <h2>3. 문항표 확인 <small>노란 칸은 AI가 자신 없는 곳입니다. 고치면 노란색이 사라집니다</small></h2>
+    <h2><span class="step">STEP 03</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다</small></h2>
     <p id="confirm-notes" class="notes"></p>
     <p id="confirm-total" class="status"></p>
     <div class="table-wrap">
@@ -63,7 +71,7 @@
   </section>
 
   <section id="step-students" class="card" hidden>
-    <h2>4. 학생 오답 입력 <small>비워 두면 학교 분석만 만듭니다</small></h2>
+    <h2><span class="step">STEP 04</span>학생 오답 입력 <small>비워 두면 학교 분석만 만듭니다</small></h2>
     <p class="hint">한 줄에 한 명. 예) <code>김OO 4, 9, 25</code> · 고른 답까지 <code>김OO 4(③), 9(②)</code> · 다 맞으면 <code>김OO 0</code></p>
     <textarea id="students" rows="6" placeholder="김OO 4, 9, 25" aria-label="학생별 틀린 문항"></textarea>
     <p id="students-problems" class="problems" role="alert"></p>
