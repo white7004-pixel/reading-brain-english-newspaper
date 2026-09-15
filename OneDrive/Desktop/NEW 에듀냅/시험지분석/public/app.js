@@ -188,11 +188,31 @@ $('#make-report').addEventListener('click', async (e) => {
       + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('');
     setStatus('#report-status', '');
     show('#step-result');
+    fitAll();
+    document.fonts.ready.then(fitAll); // 제목 웹폰트가 늦게 들어오면 높이가 바뀐다
   } catch (err) {
     setStatus('#report-status', `${err.message} — 버튼을 다시 누르면 다시 시도합니다`, true);
   } finally {
     button.disabled = false;
   }
+});
+
+// ---------- A4 한 장 맞추기 ----------
+// 넘치면 글자 배율(--fit)을 조금씩 줄인다. 고친 글이 짧아지면 다시 커지도록 매번 1 부터 계산한다.
+function fitPage(page) {
+  let fit = 1;
+  page.style.setProperty('--fit', fit);
+  while (page.scrollHeight > page.clientHeight && fit > 0.72) {
+    fit = Math.round((fit - 0.03) * 100) / 100;
+    page.style.setProperty('--fit', fit);
+  }
+  page.closest('.sheet').querySelector('.fit-warn').hidden = page.scrollHeight <= page.clientHeight;
+}
+const fitAll = () => document.querySelectorAll('#pages .page').forEach(fitPage);
+
+$('#pages').addEventListener('input', (e) => {
+  const page = e.target.closest('.page');
+  if (page) fitPage(page);
 });
 
 // ---------- 6. 내려받기 ----------
