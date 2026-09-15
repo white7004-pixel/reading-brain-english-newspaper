@@ -1,4 +1,5 @@
-import { AREAS, DIFF5, KINDS, examStats, esc } from './lib.js';
+import { AREAS, DIFF5, KINDS, examStats, studentStats, parseStudents, esc } from './lib.js';
+import { schoolPage, studentPage } from './report.js';
 
 export const $ = (sel) => document.querySelector(sel);
 export const state = { code: '', academy: null, meta: null, items: [] };
@@ -156,6 +157,61 @@ $('#items').addEventListener('input', (e) => {
   td.classList.remove('unsure');
   if (field === 'points') updateTotal();
 });
+
+// ---------- 4. 학생 입력 ----------
+function checkStudents() {
+  const result = parseStudents($('#students').value, state.items.map((it) => it.no));
+  $('#students-problems').textContent = result.problems.join('\n');
+  return result;
+}
+$('#students').addEventListener('input', checkStudents);
+
+// ---------- 5. 리포트 만들기 ----------
+$('#make-report').addEventListener('click', async (e) => {
+  const { students, problems } = checkStudents();
+  if (problems.length) return;
+  const button = e.currentTarget;
+  button.disabled = true;
+  const items = state.items.map(({ unsure, ...it }) => it);
+  const groups = [];
+  for (let i = 0; i < students.length; i += 10) groups.push(students.slice(i, i + 10));
+  try {
+    setStatus('#report-status', `분석 글을 쓰는 중입니다${students.length ? ` (학생 ${students.length}명)` : ''}. 1~3분 걸립니다…`);
+    const [school, ...parts] = await Promise.all([
+      api('/api/report', { mode: 'school', meta: state.meta, items }),
+      ...groups.map((group) => api('/api/report', { mode: 'students', meta: state.meta, items, students: group })),
+    ]);
+    const written = parts.flatMap((p) => p.students); // 서버가 학생 수·순서를 맞춰 돌려준다
+    const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
+    $('#pages').style.setProperty('--brand', state.academy.color);
+    $('#pages').innerHTML = schoolPage(ctx, school)
+      + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('');
+    setStatus('#report-status', '');
+    show('#step-result');
+  } catch (err) {
+    setStatus('#report-status', `${err.message} — 버튼을 다시 누르면 다시 시도합니다`, true);
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// ---------- 6. 내려받기 ----------
+$('#pages').addEventListener('click', async (e) => {
+  const button = e.target.closest('[data-png]');
+  if (!button) return;
+  const page = button.closest('.sheet').querySelector('.page');
+  button.disabled = true;
+  try {
+    const url = await htmlToImage.toPng(page, { pixelRatio: 2, backgroundColor: '#ffffff' });
+    Object.assign(document.createElement('a'), { href: url, download: `${button.dataset.png}.png` }).click();
+  } catch {
+    alert('이미지를 만들지 못했습니다. [전체 인쇄 / PDF 저장]을 써 주세요');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#print').addEventListener('click', () => window.print());
 
 // ---------- 시작 ----------
 state.code = store.get('code') || '';
