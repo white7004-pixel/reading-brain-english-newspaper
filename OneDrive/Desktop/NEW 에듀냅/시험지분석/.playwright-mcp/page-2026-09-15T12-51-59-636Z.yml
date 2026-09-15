@@ -1,8 +1,0 @@
-- main [ref=e2]:
-  - heading "시험지 분석 영어 · 시험판" [level=1] [ref=e4]
-  - generic [ref=e5]:
-    - heading "접속 코드" [level=2] [ref=e6]
-    - generic [ref=e7]:
-      - textbox "접속 코드" [ref=e8]:
-        - /placeholder: 안내받은 코드
-      - button "시작" [ref=e9] [cursor=pointer]
