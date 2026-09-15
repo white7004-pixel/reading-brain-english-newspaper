@@ -1,0 +1,20 @@
+- main [ref=e2]:
+  - heading "시험지 분석 영어 · 시험판" [level=1] [ref=e4]
+  - generic [ref=e10]:
+    - heading "1. 학원 정보 이 브라우저에 기억됩니다" [level=2] [ref=e11]
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - text: 학원 이름
+        - textbox "학원 이름" [ref=e14]:
+          - /placeholder: 에듀냅학원
+      - generic [ref=e15]:
+        - text: 연락처
+        - textbox "연락처" [ref=e16]:
+          - /placeholder: 031-000-0000
+      - generic [ref=e17]:
+        - text: 대표 색
+        - textbox "대표 색" [ref=e18]: "#1f2a55"
+      - generic [ref=e19]:
+        - text: 로고 이미지
+        - button "로고 이미지" [ref=e20]
+      - button "저장하고 다음" [ref=e21] [cursor=pointer]

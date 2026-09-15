@@ -1,0 +1,55 @@
+- main [ref=e2]:
+  - heading "시험지 분석 영어 · 시험판" [level=1] [ref=e4]
+  - generic [ref=e10]:
+    - heading "1. 학원 정보 이 브라우저에 기억됩니다" [level=2] [ref=e11]
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - text: 학원 이름
+        - textbox "학원 이름" [ref=e14]:
+          - /placeholder: 에듀냅학원
+          - text: 에듀냅학원
+      - generic [ref=e15]:
+        - text: 연락처
+        - textbox "연락처" [ref=e16]:
+          - /placeholder: 031-000-0000
+      - generic [ref=e17]:
+        - text: 대표 색
+        - textbox "대표 색" [ref=e18]: "#1f2a55"
+      - generic [ref=e19]:
+        - text: 로고 이미지
+        - button "로고 이미지" [ref=e20]
+      - button "저장하고 다음" [active] [ref=e21] [cursor=pointer]
+  - generic [ref=e22]:
+    - heading "2. 시험지 올리기" [level=2] [ref=e23]
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - text: 학교
+        - textbox "학교" [ref=e26]:
+          - /placeholder: 에듀냅중학교
+      - generic [ref=e27]:
+        - text: 학년
+        - combobox "학년" [ref=e28]:
+          - option "중1"
+          - option "중2" [selected]
+          - option "중3"
+          - option "고1"
+          - option "고2"
+          - option "고3"
+      - generic [ref=e29]:
+        - text: 학기
+        - combobox "학기" [ref=e30]:
+          - option "1학기" [selected]
+          - option "2학기"
+      - generic [ref=e31]:
+        - text: 시험
+        - combobox "시험" [ref=e32]:
+          - option "중간고사" [selected]
+          - option "기말고사"
+      - generic [ref=e33]:
+        - text: 시험지 사진 (1~6장, 쪽 순서대로 선택)
+        - button "시험지 사진 (1~6장, 쪽 순서대로 선택)" [ref=e34]
+      - generic [ref=e35]:
+        - text: 정답지 사진 (있으면, 2장까지)
+        - button "정답지 사진 (있으면, 2장까지)" [ref=e36]
+      - button "AI로 문항표 만들기" [ref=e37] [cursor=pointer]
+    - status [ref=e38]
