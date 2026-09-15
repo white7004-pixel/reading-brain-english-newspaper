@@ -13,8 +13,10 @@ export function makeHandler(run) {
     const code = process.env.TRIAL_CODE;
     if (!code) return send(500, { error: '서버에 접속 코드가 설정되지 않았습니다' });
     if (req.headers['x-trial-code'] !== code) return send(401, { error: '접속 코드가 맞지 않습니다' });
+    let body;
+    try { body = req.body || {}; } catch { return send(400, { error: '요청을 읽지 못했습니다' }); } // Vercel 은 깨진 JSON 이면 여기서 던진다
     try {
-      send(200, await run(req.body || {}));
+      send(200, await run(body));
     } catch (e) {
       if (e instanceof UserError) return send(400, { error: e.message });
       console.error('실패', e?.status ?? '', e?.name ?? '', e?.message ?? '');

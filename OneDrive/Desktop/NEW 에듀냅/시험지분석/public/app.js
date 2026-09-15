@@ -126,25 +126,36 @@ const options = (list, value) => list.map((o) => `<option${o === value ? ' selec
 function renderItems() {
   $('#items tbody').innerHTML = state.items.map((it, i) => {
     const cell = (field, html) => `<td data-field="${field}" class="${it.unsure.includes(field) ? 'unsure' : ''}">${html}</td>`;
+    const no = esc(it.no);
     return `<tr data-i="${i}">
-      <td>${it.no}</td>
-      ${cell('kind', `<select aria-label="${it.no}번 유형">${options(KINDS, it.kind)}</select>`)}
-      ${cell('points', `<input type="number" step="0.1" min="0" value="${it.points}" aria-label="${it.no}번 배점">`)}
-      ${cell('area', `<select aria-label="${it.no}번 영역">${options(AREAS, it.area)}</select>`)}
-      ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${it.no}번 세부유형">`)}
-      ${cell('difficulty', `<select aria-label="${it.no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
-      ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${it.no}번 정답">`)}
+      ${cell('no', `<input type="number" min="1" step="1" value="${no}" aria-label="${no}번 번호">`)}
+      ${cell('kind', `<select aria-label="${no}번 유형">${options(KINDS, it.kind)}</select>`)}
+      ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
+      ${cell('area', `<select aria-label="${no}번 영역">${options(AREAS, it.area)}</select>`)}
+      ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${no}번 세부유형">`)}
+      ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
+      ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${no}번 정답">`)}
       <td class="reason">${esc(it.reason)}</td>
+      <td><button type="button" class="ghost" data-del aria-label="${no}번 삭제">삭제</button></td>
     </tr>`;
   }).join('');
   updateTotal();
 }
 
+// 번호가 비었거나 겹치면 리포트 숫자가 틀어진다 → 고칠 때까지 만들지 않는다
+function itemProblem() {
+  if (state.items.some((it) => !Number.isInteger(it.no) || it.no < 1)) return '번호가 비어 있는 문항이 있습니다';
+  const nos = state.items.map((it) => it.no);
+  const dups = [...new Set(nos.filter((n, i) => nos.indexOf(n) !== i))];
+  return dups.length ? `${dups.join(', ')}번이 두 번 있습니다` : '';
+}
+
 function updateTotal() {
   const { count, total } = examStats(state.items);
-  const off = total !== 100;
-  $('#confirm-total').textContent = `${count}문항 · 배점 합계 ${total}점${off ? ' — 100점이 아닙니다. 배점을 확인해 주세요' : ''}`;
-  $('#confirm-total').classList.toggle('warn', off);
+  const notes = [total !== 100 && '100점이 아닙니다. 배점을 확인해 주세요', itemProblem()].filter(Boolean);
+  $('#confirm-total').textContent = `${count}문항 · 배점 합계 ${total}점${notes.length ? ` — ${notes.join(' · ')}` : ''}`;
+  $('#confirm-total').classList.toggle('warn', notes.length > 0);
+  checkStudents(); // 학생 번호 확인도 지금 번호로
 }
 
 $('#items').addEventListener('input', (e) => {
@@ -152,10 +163,23 @@ $('#items').addEventListener('input', (e) => {
   if (!td) return;
   const it = state.items[Number(td.parentElement.dataset.i)];
   const field = td.dataset.field;
-  it[field] = field === 'points' ? Number(e.target.value) : e.target.value;
+  it[field] = field === 'points' || field === 'no' ? Number(e.target.value) : e.target.value;
   it.unsure = it.unsure.filter((name) => name !== field);
   td.classList.remove('unsure');
-  if (field === 'points') updateTotal();
+  if (field === 'points' || field === 'no') updateTotal();
+});
+
+$('#items').addEventListener('click', (e) => {
+  const tr = e.target.closest('[data-del]')?.closest('tr');
+  if (!tr) return;
+  state.items.splice(Number(tr.dataset.i), 1);
+  renderItems();
+});
+
+$('#add-item').addEventListener('click', () => {
+  const no = Math.max(0, ...state.items.map((it) => Number(it.no) || 0)) + 1;
+  state.items.push({ no, kind: '객관식', points: 0, area: '독해', subtype: '', difficulty: '중', answer: '', reason: '원장님 추가', unsure: [] });
+  renderItems();
 });
 
 // ---------- 4. 학생 입력 ----------
@@ -167,20 +191,39 @@ function checkStudents() {
 $('#students').addEventListener('input', checkStudents);
 
 // ---------- 5. 리포트 만들기 ----------
+// 최대 limit 개만 동시에 부른다. 결과는 넣은 순서대로. 하나가 실패하면 남은 호출은 시작하지 않는다.
+async function runLimited(tasks, limit) {
+  const out = [];
+  let next = 0;
+  const worker = async () => {
+    while (next < tasks.length) {
+      const i = next++;
+      try { out[i] = await tasks[i](); } catch (err) { next = tasks.length; throw err; }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
+  return out;
+}
+
+const GROUP = 5; // 학생 5명씩 한 번
+const IN_FLIGHT = 3; // 동시에 3개까지 (학교 분석 포함)
+
 $('#make-report').addEventListener('click', async (e) => {
+  const itemIssue = itemProblem();
+  if (itemIssue) return setStatus('#report-status', `${itemIssue} — 문항표에서 번호를 고쳐 주세요`, true);
   const { students, problems } = checkStudents();
   if (problems.length) return;
   const button = e.currentTarget;
   button.disabled = true;
-  const items = state.items.map(({ unsure, ...it }) => it);
+  const items = [...state.items].sort((a, b) => a.no - b.no).map(({ unsure, ...it }) => it);
   const groups = [];
-  for (let i = 0; i < students.length; i += 10) groups.push(students.slice(i, i + 10));
+  for (let i = 0; i < students.length; i += GROUP) groups.push(students.slice(i, i + GROUP));
   try {
     setStatus('#report-status', `분석 글을 쓰는 중입니다${students.length ? ` (학생 ${students.length}명)` : ''}. 1~3분 걸립니다…`);
-    const [school, ...parts] = await Promise.all([
-      api('/api/report', { mode: 'school', meta: state.meta, items }),
-      ...groups.map((group) => api('/api/report', { mode: 'students', meta: state.meta, items, students: group })),
-    ]);
+    const [school, ...parts] = await runLimited([
+      () => api('/api/report', { mode: 'school', meta: state.meta, items }),
+      ...groups.map((group) => () => api('/api/report', { mode: 'students', meta: state.meta, items, students: group })),
+    ], IN_FLIGHT);
     const written = parts.flatMap((p) => p.students); // 서버가 학생 수·순서를 맞춰 돌려준다
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
     $('#pages').style.setProperty('--brand', state.academy.color);
@@ -199,14 +242,18 @@ $('#make-report').addEventListener('click', async (e) => {
 
 // ---------- A4 한 장 맞추기 ----------
 // 넘치면 글자 배율(--fit)을 조금씩 줄인다. 고친 글이 짧아지면 다시 커지도록 매번 1 부터 계산한다.
+// 인쇄 반올림 여유 2px: 잴 때만 종이를 2px 짧게 두고 맞춘다 (scrollHeight 는 clientHeight 보다 작아지지 않으므로 빼기로는 못 잰다)
 function fitPage(page) {
+  const overflows = () => page.scrollHeight > page.clientHeight;
+  page.style.height = 'calc(297mm - 2px)';
   let fit = 1;
   page.style.setProperty('--fit', fit);
-  while (page.scrollHeight > page.clientHeight && fit > 0.72) {
+  while (overflows() && fit > 0.72) {
     fit = Math.round((fit - 0.03) * 100) / 100;
     page.style.setProperty('--fit', fit);
   }
-  page.closest('.sheet').querySelector('.fit-warn').hidden = page.scrollHeight <= page.clientHeight;
+  page.closest('.sheet').querySelector('.fit-warn').hidden = !overflows();
+  page.style.height = '';
 }
 const fitAll = () => document.querySelectorAll('#pages .page').forEach(fitPage);
 

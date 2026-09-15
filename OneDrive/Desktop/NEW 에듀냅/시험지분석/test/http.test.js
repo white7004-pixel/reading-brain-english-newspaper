@@ -4,11 +4,17 @@ import { makeHandler, UserError } from '../lib/http.js';
 
 process.env.TRIAL_CODE = 'c';
 
-async function call(run, { method = 'POST', code = 'c', body = { a: 1 } } = {}) {
+async function call(run, { method = 'POST', code = 'c', body = { a: 1 }, req } = {}) {
   const res = { statusCode: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(s) { this.body = JSON.parse(s); } };
-  await makeHandler(run)({ method, headers: { 'x-trial-code': code }, body }, res);
+  await makeHandler(run)(req || { method, headers: { 'x-trial-code': code }, body }, res);
   return res;
 }
+
+test('요청 본문을 읽다 실패하면 400 으로 알린다', async () => {
+  const req = { method: 'POST', headers: { 'x-trial-code': 'c' }, get body() { throw new SyntaxError('Unexpected token 김'); } };
+  const res = await call(async () => ({}), { req });
+  assert.deepEqual([res.statusCode, res.body.error], [400, '요청을 읽지 못했습니다']);
+});
 
 test('접속 코드와 방식이 맞으면 결과를 돌려준다', async () => {
   const res = await call(async (body) => ({ got: body.a }));

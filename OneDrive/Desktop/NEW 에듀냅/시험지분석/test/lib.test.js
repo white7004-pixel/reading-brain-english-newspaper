@@ -40,6 +40,13 @@ test('parseStudents 는 한 줄에 한 명씩 읽고 문제를 알려 준다', (
   assert.match(problems[2], /99/);
 });
 
+test('parseStudents 는 한글 두 글자 이상이 이어진 표기를 막는다', () => {
+  const { problems } = parseStudents('김철수학생 1\n김 철수 1\n김OO 1\n김○○ 1\nB 1\nKM 1', [1]);
+  assert.equal(problems.length, 2);
+  assert.match(problems[0], /^김철수학생: 전체 이름 대신/);
+  assert.match(problems[1], /^김 철수: 전체 이름 대신/);
+});
+
 test('to3 와 esc', () => {
   assert.deepEqual(['하', '중하', '중', '중상', '상'].map(to3), ['하', '하', '중', '상', '상']);
   assert.equal(esc('<a href="x">&\'</a>'), '&lt;a href=&quot;x&quot;&gt;&amp;&#39;&lt;/a&gt;');

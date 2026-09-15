@@ -20,7 +20,12 @@ http.createServer(async (req, res) => {
     try { req.body = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { req.body = {}; }
     return api(req, res);
   }
-  const file = path.join(ROOT, url.pathname === '/' ? 'index.html' : path.normalize(decodeURIComponent(url.pathname)));
+  let file;
+  try {
+    file = path.join(ROOT, url.pathname === '/' ? 'index.html' : path.normalize(decodeURIComponent(url.pathname)));
+  } catch {
+    res.statusCode = 400; return res.end(); // %E0 같은 깨진 주소
+  }
   if (!file.startsWith(ROOT)) { res.statusCode = 403; return res.end(); }
   try {
     const data = await readFile(file);
@@ -30,4 +35,4 @@ http.createServer(async (req, res) => {
     res.statusCode = 404;
     res.end('없음');
   }
-}).listen(PORT, () => console.log(`http://localhost:${PORT}  (접속 코드: ${process.env.TRIAL_CODE})`));
+}).listen(PORT, '127.0.0.1', () => console.log(`http://localhost:${PORT}  (접속 코드: ${process.env.TRIAL_CODE})`));

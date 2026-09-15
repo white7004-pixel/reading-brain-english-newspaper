@@ -66,7 +66,7 @@ export function parseStudents(text, itemNos) {
     const m = line.match(/^(.+?)\s+(\d.*)$/);
     if (!m) return problems.push(`${i + 1}번째 줄: 이름 뒤에 틀린 번호를 적어 주세요 (다 맞으면 0)`);
     const label = m[1].trim();
-    if (/^[가-힣]{2,4}$/.test(label)) problems.push(`${label}: 전체 이름 대신 성+OO 또는 이니셜로 적어 주세요`);
+    if (/[가-힣]{2,}/.test(label)) problems.push(`${label}: 전체 이름 대신 성+OO 또는 이니셜로 적어 주세요`);
     const seen = new Set();
     const wrong = [];
     for (const [, no, chosen] of m[2].matchAll(/(\d+)\s*(?:\(([^)]*)\))?/g)) {

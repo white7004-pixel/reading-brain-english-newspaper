@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js" integrity="sha384-UbfRVKN3/elS1r7JcK2FhmPP+KlJ4CvYwbyYD7tH+uTkbT9bNJr9eJeQ0FoFbAgz" crossorigin="anonymous"></script>
 <script type="module" src="app.js"></script>
 </head>
 <body>
@@ -64,10 +64,11 @@
     <p id="confirm-total" class="status"></p>
     <div class="table-wrap">
       <table id="items">
-        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>영역</th><th>세부유형</th><th>난이도</th><th>정답</th><th>판단 근거</th></tr></thead>
+        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>영역</th><th>세부유형</th><th>난이도</th><th>정답</th><th>판단 근거</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
+    <button id="add-item" type="button" class="ghost">문항 추가</button>
   </section>
 
   <section id="step-students" class="card" hidden>

@@ -4,6 +4,18 @@ import { UserError } from './http.js';
 
 let client;
 
+// 대체 모델로 넘어가면 content 에 거절한 모델의 글, fallback 블록, 대체 모델의 글이 차례로 온다 → 마지막 fallback 뒤만 읽는다.
+export function readJson(msg) {
+  if (msg.stop_reason === 'refusal') throw new UserError('이 사진은 분석하지 못했습니다. 영어 시험지 사진인지 확인해 주세요');
+  if (msg.stop_reason === 'max_tokens') throw new UserError('내용이 너무 길어 끝까지 받지 못했습니다. 사진이나 학생 수를 나눠 주세요');
+  const blocks = msg.content.slice(msg.content.findLastIndex((b) => b.type === 'fallback') + 1);
+  try {
+    return JSON.parse(blocks.filter((b) => b.type === 'text').map((b) => b.text).join(''));
+  } catch {
+    throw new Error('AI 답을 JSON 으로 읽지 못함'); // 파싱 오류 메시지는 입력을 인용한다 → 학생 내용이 로그로 가지 않게 버린다
+  }
+}
+
 export async function askJson({ system, content, schema, maxTokens }) {
   client ||= new Anthropic({ maxRetries: 2 });
   const stream = client.beta.messages.stream({
@@ -19,7 +31,5 @@ export async function askJson({ system, content, schema, maxTokens }) {
   const msg = await stream.finalMessage();
   const u = msg.usage || {};
   console.log(`claude usage ${JSON.stringify({ model: msg.model, in: u.input_tokens, out: u.output_tokens, cacheRead: u.cache_read_input_tokens })}`);
-  if (msg.stop_reason === 'refusal') throw new UserError('이 사진은 분석하지 못했습니다. 영어 시험지 사진인지 확인해 주세요');
-  if (msg.stop_reason === 'max_tokens') throw new UserError('내용이 너무 길어 끝까지 받지 못했습니다. 사진이나 학생 수를 나눠 주세요');
-  return JSON.parse(msg.content.filter((b) => b.type === 'text').map((b) => b.text).join(''));
+  return readJson(msg);
 }

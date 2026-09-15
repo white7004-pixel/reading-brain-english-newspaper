@@ -60,3 +60,29 @@ test('reportRequest students 는 학생 수를 확인하고 표기를 되돌린�
   assert.throws(() => reportRequest({ mode: 'x', meta, items }), UserError);
   assert.throws(() => reportRequest({ mode: 'school', meta, items: [{ ...items[0], area: '문학' }] }), UserError);
 });
+
+test('reportRequest 는 같은 번호가 두 번 있으면 막는다', () => {
+  assert.throws(() => reportRequest({ mode: 'school', meta, items: [items[0], { ...items[1], no: 1 }] }), (e) => e instanceof UserError && e.message === '1번 문항이 두 번 있습니다');
+});
+
+test('reportRequest students 는 AI 에 학생1.. 로만 보내고 결과에서 표기를 되돌린다', () => {
+  const students = [{ label: '김OO', wrong: [{ no: 2, chosen: '' }] }, { label: 'KM', wrong: [] }];
+  const r = reportRequest({ mode: 'students', meta, items, students });
+  const text = r.content[0].text;
+  assert.doesNotMatch(text, /김OO|KM/);
+  assert.match(text, /"label":"학생1"/);
+  assert.match(text, /"label":"학생2"/);
+  const out = r.finish({ students: [
+    { label: '학생1', summary: 's', directions: [], causes: [{ no: 2, cause: '조건 누락', explain: 'b' }, { no: 1, cause: '어휘 부족', explain: 'a' }, { no: 2, cause: '조건 누락', explain: 'c' }].reverse() },
+    { label: '학생2', summary: 's', directions: [], causes: [{ no: 1, cause: '어휘 부족', explain: 'x' }] },
+  ] });
+  assert.deepEqual(out.students.map((s) => s.label), ['김OO', 'KM']);
+  assert.deepEqual(out.students[0].causes.map((c) => [c.no, c.explain]), [[2, 'c'], [2, 'b']]);
+  assert.deepEqual(out.students[1].causes, []);
+});
+
+test('reportRequest school 결과는 문항표에 있는 변별 문항만 남긴다', () => {
+  const r = reportRequest({ mode: 'school', meta, items });
+  const out = r.finish({ overview: 'o', strategy: [], keyItems: [{ no: 7, why: 'x' }, { no: 2, why: 'y' }] });
+  assert.deepEqual(out.keyItems, [{ no: 2, why: 'y' }]);
+});

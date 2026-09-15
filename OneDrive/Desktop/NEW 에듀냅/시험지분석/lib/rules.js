@@ -89,10 +89,10 @@ ${TONE}
 ${CLASSIFY}`;
 
 const STUDENTS_SYSTEM = `당신은 한국 입시학원의 영어 담임 강사입니다. 원장님이 확인한 문항표와 학생별 틀린 문항으로 학부모께 보낼 "학생 개인 리포트" 글을 씁니다.
-학생은 받은 표기(성+OO, 이니셜) 그대로 부릅니다.
+학생은 학생1, 학생2 … 로 받습니다. 글에는 이 표기나 이름을 쓰지 않고 "이 학생"이라고 씁니다.
 
 ## 학생마다 쓰는 것 (받은 순서 그대로, 한 명도 빼지 않고)
-- label: 받은 표기 그대로
+- label: 받은 표기(학생1 …) 그대로
 - summary: 1~2문장(100자 이내). 이 시험의 성격과 이 학생 결과 (통계의 점수·보완할 영역 사용).
 - causes: 틀린 문항마다 하나. cause 는 아래 원인 중 가장 가능성 큰 것. explain 은 1~2문장(70자 이내): 이 문항이 무엇을 요구했는지, 왜 틀렸을 가능성이 큰지.
   - 학생이 고른 답(chosen)이 있으면 그 선택지가 왜 매력적이었는지로 원인을 좁힙니다.
@@ -133,11 +133,14 @@ function cleanMeta(m) {
 function cleanItems(list) {
   if (!Array.isArray(list) || list.length < 1 || list.length > 60) throw new UserError('문항표를 다시 만들어 주세요');
   const txt = (v, max) => String(v ?? '').slice(0, max);
+  const seen = new Set();
   return list.map((it) => {
     const no = Number(it?.no);
     if (!Number.isInteger(no) || !KINDS.includes(it.kind) || !AREAS.includes(it.area) || !DIFF5.includes(it.difficulty)) {
       throw new UserError(`${it?.no}번 문항의 칸을 확인해 주세요`);
     }
+    if (seen.has(no)) throw new UserError(`${no}번 문항이 두 번 있습니다`);
+    seen.add(no);
     return { no, kind: it.kind, points: Number(it.points) || 0, area: it.area, subtype: txt(it.subtype, 40), difficulty: it.difficulty, answer: txt(it.answer, 200), reason: txt(it.reason, 200) };
   });
 }
@@ -173,18 +176,25 @@ export function reportRequest(body) {
     return {
       system: SCHOOL_SYSTEM, schema: SCHOOL_SCHEMA, maxTokens: 16000,
       content: [{ type: 'text', text: `다음 자료로 학교 시험 분석 글을 써 주세요.\n${JSON.stringify({ 시험: meta, 통계: stats, 문항표: items })}` }],
-      finish: (out) => out,
+      finish: (out) => ({ ...out, keyItems: out.keyItems.filter((k) => items.some((it) => it.no === k.no)) }),
     };
   }
   if (body.mode === 'students') {
     const students = cleanStudents(body.students, new Set(items.map((it) => it.no)));
-    const withStats = students.map((s) => ({ ...s, 통계: studentStats(items, s.wrong) }));
+    // 원장님이 적은 표기는 AI 로 보내지 않는다. 학생1.. 로 보내고 finish 에서 순서대로 되돌린다.
+    const withStats = students.map((s, i) => ({ label: `학생${i + 1}`, wrong: s.wrong, 통계: studentStats(items, s.wrong) }));
     return {
       system: STUDENTS_SYSTEM, schema: STUDENTS_SCHEMA, maxTokens: 32000,
       content: [{ type: 'text', text: `다음 자료로 학생 ${students.length}명의 개인 리포트 글을 받은 순서대로 써 주세요.\n${JSON.stringify({ 시험: meta, 시험통계: stats, 문항표: items, 학생들: withStats })}` }],
       finish: (out) => {
         if (out.students.length !== students.length) throw new Error(`학생 수가 맞지 않음 ${out.students.length}/${students.length}`);
-        return { students: out.students.map((s, i) => ({ ...s, label: students[i].label })) };
+        return {
+          students: out.students.map((s, i) => {
+            const wrong = new Set(students[i].wrong.map((w) => w.no));
+            const causes = s.causes.filter((c) => wrong.has(c.no)).sort((a, b) => a.no - b.no);
+            return { ...s, causes, label: students[i].label };
+          }),
+        };
       },
     };
   }
