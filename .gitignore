@@ -1,0 +1,6 @@
+node_modules/
+reels/node_modules/
+reels/out/*.mp4
+reels/out/*.png
+.DS_Store
+*.log
