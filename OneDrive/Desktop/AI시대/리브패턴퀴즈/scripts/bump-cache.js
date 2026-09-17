@@ -12,7 +12,7 @@ if (!tag) {
   process.exit(1);
 }
 
-const assets = ["styles.css", "mint-galaxy.css", "app.js"];
+const assets = ["styles.css", "mint-galaxy.css", "viva-theme.css", "app.js"];
 const QUOTES = "\"'";
 
 // `<asset>?v=` 뒤의 값을 따옴표 직전까지 갈아 끼운다. 정규식을 쓰지 않는 이유는

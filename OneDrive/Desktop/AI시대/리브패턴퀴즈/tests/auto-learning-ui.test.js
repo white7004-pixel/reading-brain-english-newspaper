@@ -47,3 +47,11 @@ assert.match(serviceWorker, /auto-pronunciation-model\.js/);
 assert.match(serviceWorker, /bookquiz-map-model\.js/);
 
 console.log("automatic learning UI tests passed");
+
+// 비바북 테마와 둥근 글꼴도 오프라인에서 똑같이 보여야 한다
+const vivaVersion = html.match(/viva-theme\.css\?v=([^"']+)/)?.[1];
+assert.ok(vivaVersion, "index.html must load viva-theme.css after the other stylesheets");
+assert.ok(html.indexOf("viva-theme.css") > html.indexOf("mint-galaxy.css"), "viva-theme.css must load last so it wins ties");
+assert.ok(serviceWorker.includes(`/viva-theme.css?v=${vivaVersion}`), "the service worker must cache the current viva-theme.css version");
+assert.ok(serviceWorker.includes("/assets/fonts/jua-subset.woff2"), "the service worker must cache the Jua font");
+assert.ok(fs.existsSync(path.join(root, "assets/fonts/jua-subset.woff2")), "the Jua font file must ship with the app");

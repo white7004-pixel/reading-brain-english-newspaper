@@ -1,0 +1,234 @@
+/* ============================================================
+   VIVA THEME — 비바북(vivabook.co.kr) 느낌의 첫인상 화면
+   연보라→분홍 그라데이션, 굵고 둥근 흰 제목(Jua), 흰 알약 버튼, 둥근 흰 카드.
+   적용: 앱 바탕·사이드바·상단 · 로그인 · 홈(허브) · 북퀴즈 지도.
+   가장 마지막에 읽혀서 같은 우선순위의 기존 규칙을 덮는다.
+   ============================================================ */
+@font-face {
+  font-family: "Jua";
+  src: url("assets/fonts/jua-subset.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  --viva-lilac: #a95bbf;
+  --viva-pink: #d06aa8;
+  --viva-blush: #e88bb4;
+  --viva-plum: #5b2a86;      /* 흰 글자를 올리는 진한 보라 */
+  --viva-plum-deep: #3b1d5e; /* 흰 카드 위 제목 글자 */
+  --viva-ink: #4a3a5c;       /* 흰 카드 위 본문 */
+  --viva-soft: #f6ecfa;      /* 연한 보라 바탕 */
+  --viva-line: #ecd9f3;
+  --viva-display: "Jua", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --viva-card-shadow: 0 10px 30px rgba(91, 42, 134, .18);
+
+  /* 앱 전체의 주색(파랑) 토큰을 보라로 돌린다. 정답 초록·오답 빨강·보상 금색은 그대로 둔다. */
+  --joy-green: var(--viva-plum);
+  --joy-green-dark: var(--viva-plum-deep);
+  --mint: var(--viva-plum);
+  --mg-mint: var(--viva-plum);
+  --paper: var(--viva-soft);
+  --mg-bg: var(--viva-soft);
+  --game-bg: var(--viva-soft);
+}
+
+/* ---------- 바탕 ---------- */
+html body {
+  background: linear-gradient(140deg, var(--viva-lilac) 0%, var(--viva-pink) 58%, var(--viva-blush) 100%) fixed;
+}
+.app-shell.mg-app-shell { background: transparent; }
+
+.program-tagline {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, .35);
+}
+.program-tagline .tagline-brand { color: #fff; }
+.program-tagline .tagline-pipe,
+.program-tagline .tagline-sub { color: rgba(255, 255, 255, .85); }
+
+/* 사이드바는 흰 글자를 그대로 쓰도록 진한 보라로만 바꾼다 */
+.sidebar.mg-sidebar {
+  background: linear-gradient(180deg, var(--viva-plum) 0%, var(--viva-plum-deep) 100%);
+}
+
+/* ---------- 상단 제목줄 ---------- */
+.topbar.mg-topbar {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+/* 작은 영어 표시는 바탕 위에서 읽히지 않으므로 흰 알약에 담는다 */
+.topbar.mg-topbar .eyebrow,
+.hub-toolbar .hub-section-title .eyebrow {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .92);
+  color: var(--viva-plum);
+}
+.topbar.mg-topbar #screenTitle {
+  font-family: var(--viva-display);
+  font-weight: 400;
+  color: #fff;
+  font-size: clamp(30px, 4vw, 44px);
+  text-shadow: 0 3px 12px rgba(91, 42, 134, .25);
+}
+.topbar.mg-topbar .stats span {
+  background: #fff;
+  border: 0;
+  border-radius: 999px;
+  color: var(--viva-ink);
+  box-shadow: var(--viva-card-shadow);
+}
+.topbar.mg-topbar .stats strong { color: var(--viva-plum); }
+
+/* ---------- 버튼 ---------- */
+button.primary,
+.primary {
+  background: var(--viva-plum);
+  border-color: var(--viva-plum);
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 5px 0 var(--viva-plum-deep);
+}
+button.primary:hover { background: #6d34a0; }
+
+/* ---------- 로그인 ---------- */
+.login-screen {
+  background: linear-gradient(140deg, var(--viva-lilac) 0%, var(--viva-pink) 58%, var(--viva-blush) 100%);
+}
+.login-screen .login-card {
+  border: 0;
+  border-radius: 32px;
+  box-shadow: 0 24px 60px rgba(91, 42, 134, .28);
+}
+.login-screen .login-card > span { color: var(--viva-plum); }
+.login-screen .login-card h1 {
+  font-family: var(--viva-display);
+  font-weight: 400;
+  font-size: 34px;
+  color: var(--viva-plum-deep);
+}
+.login-screen .login-card input {
+  border-radius: 999px;
+  border-color: var(--viva-line);
+  background: var(--viva-soft);
+}
+.login-screen .login-card input:focus { border-color: var(--viva-lilac); outline: 3px solid rgba(199, 121, 208, .35); }
+.login-screen .login-card .admin-entry { color: var(--viva-plum); }
+
+/* ---------- 홈: 오늘의 학습 ---------- */
+.student-dashboard .daily-course-cta {
+  background: #fff;
+  border: 0;
+  border-radius: 32px;
+  box-shadow: var(--viva-card-shadow);
+  color: var(--viva-ink);
+}
+.student-dashboard .daily-course-cta .daily-course-eyebrow,
+.student-dashboard .daily-course-cta #dailyCourseStep { color: var(--viva-ink); }
+.student-dashboard .daily-course-cta strong {
+  font-family: var(--viva-display);
+  font-weight: 400;
+  color: var(--viva-plum-deep);
+}
+.student-dashboard .daily-course-cta b {
+  justify-self: start;
+  padding: 10px 22px;
+  background: var(--viva-plum);
+  color: #fff;
+  border-radius: 999px;
+}
+.student-dashboard .daily-course-progress { background: var(--viva-soft); }
+
+.student-dashboard .learning-section-grid button,
+.student-dashboard .daily-course-metrics span,
+.student-dashboard .dashboard-main,
+.student-dashboard .dashboard-metrics > div {
+  background: #fff;
+  border: 0;
+  border-radius: 24px;
+  box-shadow: var(--viva-card-shadow);
+}
+.student-dashboard .learning-section-grid strong,
+.student-dashboard .daily-course-metrics b,
+.student-dashboard .dashboard-metrics strong,
+.student-dashboard #dashboardGreeting {
+  font-family: var(--viva-display);
+  font-weight: 400;
+  color: var(--viva-plum-deep);
+}
+
+/* 패턴 섹션 이동 막대(카드학습·퀴즈·통역) */
+.pattern-mode-bar .pmode-btn { border-radius: 999px; }
+.pattern-mode-bar .pmode-btn.active {
+  background: var(--viva-plum);
+  border-color: var(--viva-plum);
+  color: #fff;
+}
+
+/* 홈 학습 경로 지도: 남색 우주 → 보라 밤하늘 */
+.hub-path .galaxy-map {
+  background:
+    radial-gradient(circle at 85% 10%, rgba(247, 179, 201, .35), transparent 40%),
+    linear-gradient(165deg, #4b2272 0%, #2a1446 100%);
+  border-radius: 32px;
+}
+
+/* ---------- 북퀴즈 지도 ---------- */
+.bookquiz-map-panel {
+  border: 0;
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: var(--viva-card-shadow);
+}
+.bookquiz-map-eyebrow { color: var(--viva-plum); }
+#bookquizRoundLabel {
+  font-family: var(--viva-display);
+  font-weight: 400;
+  color: var(--viva-plum-deep);
+  font-size: 32px;
+}
+#bookquizMapProgress { background: var(--viva-soft); color: var(--viva-plum); }
+.bookquiz-learning-map button { border-radius: 24px; }
+.bookquiz-learning-map button span:not(.bq-owl) { font-family: var(--viva-display); font-weight: 400; font-size: 18px; }
+.bookquiz-learning-map button[data-state="current"] {
+  border-color: var(--viva-lilac);
+  background: linear-gradient(145deg, #fff, var(--viva-soft));
+  box-shadow: 0 6px 0 #e3c4ee, 0 12px 24px rgba(91, 42, 134, .16);
+}
+.bookquiz-learning-map button[data-state="current"] b,
+.bookquiz-learning-map button[data-state="review"] b { background: var(--viva-plum); color: #fff; }
+.bookquiz-learning-map button[data-state="current"] small,
+.bookquiz-learning-map button[data-state="review"] small { color: var(--viva-plum); }
+.bookquiz-learning-map button[data-state="review"] { border-color: var(--viva-lilac); background: var(--viva-soft); }
+
+/* ---------- 모바일 하단 메뉴 ---------- */
+.mobile-bottom-item.active {
+  color: var(--viva-plum);
+  background: var(--viva-soft);
+  border-color: #e3c4ee;
+  box-shadow: 0 3px 0 #d7a9e6;
+}
+
+/* 홈 "학습 경로" 제목은 그라데이션 위에 바로 놓이므로 흰 글자로 */
+.hub-toolbar .hub-section-title h3 {
+  font-family: var(--viva-display);
+  font-weight: 400;
+  font-size: 30px;
+  color: #fff;
+  text-shadow: 0 3px 12px rgba(91, 42, 134, .25);
+}
+
+/* 사이드바에서 지금 보고 있는 메뉴: 주황 → 흰 알약 */
+.sidebar .mode-button.active {
+  background: #fff;
+  border-color: #fff;
+  color: var(--viva-plum-deep);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .18);
+}
+
+/* 부엉이 말풍선 안내 테두리도 보라 계열로 (index.html 인라인 스타일보다 뒤에 오므로 html 로 한 단계 올린다) */
+html .liv-guide[data-state="guide"],
+html .liv-guide[data-state="listening"],
+html .liv-guide[data-state="default"] { border-color: var(--viva-lilac); }
