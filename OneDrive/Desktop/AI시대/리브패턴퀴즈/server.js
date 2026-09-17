@@ -3,7 +3,7 @@ const path = require("node:path");
 const http = require("node:http");
 const crypto = require("node:crypto");
 const os = require("node:os");
-const { execFile } = require("node:child_process");
+const { execFile, spawn } = require("node:child_process");
 const { promisify } = require("node:util");
 
 const root = __dirname;
@@ -16,6 +16,8 @@ const ttsCache = new Map();
 const execFileAsync = promisify(execFile);
 const edgeTtsBin = process.env.EDGE_TTS_BIN || "edge-tts.exe";
 const edgeTtsVoice = process.env.EDGE_TTS_VOICE || "en-US-AvaNeural";
+const edgeTtsPython = process.env.EDGE_TTS_PYTHON || "python";
+const EDGE_TTS_RATE = "-8%";
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -72,6 +74,83 @@ function sendJson(res, status, payload) {
   res.end(JSON.stringify(payload));
 }
 
+// 발음 상주 프로그램(scripts/tts-worker.py). 문장마다 edge-tts.exe 를 새로 켜면
+// 파이썬 시작에만 10초 넘게 걸려 카드가 넘어갈 때까지 소리가 나지 않았다.
+// 한 번 띄워 두고 재사용하며, 죽으면 다음 요청 때 다시 띄운다.
+let worker = null;
+
+function ttsWorker() {
+  if (worker) return worker;
+  const child = spawn(edgeTtsPython, [path.join(root, "scripts", "tts-worker.py")], {
+    windowsHide: true,
+    stdio: ["pipe", "pipe", "ignore"],
+  });
+  const pending = new Map();
+  let nextId = 1;
+  let buffered = "";
+  let resolveReady;
+  const ready = new Promise((resolve) => { resolveReady = resolve; });
+  const failAll = (error) => {
+    for (const { reject } of pending.values()) reject(error);
+    pending.clear();
+    if (worker?.child === child) worker = null;
+    resolveReady(false);
+  };
+  child.stdout.setEncoding("utf8");
+  child.stdout.on("data", (chunk) => {
+    buffered += chunk;
+    let newline;
+    while ((newline = buffered.indexOf("\n")) !== -1) {
+      const line = buffered.slice(0, newline).trim();
+      buffered = buffered.slice(newline + 1);
+      if (!line) continue;
+      let message;
+      try { message = JSON.parse(line); } catch { continue; }
+      if (message.ready) { resolveReady(true); continue; }
+      const job = pending.get(message.id);
+      if (!job) continue;
+      pending.delete(message.id);
+      if (message.ok) job.resolve();
+      else job.reject(new Error(message.error || "tts worker failed"));
+    }
+  });
+  child.on("error", failAll);
+  child.on("exit", () => failAll(new Error("tts worker exited")));
+
+  worker = {
+    child,
+    async synthesize(text, out) {
+      if (!(await ready)) throw new Error("tts worker is not available");
+      const id = nextId++;
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          pending.delete(id);
+          reject(new Error("tts worker timed out"));
+        }, 15_000);
+        pending.set(id, {
+          resolve: () => { clearTimeout(timer); resolve(); },
+          reject: (error) => { clearTimeout(timer); reject(error); },
+        });
+        child.stdin.write(`${JSON.stringify({ id, text, voice: edgeTtsVoice, rate: EDGE_TTS_RATE, out })}\n`);
+      });
+    },
+  };
+  return worker;
+}
+
+async function writeNeuralEnglishAudio(text, outputPath) {
+  try {
+    await ttsWorker().synthesize(text, outputPath);
+  } catch {
+    // 상주 프로그램을 못 쓰는 PC(파이썬에 edge_tts 가 없는 경우 등)는 예전처럼 한 번씩 실행한다.
+    await execFileAsync(
+      edgeTtsBin,
+      ["--voice", edgeTtsVoice, `--rate=${EDGE_TTS_RATE}`, "--text", text, "--write-media", outputPath],
+      { windowsHide: true, timeout: 20_000, maxBuffer: 1024 * 1024 },
+    );
+  }
+}
+
 async function createNeuralEnglishAudio(text) {
   const cacheKey = `${edgeTtsVoice}:${text}`;
   const cached = ttsCache.get(cacheKey);
@@ -80,16 +159,7 @@ async function createNeuralEnglishAudio(text) {
   const digest = crypto.createHash("sha256").update(cacheKey).digest("hex").slice(0, 20);
   const outputPath = path.join(os.tmpdir(), `reading-brain-tts-${digest}.mp3`);
   try {
-    await execFileAsync(
-      edgeTtsBin,
-      [
-        "--voice", edgeTtsVoice,
-        "--rate=-8%",
-        "--text", text,
-        "--write-media", outputPath,
-      ],
-      { windowsHide: true, timeout: 20_000, maxBuffer: 1024 * 1024 },
-    );
+    await writeNeuralEnglishAudio(text, outputPath);
     const audio = fs.readFileSync(outputPath);
     if (!audio.length) throw new Error("Neural English audio was empty.");
     ttsCache.set(cacheKey, audio);
@@ -430,4 +500,5 @@ http
   })
   .listen(port, () => {
     console.log(`Reading Brain server running at http://localhost:${port}`);
+    ttsWorker(); // 첫 학생이 기다리지 않도록 서버가 켜질 때 발음 프로그램을 미리 띄운다
   });
