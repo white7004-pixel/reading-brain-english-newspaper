@@ -23,8 +23,8 @@
   <section id="step-upload" class="card">
     <h2><span class="step">STEP 01</span>시험지 올리기 <small>과목·학교·학년은 AI가 시험지 머리글에서 읽습니다</small></h2>
     <form id="upload-form" class="grid">
-      <label class="wide">시험지 사진 (1~6장, 쪽 순서대로 선택)<input name="pages" type="file" accept="image/*" multiple required></label>
-      <label class="wide">정답지 사진 (있으면, 2장까지)<input name="answers" type="file" accept="image/*" multiple></label>
+      <label class="wide">시험지 사진 또는 PDF (1~6쪽, 쪽 순서대로 선택)<input name="pages" type="file" accept="image/*,application/pdf,.pdf" multiple required></label>
+      <label class="wide">정답지 사진 또는 PDF (있으면, 2쪽까지)<input name="answers" type="file" accept="image/*,application/pdf,.pdf" multiple></label>
       <button class="wide">AI로 문항표 만들기</button>
     </form>
     <p id="upload-status" class="status" role="status"></p>

@@ -7,7 +7,7 @@ import report from '../api/report.js';
 
 const ROOT = path.join(import.meta.dirname, '..', 'public');
 const API = { '/api/extract': extract, '/api/report': report };
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.wasm': 'application/wasm' };
 const PORT = Number(process.env.PORT) || 4310;
 
 http.createServer(async (req, res) => {

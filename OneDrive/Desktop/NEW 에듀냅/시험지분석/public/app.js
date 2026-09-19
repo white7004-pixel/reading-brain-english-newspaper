@@ -53,6 +53,51 @@ async function shrink(file, edge, type = 'image/jpeg', quality = 0.75) {
   return canvas.toDataURL(type, quality);
 }
 
+// ---------- PDF → 쪽 그림 ----------
+// PDF 는 쪽마다 그림으로 바꿔 사진과 같은 길(줄이기 → AI)로 보낸다. pdf.js 는 설치 때 복사된다 (scripts/vendor-pdfjs.js).
+const PDFJS = new URL('vendor/pdfjs/', location.href).href;
+const isPdf = (file) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+const tooMany = (label, max, n) => new Error(`${label}는 ${max}쪽까지 올릴 수 있습니다 (지금 ${n}쪽)`);
+
+async function pdfToImages(file, max, label) {
+  const pdfjs = await import(`${PDFJS}pdf.min.mjs`);
+  pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS}pdf.worker.min.mjs`;
+  const task = pdfjs.getDocument({
+    data: await file.arrayBuffer(),
+    cMapUrl: `${PDFJS}cmaps/`, standardFontDataUrl: `${PDFJS}standard_fonts/`, wasmUrl: `${PDFJS}wasm/`,
+  });
+  try {
+    let doc;
+    try {
+      doc = await task.promise;
+    } catch (err) {
+      throw new Error(err?.name === 'PasswordException' ? `${file.name} 에 비밀번호가 걸려 있습니다. 풀고 올려 주세요` : `${file.name} 을(를) 열지 못했습니다. PDF 가 깨졌는지 확인해 주세요`);
+    }
+    if (doc.numPages > max) throw tooMany(label, max, doc.numPages);
+    const out = [];
+    for (let n = 1; n <= doc.numPages; n++) {
+      const page = await doc.getPage(n);
+      const base = page.getViewport({ scale: 1 });
+      const viewport = page.getViewport({ scale: 2000 / Math.max(base.width, base.height) }); // 줄이기(1800px)보다 조금 크게
+      const canvas = Object.assign(document.createElement('canvas'), { width: Math.round(viewport.width), height: Math.round(viewport.height) });
+      await page.render({ canvas, viewport }).promise;
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+      out.push(new File([blob], `${file.name}-${n}.jpg`, { type: 'image/jpeg' }));
+    }
+    return out;
+  } finally {
+    task.destroy();
+  }
+}
+
+// 고른 파일(사진·PDF 섞어도 됨)을 고른 순서대로 쪽 그림 목록으로
+async function toImages(files, max, label) {
+  const out = [];
+  for (const f of files) out.push(...(isPdf(f) ? await pdfToImages(f, max, label) : [f]));
+  if (out.length > max) throw tooMany(label, max, out.length);
+  return out;
+}
+
 const MAX_BODY_CHARS = 4_000_000; // Vercel 요청 4.5MB 제한 안쪽
 
 async function encodeAll(files) {
@@ -89,12 +134,11 @@ $('#upload-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target.elements;
   const button = e.submitter;
-  const pages = [...f.pages.files];
-  const answers = [...f.answers.files];
-  if (pages.length > 6 || answers.length > 2) return setStatus('#upload-status', '시험지는 6장, 정답지는 2장까지 올릴 수 있습니다', true);
   button.disabled = true;
   try {
-    setStatus('#upload-status', '사진을 줄이는 중…');
+    setStatus('#upload-status', '사진·PDF 를 준비하는 중…');
+    const pages = await toImages([...f.pages.files], 6, '시험지');
+    const answers = await toImages([...f.answers.files], 2, '정답지');
     const encoded = await encodeAll([...pages, ...answers]);
     setStatus('#upload-status', 'AI가 문항을 읽고 있습니다. 1~3분 걸립니다…');
     const result = await api('/api/extract', { pages: encoded.slice(0, pages.length), answers: encoded.slice(pages.length) });
