@@ -10,9 +10,10 @@ export function makeHandler(run) {
       res.end(JSON.stringify(body));
     };
     if (req.method !== 'POST') return send(405, { error: 'POST 로 보내 주세요' });
+    // 이 PC(127.0.0.1)에서만 쓸 때는 코드가 없다. 인터넷(Vercel)에 올리면 코드 없이는 열지 않는다.
     const code = process.env.TRIAL_CODE;
-    if (!code) return send(500, { error: '서버에 접속 코드가 설정되지 않았습니다' });
-    if (req.headers['x-trial-code'] !== code) return send(401, { error: '접속 코드가 맞지 않습니다' });
+    if (!code && process.env.VERCEL) return send(500, { error: '서버에 접속 코드가 설정되지 않았습니다' });
+    if (code && req.headers['x-trial-code'] !== code) return send(401, { error: '접속 코드가 맞지 않습니다' });
     let body;
     try { body = req.body || {}; } catch { return send(400, { error: '요청을 읽지 못했습니다' }); } // Vercel 은 깨진 JSON 이면 여기서 던진다
     try {

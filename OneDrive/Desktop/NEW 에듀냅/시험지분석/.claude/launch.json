@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "시험지분석",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "local"],
+      "port": 4310
+    }
+  ]
+}

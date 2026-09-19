@@ -1,4 +1,4 @@
-// 이 PC 에서 화면과 API 를 함께 띄웁니다.   npm run local   (.env.local 에 ANTHROPIC_API_KEY, TRIAL_CODE)
+// 이 PC 에서 화면과 API 를 함께 띄웁니다.   npm run local   (.env.local 에 ANTHROPIC_API_KEY)
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -9,7 +9,6 @@ const ROOT = path.join(import.meta.dirname, '..', 'public');
 const API = { '/api/extract': extract, '/api/report': report };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8' };
 const PORT = Number(process.env.PORT) || 4310;
-process.env.TRIAL_CODE ||= 'local';
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
@@ -35,4 +34,4 @@ http.createServer(async (req, res) => {
     res.statusCode = 404;
     res.end('없음');
   }
-}).listen(PORT, '127.0.0.1', () => console.log(`http://localhost:${PORT}  (접속 코드: ${process.env.TRIAL_CODE})`));
+}).listen(PORT, '127.0.0.1', () => console.log(`http://localhost:${PORT}`));

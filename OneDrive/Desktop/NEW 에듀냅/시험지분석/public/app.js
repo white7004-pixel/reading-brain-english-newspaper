@@ -2,7 +2,7 @@ import { AREAS, DIFF5, KINDS, examStats, studentStats, parseStudents, esc } from
 import { schoolPage, studentPage } from './report.js';
 
 export const $ = (sel) => document.querySelector(sel);
-export const state = { code: '', academy: null, meta: null, items: [] };
+export const state = { academy: null, meta: null, items: [] };
 
 const store = {
   get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
@@ -22,11 +22,10 @@ export function setStatus(sel, text, isError = false) {
 export async function api(path, body) {
   const res = await fetch(path, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-trial-code': state.code },
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
-  if (res.status === 401) { store.set('code', null); $('#step-code').hidden = false; }
   if (!res.ok) throw new Error(data.error || '잠시 후 다시 시도해 주세요');
   return data;
 }
@@ -63,15 +62,6 @@ async function encodeAll(files) {
   }
   throw new Error('사진 용량이 너무 큽니다. 장수를 줄여 주세요');
 }
-
-// ---------- 0. 접속 코드 ----------
-$('#code-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  state.code = $('#code').value.trim();
-  store.set('code', state.code);
-  $('#step-code').hidden = true;
-  show('#step-academy');
-});
 
 // ---------- 1. 학원 정보 ----------
 const academyForm = $('#academy-form');
@@ -281,7 +271,6 @@ $('#pages').addEventListener('click', async (e) => {
 $('#print').addEventListener('click', () => window.print());
 
 // ---------- 시작 ----------
-state.code = store.get('code') || '';
 const saved = store.get('academy');
 if (saved) {
   state.academy = saved;
@@ -291,5 +280,5 @@ if (saved) {
   f.color.value = saved.color;
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
 }
-$(state.code ? '#step-academy' : '#step-code').hidden = false;
-if (state.code && saved) $('#step-upload').hidden = false;
+$('#step-academy').hidden = false;
+if (saved) $('#step-upload').hidden = false;

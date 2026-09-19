@@ -27,6 +27,18 @@ test('코드가 틀리거나 POST 가 아니면 막는다', async () => {
   assert.equal((await call(async () => ({}), { method: 'GET' })).statusCode, 405);
 });
 
+test('코드가 설정되지 않은 이 PC 에서는 코드 없이 쓰고, Vercel 에서는 막는다', async () => {
+  delete process.env.TRIAL_CODE;
+  try {
+    assert.equal((await call(async () => ({}), { code: undefined })).statusCode, 200);
+    process.env.VERCEL = '1';
+    assert.equal((await call(async () => ({}), { code: undefined })).statusCode, 500);
+  } finally {
+    delete process.env.VERCEL;
+    process.env.TRIAL_CODE = 'c';
+  }
+});
+
 test('UserError 는 400 과 메시지, 나머지는 502 와 일반 문구', async () => {
   const bad = await call(async () => { throw new UserError('학교를 적어 주세요'); });
   assert.deepEqual([bad.statusCode, bad.body.error], [400, '학교를 적어 주세요']);
