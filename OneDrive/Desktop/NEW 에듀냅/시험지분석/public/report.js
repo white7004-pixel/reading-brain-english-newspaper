@@ -21,8 +21,10 @@ const bars = (rows, caption) => `<ul class="bars">${rows.map((r) => `<li><span>$
 
 const badge = (d, shown = d) => `<em class="d d-${esc(to3(d))}">${esc(shown)}</em>`;
 
-const ABBR = { 대화문: '대화', 서술형: '서술' };
+// 칸이 좁아 긴 영역 이름은 줄여 쓰고, 줄인 것만 범례에 풀어 적는다
+const ABBR = { 대화문: '대화', 서술형: '서술', '화법과 작문': '화작', '수와 연산': '수·연산', '문자와 식': '문자·식', '확률과 통계': '확통', 생명과학: '생명', 지구과학: '지구', 일반사회: '일사' };
 const abbr = (area) => ABBR[area] || area;
+const abbrLegend = (items) => [...new Set(items.map((it) => it.area))].filter((a) => ABBR[a]).map((a) => ` · ${ABBR[a]}=${a}`).join('');
 
 // 문항 칸 격자: 한 줄 10칸
 const grid = (items, cell) => `<ol class="r-grid">${items.map(cell).join('')}</ol>`;
@@ -33,8 +35,8 @@ const nums = (cards) => `<div class="r-nums">${cards.map(([value, label]) => `<d
 
 export function schoolPage({ academy, meta, items, stats }, school) {
   const byNo = new Map(items.map((it) => [it.no, it]));
-  return sheet(`${meta.school}-${meta.grade}-영어분석`, `
-    ${header(academy, `${examName(meta)} 영어 분석`, `${stats.count}문항 · ${stats.total}점 만점`)}
+  return sheet(`${meta.school}-${meta.grade}-${meta.subject}분석`, `
+    ${header(academy, `${examName(meta)} ${meta.subject} 분석`, `${stats.count}문항 · ${stats.total}점 만점`)}
     <section class="r-row r-top">
       <div><h3>총평 ${badge(stats.overall, `전체 난이도 ${stats.overall}`)}</h3><p contenteditable>${esc(school.overview)}</p></div>
       ${nums([[esc(stats.count), '문항'], [`${esc(stats.essayPointsPct)}%`, '서술형 배점 비율'], [`${esc(stats.hardPct)}%`, '중상 이상 문항']])}
@@ -46,7 +48,7 @@ export function schoolPage({ academy, meta, items, stats }, school) {
     <section>
       <h3>문항별 분석</h3>
       ${grid(items, (it) => `<li><b>${esc(it.no)}</b><span>${esc(it.points)}점</span>${badge(it.difficulty)}<span>${esc(abbr(it.area))}</span><small>${esc(it.subtype)}</small></li>`)}
-      <p class="r-legend">칸: 번호·배점 / 난이도·영역 / 세부유형 · 대화=대화문, 서술=서술형</p>
+      <p class="r-legend">칸: 번호·배점 / 난이도·영역 / 세부유형${esc(abbrLegend(items))}</p>
     </section>
     <section class="r-row">
       <div>
@@ -73,8 +75,8 @@ export function studentPage({ academy, meta, items }, student, stats, text) {
       return `<li><b>${esc(c.no)}번</b> <span class="r-meta">${esc(it.area)} ${esc(it.subtype)}</span> ${badge(it.difficulty, to3(it.difficulty))} <strong>${esc(c.cause)}</strong> <span contenteditable>${esc(c.explain)}</span></li>`;
     }).join('')}</ol>`
     : '<p>틀린 문항이 없습니다.</p>';
-  return sheet(`${student.label}-영어리포트`, `
-    ${header(academy, `${student.label} 학생 시험 분석 리포트`, `${examName(meta)} 영어`)}
+  return sheet(`${student.label}-${meta.subject}리포트`, `
+    ${header(academy, `${student.label} 학생 시험 분석 리포트`, `${examName(meta)} ${meta.subject}`)}
     <section class="r-row">
       ${nums([
         [`${esc(stats.score)}<small> / ${esc(stats.total)}</small>`, '추정 점수*'],
@@ -89,7 +91,7 @@ export function studentPage({ academy, meta, items }, student, stats, text) {
         const x = wrong.has(it.no);
         return `<li${x ? ' class="wrong"' : ''}><b>${esc(it.no)}</b><i>${x ? '✕' : ''}</i><span>${esc(abbr(it.area))}</span>${badge(it.difficulty, to3(it.difficulty))}</li>`;
       })}
-      <p class="r-legend"><i class="r-x">✕</i> 틀린 문항 · 칸: 번호 / 영역·난이도(상·중·하) · 대화=대화문, 서술=서술형</p>
+      <p class="r-legend"><i class="r-x">✕</i> 틀린 문항 · 칸: 번호 / 영역·난이도(상·중·하)${esc(abbrLegend(items))}</p>
     </section>
     <section><h3>오답 분석</h3>${causes}</section>
     <section class="r-row">

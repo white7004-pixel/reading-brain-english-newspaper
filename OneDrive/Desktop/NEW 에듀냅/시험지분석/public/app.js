@@ -1,4 +1,4 @@
-import { AREAS, DIFF5, KINDS, examStats, studentStats, parseStudents, esc } from './lib.js';
+import { SUBJECTS, DIFF5, KINDS, examStats, studentStats, parseStudents, esc } from './lib.js';
 import { schoolPage, studentPage } from './report.js';
 
 export const $ = (sel) => document.querySelector(sel);
@@ -63,8 +63,9 @@ async function encodeAll(files) {
   throw new Error('사진 용량이 너무 큽니다. 장수를 줄여 주세요');
 }
 
-// ---------- 1. 학원 정보 ----------
+// ---------- 학원 정보 (시험판만. 에듀냅 안에서는 로그인한 학원 정보가 들어온다) ----------
 const academyForm = $('#academy-form');
+const showAcademy = () => { $('#academy-now').textContent = state.academy ? `· ${state.academy.name}` : '· 아직 없음'; };
 
 $('#academy-form').elements.logo.addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -79,10 +80,11 @@ academyForm.addEventListener('submit', (e) => {
   const f = academyForm.elements;
   state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src };
   store.set('academy', state.academy);
-  show('#step-upload');
+  showAcademy();
+  academyForm.closest('details').open = false;
 });
 
-// ---------- 2. 사진 올리기 ----------
+// ---------- 1. 사진 올리기 ----------
 $('#upload-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target.elements;
@@ -90,15 +92,16 @@ $('#upload-form').addEventListener('submit', async (e) => {
   const pages = [...f.pages.files];
   const answers = [...f.answers.files];
   if (pages.length > 6 || answers.length > 2) return setStatus('#upload-status', '시험지는 6장, 정답지는 2장까지 올릴 수 있습니다', true);
-  state.meta = { school: f.school.value.trim(), grade: f.grade.value, term: f.term.value, exam: f.exam.value };
   button.disabled = true;
   try {
     setStatus('#upload-status', '사진을 줄이는 중…');
     const encoded = await encodeAll([...pages, ...answers]);
     setStatus('#upload-status', 'AI가 문항을 읽고 있습니다. 1~3분 걸립니다…');
-    const result = await api('/api/extract', { meta: state.meta, pages: encoded.slice(0, pages.length), answers: encoded.slice(pages.length) });
+    const result = await api('/api/extract', { pages: encoded.slice(0, pages.length), answers: encoded.slice(pages.length) });
+    state.meta = result.meta;
     state.items = result.items;
     $('#confirm-notes').textContent = result.notes;
+    renderMeta();
     renderItems();
     setStatus('#upload-status', '');
     show('#step-confirm');
@@ -110,8 +113,31 @@ $('#upload-form').addEventListener('submit', async (e) => {
   }
 });
 
-// ---------- 3. 확인 표 ----------
+// ---------- 2. 확인 표 ----------
 const options = (list, value) => list.map((o) => `<option${o === value ? ' selected' : ''}>${esc(o)}</option>`).join('');
+const areasNow = () => SUBJECTS[state.meta.subject];
+
+// 시험 정보: AI 가 머리글에서 읽은 값. 못 읽어 빈 학교·학년은 금색으로 표시한다.
+function renderMeta() {
+  const f = $('#meta-form').elements;
+  f.subject.innerHTML = options(Object.keys(SUBJECTS), state.meta.subject);
+  for (const k of ['school', 'grade', 'term', 'exam']) {
+    f[k].value = state.meta[k];
+    f[k].classList.toggle('unsure', !state.meta[k] && (k === 'school' || k === 'grade'));
+  }
+}
+
+$('#meta-form').addEventListener('input', (e) => {
+  const { name, value } = e.target;
+  state.meta[name] = value.trim();
+  e.target.classList.remove('unsure');
+  if (name !== 'subject') return;
+  // 과목을 바꾸면 그 과목에 없는 영역은 첫 영역으로 두고 다시 확인하게 한다
+  state.items.forEach((it) => {
+    if (!areasNow().includes(it.area)) { it.area = areasNow()[0]; it.unsure = [...new Set([...it.unsure, 'area'])]; }
+  });
+  renderItems();
+});
 
 function renderItems() {
   $('#items tbody').innerHTML = state.items.map((it, i) => {
@@ -121,7 +147,7 @@ function renderItems() {
       ${cell('no', `<input type="number" min="1" step="1" value="${no}" aria-label="${no}번 번호">`)}
       ${cell('kind', `<select aria-label="${no}번 유형">${options(KINDS, it.kind)}</select>`)}
       ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
-      ${cell('area', `<select aria-label="${no}번 영역">${options(AREAS, it.area)}</select>`)}
+      ${cell('area', `<select aria-label="${no}번 영역">${options(areasNow(), it.area)}</select>`)}
       ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${no}번 세부유형">`)}
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
       ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${no}번 정답">`)}
@@ -168,7 +194,7 @@ $('#items').addEventListener('click', (e) => {
 
 $('#add-item').addEventListener('click', () => {
   const no = Math.max(0, ...state.items.map((it) => Number(it.no) || 0)) + 1;
-  state.items.push({ no, kind: '객관식', points: 0, area: '독해', subtype: '', difficulty: '중', answer: '', reason: '원장님 추가', unsure: [] });
+  state.items.push({ no, kind: '객관식', points: 0, area: areasNow()[0], subtype: '', difficulty: '중', answer: '', reason: '원장님 추가', unsure: [] });
   renderItems();
 });
 
@@ -201,6 +227,11 @@ const IN_FLIGHT = 3; // 동시에 3개까지 (학교 분석 포함)
 $('#make-report').addEventListener('click', async (e) => {
   const itemIssue = itemProblem();
   if (itemIssue) return setStatus('#report-status', `${itemIssue} — 문항표에서 번호를 고쳐 주세요`, true);
+  if (!state.meta.school || !state.meta.grade) return setStatus('#report-status', '문항표 위 시험 정보에 학교와 학년을 적어 주세요', true);
+  if (!state.academy) {
+    academyForm.closest('details').open = true;
+    return setStatus('#report-status', '리포트에 들어갈 학원 정보를 한 번 저장해 주세요 (STEP 01 아래)', true);
+  }
   const { students, problems } = checkStudents();
   if (problems.length) return;
   const button = e.currentTarget;
@@ -280,5 +311,4 @@ if (saved) {
   f.color.value = saved.color;
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
 }
-$('#step-academy').hidden = false;
-if (saved) $('#step-upload').hidden = false;
+showAcademy();

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EXTRACT_SCHEMA, SCHOOL_SCHEMA, STUDENTS_SCHEMA, extractRequest, reportRequest } from '../lib/rules.js';
+import { EXTRACT_SCHEMA, SCHOOL_SCHEMA, studentsSchema, GUIDE, extractRequest, reportRequest } from '../lib/rules.js';
+import { SUBJECTS } from '../public/lib.js';
 import { UserError } from '../lib/http.js';
 
 function strict(schema, path = '$') {
@@ -13,27 +14,30 @@ function strict(schema, path = '$') {
 }
 
 test('스키마는 구조화 출력 규칙(모든 칸 필수, 추가 칸 금지)을 지킨다', () => {
-  [EXTRACT_SCHEMA, SCHOOL_SCHEMA, STUDENTS_SCHEMA].forEach((s) => strict(s));
+  [EXTRACT_SCHEMA, SCHOOL_SCHEMA, ...Object.keys(SUBJECTS).map(studentsSchema)].forEach((s) => strict(s));
+  assert.deepEqual(Object.keys(GUIDE), Object.keys(SUBJECTS));
 });
 
 const img = Buffer.from('fake image').toString('base64');
-const meta = { school: '에듀냅중학교', grade: '중2', term: '1학기', exam: '중간고사' };
+const meta = { subject: '영어', school: '에듀냅중학교', grade: '중2', term: '1학기', exam: '중간고사' };
 
 test('extractRequest 는 사진을 이미지 블록으로 만들고 결과를 번호순으로 정리한다', () => {
-  const r = extractRequest({ meta, pages: [img, img], answers: [img] });
+  const r = extractRequest({ pages: [img, img], answers: [img] });
   assert.equal(r.schema, EXTRACT_SCHEMA);
   assert.equal(r.content.filter((b) => b.type === 'image').length, 3);
-  assert.match(r.content.at(-1).text, /에듀냅중학교/);
-  const out = r.finish({ items: [{ no: 2, unsure: [] }, { no: 1, unsure: ['answer'] }], notes: '' });
+  const out = r.finish({ meta: { ...meta, subject: '수학' }, items: [{ no: 2, area: '함수', unsure: [] }, { no: 1, area: '독해', unsure: ['answer'] }], notes: '' });
   assert.deepEqual(out.items.map((i) => i.no), [1, 2]);
+  assert.equal(out.meta.subject, '수학');
+  // 수학 시험에 영어 영역이 오면 수학 첫 영역으로 두고 확인 칸으로 표시한다
+  assert.deepEqual([out.items[0].area, out.items[0].unsure], ['수와 연산', ['answer', 'area']]);
+  assert.deepEqual([out.items[1].area, out.items[1].unsure], ['함수', []]);
 });
 
 test('extractRequest 는 잘못된 입력을 막는다', () => {
-  assert.throws(() => extractRequest({ meta, pages: [] }), UserError);
-  assert.throws(() => extractRequest({ meta, pages: Array(7).fill(img) }), UserError);
-  assert.throws(() => extractRequest({ meta, pages: [img], answers: Array(3).fill(img) }), UserError);
-  assert.throws(() => extractRequest({ meta, pages: ['<script>'] }), UserError);
-  assert.throws(() => extractRequest({ meta: { school: '' }, pages: [img] }), UserError);
+  assert.throws(() => extractRequest({ pages: [] }), UserError);
+  assert.throws(() => extractRequest({ pages: Array(7).fill(img) }), UserError);
+  assert.throws(() => extractRequest({ pages: [img], answers: Array(3).fill(img) }), UserError);
+  assert.throws(() => extractRequest({ pages: ['<script>'] }), UserError);
 });
 
 const items = [
@@ -50,7 +54,7 @@ test('reportRequest school 은 서버에서 계산한 통계를 넘긴다', () =
 test('reportRequest students 는 학생 수를 확인하고 표기를 되돌린다', () => {
   const students = [{ label: '김OO', wrong: [{ no: 2, chosen: '' }, { no: 99, chosen: '' }] }, { label: 'B', wrong: [] }];
   const r = reportRequest({ mode: 'students', meta, items, students });
-  assert.equal(r.schema, STUDENTS_SCHEMA);
+  assert.deepEqual(r.schema, studentsSchema('영어'));
   assert.doesNotMatch(r.content[0].text, /99/);
   const one = { summary: 's', causes: [], directions: [] };
   const out = r.finish({ students: [{ label: '김OO 학생', ...one }, { label: 'B', ...one }] });
@@ -59,6 +63,9 @@ test('reportRequest students 는 학생 수를 확인하고 표기를 되돌린�
   assert.throws(() => reportRequest({ mode: 'students', meta, items, students: Array(11).fill(students[1]) }), UserError);
   assert.throws(() => reportRequest({ mode: 'x', meta, items }), UserError);
   assert.throws(() => reportRequest({ mode: 'school', meta, items: [{ ...items[0], area: '문학' }] }), UserError);
+  assert.throws(() => reportRequest({ mode: 'school', meta: { ...meta, subject: '체육' }, items }), UserError);
+  assert.throws(() => reportRequest({ mode: 'school', meta: { ...meta, subject: 'constructor' }, items }), UserError);
+  assert.throws(() => reportRequest({ mode: 'school', meta: { ...meta, school: '' }, items }), UserError);
 });
 
 test('reportRequest 는 같은 번호가 두 번 있으면 막는다', () => {

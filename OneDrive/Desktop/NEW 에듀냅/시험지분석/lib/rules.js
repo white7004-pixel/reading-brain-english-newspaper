@@ -1,5 +1,5 @@
 // AI 판단 기준(설계서 4장)과 요청 검증. 사진·학생 정보는 여기서 걸러서만 AI 로 간다.
-import { AREAS, DIFF5, KINDS, CAUSES, examStats, studentStats } from '../public/lib.js';
+import { SUBJECTS, AREAS, DIFF5, KINDS, examStats, studentStats } from '../public/lib.js';
 import { UserError } from './http.js';
 
 const UNSURE_FIELDS = ['points', 'area', 'subtype', 'difficulty', 'answer'];
@@ -10,7 +10,116 @@ const str = { type: 'string' };
 const int = { type: 'integer' };
 const oneOf = (list) => ({ type: 'string', enum: list });
 
+// 과목마다: 영역 분류표 / 오답 원인 / 글 예시. 영역 이름은 public/lib.js SUBJECTS 와 같아야 한다.
+export const GUIDE = {
+  영어: {
+    classify: `어휘: 문맥 어휘, 영영풀이, 품사·파생어, 숙어·표현
+어법: 문법 포인트명으로 적는다 (시제, 수일치, to부정사, 동명사, 분사, 관계사, 접속사, 수동태, 비교, 가정법, 도치 …), 어법 개수 고르기
+대화문: 대화 흐름·응답, 의사소통 기능 표현
+독해: 주제·제목·요지, 내용 일치/불일치, 빈칸, 순서, 문장 삽입, 무관한 문장, 지칭, 목적·심경, 요약, 답할 수 없는 질문
+서술형: 조건 영작, 문장 변형·전환, 배열 영작, 빈칸 쓰기, 요약 쓰기, 우리말 해석 (영어는 서술형 문항의 area 를 서술형으로 두고 무엇을 묻는지 subtype 에: 조건 영작 - 관계대명사)
+듣기: 시험지에 듣기 문항이 있을 때만`,
+    causes: [
+      ['어휘 부족', '핵심 단어·표현 뜻을 몰라 틀림'],
+      ['문법 개념 미흡', '해당 문법 규칙을 모르거나 헷갈림'],
+      ['구문 해석 오류', '긴 문장 구조를 잘못 끊어 읽음'],
+      ['단서 놓침·추론 오류', '지문의 근거를 못 찾거나 잘못 연결함'],
+      ['선택지 함정', '부분만 맞는 선택지를 고름'],
+      ['조건 누락', '서술형 조건(단어 수·형태 등)을 빠뜨림'],
+      ['시간 부족·실수', '쉬운 문항인데 틀림, 마지막 문항에 몰림'],
+    ],
+    strategy: '교과서 본문 문장을 조건 영작으로 바꿔 써 보기',
+    direction: '매 수업 관계사 문장 5개를 조건 영작으로 쓰고 첨삭',
+  },
+  국어: {
+    classify: `문학: 현대시, 현대소설, 고전시가, 고전산문, 극·수필 (subtype 에 갈래와 묻는 것: 현대시 - 표현상 특징)
+독서: 인문·사회·과학·기술·예술 지문의 내용 일치, 추론, <보기> 적용, 문맥 어휘
+문법: 음운, 품사·단어 형성, 문장 성분·짜임, 담화, 국어의 역사, 맞춤법·표준 발음
+화법과 작문: 말하기 전략, 토의·토론, 글쓰기 계획·고쳐 쓰기
+매체: 매체 자료 분석, 매체 언어 표현`,
+    causes: [
+      ['개념어·어휘 부족', '표현법·문학 용어나 지문 어휘를 몰라 틀림'],
+      ['문법 개념 미흡', '음운·품사·문장 규칙을 모르거나 헷갈림'],
+      ['지문 구조 파악 실패', '글의 흐름·중심 내용을 잡지 못함'],
+      ['근거 찾기·추론 오류', '지문의 근거를 못 찾거나 잘못 연결함'],
+      ['<보기> 적용 오류', '<보기> 관점을 작품·지문에 잘못 대입함'],
+      ['선택지 함정', '부분만 맞는 선택지를 고름'],
+      ['조건 누락', '서술형 조건(글자 수·형식 등)을 빠뜨림'],
+      ['시간 부족·실수', '쉬운 문항인데 틀림, 마지막 문항에 몰림'],
+    ],
+    strategy: '교과서 작품마다 표현상 특징을 표로 정리해 보기',
+    direction: '매 수업 교과서 외 작품 1편에 <보기> 적용 문제 풀고 근거 쓰기',
+  },
+  수학: {
+    // ponytail: 영역을 중·고 공통 5개로 묶었다. 학교 단원명은 subtype 에 남는다. 단원별 통계가 필요해지면 영역을 학년별로 나눈다.
+    classify: `수와 연산: 소인수분해, 정수와 유리수, 유리수와 순환소수, 제곱근과 실수, 복소수, 집합과 명제
+문자와 식: 식의 계산, 다항식, 인수분해, 방정식, 부등식, 연립방정식
+함수: 일차·이차함수, 함수와 그래프, 지수·로그, 삼각함수, 수열, 극한, 미분, 적분
+기하: 도형의 성질, 작도와 합동, 닮음, 피타고라스 정리, 삼각비, 원의 성질, 도형의 방정식, 벡터
+확률과 통계: 경우의 수, 확률, 자료의 정리, 대푯값과 산포도, 상관관계, 통계
+subtype 에 단원명과 묻는 것을 적는다 (이차함수 - 최댓값). answer 는 객관식 기호, 단답·서술형은 최종 답.`,
+    causes: [
+      ['개념 이해 부족', '정의·성질을 정확히 모름'],
+      ['공식·성질 적용 오류', '알맞은 공식을 고르지 못하거나 잘못 씀'],
+      ['계산 실수', '풀이 방향은 맞았는데 계산에서 틀림'],
+      ['조건 해석 오류', '문제의 조건을 빠뜨리거나 잘못 읽음'],
+      ['풀이 전략 부재', '여러 개념을 엮어야 하는 문항에서 시작을 못 함'],
+      ['풀이 과정 누락', '서술형에서 필요한 과정·근거를 빠뜨림'],
+      ['시간 부족·실수', '쉬운 문항인데 틀림, 마지막 문항에 몰림'],
+    ],
+    strategy: '틀린 유형을 조건만 바꿔 세 번 다시 풀어 보기',
+    direction: '매 수업 서술형 2문항을 풀이 과정까지 쓰고 채점 기준으로 첨삭',
+  },
+  과학: {
+    classify: `물리: 힘과 운동, 일과 에너지, 전기와 자기, 빛과 파동, 열
+화학: 물질의 구성, 상태 변화, 화학 반응과 규칙, 산과 염기, 원소와 주기율
+생명과학: 세포, 소화·순환·호흡·배설, 자극과 반응, 생식과 유전, 생태계
+지구과학: 지권의 변화, 대기와 날씨, 해수, 태양계와 우주
+통합과학 문항은 가장 가까운 영역으로 둔다. subtype 에 단원명과 묻는 것 (산과 염기 - 중화 반응 그래프).`,
+    causes: [
+      ['개념 이해 부족', '원리·정의를 정확히 모름'],
+      ['용어 혼동', '비슷한 과학 용어를 바꿔 알고 있음'],
+      ['자료·그래프 해석 오류', '표·그래프·그림에서 정보를 잘못 읽음'],
+      ['실험·변인 이해 부족', '실험 목적·조작 변인·결과 해석을 놓침'],
+      ['계산 오류', '식은 맞았는데 계산·단위에서 틀림'],
+      ['선택지 함정', '부분만 맞는 선택지를 고름'],
+      ['시간 부족·실수', '쉬운 문항인데 틀림, 마지막 문항에 몰림'],
+    ],
+    strategy: '교과서 실험마다 변인과 결과 그래프를 직접 그려 보기',
+    direction: '매 수업 그래프 해석 문항 5개를 풀고 근거를 말로 설명하기',
+  },
+  '사회·역사': {
+    classify: `지리: 지도 읽기, 기후·지형, 인구·도시, 자원·산업, 지역 이해
+일반사회: 정치, 법, 경제, 사회·문화
+역사: 한국사·세계사 (subtype 에 시대와 묻는 것: 조선 후기 - 경제 변화)`,
+    causes: [
+      ['개념 이해 부족', '핵심 개념의 뜻을 정확히 모름'],
+      ['용어 혼동', '비슷한 용어·제도를 바꿔 알고 있음'],
+      ['자료·통계 해석 오류', '지도·도표·사료에서 정보를 잘못 읽음'],
+      ['사례 적용 오류', '개념을 새로운 사례에 잘못 대입함'],
+      ['시대·순서 혼동', '사건의 시기나 앞뒤 순서를 헷갈림'],
+      ['선택지 함정', '부분만 맞는 선택지를 고름'],
+      ['서술 요소 누락', '서술형에 필요한 핵심어·근거를 빠뜨림'],
+      ['시간 부족·실수', '쉬운 문항인데 틀림, 마지막 문항에 몰림'],
+    ],
+    strategy: '단원마다 핵심 개념을 사례 하나씩과 짝지어 정리하기',
+    direction: '매 수업 자료 해석 문항 5개를 풀고 선택지마다 근거 적기',
+  },
+};
+const SUBJECT_NAMES = Object.keys(SUBJECTS);
+
+const DIFFICULTY = `## 난이도 기준 (그 학년 기준)
+하: 교과서 기본 개념·용어 확인, 한 번에 풀린다
+중하: 기본 개념 적용, 함정이 거의 없다
+중: 개념 적용이나 지문·자료 해석이 한 단계 필요, 선택지 한두 개가 헷갈린다
+중상: 두 단계 이상의 추론·풀이, 학년보다 높은 개념·어휘, 비슷한 선택지 함정, 조건이 여러 개인 서술형
+상: 여러 개념을 엮거나 세밀한 근거 대조가 필요, 학년 범위를 넘는 응용, 배점이 높고 정답률이 낮을 문항
+배점이 높을수록 학교가 어렵게 낸 문항일 가능성이 크지만 배점만으로 정하지 않는다.`;
+
+const classifyOf = (s) => `## ${s} 영역 분류표\n${GUIDE[s].classify}`;
+
 export const EXTRACT_SCHEMA = obj({
+  meta: obj({ subject: oneOf(SUBJECT_NAMES), school: str, grade: str, term: str, exam: str }),
   items: arr(obj({
     no: int, kind: oneOf(KINDS), points: { type: 'number' }, area: oneOf(AREAS), subtype: str,
     difficulty: oneOf(DIFF5), answer: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
@@ -24,33 +133,24 @@ export const SCHOOL_SCHEMA = obj({
   strategy: arr(obj({ area: str, tip: str })),
 });
 
-export const STUDENTS_SCHEMA = obj({
+export const studentsSchema = (subject) => obj({
   students: arr(obj({
     label: str, summary: str,
-    causes: arr(obj({ no: int, cause: oneOf(CAUSES), explain: str })),
+    causes: arr(obj({ no: int, cause: oneOf(GUIDE[subject].causes.map(([name]) => name)), explain: str })),
     directions: arr(str),
   })),
 });
 
-const CLASSIFY = `## 영역 분류표
-어휘: 문맥 어휘, 영영풀이, 품사·파생어, 숙어·표현
-어법: 문법 포인트명으로 적는다 (시제, 수일치, to부정사, 동명사, 분사, 관계사, 접속사, 수동태, 비교, 가정법, 도치 …), 어법 개수 고르기
-대화문: 대화 흐름·응답, 의사소통 기능 표현
-독해: 주제·제목·요지, 내용 일치/불일치, 빈칸, 순서, 문장 삽입, 무관한 문장, 지칭, 목적·심경, 요약, 답할 수 없는 질문
-서술형: 조건 영작, 문장 변형·전환, 배열 영작, 빈칸 쓰기, 요약 쓰기, 우리말 해석
-듣기: 시험지에 듣기 문항이 있을 때만
-서술형 문항은 area 를 서술형으로 두고 무엇을 묻는지 subtype 에 적는다 (예: 조건 영작 - 관계대명사).
+const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 분석하는 20년차 입시학원 강사입니다 (${SUBJECT_NAMES.join('·')}).
+원장님이 올린 시험지 사진만 보고 시험 정보와 문항표를 만듭니다. 원장님이 이 표를 확인한 뒤 학부모 자료가 됩니다.
 
-## 난이도 기준 (그 학년 기준)
-하: 교과서 기본 표현·문법 확인, 한 번 읽으면 풀린다
-중하: 기본 개념 적용, 함정이 거의 없다
-중: 지문 이해나 문법 적용이 한 단계 필요, 선택지 한두 개가 헷갈린다
-중상: 추론 두 단계 이상, 학년보다 높은 구문·어휘, 비슷한 선택지 함정, 조건이 여러 개인 서술형
-상: 긴 지문 전체 흐름과 세밀한 근거 대조, 학년 범위를 넘는 개념, 배점이 높고 정답률이 낮을 문항
-배점이 높을수록 학교가 어렵게 낸 문항일 가능성이 크지만 배점만으로 정하지 않는다.`;
-
-const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 영어 내신 시험지를 분석하는 20년차 입시학원 영어 강사입니다.
-원장님이 올린 시험지 사진을 읽고 문항표를 만듭니다. 원장님이 이 표를 확인한 뒤 학부모 자료가 됩니다.
+## 먼저: 시험 정보 (meta)
+첫 쪽 머리글·표지에서 읽습니다. 안 보이는 칸은 지어내지 말고 빈 문자열로 둡니다.
+- subject: 과목 (${SUBJECT_NAMES.join(' / ')}). 한국사·역사·통합사회는 사회·역사, 통합과학·물리학 등은 과학.
+- school: 학교 이름 그대로 (예: 에듀냅중학교)
+- grade: 중1~중3, 고1~고3 형식
+- term: 1학기 / 2학기
+- exam: 중간고사 / 기말고사 (그 밖이면 적힌 그대로)
 
 ## 할 일
 사진에 있는 모든 문항을 번호 순서대로 한 줄씩 적습니다. 한 문항이 두 쪽에 걸쳐도 한 줄입니다.
@@ -58,16 +158,18 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 영어 내신 시험�
 
 ## 칸
 - no: 문항 번호. 서술형이 "서술형 1"처럼 따로 번호가 매겨져 있으면 객관식 마지막 번호 뒤에 이어 붙이고 reason 앞에 "(서술형 1)"을 적습니다.
-- kind: 객관식 / 서술형
+- kind: 객관식 / 서술형 (단답형도 서술형)
 - points: 시험지에 적힌 배점. 안 보이면 남은 점수를 나눈 추정값을 쓰고 unsure 에 points 를 넣습니다.
-- area, subtype: 아래 분류표에서 고릅니다. 어법은 subtype 에 문법 포인트명을 적습니다 (예: 관계대명사 what).
+- area, subtype: 그 과목의 분류표에서만 고릅니다.
 - difficulty: 아래 기준으로 5단계.
 - answer: 정답지 사진이 있으면 그대로 따릅니다. 없으면 직접 풀어서 적습니다. 객관식은 ①~⑤ 기호, 서술형은 모범답안 요지.
 - reason: 난이도 판단 근거 한 줄(60자 이내). 지문 문장을 옮겨 적지 않습니다.
 - unsure: 확신이 없는 칸 이름. 흐려서 읽기 어려움, 배점이 안 보임, 정답이 둘로 갈림, 유형이 둘에 걸침 등. 확신하면 빈 배열.
 - notes: 읽지 못한 쪽, 잘린 문항, 시험지가 아닌 사진처럼 원장님이 알아야 할 것. 없으면 빈 문자열.
 
-${CLASSIFY}`;
+${DIFFICULTY}
+
+${SUBJECT_NAMES.map(classifyOf).join('\n\n')}`;
 
 const TONE = `## 말투
 차분한 전문가의 존댓말. 과장·광고 문구·이모지 없음. 학부모가 한 번에 이해할 쉬운 말.
@@ -77,18 +179,20 @@ const TONE = `## 말투
 - 문항표에 없는 사실(학교 평균, 작년 시험, 교과서 이름, 출제범위, 시험 날짜)을 쓰지 않습니다.
 - 지문 문장을 길게 옮겨 적지 않습니다.`;
 
-const SCHOOL_SYSTEM = `당신은 한국 입시학원의 영어 내신 분석 담당 강사입니다. 원장님이 확인한 문항표와 계산된 통계로 학부모께 드릴 "학교 시험 분석" 글을 씁니다.
+const schoolSystem = (s) => `당신은 한국 입시학원의 ${s} 내신 분석 담당 강사입니다. 원장님이 확인한 문항표와 계산된 통계로 학부모께 드릴 "학교 시험 분석" 글을 씁니다.
 
 ## 쓰는 것
-- overview: 총평 2~3문장(180자 이내). 시험의 성격(교과서 기본형인지, 독해·추론형인지, 서술형 비중), 어려웠던 지점, 전체 난이도.
+- overview: 총평 2~3문장(180자 이내). 시험의 성격(교과서 기본형인지, 응용·추론형인지, 서술형 비중), 어려웠던 지점, 전체 난이도.
 - keyItems: 변별 문항 3개. 난이도 중상·상이면서 배점이 높은 문항을 우선합니다. why 는 왜 어려웠는지 1문장(60자 이내) (함정 선택지, 학년보다 높은 개념, 추론 단계).
-- strategy: 이 시험에 나온 영역마다 1문장(40자 이내)씩 다음 시험 대비 방법. 구체적인 공부 활동으로 (예: 교과서 본문 문장을 조건 영작으로 바꿔 써 보기).
+- strategy: 이 시험에 나온 영역마다 1문장(40자 이내)씩 다음 시험 대비 방법. 구체적인 공부 활동으로 (예: ${GUIDE[s].strategy}).
 
 ${TONE}
 
-${CLASSIFY}`;
+${DIFFICULTY}
 
-const STUDENTS_SYSTEM = `당신은 한국 입시학원의 영어 담임 강사입니다. 원장님이 확인한 문항표와 학생별 틀린 문항으로 학부모께 보낼 "학생 개인 리포트" 글을 씁니다.
+${classifyOf(s)}`;
+
+const studentsSystem = (s) => `당신은 한국 입시학원의 ${s} 담임 강사입니다. 원장님이 확인한 문항표와 학생별 틀린 문항으로 학부모께 보낼 "학생 개인 리포트" 글을 씁니다.
 학생은 학생1, 학생2 … 로 받습니다. 글에는 이 표기나 이름을 쓰지 않고 "이 학생"이라고 씁니다.
 
 ## 학생마다 쓰는 것 (받은 순서 그대로, 한 명도 빼지 않고)
@@ -97,17 +201,11 @@ const STUDENTS_SYSTEM = `당신은 한국 입시학원의 영어 담임 강사�
 - causes: 틀린 문항마다 하나. cause 는 아래 원인 중 가장 가능성 큰 것. explain 은 1~2문장(70자 이내): 이 문항이 무엇을 요구했는지, 왜 틀렸을 가능성이 큰지.
   - 학생이 고른 답(chosen)이 있으면 그 선택지가 왜 매력적이었는지로 원인을 좁힙니다.
   - 고른 답이 없으면 "~했을 가능성이 큽니다"처럼 추정으로 씁니다.
-- directions: 학원에서 할 지도 방향 3개. 보완할 영역에 맞춘 구체적인 수업 활동 한 문장씩(각 40자 이내) (예: 매 수업 관계사 문장 5개를 조건 영작으로 쓰고 첨삭).
+- directions: 학원에서 할 지도 방향 3개. 보완할 영역에 맞춘 구체적인 수업 활동 한 문장씩(각 40자 이내) (예: ${GUIDE[s].direction}).
 틀린 문항이 없으면 causes 는 빈 배열, directions 는 지금 수준을 지키고 넓힐 활동으로 씁니다.
 
 ## 오답 원인
-어휘 부족: 핵심 단어·표현 뜻을 몰라 틀림
-문법 개념 미흡: 해당 문법 규칙을 모르거나 헷갈림
-구문 해석 오류: 긴 문장 구조를 잘못 끊어 읽음
-단서 놓침·추론 오류: 지문의 근거를 못 찾거나 잘못 연결함
-선택지 함정: 부분만 맞는 선택지를 고름
-조건 누락: 서술형 조건(단어 수·형태 등)을 빠뜨림
-시간 부족·실수: 쉬운 문항인데 틀림, 마지막 문항에 몰림
+${GUIDE[s].causes.map(([name, what]) => `${name}: ${what}`).join('\n')}
 
 ${TONE}`;
 
@@ -125,18 +223,19 @@ function imageBlocks(list, min, max, label) {
 
 function cleanMeta(m) {
   const pick = (k) => String(m?.[k] ?? '').slice(0, 40).trim();
-  const out = { school: pick('school'), grade: pick('grade'), term: pick('term'), exam: pick('exam') };
+  const out = { subject: pick('subject'), school: pick('school'), grade: pick('grade'), term: pick('term'), exam: pick('exam') };
+  if (!Object.hasOwn(SUBJECTS, out.subject)) throw new UserError('과목을 골라 주세요');
   if (!out.school || !out.grade) throw new UserError('학교와 학년을 적어 주세요');
   return out;
 }
 
-function cleanItems(list) {
+function cleanItems(list, subject) {
   if (!Array.isArray(list) || list.length < 1 || list.length > 60) throw new UserError('문항표를 다시 만들어 주세요');
   const txt = (v, max) => String(v ?? '').slice(0, max);
   const seen = new Set();
   return list.map((it) => {
     const no = Number(it?.no);
-    if (!Number.isInteger(no) || !KINDS.includes(it.kind) || !AREAS.includes(it.area) || !DIFF5.includes(it.difficulty)) {
+    if (!Number.isInteger(no) || !KINDS.includes(it.kind) || !SUBJECTS[subject].includes(it.area) || !DIFF5.includes(it.difficulty)) {
       throw new UserError(`${it?.no}번 문항의 칸을 확인해 주세요`);
     }
     if (seen.has(no)) throw new UserError(`${no}번 문항이 두 번 있습니다`);
@@ -155,26 +254,35 @@ function cleanStudents(list, nos) {
   }));
 }
 
+// 과목과 맞지 않는 영역을 고르면 그 과목 첫 영역으로 두고 원장님 확인 칸으로 표시한다
+function fitArea(item, subject) {
+  if (SUBJECTS[subject].includes(item.area)) return item;
+  return { ...item, area: SUBJECTS[subject][0], unsure: [...new Set([...item.unsure, 'area'])] };
+}
+
 export function extractRequest(body) {
-  const meta = cleanMeta(body.meta);
   const pages = imageBlocks(body.pages, 1, 6, '시험지');
   const answers = imageBlocks(body.answers ?? [], 0, 2, '정답지');
   const content = [{ type: 'text', text: '시험지 사진 (쪽 순서대로):' }, ...pages];
   if (answers.length) content.push({ type: 'text', text: '정답지 사진:' }, ...answers);
-  content.push({ type: 'text', text: `${meta.school} ${meta.grade} ${meta.term} ${meta.exam} 영어 시험입니다. 문항표를 만들어 주세요.` });
+  content.push({ type: 'text', text: '머리글에서 시험 정보를 읽고 문항표를 만들어 주세요.' });
   return {
     system: EXTRACT_SYSTEM, schema: EXTRACT_SCHEMA, content, maxTokens: 32000,
-    finish: (out) => ({ items: [...out.items].sort((a, b) => a.no - b.no), notes: out.notes }),
+    finish: (out) => ({
+      meta: out.meta,
+      items: [...out.items].sort((a, b) => a.no - b.no).map((it) => fitArea(it, out.meta.subject)),
+      notes: out.notes,
+    }),
   };
 }
 
 export function reportRequest(body) {
   const meta = cleanMeta(body.meta);
-  const items = cleanItems(body.items);
+  const items = cleanItems(body.items, meta.subject);
   const stats = examStats(items);
   if (body.mode === 'school') {
     return {
-      system: SCHOOL_SYSTEM, schema: SCHOOL_SCHEMA, maxTokens: 16000,
+      system: schoolSystem(meta.subject), schema: SCHOOL_SCHEMA, maxTokens: 16000,
       content: [{ type: 'text', text: `다음 자료로 학교 시험 분석 글을 써 주세요.\n${JSON.stringify({ 시험: meta, 통계: stats, 문항표: items })}` }],
       finish: (out) => ({ ...out, keyItems: out.keyItems.filter((k) => items.some((it) => it.no === k.no)) }),
     };
@@ -184,7 +292,7 @@ export function reportRequest(body) {
     // 원장님이 적은 표기는 AI 로 보내지 않는다. 학생1.. 로 보내고 finish 에서 순서대로 되돌린다.
     const withStats = students.map((s, i) => ({ label: `학생${i + 1}`, wrong: s.wrong, 통계: studentStats(items, s.wrong) }));
     return {
-      system: STUDENTS_SYSTEM, schema: STUDENTS_SCHEMA, maxTokens: 32000,
+      system: studentsSystem(meta.subject), schema: studentsSchema(meta.subject), maxTokens: 32000,
       content: [{ type: 'text', text: `다음 자료로 학생 ${students.length}명의 개인 리포트 글을 받은 순서대로 써 주세요.\n${JSON.stringify({ 시험: meta, 시험통계: stats, 문항표: items, 학생들: withStats })}` }],
       finish: (out) => {
         if (out.students.length !== students.length) throw new Error(`학생 수가 맞지 않음 ${out.students.length}/${students.length}`);

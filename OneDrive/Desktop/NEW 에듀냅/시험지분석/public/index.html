@@ -17,41 +17,40 @@
   <div class="hero">
     <p class="eyebrow">SUBJECT<span> · 교과 입시</span></p>
     <h1>시험지 분석</h1>
-    <p class="lede">영어 시험지 사진으로 학교 분석과 학생 리포트를 만듭니다</p>
+    <p class="lede">시험지 사진만 올리면 과목·학교를 알아보고 학교 분석과 학생 리포트를 만듭니다 · 국어 영어 수학 과학 사회·역사</p>
   </div>
 
-  <section id="step-academy" class="card" hidden>
-    <h2><span class="step">STEP 01</span>학원 정보 <small>이 브라우저에 기억됩니다</small></h2>
-    <form id="academy-form" class="grid">
-      <label>학원 이름<input name="academyName" required placeholder="에듀냅학원"></label>
-      <label>연락처<input name="phone" placeholder="031-000-0000"></label>
-      <label>대표 색<input name="color" type="color" value="#03392A"></label>
-      <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
-      <img id="logo-preview" alt="로고 미리보기" hidden>
-      <button class="wide">저장하고 다음</button>
-    </form>
-  </section>
-
-  <section id="step-upload" class="card" hidden>
-    <h2><span class="step">STEP 02</span>시험지 올리기</h2>
+  <section id="step-upload" class="card">
+    <h2><span class="step">STEP 01</span>시험지 올리기 <small>과목·학교·학년은 AI가 시험지 머리글에서 읽습니다</small></h2>
     <form id="upload-form" class="grid">
-      <label>학교<input name="school" required placeholder="에듀냅중학교"></label>
-      <label>학년
-        <select name="grade" required>
-          <option>중1</option><option selected>중2</option><option>중3</option><option>고1</option><option>고2</option><option>고3</option>
-        </select>
-      </label>
-      <label>학기<select name="term"><option>1학기</option><option>2학기</option></select></label>
-      <label>시험<select name="exam"><option>중간고사</option><option>기말고사</option></select></label>
       <label class="wide">시험지 사진 (1~6장, 쪽 순서대로 선택)<input name="pages" type="file" accept="image/*" multiple required></label>
       <label class="wide">정답지 사진 (있으면, 2장까지)<input name="answers" type="file" accept="image/*" multiple></label>
       <button class="wide">AI로 문항표 만들기</button>
     </form>
     <p id="upload-status" class="status" role="status"></p>
+    <!-- 에듀냅 안에서는 로그인한 학원 정보를 쓰므로 이 칸이 없다. 시험판에서만 이 브라우저에 기억한다. -->
+    <details class="academy">
+      <summary>리포트에 들어갈 학원 정보 <span id="academy-now"></span></summary>
+      <form id="academy-form" class="grid">
+        <label>학원 이름<input name="academyName" required placeholder="에듀냅학원"></label>
+        <label>연락처<input name="phone" placeholder="031-000-0000"></label>
+        <label>대표 색<input name="color" type="color" value="#03392A"></label>
+        <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
+        <img id="logo-preview" alt="로고 미리보기" hidden>
+        <button class="wide">저장</button>
+      </form>
+    </details>
   </section>
 
   <section id="step-confirm" class="card" hidden>
-    <h2><span class="step">STEP 03</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다</small></h2>
+    <h2><span class="step">STEP 02</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다</small></h2>
+    <form id="meta-form" class="grid meta" aria-label="시험 정보">
+      <label>과목<select name="subject"></select></label>
+      <label>학교<input name="school" placeholder="에듀냅중학교"></label>
+      <label>학년<input name="grade" placeholder="중2"></label>
+      <label>학기<input name="term" placeholder="1학기"></label>
+      <label>시험<input name="exam" placeholder="중간고사"></label>
+    </form>
     <p id="confirm-notes" class="notes"></p>
     <p id="confirm-total" class="status"></p>
     <div class="table-wrap">
@@ -64,7 +63,7 @@
   </section>
 
   <section id="step-students" class="card" hidden>
-    <h2><span class="step">STEP 04</span>학생 오답 입력 <small>비워 두면 학교 분석만 만듭니다</small></h2>
+    <h2><span class="step">STEP 03</span>학생 오답 입력 <small>비워 두면 학교 분석만 만듭니다</small></h2>
     <p class="hint">한 줄에 한 명. 예) <code>김OO 4, 9, 25</code> · 고른 답까지 <code>김OO 4(③), 9(②)</code> · 다 맞으면 <code>김OO 0</code></p>
     <textarea id="students" rows="6" placeholder="김OO 4, 9, 25" aria-label="학생별 틀린 문항"></textarea>
     <p id="students-problems" class="problems" role="alert"></p>
