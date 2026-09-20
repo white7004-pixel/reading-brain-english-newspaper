@@ -1992,12 +1992,27 @@ body {
 /* ─── 23. 키보드 포커스 ────────────────────────────────────────────
    탭으로 다닐 때 지금 어디인지 보이게 한다. 마우스로는 안 나온다.
    챗봇 입력창은 outline:none 으로 지워져 있어 따로 되돌린다. */
-:where(a, button, input, textarea, select, [tabindex]):focus-visible {
-  outline: 3px solid var(--brand-red, #E4212F);
+/* :where() 는 특이도가 0 이라 버튼에 걸린 box-shadow 에 밀린다.
+   흰 테두리가 이겨야 하므로 보통 선택자로 적는다. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--brand-red);
   outline-offset: 2px;
   border-radius: 3px;
+  /* 빨강은 네이비 위에서 2.96:1 뿐이라 WCAG 3:1 에 못 미친다.
+     테두리 사이 틈을 흰색으로 채우면 어두운 배경에서 13.6:1 이 된다.
+     밝은 배경에서는 흰색이 묻히고 빨강(4.1:1)이 보인다. */
+  box-shadow: 0 0 0 2px #FFFFFF;
 }
-.chatbot-form input:focus-visible { outline: 3px solid var(--brand-red, #E4212F); outline-offset: 1px; }
+.chatbot-form input:focus-visible {
+  outline: 3px solid var(--brand-red);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #FFFFFF;
+}
 
 /* ─── 24. 읽는 글자 키우기 ──────────────────────────────────────────
    학부모가 실제로 읽는 문단만 13px → 15px 로 올린다.
