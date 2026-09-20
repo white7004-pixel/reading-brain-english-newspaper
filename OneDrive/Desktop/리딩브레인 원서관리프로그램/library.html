@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>서재 · 리딩브레인</title>
+<link rel="stylesheet" href="app.css">
+<style>
+.lb-bar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:14px 0 10px}
+.lb-bar input{flex:1; min-width:180px; border:0; border-radius:16px; padding:11px 15px; font:inherit; background:#fff; color:#3b2c46}
+.lb-bar select{border:0; border-radius:16px; padding:11px 13px; font:inherit; background:#fff; color:#6b5a78}
+.lb-lv{display:flex; gap:8px; overflow-x:auto; padding:2px 0 12px}
+.lb-lv button{flex:none; border:0; background:#fff; color:#6b5a78; border-radius:16px; padding:9px 15px; text-align:left; font:inherit; cursor:pointer}
+.lb-lv button small{display:block; font-weight:400; font-size:11.5px; color:#a597b0}
+.lb-lv button.on{background:var(--grad); color:#fff}
+.lb-lv button.on small{color:#fbe6ff}
+.lb-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px}
+.lb-card{background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 14px rgba(120,60,160,.10); cursor:pointer; text-align:left; border:0; padding:0; font:inherit}
+.lb-cv{display:block; aspect-ratio:3/4; background:#f1e8f6 center/cover no-repeat; position:relative}
+.lb-sp{display:flex; flex-direction:column; justify-content:center; height:100%; padding:10px 12px; box-sizing:border-box; color:#fff}
+.lb-sp b{font-size:13.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden}
+.lb-sp span{font-size:11px; opacity:.85; margin-top:6px}
+.lb-ar{position:absolute; left:8px; top:8px; background:rgba(0,0,0,.55); color:#fff; border-radius:10px; padding:2px 8px; font-size:11.5px}
+.lb-meta{padding:9px 11px 11px}
+.lb-meta h3{margin:0 0 3px; font-size:13.5px; line-height:1.3; color:#3b2c46}
+.lb-meta .au{font-size:11.5px; color:#a597b0}
+.lb-more{display:block; margin:18px auto 30px}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="home" href="index.html">← 목록</a>
+  <div class="bk"><b>📚 서재</b><span>학원에 있는 원서를 수준·주제로 찾아요</span></div>
+  <div class="sp"></div>
+  <label for="who">이름</label>
+  <input class="who" id="who" placeholder="김리브로" autocomplete="off">
+</div>
+
+<main>
+  <p class="sub" style="margin-top:14px">학원이 가진 원서를 <b>AR 수준·장르·주제·시리즈</b>로 찾습니다.
+    PRE-TEST 나 AR TEST 로 수준을 잰 다음 그 수준의 책을 고르면 됩니다.</p>
+  <div class="lb-bar">
+    <input id="q" placeholder="제목·저자·시리즈로 찾기" autocomplete="off">
+    <select id="g"></select>
+    <select id="t"></select>
+    <span class="count" id="cnt"></span>
+  </div>
+  <div class="lb-lv" id="lv"></div>
+  <div class="lb-grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>찾는 책이 없어요. 다른 말로 찾아보세요.</div>
+  <button class="btn ghost lb-more" id="more" hidden>더 보기</button>
+</main>
+
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="catalog.js"></script>
+<script>
+RB.gate();
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+// 서재용 AR 칸. fluency 의 14단계와 다르다 — 책을 고르는 데는 이 정도가 알맞다
+const BANDS = [
+  { name: "첫 글자책", ar: [0, 0.9] }, { name: "AR 1점대", ar: [1, 1.9] },
+  { name: "AR 2점대", ar: [2, 2.9] }, { name: "AR 3점대", ar: [3, 3.9] },
+  { name: "AR 4점대", ar: [4, 4.9] }, { name: "AR 5점대", ar: [5, 5.9] },
+  { name: "AR 6 이상", ar: [6, 99] }
+];
+const PAGE = 60;                       // 4,820칸을 한 번에 그리면 느리다. 60칸씩 늘린다
+const LIB = { state: { q: "", ar: -1, g: -1, t: -1, shown: PAGE }, hit: [] };
+
+// AR 단계별 책등 색 (표지를 못 찾은 책에 쓴다)
+const SPINE = ["#7f8fd6", "#5fa8b8", "#6fae7a", "#c9a24a", "#cf8158", "#b96a86", "#8a6bb5"];
+const bandOf = bl => { for (let i = 0; i < BANDS.length; i++) if (bl >= BANDS[i].ar[0] && bl <= BANDS[i].ar[1]) return i; return 0; };
+
+function card(i){
+  const b = CATALOG.at(i), band = bandOf(b.bl);
+  return `<button class="lb-card" data-i="${i}">
+    <span class="lb-cv" style="background:${SPINE[band]}">
+      <span class="lb-sp"><b>${esc(b.title)}</b><span>${esc(b.series === "No series" ? "" : b.series)}</span></span>
+      <span class="lb-ar">AR ${b.bl.toFixed(1)}</span>
+    </span>
+    <span class="lb-meta"><h3>${esc(b.title)}</h3><span class="au">${esc(b.author)}</span></span>
+  </button>`;
+}
+
+LIB.draw = function(){
+  const s = LIB.state;
+  LIB.hit = CATALOG.pick(s.q, s.ar < 0 ? null : BANDS[s.ar].ar, s.g, s.t);
+  $("#grid").innerHTML = LIB.hit.slice(0, s.shown).map(card).join("");
+  $("#empty").hidden = LIB.hit.length > 0;
+  $("#more").hidden = LIB.hit.length <= s.shown;
+  $("#cnt").textContent = `${LIB.hit.length.toLocaleString()}권`;
+  $("#lv").innerHTML = [{ name: "전체", sub: `${CATALOG.books.length.toLocaleString()}권` }].concat(
+    BANDS.map((x, i) => ({ name: x.name, sub: `${CATALOG.pick("", x.ar, -1, -1).length}권` })))
+    .map((x, i) => `<button data-i="${i - 1}" class="${i - 1 === s.ar ? "on" : ""}">${esc(x.name)}<small>${esc(x.sub)}</small></button>`).join("");
+  $("#lv").querySelectorAll("button").forEach(b2 =>
+    b2.onclick = () => { s.ar = +b2.dataset.i; s.shown = PAGE; LIB.draw(); });
+};
+
+function fill(sel, list, label){
+  sel.innerHTML = `<option value="-1">${label} 전체</option>` +
+    list.map((x, i) => `<option value="${i}">${esc(x)}</option>`).join("");
+}
+fill($("#g"), CATALOG.genre, "갈래"); fill($("#t"), CATALOG.theme, "주제");
+$("#g").onchange = () => { LIB.state.g = +$("#g").value; LIB.state.shown = PAGE; LIB.draw(); };
+$("#t").onchange = () => { LIB.state.t = +$("#t").value; LIB.state.shown = PAGE; LIB.draw(); };
+$("#q").oninput = () => { LIB.state.q = $("#q").value.trim(); LIB.state.shown = PAGE; LIB.draw(); };
+$("#more").onclick = () => { LIB.state.shown += PAGE; LIB.draw(); };
+
+$("#who").value = localStorage.getItem("rb1:who") || "";
+$("#who").onchange = () => localStorage.setItem("rb1:who", $("#who").value.trim());
+
+// 주소로 들어온 조건 (PRE-TEST 결과에서 넘어온다): ?ar=1.5
+const P = new URLSearchParams(location.search);
+if (P.get("ar")) LIB.state.ar = bandOf(parseFloat(P.get("ar")));
+if (P.get("q")) { LIB.state.q = P.get("q"); $("#q").value = P.get("q"); }
+LIB.draw();
+
+// 확인: 주소 끝에 #selftest
+if (location.hash === "#selftest"){
+  const eq = (a, b, m) => console.assert(a === b, m, a, b);
+  eq(bandOf(0.3), 0, "0.3 은 첫 글자책"); eq(bandOf(1.5), 1, "1.5 는 AR 1점대");
+  eq(bandOf(6.7), 6, "6.7 은 AR 6 이상"); eq(bandOf(11.7), 6, "11.7 도 AR 6 이상");
+  const all = CATALOG.pick("", null, -1, -1).length;
+  eq(all, CATALOG.books.length, "조건이 없으면 전부");
+  let sum = 0; BANDS.forEach(x => sum += CATALOG.pick("", x.ar, -1, -1).length);
+  eq(sum, all, "AR 칸이 모든 책을 겹침 없이 덮는다");
+  console.assert(CATALOG.pick("fly", null, -1, -1).length > 0, "fly 가 찾아진다");
+  console.log("library selftest done");
+}
+</script>
+</body>
+</html>
