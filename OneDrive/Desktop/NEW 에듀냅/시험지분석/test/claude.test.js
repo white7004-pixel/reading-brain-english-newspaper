@@ -15,7 +15,8 @@ test('readJson 은 대체 모델로 넘어가면 마지막 fallback 뒤의 글�
 });
 
 test('readJson 은 거절·길이 초과를 원장님께 보일 오류로 바꾼다', () => {
-  assert.throws(() => readJson({ stop_reason: 'refusal', content: [] }), UserError);
+  // 과목별로 바뀌었으므로 거절 안내에 "영어"가 남아 있으면 안 된다
+  assert.throws(() => readJson({ stop_reason: 'refusal', content: [] }), (e) => e instanceof UserError && !e.message.includes('영어'));
   assert.throws(() => readJson({ stop_reason: 'max_tokens', content: [text('{"a":')] }), UserError);
 });
 

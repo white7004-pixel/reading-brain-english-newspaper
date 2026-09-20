@@ -60,7 +60,12 @@ const isPdf = (file) => file.type === 'application/pdf' || /\.pdf$/i.test(file.n
 const tooMany = (label, max, n) => new Error(`${label}는 ${max}쪽까지 올릴 수 있습니다 (지금 ${n}쪽)`);
 
 async function pdfToImages(file, max, label) {
-  const pdfjs = await import(`${PDFJS}pdf.min.mjs`);
+  let pdfjs;
+  try {
+    pdfjs = await import(`${PDFJS}pdf.min.mjs`); // 설치 때 복사되지 않았으면 브라우저 영어 오류가 뜬다 → 원장님 말로 바꾼다
+  } catch {
+    throw new Error('PDF 읽기 기능을 불러오지 못했습니다. 우선 사진으로 올려 주세요 (설치가 끝나지 않았을 수 있습니다)');
+  }
   pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS}pdf.worker.min.mjs`;
   const task = pdfjs.getDocument({
     data: await file.arrayBuffer(),
@@ -80,7 +85,9 @@ async function pdfToImages(file, max, label) {
       const base = page.getViewport({ scale: 1 });
       const viewport = page.getViewport({ scale: 2000 / Math.max(base.width, base.height) }); // 줄이기(1800px)보다 조금 크게
       const canvas = Object.assign(document.createElement('canvas'), { width: Math.round(viewport.width), height: Math.round(viewport.height) });
-      await page.render({ canvas, viewport }).promise;
+      // intent:'print' 로 그린다. 화면용으로 그리면 pdf.js 가 requestAnimationFrame 으로 이어 그리는데,
+      // 원장님이 다른 창으로 넘어가면 그 호출이 멈춰 변환이 끝나지 않는다 (pdf.mjs useRequestAnimationFrame: !intentPrint).
+      await page.render({ canvas, viewport, intent: 'print' }).promise;
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
       out.push(new File([blob], `${file.name}-${n}.jpg`, { type: 'image/jpeg' }));
     }

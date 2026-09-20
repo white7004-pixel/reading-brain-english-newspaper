@@ -6,7 +6,7 @@ let client;
 
 // 대체 모델로 넘어가면 content 에 거절한 모델의 글, fallback 블록, 대체 모델의 글이 차례로 온다 → 마지막 fallback 뒤만 읽는다.
 export function readJson(msg) {
-  if (msg.stop_reason === 'refusal') throw new UserError('이 사진은 분석하지 못했습니다. 영어 시험지 사진인지 확인해 주세요');
+  if (msg.stop_reason === 'refusal') throw new UserError('이 사진은 분석하지 못했습니다. 시험지 사진이 맞는지 확인해 주세요');
   if (msg.stop_reason === 'max_tokens') throw new UserError('내용이 너무 길어 끝까지 받지 못했습니다. 사진이나 학생 수를 나눠 주세요');
   const blocks = msg.content.slice(msg.content.findLastIndex((b) => b.type === 'fallback') + 1);
   try {
