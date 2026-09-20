@@ -2,7 +2,7 @@
 // {{}} 는 학생이 채우는 밑줄 칸이다. 인쇄하면 밑줄, 화면에서는 입력칸이 된다.
 
 window.BOOK = {
-  bookNo: "S2703",
+  bookNo: "S4309",
   slug: "charlie-and-the-chocolate-factory",
   title: "Charlie and the Chocolate Factory",
   author: "Roald Dahl",

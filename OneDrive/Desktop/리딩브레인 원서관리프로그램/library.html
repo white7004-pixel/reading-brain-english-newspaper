@@ -66,12 +66,13 @@
 RB.gate();
 
 // 학습 콘텐츠가 있는 책. books/<slug>.js 의 bookNo 와 짝이 맞아야 한다.
-// 새 학습 책을 만들면 여기 한 줄을 더한다.
+// 새 학습 책을 만들면 여기 한 줄을 더한다. 번호를 고를 때는 catalog.js 의 BL 이 그 책 level.ar 과
+// 같은지 꼭 보라 — 같은 제목의 축약본과 완역본이 따로 있다 (예: 찰리 S2703 축약 2.9 / S4309 완역 4.8).
 window.BOOK_BY_NO = {
   "S1624": "hi-fly-guy", "M3117": "sarah-plain-and-tall", "S4154": "charlottes-web",
   "S1212": "green-eggs-and-ham", "M2187": "nate-the-great", "M3013": "dinosaurs-before-dark",
   "S2040": "frog-and-toad-are-friends", "M3069": "flat-stanley", "S4191": "holes",
-  "S2703": "charlie-and-the-chocolate-factory", "S5084": "harry-potter-sorcerers-stone"
+  "S4309": "charlie-and-the-chocolate-factory", "S5084": "harry-potter-sorcerers-stone"
 };
 
 const $ = s => document.querySelector(s);
