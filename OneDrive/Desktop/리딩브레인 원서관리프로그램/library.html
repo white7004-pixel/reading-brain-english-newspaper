@@ -114,23 +114,28 @@ LIB.draw = function(){
 };
 
 // 책 상세 패널. 요약은 무거워서 처음 열 때 한 번만 받아온다
-let SUM = null;
+let SUM = null, sumPromise = null;      // sumPromise: 받아오는 도중에 또 열어도 새로 받지 않고 같이 기다린다
 function loadSum(){
   if (SUM) return Promise.resolve();
-  return new Promise(ok => {
+  if (sumPromise) return sumPromise;
+  sumPromise = new Promise(ok => {
     const s = document.createElement("script");
     s.src = "catalog-sum.js"; s.onload = () => { SUM = window.CATALOG_SUM || []; ok(); };
     s.onerror = () => { SUM = []; ok(); };
     document.head.appendChild(s);
   });
+  return sumPromise;
 }
 const yt = t => "https://www.youtube.com/results?search_query=" + encodeURIComponent(t + " read aloud");
 
+let openSeq = 0;                        // 여러 책을 빠르게 열었을 때 마지막 것만 화면에 남긴다
 LIB.open = async function(i){
+  const mySeq = ++openSeq;
   const b = CATALOG.at(i);
   $("#det").hidden = $("#veil").hidden = false;
   $("#det").innerHTML = `<h2 class="h">${esc(b.title)}</h2><p class="sub">불러오는 중…</p>`;
   await loadSum();
+  if (mySeq !== openSeq) return;        // 기다리는 사이 다른 책을 열었으면 그리지 않는다
   const pin = (window.CATALOG_PINS || {})[b.no];
   const learn = (window.BOOK_BY_NO || {})[b.no];
   $("#det").innerHTML = `
