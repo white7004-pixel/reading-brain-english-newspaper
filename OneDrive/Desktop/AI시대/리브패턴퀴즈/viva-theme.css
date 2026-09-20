@@ -30,6 +30,7 @@
   --paper: var(--viva-soft);
   --mg-bg: var(--viva-soft);
   --game-bg: var(--viva-soft);
+  --viva-ok: var(--ok-dark);  /* 완료 표시 초록 — styles.css 의 정답 초록을 그대로 빌린다 */
 }
 
 /* ---------- 바탕 ---------- */

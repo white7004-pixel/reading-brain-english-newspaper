@@ -63,3 +63,14 @@ assert.match(
   /#bqQuizArea\s+#bqQuizOptions\.rt-choices\s*\{[\s\S]*?grid-template-columns:\s*1fr/,
   "보기는 한 줄에 하나씩 쌓여야 한다",
 );
+
+// --- 계획의 전역 제약 지키기 ---
+// 색은 viva 토큰만 쓴다. 흰색(#fff)만 예외로 둔다 — 비바북 테마가 이미 카드 바탕으로 쓴다.
+const hexes = [...css.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map((m) => m[0].toLowerCase());
+const strayHex = hexes.filter((h) => h !== "#fff" && h !== "#ffffff");
+assert.deepEqual(strayHex, [], `새 색을 하드코딩하지 않는다. 발견: ${strayHex.join(", ")}`);
+
+// 눌렀을 때 내려앉는 움직임도 '움직임 줄이기' 설정에서 멈춰야 한다.
+const reduceBlock = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
+assert.match(reduceBlock, /\.rt-speak:active[\s\S]{0,120}transform:\s*none/, "발음 버튼의 눌림 움직임을 멈춰야 한다");
+assert.match(reduceBlock, /rt-dock-next:active[\s\S]{0,120}transform:\s*none/, "다음 버튼의 눌림 움직임을 멈춰야 한다");

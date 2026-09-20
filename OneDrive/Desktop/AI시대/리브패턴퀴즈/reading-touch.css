@@ -45,11 +45,11 @@
 }
 .rt-step[data-locked="true"] {
   background: rgba(255, 255, 255, .45);
-  color: #6b5c78;
+  color: var(--viva-ink);
   cursor: not-allowed;
 }
 .rt-step[data-locked="true"]::after { content: "🔒"; font-size: 14px; }
-.rt-step[data-done="true"]:not(.active)::after { content: "✓"; color: var(--ok, #16a34a); font-size: 15px; }
+.rt-step[data-done="true"]:not(.active)::after { content: "✓"; color: var(--viva-ok); font-size: 15px; }
 
 /* ---------- 가운데 학습판 ---------- */
 .rt-stage {
@@ -185,6 +185,8 @@
 @media (prefers-reduced-motion: reduce) {
   .rt-step, .rt-dock button, .rt-speak { transition: none !important; }
   .rt-step:hover:not([data-locked="true"]) { transform: none; }
+  .rt-speak:active,
+  .rt-dock .rt-dock-next:active { transform: none; box-shadow: none; }
 }
 
 /* 학습판 머리: 개수와 섹션 이름이 발음 버튼과 겹치지 않게 한 줄씩 둔다 */
@@ -235,5 +237,6 @@
 }
 #bqQuizArea #bqQuizOptions.rt-choices button.correct,
 #bqQuizArea #bqQuizOptions.rt-choices button.wrong { box-shadow: none; }
-#bqQuizArea #bqQuizOptions.rt-choices button.correct::before { background: #bdeedd; color: #0a5a3e; }
-#bqQuizArea #bqQuizOptions.rt-choices button.wrong::before { background: #ffcdd3; color: #8a1e2a; }
+/* 채점된 알약의 A·B·C·D 동그라미는 그 알약의 글자색을 그대로 물려받는다 */
+#bqQuizArea #bqQuizOptions.rt-choices button.correct::before,
+#bqQuizArea #bqQuizOptions.rt-choices button.wrong::before { background: rgba(255, 255, 255, .72); color: inherit; }
