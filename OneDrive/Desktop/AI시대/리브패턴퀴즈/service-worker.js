@@ -1,4 +1,4 @@
-const CACHE_VERSION = "20260920-rt-8";
+const CACHE_VERSION = "20260920-quiz-2";
 const SHELL_CACHE = `rb-shell-${CACHE_VERSION}`;
 const CONTENT_CACHE = `rb-content-${CACHE_VERSION}`;
 const CACHE_PREFIXES = ["rb-shell-", "rb-content-"];
@@ -8,10 +8,10 @@ const SHELL_ASSETS = [
   "/index.html",
   "/offline.html",
   "/manifest.webmanifest",
-  "/styles.css?v=20260920-rt-8",
-  "/mint-galaxy.css?v=20260920-rt-8",
-  "/viva-theme.css?v=20260920-rt-8",
-  "/reading-touch.css?v=20260920-rt-8",
+  "/styles.css?v=20260920-quiz-2",
+  "/mint-galaxy.css?v=20260920-quiz-2",
+  "/viva-theme.css?v=20260920-quiz-2",
+  "/reading-touch.css?v=20260920-quiz-2",
   "/assets/fonts/jua-subset.woff2",
   "/assets/reading-brain-logo.jpg",
   "/assets/icons/icon-192.png",
@@ -26,13 +26,14 @@ const CONTENT_ASSETS = [
   "/daily-learning-model.js?v=20260823",
   "/auto-pronunciation-model.js?v=20260823",
   "/bookquiz-map-model.js?v=20260823",
+  "/quiz-options-model.js?v=20260920",
   "/leaderboard-model.js?v=20260821-podium",
   "/pattern-hub-model.js?v=20260819-open-interpret",
   "/interpretation-model.js?v=20260818-path",
   "/game-ui-model.js?v=20260821",
   "/game-ui.js?v=20260821",
   "/offline-sync-model.js?v=20260823",
-  "/app.js?v=20260920-rt-8",
+  "/app.js?v=20260920-quiz-2",
   "/assets/mascot/default.webp",
   "/assets/mascot/guide.webp",
   "/assets/mascot/listening.webp",

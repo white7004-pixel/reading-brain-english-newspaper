@@ -18,6 +18,7 @@ const offlineSync = window.ReadingBrainOfflineSync || {
 const pwaApi = window.ReadingBrainPwa || {};
 const autoPronunciation = window.ReadingBrainAutoPronunciation || {};
 const bookquizMapModel = window.ReadingBrainBookquizMap || {};
+const quizOptionsModel = window.ReadingBrainQuizOptions || {};
 const cardPronunciationGuard = autoPronunciation.createPronunciationGuard?.();
 let pwaController = null;
 
@@ -2278,7 +2279,7 @@ function makeOptions(answer, key, sourceItems = expressions) {
       meaningKey(item) !== meaningKey(answer) &&
       !primaryPool.some((primary) => primary.id === item.id),
   );
-  const options = shuffle([...primaryPool, ...fallbackPool]).slice(0, 3);
+  const options = quizOptionsModel.pickDistractors(answer, shuffle([...primaryPool, ...fallbackPool]));
   return shuffle([answer, ...options]).map((item) => ({
     id: item.id,
     text: item[key],
@@ -2703,7 +2704,7 @@ function spawnBlastEnemy() {
   const item = pool[Math.floor(Math.random() * pool.length)];
   blast.currentItem = item;
 
-  const others = shuffle(pool.filter((p) => p.id !== item.id && meaningKey(p) !== meaningKey(item))).slice(0, 3);
+  const others = quizOptionsModel.pickDistractors(item, shuffle(pool));
   const options = shuffle([item, ...others]);
 
   const enemy = document.createElement("div");
@@ -4290,7 +4291,9 @@ function newBQQuiz() {
 
   const ansKey = askKorean ? "english" : "korean";
   const sameKindPool = pool.filter((candidate) => (candidate.id >= 9000) === isPattern);
-  const distractors = shuffle(sameKindPool.filter((p) => p.id !== item.id && p[ansKey] !== item[ansKey])).slice(0, 3);
+  // 같은 종류(단어/패턴)를 먼저 쓰고, 모자라면 나머지에서 채운다. 정답과 헷갈리는 후보는 빠진다.
+  const otherPool = pool.filter((candidate) => !sameKindPool.includes(candidate));
+  const distractors = quizOptionsModel.pickDistractors(item, [...shuffle(sameKindPool), ...shuffle(otherPool)]);
   const options = shuffle([item, ...distractors]);
 
   const optEl = $("#bqQuizOptions");
@@ -4436,7 +4439,7 @@ function spawnBQBlastEnemy() {
   const item = pool[Math.floor(Math.random() * pool.length)];
   bqBlast.currentItem = item;
 
-  const others = shuffle(pool.filter((p) => p.id !== item.id)).slice(0, 3);
+  const others = quizOptionsModel.pickDistractors(item, shuffle(pool));
   const options = shuffle([item, ...others]);
 
   const enemy = document.createElement("div");
