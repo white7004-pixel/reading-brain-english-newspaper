@@ -23,3 +23,13 @@ assert.ok(
   serviceWorker.includes(`/reading-touch.css?v=${rtVersion}`),
   "오프라인에서도 학습 화면이 같으려면 서비스워커가 현재 버전을 담아야 한다",
 );
+
+// --- Task 2: 카드학습 화면 ---
+const studyView = html.slice(html.indexOf('id="studyView"'), html.indexOf('id="quizView"'));
+assert.match(studyView, /class="rt-stage"/, "카드학습 가운데는 리딩터치 학습판이어야 한다");
+assert.match(studyView, /id="studySpeakBtn"/, "학습판 오른쪽 위에 발음 버튼이 있어야 한다");
+assert.match(studyView, /class="rt-dock"[\s\S]*id="prevButton"[\s\S]*id="nextButton"[\s\S]*<\/div>/,
+  "이전·다음 버튼은 아래 고정 바 안에 있어야 한다");
+assert.match(studyView, /id="cardEnglish"[^>]*class="[^"]*rt-word/, "영어 표현은 크게 보여 주는 자리에 있어야 한다");
+const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+assert.match(app, /studySpeakBtn[\s\S]{0,200}addEventListener\("click"/, "발음 버튼이 실제로 발음을 재생해야 한다");

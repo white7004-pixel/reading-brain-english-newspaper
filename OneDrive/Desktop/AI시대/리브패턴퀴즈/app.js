@@ -1692,7 +1692,6 @@ function renderNewWords(item) {
 function renderStudy() {
   const item = currentItem();
   const cards = currentStudyCards();
-  elements.flashcard.classList.remove("flipped");
   elements.cardMeta.textContent = `${item.category}`;
   const indexEl = $("#cardIndexDisplay");
   if (indexEl) indexEl.textContent = `${state.index + 1} / ${cards.length}`;
@@ -3081,7 +3080,7 @@ function handleStudyShortcut(event) {
 
   if (event.key === "ArrowLeft") { moveCard(-1); }
   else if (event.key === "ArrowRight") { markKnown(true); }
-  else if (event.key === " " || event.key === "Enter") { elements.flashcard.classList.toggle("flipped"); }
+  else if (event.key === " " || event.key === "Enter") { Promise.resolve(speakExpression(currentItem(), 1)).catch(() => {}); }
   else return;
 
   event.preventDefault();
@@ -3114,9 +3113,9 @@ function bindEvents() {
   $("#leaderboardNavBtn").addEventListener("click", () => setMode("leaderboard"));
   bindPatternHubEvents();
 
-  elements.flashcard.addEventListener("click", () => elements.flashcard.classList.toggle("flipped"));
-  elements.flashcard.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") elements.flashcard.classList.toggle("flipped");
+  // 리딩터치 구성에서는 영어와 뜻을 함께 보여 주므로 뒤집기가 없다. 대신 발음 버튼을 둔다.
+  $("#studySpeakBtn").addEventListener("click", () => {
+    Promise.resolve(speakExpression(currentItem(), 1)).catch(() => {});
   });
   $("#prevButton").addEventListener("click", () => moveCard(-1));
   $("#nextButton").addEventListener("click", () => moveCard(1));

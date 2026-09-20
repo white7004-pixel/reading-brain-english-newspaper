@@ -10,10 +10,10 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <title>Reading Brain 영어표현 카드 게임</title>
-    <link rel="stylesheet" href="styles.css?v=20260920-rt-1" />
-    <link rel="stylesheet" href="mint-galaxy.css?v=20260920-rt-1" />
-    <link rel="stylesheet" href="viva-theme.css?v=20260920-rt-1" />
-    <link rel="stylesheet" href="reading-touch.css?v=20260920-rt-1" />
+    <link rel="stylesheet" href="styles.css?v=20260920-rt-3" />
+    <link rel="stylesheet" href="mint-galaxy.css?v=20260920-rt-3" />
+    <link rel="stylesheet" href="viva-theme.css?v=20260920-rt-3" />
+    <link rel="stylesheet" href="reading-touch.css?v=20260920-rt-3" />
     <style id="quizAlignmentGuard">
       #quizView .quiz-panel { text-align: center !important; }
       #quizView .quiz-panel :is(#quizCount, #quizScopeText, #quizPrompt, #quizQuestion, #quizFeedback),
@@ -373,28 +373,21 @@
                 </div>
                 <div class="study-context-track" aria-hidden="true"><span id="studyContextBar"></span></div>
               </div>
-              <div class="flashcard quest-card" id="flashcard" tabindex="0" role="button" aria-label="카드 뒤집기">
-                <div class="flashcard-inner">
-                  <div class="card-face card-front">
-                    <span id="cardMeta">Section 1</span>
-                    <div class="new-words" id="newWords"></div>
-                    <h2 id="cardEnglish" class="quest-card-english">Hello, my name is Minho.</h2>
-                    <p>카드를 클릭하면 뜻을 확인할 수 있어요.</p>
-                  </div>
-                  <div class="card-face card-back">
-                    <h2 id="cardKorean" class="quest-card-meaning">안녕, 나는 민호야.</h2>
-                    <p class="card-back-hint">다시 클릭하면 영어로 돌아갑니다.</p>
-                  </div>
-                </div>
+              <div class="rt-stage" id="flashcard">
+                <button id="studySpeakBtn" class="rt-speak" type="button" aria-label="영어 발음 듣기">🔊</button>
+                <span class="rt-count" id="cardIndexDisplay"></span>
+                <span id="cardMeta">Section 1</span>
+                <h2 id="cardEnglish" class="rt-word">Hello, my name is Minho.</h2>
+                <p id="cardKorean" class="rt-meaning">안녕, 나는 민호야.</p>
+                <div class="new-words" id="newWords"></div>
               </div>
               <p class="sr-only">새 카드가 표시되면 영어 발음이 자동으로 재생되고, 잠시 후 다음 카드로 자동으로 넘어갑니다.</p>
-              <div class="nav-buttons">
-                <button id="prevButton" class="ghost">이전</button>
-                <span id="cardIndexDisplay" class="card-index-display"></span>
-                <button id="nextButton" class="ghost">다음</button>
+              <div class="rt-dock">
+                <button id="prevButton" type="button">← 이전</button>
+                <button id="nextButton" class="rt-dock-next" type="button">다음 ▶</button>
               </div>
               <p class="study-shortcuts">
-                <kbd>←</kbd><kbd>→</kbd> 카드 이동 · <kbd>Space</kbd> 뒤집기 · <kbd>S</kbd> 발음
+                <kbd>←</kbd><kbd>→</kbd> 카드 이동 · <kbd>S</kbd> 발음
               </p>
               <div class="section-done-banner hidden" id="sectionDoneBanner">
                 <div>
@@ -650,6 +643,6 @@
     <script src="game-ui.js?v=20260821"></script>
     <script src="offline-sync-model.js?v=20260823"></script>
     <script src="pwa-controller.js?v=20260823"></script>
-    <script src="app.js?v=20260920-rt-1"></script>
+    <script src="app.js?v=20260920-rt-3"></script>
   </body>
 </html>

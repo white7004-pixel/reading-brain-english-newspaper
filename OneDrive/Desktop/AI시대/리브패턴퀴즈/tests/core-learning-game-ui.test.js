@@ -48,7 +48,8 @@ assert.ok(!html.includes('id="speakButton"'), "study cards autoplay pronunciatio
 assert.ok(!html.includes('id="markKnownBtn"'), "the streamlined study view must not restore the known button");
 assert.ok(!html.includes('id="markUnsureBtn"'), "the streamlined study view must not restore the unsure button");
 
-assert.match(html, /class="[^"]*quest-card[^"]*"[^>]*id="flashcard"/, "the study sentence needs a quest card");
+// 카드학습은 리딩터치 구성으로 바뀌었다: 뒤집는 카드 대신 큰 단어가 놓인 학습판이다.
+assert.match(html, /class="[^"]*rt-stage[^"]*"[^>]*id="flashcard"/, "the study sentence needs a Reading Touch stage");
 assert.match(html, /id="quizOptions"[^>]*class="[^"]*answer-grid[^"]*"/, "quiz choices need the answer grid hook");
 assert.match(app, /button\.className\s*=\s*"answer-card"/, "generated quiz choices need the answer card hook");
 

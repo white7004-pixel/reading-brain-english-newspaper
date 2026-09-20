@@ -192,3 +192,12 @@
   .rt-step, .rt-dock button, .rt-speak { transition: none !important; }
   .rt-step:hover:not([data-locked="true"]) { transform: none; }
 }
+
+/* 학습판 머리: 개수와 섹션 이름이 발음 버튼과 겹치지 않게 한 줄씩 둔다 */
+.rt-stage .rt-count { position: static; padding-right: 64px; }
+.rt-stage #cardMeta,
+.rt-stage .rt-count { color: var(--viva-plum); font-weight: 800; }
+.rt-stage #cardMeta { font-size: 15px; padding-right: 64px; }
+
+/* 학습판이 흰 카드이므로 바깥 판은 투명하게 둬 카드가 겹쳐 보이지 않게 한다 */
+#studyView .study-layout { background: transparent; border: 0; box-shadow: none; padding: 0; }
