@@ -3143,6 +3143,9 @@ function bindEvents() {
   }
   $("#newVerbQuizBtn").addEventListener("click", newVerbQuiz);
 
+  $("#bqSpeakBtn").addEventListener("click", () => {
+    Promise.resolve(speakBookquizItem(currentBQItem().item)).catch(() => {});
+  });
   $$(".bqtype-btn").forEach((btn) => btn.addEventListener("click", () => setBQType(btn.dataset.bqtype)));
   $$(".bqmode-btn").forEach((btn) => btn.addEventListener("click", () => setBQSubMode(btn.dataset.bqmode)));
   $$("[data-bookquiz-node]").forEach((btn) => {
@@ -3506,6 +3509,9 @@ function renderBookquizMap() {
     const current = node === map.currentNode && !map.roundCompleted;
     const reviewing = map.allRoundsCompleted && node === map.reviewNode;
     button.disabled = !bookquizMapModel.canOpenNode?.(map, node);
+    button.dataset.locked = String(!bookquizMapModel.canOpenNode?.(map, node));
+    button.dataset.done = String(complete);
+    button.classList.toggle("active", Boolean(current || reviewing));
     button.dataset.state = reviewing ? "review" : complete ? "complete" : current ? "current" : "locked";
     if (current) button.setAttribute("aria-current", "step");
     else button.removeAttribute("aria-current");
@@ -4174,13 +4180,18 @@ function setBQSubMode(mode) {
   else if (mode === "quiz") { state.bqQuizCount = 1; newBQQuiz(); }
 }
 
-function renderBQCard() {
+// 지금 화면에 떠 있는 북퀴즈 카드. 카드를 그릴 때와 발음 버튼이 같은 것을 봐야 한다.
+function currentBQItem() {
   const course = activeDailyCourse("bookquiz");
   const selected = course && dailyLearning.courseItems ? dailyLearning.courseItems(course, bqPool()) : [];
   const pool = selected.length ? selected : bqPool();
   const total = pool.length;
   state.bqIndex = ((state.bqIndex % total) + total) % total;
-  const item = pool[state.bqIndex];
+  return { item: pool[state.bqIndex], total };
+}
+
+function renderBQCard() {
+  const { item, total } = currentBQItem();
   $("#bqCardEnglish").textContent = item.english;
   $("#bqCardKorean").textContent = item.korean;
   $("#bqCardMeta").textContent = `${state.bqIndex + 1} / ${total}`;
@@ -4284,10 +4295,11 @@ function newBQQuiz() {
 
   const optEl = $("#bqQuizOptions");
   optEl.innerHTML = "";
-  options.forEach((opt) => {
+  options.forEach((opt, index) => {
     const btn = document.createElement("button");
     btn.textContent = opt[ansKey];
     btn.dataset.id = String(opt.id);
+    btn.dataset.choice = "ABCD"[index];
     btn.addEventListener("click", () => checkBQAnswer(btn, opt.id, item.id, ansKey));
     optEl.appendChild(btn);
   });

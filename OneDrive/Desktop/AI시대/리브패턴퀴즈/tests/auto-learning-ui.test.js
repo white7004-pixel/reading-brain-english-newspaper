@@ -8,7 +8,7 @@ const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const serviceWorker = fs.readFileSync(path.join(root, "service-worker.js"), "utf8");
 
 assert.doesNotMatch(html, /id="speakButton"/);
-assert.doesNotMatch(html, /id="bqSpeakBtn"/);
+assert.match(html, /id="bqSpeakBtn"[^>]*class="rt-speak"/, "리딩터치 구성에서는 다시 듣기 버튼을 학습판에 둔다");
 assert.match(html, /auto-pronunciation-model\.js/);
 assert.match(html, /bookquiz-map-model\.js/);
 assert.match(app, /function scheduleCardPronunciation\(/);

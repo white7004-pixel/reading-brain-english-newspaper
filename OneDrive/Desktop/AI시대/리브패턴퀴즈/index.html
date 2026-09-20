@@ -10,10 +10,10 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <title>Reading Brain 영어표현 카드 게임</title>
-    <link rel="stylesheet" href="styles.css?v=20260920-rt-3" />
-    <link rel="stylesheet" href="mint-galaxy.css?v=20260920-rt-3" />
-    <link rel="stylesheet" href="viva-theme.css?v=20260920-rt-3" />
-    <link rel="stylesheet" href="reading-touch.css?v=20260920-rt-3" />
+    <link rel="stylesheet" href="styles.css?v=20260920-rt-7" />
+    <link rel="stylesheet" href="mint-galaxy.css?v=20260920-rt-7" />
+    <link rel="stylesheet" href="viva-theme.css?v=20260920-rt-7" />
+    <link rel="stylesheet" href="reading-touch.css?v=20260920-rt-7" />
     <style id="quizAlignmentGuard">
       #quizView .quiz-panel { text-align: center !important; }
       #quizView .quiz-panel :is(#quizCount, #quizScopeText, #quizPrompt, #quizQuestion, #quizFeedback),
@@ -438,12 +438,12 @@
                 </div>
                 <span id="bookquizMapProgress">0 / 4 단계 완료</span>
               </div>
-              <ol id="bookquizLearningMap" class="bookquiz-learning-map" aria-label="북퀴즈 순차 학습 지도">
-                <li><button type="button" data-bookquiz-node="word-study"><b>1</b><span>핵심 단어 카드학습</span><small>현재 단계</small><span id="bookquizOwl" class="bq-owl" aria-hidden="true"></span></button></li>
-                <li><button type="button" data-bookquiz-node="word-quiz"><b>2</b><span>핵심 단어 퀴즈</span><small>잠김</small></button></li>
-                <li><button type="button" data-bookquiz-node="pattern-study"><b>3</b><span>질문 패턴 카드학습</span><small>잠김</small></button></li>
-                <li><button type="button" data-bookquiz-node="pattern-quiz"><b>4</b><span>질문 패턴 퀴즈</span><small>잠김</small></button></li>
-              </ol>
+              <div id="bookquizLearningMap" class="rt-steps" role="tablist" aria-label="북퀴즈 순차 학습 단계">
+                <button type="button" class="rt-step" data-bookquiz-node="word-study"><b>1</b><span>단어</span><small class="sr-only">현재 단계</small><span id="bookquizOwl" class="bq-owl" aria-hidden="true"></span></button>
+                <button type="button" class="rt-step" data-bookquiz-node="word-quiz"><b>2</b><span>단어 퀴즈</span><small class="sr-only">잠김</small></button>
+                <button type="button" class="rt-step" data-bookquiz-node="pattern-study"><b>3</b><span>질문 패턴</span><small class="sr-only">잠김</small></button>
+                <button type="button" class="rt-step" data-bookquiz-node="pattern-quiz"><b>4</b><span>패턴 퀴즈</span><small class="sr-only">잠김</small></button>
+              </div>
               <p id="bookquizMapStatus" class="sr-only" aria-live="polite"></p>
               <button id="bookquizSecondRoundBtn" class="primary hidden" type="button">2회독 시작</button>
               <p id="bookquizFinalComplete" class="hidden">2회독 학습을 모두 완료했습니다. 완료한 단계를 자유롭게 복습할 수 있어요.</p>
@@ -459,21 +459,19 @@
 
             <div id="bqCardArea" class="bq-area">
               <div class="bq-card-wrap">
-                <article id="bqCard" class="bq-card study-board book-quest" aria-label="북퀴즈 단어 학습판">
-                  <div class="bq-face bq-front">
-                    <div id="bqCardMeta" class="bq-card-meta">1 / 21</div>
-                    <div class="bq-card-badge" id="bqCardBadge">핵심 단어</div>
-                    <h2 id="bqCardEnglish">What</h2>
-                    <div class="bq-board-divider" aria-hidden="true"></div>
-                    <h3 id="bqCardKorean" class="bq-card-korean">무엇 / 어떤</h3>
-                    <p class="sr-only">새 카드가 표시되면 영어 발음이 자동으로 한 번 재생됩니다.</p>
-                  </div>
+                <article id="bqCard" class="rt-stage" aria-label="북퀴즈 단어 학습판">
+                  <button id="bqSpeakBtn" class="rt-speak" type="button" aria-label="영어 발음 듣기">🔊</button>
+                  <span class="rt-count" id="bqIndexDisplay">1 / 21</span>
+                  <div class="bq-card-badge" id="bqCardBadge">핵심 단어</div>
+                  <h2 id="bqCardEnglish" class="rt-word">What</h2>
+                  <h3 id="bqCardKorean" class="rt-meaning">무엇 / 어떤</h3>
+                  <div id="bqCardMeta" class="sr-only">1 / 21</div>
+                  <p class="sr-only">새 카드가 표시되면 영어 발음이 자동으로 한 번 재생됩니다.</p>
                 </article>
               </div>
-              <div class="nav-buttons">
-                <button id="bqPrevBtn" class="ghost">이전</button>
-                <span id="bqIndexDisplay">1 / 21</span>
-                <button id="bqNextBtn" class="ghost">다음</button>
+              <div class="rt-dock">
+                <button id="bqPrevBtn" type="button">← 이전</button>
+                <button id="bqNextBtn" class="rt-dock-next" type="button">다음 ▶</button>
               </div>
             </div>
 
@@ -490,7 +488,7 @@
                     <div id="bqQuizQuestion" class="quiz-question">무엇 / 어떤</div>
                   </div>
                 </div>
-                <div id="bqQuizOptions" class="options"></div>
+                <div id="bqQuizOptions" class="rt-choices"></div>
                 <p id="bqQuizFeedback" class="feedback"></p>
               </div>
             </div>
@@ -643,6 +641,6 @@
     <script src="game-ui.js?v=20260821"></script>
     <script src="offline-sync-model.js?v=20260823"></script>
     <script src="pwa-controller.js?v=20260823"></script>
-    <script src="app.js?v=20260920-rt-3"></script>
+    <script src="app.js?v=20260920-rt-7"></script>
   </body>
 </html>

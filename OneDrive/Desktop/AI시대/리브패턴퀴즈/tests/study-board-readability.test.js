@@ -14,7 +14,7 @@ assert.match(
 );
 assert.match(
   html,
-  /id="bqCard"[^>]*class="[^"]*study-board[^"]*"[\s\S]*?id="bqCardEnglish"[\s\S]*?id="bqCardKorean"/,
+  /id="bqCard"[^>]*class="[^"]*rt-stage[^"]*"[\s\S]*?id="bqCardEnglish"[\s\S]*?id="bqCardKorean"/,
   "the bookquiz study board must show English and Korean together",
 );
 assert.ok(!html.includes('id="bqCardBackEnglish"'), "the bookquiz study board must render its English expression only once");

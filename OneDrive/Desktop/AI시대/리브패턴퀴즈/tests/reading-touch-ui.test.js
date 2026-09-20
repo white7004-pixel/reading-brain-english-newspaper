@@ -33,3 +33,33 @@ assert.match(studyView, /class="rt-dock"[\s\S]*id="prevButton"[\s\S]*id="nextBut
 assert.match(studyView, /id="cardEnglish"[^>]*class="[^"]*rt-word/, "영어 표현은 크게 보여 주는 자리에 있어야 한다");
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 assert.match(app, /studySpeakBtn[\s\S]{0,200}addEventListener\("click"/, "발음 버튼이 실제로 발음을 재생해야 한다");
+
+// --- Task 3: 북퀴즈 단계 탭 + A·B·C·D 보기 ---
+const bookquizView = html.slice(html.indexOf('id="bookquizView"'), html.indexOf('id="verbView"'));
+assert.match(bookquizView, /class="rt-steps"/, "북퀴즈 4단계는 가로 단계 탭이어야 한다");
+assert.match(bookquizView, /class="rt-step"[^>]*data-bookquiz-node="word-study"/, "단계 탭은 기존 단계 버튼을 그대로 쓴다");
+assert.match(bookquizView, /id="bqQuizOptions"[^>]*class="[^"]*rt-choices/, "북퀴즈 보기는 A·B·C·D 알약이어야 한다");
+assert.match(bookquizView, /class="rt-stage"/, "북퀴즈 카드도 리딩터치 학습판이어야 한다");
+assert.match(
+  app,
+  /button\.dataset\.locked = String\(!bookquizMapModel\.canOpenNode/,
+  "잠금 표시는 기존 단계 모델(canOpenNode)이 정한 그대로 따라야 한다",
+);
+assert.match(app, /dataset\.choice = "ABCD"/, "보기 버튼에 A·B·C·D 글자를 붙여야 한다");
+
+// 보기 알약은 styles.css 의 옛 규칙(#bqQuizArea #bqQuizOptions button)보다 세야 실제로 보인다.
+assert.match(
+  css,
+  /#bqQuizArea\s+#bqQuizOptions\.rt-choices\s+button\s*\{[\s\S]*?border-radius:\s*999px/,
+  "보기 알약 모양이 옛 네모 규칙을 이겨야 한다",
+);
+assert.match(
+  css,
+  /#bqQuizArea\s+#bqQuizOptions\.rt-choices\s+button\s*\{[\s\S]*?text-align:\s*left\s*!important/,
+  "보기 글은 A·B·C·D 옆에서 왼쪽으로 읽혀야 한다",
+);
+assert.match(
+  css,
+  /#bqQuizArea\s+#bqQuizOptions\.rt-choices\s*\{[\s\S]*?grid-template-columns:\s*1fr/,
+  "보기는 한 줄에 하나씩 쌓여야 한다",
+);

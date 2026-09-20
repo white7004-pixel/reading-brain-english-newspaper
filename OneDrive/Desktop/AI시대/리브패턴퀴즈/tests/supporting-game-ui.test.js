@@ -31,7 +31,7 @@ assert.match(
 assert.equal((html.match(/id="bqCardEnglish"/g) || []).length, 1, "bookquiz needs one English prompt");
 assert.equal((html.match(/id="bqCardKorean"/g) || []).length, 1, "bookquiz needs one Korean meaning");
 assert.ok(!html.includes("우리말 뜻"), "bookquiz must not add a redundant Korean-meaning label");
-assert.match(html, /id="bqCard"[^>]*class="[^"]*book-quest[^"]*"/, "bookquiz cards need the shared quest surface");
+assert.match(html, /id="bqCard"[^>]*class="[^"]*rt-stage[^"]*"/, "bookquiz cards use the Reading Touch stage");
 assert.ok(!html.includes('id="bqMascot"'), "bookquiz must reuse the shared Liv guide");
 assert.match(app, /function checkBQAnswer[\s\S]*?ReadingBrainGameUI\?\.setMascot\?\.\(/, "bookquiz answers must update shared Liv feedback");
 

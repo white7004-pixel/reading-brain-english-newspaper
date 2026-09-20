@@ -16,11 +16,11 @@ test("study cards remove manual pronunciation controls and Bookquiz starts as a 
 
   await page.locator('[data-pmode="study"]').click();
   await expect(page.locator("#studyView")).toHaveClass(/active/);
-  await expect(page.locator("#speakButton")).toHaveCount(0);
+  await expect(page.locator("#studySpeakBtn")).toHaveCount(1);
 
   await page.locator("#bqNavBtn").click();
   await expect(page.locator("#bookquizView")).toHaveClass(/active/);
-  await expect(page.locator("#bqSpeakBtn")).toHaveCount(0);
+  await expect(page.locator("#bqSpeakBtn")).toHaveCount(1);
 
   const nodes = page.locator("[data-bookquiz-node]");
   await expect(nodes).toHaveCount(4);
