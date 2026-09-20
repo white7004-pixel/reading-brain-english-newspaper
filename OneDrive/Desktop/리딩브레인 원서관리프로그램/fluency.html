@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRE-TEST · 리딩브레인</title>
+<link rel="stylesheet" href="app.css">
+<style>
+main{max-width:980px}
+.fl-lv{display:flex; gap:8px; overflow-x:auto; padding:2px 0 12px}
+.fl-lv button{flex:none; border:0; background:#fff; color:#6b5a78; border-radius:16px; padding:9px 15px; text-align:left;
+  font:inherit; font-weight:700; font-size:14px; box-shadow:0 1px 4px rgba(120,60,160,.12); cursor:pointer}
+.fl-lv button small{display:block; font-weight:400; font-size:11.5px; color:#a597b0}
+.fl-lv button.on{background:var(--grad); color:#fff}
+.fl-lv button.on small{color:#fbe6ff}
+.fl-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px}
+.fl-head b{font-size:18px; color:var(--navy)}
+.fl-text{background:var(--soft); border-radius:14px; padding:18px 20px; font-family:Georgia,"Times New Roman",serif;
+  font-size:21px; line-height:1.9; color:var(--ink)}
+.fl-clock{font-size:44px; font-weight:800; color:var(--navy); font-variant-numeric:tabular-nums; min-width:130px}
+.fl-err{font:inherit; font-size:18px; width:110px; padding:8px 10px; border:1px solid var(--line); border-radius:10px}
+.fl-big{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:0 16px}
+.fl-big div{background:var(--soft); border-radius:12px; padding:12px; text-align:center; font-size:13px; color:#6b5a78}
+.fl-big b{display:block; font-size:28px; color:var(--navy)}
+.fl-hist{margin:0 16px 16px}
+mark.miss{background:#fde3e6; color:#c0111f; border-radius:4px; padding:0 2px}
+.fl-text .skip{color:#b9aec4}
+@media (max-width:520px){ .fl-text{font-size:18px} .fl-clock{font-size:36px} }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="home" href="index.html">← 목록</a>
+  <div class="bk"><b>📖 PRE-TEST (K–6)</b><span>낭독 유창성 진단 · 선생님과 함께 해요</span></div>
+  <div class="sp"></div>
+  <label for="who">이름</label>
+  <input class="who" id="who" placeholder="김리브로" autocomplete="off">
+</div>
+
+<main>
+  <p class="sub" style="margin-top:14px">학생이 지문을 소리 내어 읽는 동안 시간을 재고 <b>오류 단어 수</b>를 기록하면, 분당 정확히 읽은 단어 수(<b>WCPM</b>)와 <b>정확도</b>로
+    대략적인 읽기 수준을 추정합니다. 기준은 미국 전국 유창성 벤치마크(Hasbrouck &amp; Tindal 2017, 50백분위 참고치)입니다.
+    <b>단계 이름의 학년은 모두 미국 학년</b>이며, 한국 학년과 다릅니다.</p>
+  <div class="fl-lv" id="lv"></div>
+
+  <div class="box">
+    <div class="fl-head"><b id="lvName"></b><span class="count" id="lvInfo"></span></div>
+    <div class="fl-text" id="text"></div>
+  </div>
+
+  <div class="box">
+    <div class="row">
+      <div class="fl-clock" id="clock">00:00</div>
+      <button class="btn" id="goAI">🤖 AI 채점으로 시작</button>
+      <button class="btn red" id="stop" disabled>■ 정지</button>
+      <button class="btn ghost" id="reset">다시 설정</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost" id="go">⏱ 시간만 재기 (직접 세기)</button>
+      <button class="btn ghost" id="goRec">🎙 녹음하며 직접 세기</button>
+      <audio id="au" controls hidden></audio>
+      <span class="count" id="note"></span>
+    </div>
+    <div class="row" style="margin-top:16px; align-items:flex-end">
+      <label>오류 단어 수 <span id="errBy" class="count"></span><br>
+        <input class="fl-err" id="err" type="number" min="0" value="0" inputmode="numeric"></label>
+      <button class="btn" id="calc" disabled>결과 계산</button>
+    </div>
+    <p class="count" style="margin:10px 0 0"><b>AI 채점</b>은 학생이 읽는 소리를 받아써서 지문과 낱말 단위로 맞춰 보고, 틀리거나 건너뛴 낱말을 자동으로 셉니다. PC·안드로이드는 크롬, 아이폰은 사파리에서 마이크를 허용해 주세요(카톡 안 브라우저는 안 됩니다). 지문의 <mark class="miss">빨간 낱말</mark>이 AI가 놓쳤다고 본 낱말이에요. 어린 학생 발음은 잘못 들을 수 있으니, 숫자를 고치고 [결과 계산]을 다시 누르면 됩니다.<br>오류 기준: 잘못 읽음, 건너뜀, 5초 이상 막혀 알려준 단어. 자기수정(스스로 고쳐 읽음)은 오류로 세지 않습니다.</p>
+  </div>
+
+  <div id="result"></div>
+</main>
+
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="report.js"></script>
+<script>
+RB.gate();
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+/* 지문은 모두 학원에서 새로 쓴 글이다 (시판 교재·원서 본문 아님).
+   학년은 모두 미국 학년이다(한국 학년과 다르다. 미국 학년도는 가을에 시작한다).
+   bench = 그 시기 50백분위 WCPM 참고치. Hasbrouck & Tindal(2017) 표에서
+   1학기 = 가을·겨울 평균, 2학기 = 봄. 유치원은 표에 없어 학원 기준으로 둔 값이다. */
+const LEVELS = [
+  { name: "미국 유치원 1학기", ar: "AR BR · 도서수준 이전", bench: 10, text:
+    "I see a red hen. The hen is big. I see a pig. The pig can sit. I like the hen and the pig." },
+  { name: "미국 유치원 2학기", ar: "AR K.5 내외", bench: 20, text:
+    "This is my cat. My cat is little. She can run and jump. She likes to play with a red ball. I like to play with her. We have fun in the sun. Then we go in for a nap." },
+  { name: "미국 1학년 1학기", ar: "AR 1.0–1.3", bench: 29, text:
+    "Ben has a new kite. It is blue and yellow. He takes it to the park with his dad. The wind is strong today. Ben runs fast, and the kite goes up, up, up. It looks like a bird in the sky. Then the string gets stuck in a tree. Dad helps Ben get it down. Ben is happy again. \"Let's fly it one more time!\" he says." },
+  { name: "미국 1학년 2학기", ar: "AR 1.5–1.8", bench: 60, text:
+    "Mia woke up and looked out the window. Rain was falling on the street. She wanted to ride her bike, but the ground was too wet. \"What can I do inside?\" she asked. Her grandma smiled and took out a big box. Inside were paper, paint, and brushes. Mia painted a rainbow over a green hill. She painted herself riding her bike under it. When the paint was dry, Grandma put the picture on the wall. Mia thought it was the best rainy day ever." },
+  { name: "미국 2학년 1학기", ar: "AR 2.0–2.3", bench: 67, text:
+    "Our class planted a garden behind the school. First, we dug small holes in the soft dirt. Then we dropped in tiny seeds and covered them up. Every morning, two students carried water to the garden. For a long time, nothing happened. Some of us wanted to give up. But one Monday, Leo shouted, \"Look! Green leaves!\" Little plants were pushing up through the soil. By summer, we had beans, carrots, and bright red tomatoes. We made a big salad and shared it with the whole school. Everyone agreed that waiting was worth it." },
+  { name: "미국 2학년 2학기", ar: "AR 2.5–2.8", bench: 100, text:
+    "Owls are birds that hunt at night. While most animals sleep, owls are wide awake. Their large eyes help them see in the dark, and their ears can hear a mouse moving under the leaves. Owls cannot move their eyes from side to side. Instead, they turn their heads far around to look behind them. Their soft feathers make their wings very quiet, so other animals do not hear them coming. During the day, owls rest in trees or old barns. Their brown and gray feathers match the bark, which makes them hard to find. If you walk in the woods at sunset, listen carefully. You might hear an owl calling before its nightly hunt." },
+  { name: "미국 3학년 1학기", ar: "AR 3.0–3.3", bench: 90, text:
+    "Every Saturday, Nora helped her uncle at his small bakery. She swept the floor, washed the trays, and placed warm rolls in the window. One morning, a thin gray dog sat outside the door. It did not bark or beg. It simply watched the people walking by. Nora's uncle said the dog probably belonged to someone, so they made a sign with its picture and taped it to the glass. Days passed, but nobody came. Each Saturday the dog returned, and each Saturday Nora saved it a piece of bread. At the end of the month, her uncle laughed and said, \"I think that dog has already chosen its family.\" Nora named him Biscuit, and from then on, the bakery had a new greeter at the door." },
+  { name: "미국 3학년 2학기", ar: "AR 3.5–3.8", bench: 112, text:
+    "A honeybee hive is one of the busiest places in nature. A single colony can hold tens of thousands of bees, and every bee has a job. The queen lays the eggs. Worker bees, which are all female, build the wax comb, guard the entrance, and care for the young. Older workers fly out to gather nectar and pollen from flowers. When a worker finds a good patch of flowers, she returns to the hive and performs a special dance. The direction and length of her dance tell the other bees where to go. Bees do more than make honey. As they move from flower to flower, they carry pollen that helps plants grow fruit and seeds. Many of the foods we eat, such as apples and almonds, depend on the work of these tiny insects." },
+  { name: "미국 4학년 1학기", ar: "AR 4.0–4.3", bench: 107, text:
+    "Daniel had three weeks to prepare for the school science fair, and he had no idea what to build. His older sister suggested a volcano, but half the class was already making one. Then, while riding his bike home, Daniel noticed how quickly his front light faded whenever he slowed down. The light was powered by the turning wheel. That gave him an idea. He borrowed the small generator from the bike and connected it to a hand crank made from an old toy. After several failed attempts, a tiny bulb finally flickered on. Daniel measured how fast he had to turn the crank to keep the bulb glowing and recorded the results in a chart. On the day of the fair, visitors lined up to try the crank themselves. Daniel did not win first prize, but the judges wrote one sentence he never forgot: \"You asked a real question and found your own answer.\"" },
+  { name: "미국 4학년 2학기", ar: "AR 4.5–4.8", bench: 133, text:
+    "Far beneath our feet, the inside of the Earth is incredibly hot. In some places, the heat is great enough to melt solid rock. This melted rock, called magma, is lighter than the rock around it, so it slowly rises toward the surface. When magma breaks through the ground, a volcano erupts. Once it reaches the surface, the melted rock is known as lava. Some eruptions are gentle, with lava flowing like a thick, glowing river. Others are violent, blasting ash and gas high into the sky. The ash can travel for hundreds of kilometers and darken the daytime sky. Although volcanoes can be dangerous, they also bring benefits. Over many years, volcanic ash breaks down into rich soil that is excellent for farming. Entire islands, including the islands of Hawaii, were built by volcanoes rising from the ocean floor. In this way, volcanoes both destroy land and create it." },
+  { name: "미국 5학년 1학기", ar: "AR 5.0–5.3", bench: 127, text:
+    "The trail to the summit was supposed to take four hours, but by noon Hana and her father had covered less than half of it. Loose stones slid under their boots, and the thin mountain air made every step feel heavier. Hana wanted to complain, yet she remembered that the hike had been her idea. At a bend in the path, they met an elderly woman resting on a rock. She told them she had climbed this mountain every autumn for thirty years. \"The secret,\" she said, \"is not to stare at the top. Look only at the next ten steps.\" Hana tried it. She stopped measuring the distance that remained and paid attention to the ground in front of her, the smell of pine, and the rhythm of her breathing. Ten steps became a hundred, and a hundred became a thousand. When they finally reached the summit, the valley spread out below them like a painted map. Hana realized that the woman's advice was about far more than mountains." },
+  { name: "미국 5학년 2학기", ar: "AR 5.5–5.8", bench: 146, text:
+    "For most of human history, every book had to be copied by hand. A single copy could take a skilled writer many months to finish, so books were rare and extremely expensive. Only wealthy people, temples, and universities could afford to own them. Printing changed everything. In Korea, a Buddhist text known as Jikji was printed with movable metal type in 1377, and it is the oldest surviving book made with this method. Around 1450, a German craftsman named Johannes Gutenberg developed a printing press that could produce pages quickly and in large numbers. Within a few decades, printing shops had opened in cities across Europe, and millions of books were in circulation. As books became cheaper, more people learned to read. New ideas about science, religion, and government spread faster than ever before. Historians often compare the impact of the printing press to the arrival of the internet, because both inventions suddenly placed information in the hands of ordinary people." },
+  { name: "미국 6학년 1학기", ar: "AR 6.0–6.3", bench: 139, text:
+    "When the school announced that the old library would be replaced by a computer lab, most students cheered. Jisoo did not. She had spent countless afternoons in that dusty room, and she could not imagine the building without it. Instead of simply complaining, she decided to gather evidence. She surveyed two hundred students and discovered something surprising: although few of them borrowed books regularly, nearly all of them used the library as a quiet place to study. She presented her findings to the principal, along with a proposal. Rather than removing the library, the school could redesign it, keeping the most popular books while adding computers and group study tables. The principal was impressed, not only by the idea but by the careful way Jisoo had supported it. The following spring, the new learning center opened with both bookshelves and screens. Jisoo learned that persuading people requires more than strong feelings. It requires listening, collecting facts, and offering a solution that others can accept." },
+  { name: "미국 6학년 2학기", ar: "AR 6.5–6.8", bench: 146, text:
+    "Sleep may look like a waste of time, but scientists have discovered that the brain is remarkably active while we rest. During the night, the brain reviews the experiences of the day, strengthening important memories and discarding unnecessary details. This process explains why students who sleep well after studying often remember more than those who stay up late to review. Sleep also affects mood, attention, and even the body's ability to fight illness. Medical experts recommend that children between six and twelve years old sleep nine to twelve hours each night, while teenagers need eight to ten. Unfortunately, many young people fall short of these goals. One major cause is the use of phones and tablets before bed. The bright light from screens can delay the release of melatonin, the hormone that signals the body to prepare for sleep. Researchers suggest a simple strategy: turn off screens an hour before bedtime and keep a regular schedule, even on weekends. A rested brain, they argue, is one of the most powerful tools a learner can have." },
+];
+LEVELS.forEach(l => l.words = l.text.trim().split(/\s+/).length);
+/* 한 단계의 통과선 = 그 단계까지 나온 참고치 중 가장 높은 값.
+   참고치 표는 학년이 올라가도 한 번 내려간다(가을은 방학 뒤라 지난 봄보다 낮다). 그대로 비교하면
+   100 WCPM 이 2학년 2학기(100)는 못 넘으면서 3학년 1학기(90)는 넘는 뒤집힘이 생겨 4학년까지 튀어 오른다. */
+LEVELS.forEach((l, i) => l.need = i ? Math.max(LEVELS[i - 1].need, l.bench) : l.bench);
+
+let L = 0, t0 = 0, sec = 0, tick = null, rec = null, blob = null;
+let ai = null;            // AI 채점 중: { heard, live, sr }
+let attempted = 0;        // AI 채점에서 학생이 실제로 읽은 데까지의 낱말 수 (0 이면 지문 전체)
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const norm = w => w.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/* AI 채점: 지문 낱말과 들은 낱말을 순서대로 맞춘다(LCS). 지문에만 있고 못 들은 낱말 = 오류.
+   더 말한 낱말(되풀이·스스로 고쳐 읽기)은 오류로 세지 않는다. 마지막으로 맞은 낱말 뒤로 4낱말 넘게 비면 거기까지만 읽은 것으로 본다.
+   ponytail: 브라우저 음성 인식을 그대로 쓴다. 어린 학생 발음에서 틀리기 쉬워서 숫자는 선생님이 고칠 수 있게 둔다. 더 정확히 하려면 서버에서 음성 모델로 받아쓴다. */
+function align(text, heard){
+  const P = text.trim().split(/\s+/), p = P.map(norm), h = heard.split(/\s+/).map(norm).filter(Boolean);
+  const n = p.length, m = h.length, D = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+    D[i][j] = p[i] === h[j] ? D[i + 1][j + 1] + 1 : Math.max(D[i + 1][j], D[i][j + 1]);
+  const hit = new Array(n).fill(false);
+  for (let i = 0, j = 0; i < n && j < m;){
+    if (p[i] === h[j]){ hit[i] = true; i++; j++; } else if (D[i + 1][j] >= D[i][j + 1]) i++; else j++;
+  }
+  let end = n; const lastHit = hit.lastIndexOf(true);
+  if (n - 1 - lastHit > 4) end = lastHit + 1;               // 끝까지 읽지 않았다
+  const miss = []; for (let i = 0; i < end; i++) if (!hit[i]) miss.push(i);
+  return { words: P, miss, end };
+}
+const MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const INAPP = RB_INAPP;
+const SR_ERR = {
+  "not-allowed": "마이크 사용이 막혀 있어요. 주소창의 🔒(또는 ‘aA’) → 마이크 허용으로 바꿔 주세요.",
+  "service-not-allowed": "이 휴대폰에서 음성 인식이 꺼져 있어요. 아이폰은 설정 → 일반 → 키보드 → ‘받아쓰기 활성화’를 켜 주세요.",
+  "audio-capture": "마이크를 찾지 못했어요. 다른 앱이 마이크를 쓰고 있지 않은지 확인해 주세요.",
+  "network": "음성 인식은 인터넷이 필요해요. 연결을 확인해 주세요.",
+  "language-not-supported": "이 브라우저는 영어 음성 인식을 지원하지 않아요. 크롬에서 열어 주세요."
+};
+function listen(){
+  if (!ai) return;
+  const sr = new SR(); sr.lang = "en-US"; sr.continuous = true; sr.interimResults = true;
+  const base = ai.live ? ai.live + " " : "";
+  sr.onresult = e => {
+    const parts = [];
+    for (let i = 0; i < e.results.length; i++){
+      const t = e.results[i][0].transcript.trim(), last = parts[parts.length - 1];
+      if (last != null && t.toLowerCase().startsWith(last.toLowerCase())) parts[parts.length - 1] = t; else parts.push(t);
+    }
+    if (ai) ai.heard = ai.live = base + parts.join(" ");
+  };
+  sr.onerror = e => { if (ai && SR_ERR[e.error]){ ai.fatal = true; $("#note").textContent = SR_ERR[e.error] + " 지금은 [정지] 후 오류 수를 직접 적어 주세요."; } };
+  sr.onend = () => { if (ai && tick && !ai.fatal) listen(); };   // 조용하면 멈춘다. 재는 동안 다시 켠다
+  ai.sr = sr; try { sr.start(); } catch (e) {}
+}
+const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s) % 60).padStart(2, "0")}`;
+const today = () => new Date().toLocaleDateString("sv-SE");
+const who = () => $("#who").value.trim();
+const histKey = () => "rbflu:" + who();
+const hist = () => { try { return JSON.parse(localStorage.getItem(histKey()) || "[]"); } catch { return []; } };
+
+function drawLevels(){
+  $("#lv").innerHTML = LEVELS.map((l, i) =>
+    `<button data-i="${i}" class="${i === L ? "on" : ""}">${esc(l.name)}<small>${esc(l.ar)}</small></button>`).join("");
+  $("#lv").querySelectorAll("button").forEach(b => b.onclick = () => { if (tick) return; L = +b.dataset.i; reset(); });
+  $("#lvName").textContent = LEVELS[L].name;
+  $("#lvInfo").textContent = `총 ${LEVELS[L].words}단어 · 참고 ${LEVELS[L].ar}`;
+  $("#text").textContent = LEVELS[L].text;
+}
+
+function reset(){
+  clearInterval(tick); tick = null; sec = 0; blob = null; attempted = 0;
+  if (ai && ai.sr){ ai.sr.onend = null; try { ai.sr.stop(); } catch (e) {} }
+  ai = null; $("#errBy").textContent = "(틀리거나 건너뛴 단어)";
+  if (rec && rec.state !== "inactive") rec.stop();
+  rec = null;
+  $("#clock").textContent = "00:00"; $("#err").value = 0;
+  $("#go").disabled = $("#goRec").disabled = $("#goAI").disabled = false; $("#stop").disabled = $("#calc").disabled = true;
+  $("#au").hidden = true; $("#note").textContent = ""; $("#result").innerHTML = "";
+  drawLevels();
+}
+
+async function start(withRec, withAI){
+  if (withAI && !SR){ $("#note").textContent = INAPP ? "메신저 안 브라우저에서는 AI 채점이 안 돼요. 맨 위의 [바깥 브라우저로 열기]를 눌러 주세요."
+    : "이 브라우저는 AI 채점을 못 해요. 크롬(안드로이드)·사파리(아이폰)에서 열거나 [시간만 재기]로 직접 세어 주세요."; return; }
+  if (withAI && MOBILE) withRec = false;                     // 휴대폰은 녹음과 음성 인식이 마이크를 두고 다툰다. AI 채점이 먼저다
+  drawLevels(); attempted = 0; $("#errBy").textContent = "(틀리거나 건너뛴 단어)";
+  if (withRec){
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const chunks = [];
+      rec = new MediaRecorder(stream);
+      rec.ondataavailable = e => chunks.push(e.data);
+      rec.onstop = () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (!chunks.length) return;
+        blob = new Blob(chunks, { type: rec.mimeType });
+        $("#au").src = URL.createObjectURL(blob); $("#au").hidden = false;
+        if (who()) RB.putAudio("_fluency", who(), "read", blob).catch(() => {});
+      };
+      rec.start();
+      $("#note").textContent = "● 녹음 중";
+    } catch { $("#note").textContent = "마이크를 쓸 수 없어요. 시간만 잽니다."; }
+  }
+  if (withAI){ ai = { heard: "", live: "" }; $("#note").textContent = "● AI가 듣고 있어요. 다 읽으면 [정지]를 누르세요." + (MOBILE ? " (휴대폰에서는 녹음 파일은 남기지 않아요)" : ""); }
+  t0 = Date.now();
+  tick = setInterval(() => { sec = (Date.now() - t0) / 1000; $("#clock").textContent = fmt(sec); }, 200);
+  if (withAI) listen();
+  $("#go").disabled = $("#goRec").disabled = $("#goAI").disabled = true; $("#stop").disabled = false; $("#calc").disabled = true;
+  $("#result").innerHTML = "";
+}
+
+function stop(){
+  sec = (Date.now() - t0) / 1000;
+  clearInterval(tick); tick = null;
+  if (rec && rec.state !== "inactive") rec.stop();
+  $("#clock").textContent = fmt(sec);
+  $("#stop").disabled = true; $("#go").disabled = $("#goRec").disabled = $("#goAI").disabled = false; $("#calc").disabled = false;
+  if (!ai){ $("#note").textContent = "오류 단어 수를 적고 [결과 계산]을 누르세요."; $("#err").focus(); return; }
+  // AI 채점: 마지막 인식 결과가 조금 늦게 오니 잠깐 기다렸다가 맞춰 본다
+  const a = ai;
+  if (a.sr){ a.sr.onend = null; try { a.sr.stop(); } catch (e) {} }
+  $("#note").textContent = "AI가 채점하는 중…";
+  setTimeout(() => { ai = null; aiScore(a.live.length > a.heard.length ? a.live : a.heard); }, 700);
+}
+function aiScore(heard){
+  if (heard.trim().split(/\s+/).filter(Boolean).length < 3){
+    $("#note").textContent = "AI가 소리를 거의 듣지 못했어요. 마이크를 확인하거나 오류 수를 직접 적어 주세요."; $("#err").focus(); return; }
+  const r = align(LEVELS[L].text, heard), bad = new Set(r.miss);
+  attempted = r.end < r.words.length ? r.end : 0;
+  $("#text").innerHTML = r.words.map((w, i) => i >= r.end ? `<span class="skip">${esc(w)}</span>`
+    : bad.has(i) ? `<mark class="miss">${esc(w)}</mark>` : esc(w)).join(" ");
+  $("#err").value = r.miss.length; $("#errBy").textContent = "(AI가 센 값 · 고칠 수 있어요)";
+  $("#note").textContent = attempted ? `끝까지 읽지 않아 ${attempted}번째 낱말까지만 계산했어요.` : "AI 채점 완료. 숫자가 다르면 고치고 [결과 계산]을 다시 누르세요.";
+  calc();
+}
+
+/* 추정: 정확도 90% 미만이면 이 지문은 좌절 수준 → 한 단계 아래.
+   아니면 WCPM 이 닿는 가장 높은 단계. 다만 읽은 지문보다 두 단계(=1학년) 위까지만 적는다.
+   쉬운 지문을 빨리 읽은 것만으로 더 어려운 글도 읽는다고 볼 수 없어서다(한 지문으로는 여기까지가 한계다).
+   더 높이 나오면 수준 뒤에 "이상"을 붙이고, 그 단계 지문으로 다시 재라고 안내한다. */
+function estimate(L, wcpm, acc){
+  if (acc < 90) return { i: Math.max(0, L - 1), over: false };
+  let byRate = 0;
+  LEVELS.forEach((l, i) => { if (wcpm >= l.need) byRate = i; });
+  while (byRate && LEVELS[byRate - 1].need === LEVELS[byRate].need) byRate--;   // 통과선이 같은 단계가 이어지면 낮은 쪽까지만 확인된 것이다
+  const cap = Math.min(LEVELS.length - 1, L + 2);
+  const floor = acc >= 95 && wcpm >= LEVELS[L].bench ? L : 0;                   // 읽은 지문을 참고치 이상으로 잘 읽었으면 적어도 이 단계다
+  return { i: Math.max(floor, Math.min(byRate, cap)), over: byRate > cap };
+}
+
+function calc(){
+  const lv = LEVELS[L], total = attempted || lv.words, err = Math.min(total, Math.max(0, parseInt($("#err").value, 10) || 0));
+  if (sec < 3){ $("#note").textContent = "시간이 너무 짧아요. 다시 재 주세요."; return; }
+  const right = total - err, wcpm = Math.round(right / sec * 60), acc = Math.round(right / total * 1000) / 10;
+  const est = estimate(L, wcpm, acc), E = LEVELS[est.i], estName = E.name + (est.over ? " 이상" : "");
+  const band = acc >= 95 ? "독립 수준 (혼자 읽기 알맞음)" : acc >= 90 ? "지도 수준 (도움 받으며 읽기 알맞음)" : "좌절 수준 (이 지문은 어려움)";
+  const next = acc < 90 ? `정확도가 90% 아래예요. 한 단계 아래 지문(${LEVELS[Math.max(0, L - 1)].name})으로 다시 진단해 보세요.`
+    : est.i < L ? `정확도는 괜찮지만 속도가 이 단계 참고치(${lv.bench} WCPM)에 못 미쳐요. ${E.name} 수준 원서로 다독하며 유창성을 키워요.`
+    : est.i > L ? `이 지문은 너무 쉬웠어요. ${E.name} 지문으로 다시 진단해야 정확한 수준이 나옵니다.`
+    : acc >= 95 && wcpm >= lv.bench && L < LEVELS.length - 1 ? `이 단계를 편하게 읽어요. 다음 단계(${LEVELS[L + 1].name}) 지문으로 한 번 더 진단해 보세요.`
+    : `${lv.name} 수준이 지금 읽기에 알맞아요. 이 AR 범위의 원서로 시작하세요.`;
+  const r = { date: today(), level: lv.name, words: lv.words, sec: Math.round(sec), err, wcpm, acc, est: estName, ar: E.ar };
+  if (who()){ const h = hist(); h.push(r); localStorage.setItem(histKey(), JSON.stringify(h.slice(-20))); }
+
+  const h = who() ? hist() : [r];
+  $("#result").innerHTML = `
+    <div class="lrep" id="flRep">
+      <div class="lrbar">Reading Report · PRE-TEST (낭독 유창성 진단)</div>
+      <div class="lrhead"><h1>FLUENCY CHECK</h1><img src="assets/logo-full.png" alt="리딩브레인" onerror="this.remove()"></div>
+      <div class="lrinfo"><table>
+        <tr><th>Name</th><td>${esc(who() || "-")}</td><th>Date</th><td>${r.date}</td></tr>
+        <tr><th>Passage</th><td>${esc(lv.name)} · ${lv.words}단어</td><th>Time</th><td>${fmt(sec)} · 오류 ${err}개</td></tr></table></div>
+      <div class="lrtag">📊 결과</div>
+      <div class="fl-big">
+        <div><b>${wcpm}</b>WCPM (분당 정확히 읽은 단어)</div>
+        <div><b>${acc}%</b>정확도 · ${band.split(" (")[0]}</div>
+        <div><b>${esc(estName)}</b>추정 읽기 수준 · ${esc(E.ar)}</div>
+      </div>
+      <div class="lrtag">💬 해석</div>
+      <div class="rpcom">${esc(band)}. 이 단계 참고치는 <b>${lv.bench} WCPM</b>입니다.<br>${esc(next)}
+        <br><small>※ 한 번의 1~2분 낭독으로 본 대략적인 추정입니다. 독해 이해도는 포함하지 않으며, 반 편성은 선생님 판단과 함께 쓰세요.${L < 2 ? " 유치원 단계 참고치는 미국 표에 없어 학원 기준값입니다." : ""}${sec < 25 ? ` 이번엔 ${Math.round(sec)}초만 읽어 WCPM 이 크게 흔들릴 수 있습니다 — 1분 가까이 걸리는 지문으로 다시 재면 더 정확합니다.` : ""}</small></div>
+      ${h.length > 1 ? `<div class="lrtag">🗂 지난 기록</div>
+        <div class="fl-hist scroll"><table class="t lrt"><tr><th>날짜</th><th>지문</th><th>WCPM</th><th>정확도</th><th>추정 수준</th></tr>
+        ${h.slice().reverse().map(x => `<tr><td class="c">${esc(x.date)}</td><td>${esc(x.level)}</td><td class="c">${+x.wcpm}</td><td class="c">${+x.acc}%</td><td>${esc(x.est)}</td></tr>`).join("")}</table></div>` : ""}
+    </div>
+    <div class="row rp-hide" style="justify-content:center; margin:14px 0 30px">
+      <button class="btn ghost" id="pr">🖨 결과 인쇄</button>
+      <a class="btn" href="library.html?ar=${est.i < 2 ? 0.5 : est.i / 2}">이 수준 원서 고르러 가기 →</a>
+    </div>`;
+  $("#pr").onclick = () => RBReport.print($("#flRep"));
+  $("#flRep").scrollIntoView({ behavior: "smooth" });
+}
+
+$("#who").value = localStorage.getItem("rb1:who") || "";
+$("#who").onchange = () => localStorage.setItem("rb1:who", who());
+$("#go").onclick = () => start(false, false);
+$("#goRec").onclick = () => start(true, false);
+$("#goAI").onclick = () => start(true, true);
+$("#stop").onclick = stop;
+$("#reset").onclick = reset;
+$("#calc").onclick = calc;
+drawLevels();
+
+// 확인: 주소 끝에 #selftest — 추정 규칙이 뜻대로 도는지 본다
+if (location.hash === "#selftest"){
+  const eq = (a, b, m) => console.assert(a === b, m, a, b);
+  const E = (L, w, a) => estimate(L, w, a).i;
+  eq(E(5, 105, 98), 5, "2학년 2학기를 참고치 이상으로 → 그 단계");
+  eq(E(5, 40, 96), 2, "느리면 속도가 닿는 단계로 내려간다");
+  eq(E(5, 150, 85), 4, "정확도 90% 미만 → 한 단계 아래");
+  eq(E(1, 160, 97.5), 3, "유치원 2학기 지문을 160 WCPM → 두 단계 위(1학년 2학기)까지");
+  eq(estimate(1, 160, 97.5).over, true, "더 높이 나와 막혔으면 '이상'을 붙인다");
+  eq(E(13, 300, 99), 13, "맨 위 단계를 넘어가지 않는다");
+  eq(E(9, 100, 98), 5, "100 WCPM 은 2학년 2학기 · 참고치가 내려가는 자리를 건너뛰지 않는다");
+  eq(estimate(9, 100, 98).over, false, "낮게 나오면 '이상'이 아니다");
+  const A = align("I see a red hen. The hen is big. I see a pig.", "i see a red hen the hen is pig i i see a pig");
+  eq(A.miss.length, 1, "big 하나만 놓침 · 되풀이(i i)는 오류가 아니다"); eq(A.words[A.miss[0]], "big.", "놓친 낱말은 big"); eq(A.end, 13, "13낱말을 끝까지 읽음");
+  const B2 = align("one two three four five six seven eight nine ten", "one two three");
+  eq(B2.end, 3, "세 낱말에서 멈추면 거기까지만"); eq(B2.miss.length, 0, "읽은 데까지는 오류 없음");
+  console.log("fluency selftest done", LEVELS.map(l => l.words).join(","));
+}
+</script>
+</body>
+</html>

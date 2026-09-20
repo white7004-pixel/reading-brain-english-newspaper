@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AR TEST · 리딩브레인</title>
+<link rel="stylesheet" href="app.css">
+<style>
+main{max-width:980px}
+.fl-lv{display:flex; gap:8px; overflow-x:auto; padding:2px 0 12px}
+.fl-lv button{flex:none; border:0; background:#fff; color:#6b5a78; border-radius:16px; padding:9px 15px; text-align:left;
+  font:inherit; font-weight:700; font-size:14px; box-shadow:0 1px 4px rgba(120,60,160,.12); cursor:pointer}
+.fl-lv button small{display:block; font-weight:400; font-size:11.5px; color:#a597b0}
+.fl-lv button.on{background:var(--grad); color:#fff}
+.fl-lv button.on small{color:#fbe6ff}
+.at-dom{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin:0 0 4px}
+.at-dom b{font-size:19px; color:var(--navy)}
+.at-act{margin:16px 0 6px; font-weight:700; color:var(--red)}
+.at-act small{font-weight:400; color:#8d7f99; margin-left:6px}
+.at-q{padding:9px 0; border-top:1px dashed var(--line)}
+.at-q:first-of-type{border-top:0}
+.at-q p{margin:0 0 6px; font-size:16px}
+.at-q p b{color:var(--navy); margin-right:6px}
+.at-opts{display:flex; flex-wrap:wrap; gap:8px}
+.at-opts label{border:1px solid var(--line); border-radius:12px; padding:7px 13px; cursor:pointer; background:#fff; font-size:16px}
+.at-opts input{position:absolute; opacity:0; pointer-events:none}
+.at-opts label:has(input:checked){border-color:var(--red); background:var(--soft); font-weight:700; color:var(--red)}
+.at-opts label.ok{border-color:#2e9e6b; background:#e7f6ee} .at-opts label.no{border-color:#d2505e; background:#fdecee}
+.at-text{background:var(--soft); border-radius:14px; padding:14px 18px; font-family:Georgia,"Times New Roman",serif; font-size:18px; line-height:1.8; margin-bottom:6px}
+.at-text h4{margin:0 0 6px; font-family:inherit; color:var(--navy)}
+.at-show{display:flex; flex-wrap:wrap; gap:10px; margin:8px 0; font-size:30px}
+.at-show span{background:var(--soft); border-radius:12px; padding:6px 12px}
+.at-show.chart{flex-direction:column; font-size:16px; font-family:ui-monospace,Consolas,monospace}
+.at-task{padding:12px 0; border-top:1px dashed var(--line)}
+.at-task:first-of-type{border-top:0}
+.at-task .hint{margin:4px 0; padding-left:18px; color:#6b5a78; font-size:13.5px}
+.at-task textarea{width:100%; min-height:90px; font:inherit; font-size:16px; border:1px solid var(--line); border-radius:10px; padding:9px; margin-top:6px}
+.at-score{font:inherit; font-size:17px; width:74px; padding:6px 8px; border:1px solid var(--line); border-radius:10px; text-align:center}
+.at-rub{font-size:13px; color:#6b5a78; background:var(--soft); border-radius:10px; padding:9px 12px; margin-top:8px}
+.at-big{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:0 16px}
+.at-big div{background:var(--soft); border-radius:12px; padding:12px; text-align:center; font-size:13px; color:#6b5a78}
+.at-big b{display:block; font-size:28px; color:var(--navy)}
+details.at-tr{margin-top:6px; font-size:13px; color:#6b5a78}
+@media (max-width:520px){ .at-text{font-size:16px} .at-show{font-size:24px} }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="home" href="index.html">← 목록</a>
+  <div class="bk"><b>📊 AR TEST (K–6)</b><span>듣기 · 읽기 · 말하기 · 쓰기 레벨 진단</span></div>
+  <div class="sp"></div>
+  <label for="who">이름</label>
+  <input class="who" id="who" placeholder="김리브로" autocomplete="off">
+</div>
+
+<main>
+  <p class="sub" style="margin-top:14px">단계를 고르고 네 영역을 봅니다. <b>듣기·읽기</b>는 학생이 고르면 자동 채점되고, <b>말하기·쓰기</b>는 선생님이 기준표를 보고 점수를 넣습니다.
+    영역마다 25점이며 <b>15점 미만 Beginner · 15~19 Intermediate · 20 이상 High</b>로 봅니다. 읽기 점수로 <b>추정 AR</b>과 WOW 로드맵 Tier 를 알려 줍니다. 영역 하나만 봐도 됩니다.</p>
+  <div class="fl-lv" id="lv"></div>
+  <div id="test"></div>
+  <div class="row" style="justify-content:center; margin:18px 0">
+    <button class="btn" id="grade">✅ 채점하고 결과 보기</button>
+    <button class="btn ghost" id="again">처음부터 다시</button>
+  </div>
+  <div id="result"></div>
+</main>
+
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="report.js"></script>
+<script src="artest-data.js"></script>
+<script>
+RB.gate();
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const who = () => $("#who").value.trim();
+const today = () => new Date().toLocaleDateString("sv-SE");
+const histKey = () => "rbar:" + who();
+const hist = () => { try { return JSON.parse(localStorage.getItem(histKey()) || "[]"); } catch (e) { return []; } };
+let F = 0;                                   // 고른 단계
+
+// 듣기: 브라우저 음성으로 읽는다. 대본은 학생 화면에 보이지 않는다 (선생님용 접힌 칸에만 있다)
+function say(text){
+  if (!window.speechSynthesis) return alert("이 브라우저는 읽어 주기를 못 합니다. 아래 '선생님용 대본'을 펴서 직접 읽어 주세요.");
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = F < 2 ? 0.8 : 0.9;
+  speechSynthesis.speak(u);
+}
+
+const opts = (name, a) => `<div class="at-opts">${a.map((t, i) =>
+  `<label><input type="radio" name="${name}" value="${i}">${esc(t)}</label>`).join("")}</div>`;
+const item = (name, n, x, pts) => `<div class="at-q" data-name="${name}" data-c="${x.a ? x.c : (x.c ? 0 : 1)}" data-pts="${pts}">
+  <p><b>${n}.</b>${esc(x.q)}</p>${opts(name, x.a || ["True", "False"])}</div>`;
+const script = t => `<details class="at-tr"><summary>선생님용 대본 (학생에게 보이지 않게)</summary>${esc(t)}</details>`;
+const show = s => s ? `<div class="at-show${/█/.test(s.join("")) ? " chart" : ""}">${s.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : "";
+
+function drawListening(L){
+  return `<div class="box" data-dom="listening">
+    <div class="at-dom"><b>🎧 Listening</b><span class="count">25점 · 🔊 를 눌러 두 번 들려주세요</span></div>
+    <div class="at-act">A. Listen and choose. <small>5 × 2점</small></div>
+    ${L.A.map((x, i) => `<div class="at-q" data-name="LA${i}" data-c="${x.c}" data-pts="2">
+      <p><b>${i + 1}.</b><button class="btn ghost s" data-say="${esc(x.say)}">🔊 듣기</button> ${esc(x.q)}</p>${opts("LA" + i, x.a)}${script(x.say)}</div>`).join("")}
+    <div class="at-act">B. Listen. True or False? <small>5 × 1점</small> <button class="btn ghost s" data-say="${esc(L.B.say)}">🔊 이야기 듣기</button></div>
+    ${script(L.B.say)}${L.B.items.map((x, i) => item("LB" + i, i + 6, x, 1)).join("")}
+    <div class="at-act">C. Listen and choose the correct answer. <small>5 × 2점</small> <button class="btn ghost s" data-say="${esc(L.C.say)}">🔊 이야기 듣기</button></div>
+    ${script(L.C.say)}${L.C.items.map((x, i) => item("LC" + i, i + 11, x, 2)).join("")}
+  </div>`;
+}
+function drawReading(R){
+  const pass = (P, tag, n0) => `<div class="at-text"><h4>${esc(P.title)}</h4>${esc(P.text)}</div>${P.items.map((x, i) => item(tag + i, n0 + i, x, 2)).join("")}`;
+  return `<div class="box" data-dom="reading">
+    <div class="at-dom"><b>📖 Reading</b><span class="count">25점 · 학생이 소리 내어 읽으면 억양과 끊어 읽기도 들어 보세요</span></div>
+    <div class="at-act">A. Choose the best answer. <small>5 × 1점</small></div>
+    ${R.A.map((x, i) => item("RA" + i, i + 1, x, 1)).join("")}
+    <div class="at-act">B. Read and choose. <small>5 × 2점</small></div>${pass(R.B, "RB", 6)}
+    <div class="at-act">C. Read and choose. <small>5 × 2점</small></div>${pass(R.C, "RC", 11)}
+  </div>`;
+}
+const RUBRIC = `<div class="at-rub"><b>채점 기준 (10점 활동 · 5점 활동은 절반)</b><br>
+  9~10 완전한 문장으로 자세히, 오류가 거의 없다 · 6~8 문장으로 말하고(쓰고) 세부 내용이 조금 있다 ·
+  3~5 짧은 구나 한두 문장, 세부 내용이 없다 · 0~2 낱말 하나로 답하거나 답하지 못한다</div>`;
+function drawOpen(dom, icon, title, tasks, typed){
+  return `<div class="box" data-dom="${dom}">
+    <div class="at-dom"><b>${icon} ${title}</b><span class="count">25점 · 선생님이 채점</span></div>
+    ${tasks.map((t, i) => `<div class="at-task">
+      <div class="row" style="justify-content:space-between"><div class="at-act" style="margin:0">${"ABC"[i]}. ${esc(t.task)}</div>
+        <span><input class="at-score" type="number" min="0" max="${t.pts}" step="1" data-open="${dom}" data-max="${t.pts}" placeholder="–"> / ${t.pts}</span></div>
+      ${show(t.show)}<ul class="hint">${t.hints.map(h => `<li>${esc(h)}</li>`).join("")}</ul>
+      ${typed ? `<textarea placeholder="여기에 써도 되고, 종이에 써도 됩니다."></textarea>` : ""}</div>`).join("")}
+    ${RUBRIC}</div>`;
+}
+
+function draw(){
+  const f = ARTEST.forms[F];
+  $("#lv").innerHTML = ARTEST.forms.map((x, i) =>
+    `<button data-i="${i}" class="${i === F ? "on" : ""}">${esc(x.name)}<small>AR ${x.ar[0]}~${x.ar[1]} · ${esc(x.grade)}</small></button>`).join("");
+  $("#lv").querySelectorAll("button").forEach(b => b.onclick = () => {
+    if (document.querySelector("#test input:checked") && !confirm("단계를 바꾸면 지금 고른 답이 지워집니다. 바꿀까요?")) return;
+    F = +b.dataset.i; draw();
+  });
+  $("#test").innerHTML = drawListening(f.listening) + drawReading(f.reading) +
+    drawOpen("speaking", "🗣️", "Speaking", f.speaking, false) + drawOpen("writing", "✍️", "Writing", f.writing, true);
+  $("#test").querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say));
+  $("#result").innerHTML = "";
+}
+
+// 영역 점수. 아무것도 안 건드린 영역은 null (보지 않은 영역으로 친다)
+function score(){
+  const out = {};
+  ["listening", "reading"].forEach(d => {
+    let s = 0, touched = false;
+    document.querySelectorAll(`[data-dom="${d}"] .at-q`).forEach(q => {
+      const pick = q.querySelector("input:checked");
+      q.querySelectorAll("label").forEach((l, i) => l.className = pick ? (i === +q.dataset.c ? "ok" : (l.contains(pick) ? "no" : "")) : "");
+      if (pick){ touched = true; if (+pick.value === +q.dataset.c) s += +q.dataset.pts; }
+    });
+    out[d] = touched ? s : null;
+  });
+  ["speaking", "writing"].forEach(d => {
+    const v = [...document.querySelectorAll(`[data-open="${d}"]`)].filter(i => i.value !== "");
+    out[d] = v.length ? v.reduce((a, i) => a + Math.max(0, Math.min(+i.dataset.max, +i.value || 0)), 0) : null;
+  });
+  return out;
+}
+
+const DOMS = [["listening", "🎧 Listening"], ["reading", "📖 Reading"], ["speaking", "🗣️ Speaking"], ["writing", "✍️ Writing"]];
+function grade(){
+  const f = ARTEST.forms[F], sc = score(), done = DOMS.filter(d => sc[d[0]] != null);
+  if (!done.length) return alert("아직 답한 문항이 없습니다.");
+  const ar = sc.reading != null ? ARTEST.estimate(f, sc.reading) : null, tier = ar != null ? ARTEST.tier(ar) : null;
+  const total = done.reduce((a, d) => a + sc[d[0]], 0), max = done.length * 25;
+  const move = sc.reading == null ? "읽기 영역을 보면 추정 AR 이 나옵니다."
+    : sc.reading < 10 && F > 0 ? `읽기 점수가 낮습니다. 한 단계 아래 <b>${esc(ARTEST.forms[F - 1].name)}</b> 단계로 다시 보기를 권합니다.`
+    : sc.reading >= 23 && F < ARTEST.forms.length - 1 ? `읽기 점수가 아주 높습니다. 한 단계 위 <b>${esc(ARTEST.forms[F + 1].name)}</b> 단계도 보기를 권합니다.`
+    : "이 단계가 학생 수준에 맞습니다.";
+  const weak = done.filter(d => sc[d[0]] < 15).map(d => d[1]);
+  const r = { date: today(), form: f.name, ar, tier: tier ? tier.t : "", total, max };
+  DOMS.forEach(d => r[d[0]] = sc[d[0]]);
+  if (who()){ const h = hist(); h.push(r); localStorage.setItem(histKey(), JSON.stringify(h.slice(-20))); }
+  const h = who() ? hist() : [r];
+  $("#result").innerHTML = `
+    <div class="lrep" id="arRep">
+      <div class="lrbar">Reading Report · AR TEST (레벨 진단)</div>
+      <div class="lrhead"><h1>AR TEST</h1><img src="assets/logo-full.png" alt="리딩브레인" onerror="this.remove()"></div>
+      <div class="lrinfo"><table>
+        <tr><th>Name</th><td>${esc(who() || "-")}</td><th>Date</th><td>${r.date}</td></tr>
+        <tr><th>Form</th><td>${esc(f.name)} · ${esc(f.grade)}</td><th>Total</th><td>${total} / ${max}</td></tr></table></div>
+      <div class="lrtag">📊 결과</div>
+      <div class="at-big">
+        <div><b>${ar != null ? "AR " + ar.toFixed(1) : "–"}</b>추정 AR (읽기 ${sc.reading != null ? sc.reading : "–"}/25)</div>
+        <div><b>${tier ? esc(tier.t) : "–"}</b>${tier ? "WOW 로드맵 · AR " + esc(tier.ar) : "WOW 로드맵"}</div>
+        <div><b>${Math.round(total / max * 100)}%</b>본 영역 합계 ${total}/${max}</div>
+      </div>
+      <div class="lrtag">🧭 영역별</div>
+      <div class="scroll"><table class="t lrt"><tr><th>영역</th><th>점수</th><th>수준</th></tr>
+        ${DOMS.map(d => { const v = sc[d[0]], b = v != null ? ARTEST.band(v) : null;
+          return `<tr><td>${d[1]}</td><td class="c">${v != null ? v + " / 25" : "보지 않음"}</td><td class="c">${b ? b[1] + " (" + b[2] + ")" : "-"}</td></tr>`; }).join("")}</table></div>
+      <div class="lrtag">💬 해석</div>
+      <div class="rpcom">${move}${tier ? `<br>권장 과정: <b>${esc(tier.prog)}</b>` : ""}
+        ${weak.length ? `<br>먼저 도울 영역: <b>${weak.join(" · ")}</b> (15점 미만)` : ""}
+        <br><small>※ 추정 AR 은 리딩브레인 자체 진단값입니다. Renaissance 의 공식 STAR 검사 점수가 아니며, 반 편성은 선생님의 관찰과 함께 쓰세요. 학생은 영역마다 수준이 다를 수 있습니다.</small></div>
+      ${h.length > 1 ? `<div class="lrtag">🗂 지난 기록</div>
+        <div class="scroll"><table class="t lrt"><tr><th>날짜</th><th>단계</th><th>L</th><th>R</th><th>S</th><th>W</th><th>추정 AR</th></tr>
+        ${h.slice().reverse().map(x => `<tr><td class="c">${esc(x.date)}</td><td>${esc(x.form)}</td>${DOMS.map(d =>
+          `<td class="c">${x[d[0]] != null ? +x[d[0]] : "-"}</td>`).join("")}<td class="c">${x.ar != null ? (+x.ar).toFixed(1) : "-"}</td></tr>`).join("")}</table></div>` : ""}
+    </div>
+    <div class="row rp-hide" style="justify-content:center; margin:14px 0 30px">
+      <button class="btn ghost" id="pr">🖨 결과 인쇄</button>
+      <a class="btn" href="library.html${ar != null ? "?ar=" + ar : ""}">이 수준 원서 고르러 가기 →</a>
+    </div>`;
+  $("#pr").onclick = () => RBReport.print($("#arRep"));
+  $("#arRep").scrollIntoView({ behavior: "smooth" });
+}
+
+$("#who").value = localStorage.getItem("rb1:who") || "";
+$("#who").onchange = () => localStorage.setItem("rb1:who", who());
+$("#grade").onclick = grade;
+$("#again").onclick = () => { if (confirm("고른 답과 점수를 모두 지울까요?")) { draw(); scrollTo(0, 0); } };
+draw();
+</script>
+</body>
+</html>

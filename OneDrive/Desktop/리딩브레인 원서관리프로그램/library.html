@@ -64,6 +64,16 @@
 <script src="catalog-pins.js"></script>
 <script>
 RB.gate();
+
+// 학습 콘텐츠가 있는 책. books/<slug>.js 의 bookNo 와 짝이 맞아야 한다.
+// 새 학습 책을 만들면 여기 한 줄을 더한다.
+window.BOOK_BY_NO = {
+  "S1624": "hi-fly-guy", "M3117": "sarah-plain-and-tall", "S4154": "charlottes-web",
+  "S1212": "green-eggs-and-ham", "M2187": "nate-the-great", "M3013": "dinosaurs-before-dark",
+  "S2040": "frog-and-toad-are-friends", "M3069": "flat-stanley", "S4191": "holes",
+  "S2703": "charlie-and-the-chocolate-factory", "S5084": "harry-potter-sorcerers-stone"
+};
+
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 
@@ -177,7 +187,8 @@ $("#who").onchange = () => localStorage.setItem("rb1:who", $("#who").value.trim(
 
 // 주소로 들어온 조건 (PRE-TEST 결과에서 넘어온다): ?ar=1.5
 const P = new URLSearchParams(location.search);
-if (P.get("ar")) LIB.state.ar = bandOf(parseFloat(P.get("ar")));
+const arv = parseFloat(P.get("ar"));
+if (!isNaN(arv)) LIB.state.ar = bandOf(arv);
 if (P.get("q")) { LIB.state.q = P.get("q"); $("#q").value = P.get("q"); }
 LIB.draw();
 
