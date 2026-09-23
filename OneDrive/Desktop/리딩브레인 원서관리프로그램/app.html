@@ -118,7 +118,7 @@ function drawShadow(){
   // 영상이 없는 책은 출판사 낭독 음원(shadowing.audio: 쪽별 mp3)을 쓴다. 학생은 책을 펴고 그 쪽을 보며 따라 읽는다.
   const au = (B.shadowing && B.shadowing.audio) || [];
   // 영상(url)과 쪽별 음원·E북(src·pages)이 둘 다 있으면 한 줄에 같이 둔다. 음원 없이 pages 만 있으면 소리 없이 책장만 넘긴다.
-  const vs = ((B.shadowing && B.shadowing.videos) || []).concat(au);
+  const vs = au.concat((B.shadowing && B.shadowing.videos) || []);   // E북·음원이 먼저 — 쪽을 짚으며 따라 읽는 게 쉐도잉이다
   if (!vs.length){ $("#p-shadow").innerHTML = `<div class="empty">이 책은 아직 낭독 영상이 없습니다.</div>`; return; }
   if (EP >= vs.length) EP = 0;
   const it = vs[EP], isAu = !it.url;
@@ -158,7 +158,7 @@ function ebookHTML(item){
   if (!B.shadowing.ebook || !(item.pages || []).length) return "";
   return `<div class="ebook" id="ebook"><div class="pg"><img alt=""></div><div class="pg"><img alt=""></div></div>
     <div class="row ebnav"><button class="btn ghost s" id="ebPrev">◀ 이전 쪽</button>
-      <span class="count" id="ebAt"></span><button class="btn ghost s" id="ebNext">다음 쪽 ▶</button></div>`;
+      <span class="count" id="ebAt"></span>${item.say ? `<button class="btn s" id="ebSay">🔊 이 쪽 듣기</button>` : ""}<button class="btn ghost s" id="ebNext">다음 쪽 ▶</button></div>`;
 }
 async function ebookOpen(item){
   const eb = B.shadowing.ebook, a = $("#sa"), book = $("#ebook");
@@ -191,10 +191,15 @@ async function ebookOpen(item){
     $("#ebAt").textContent = (p[0] ? "p." + p.join("–") : p.length > 1 ? "표지 · p." + p[1] : "표지") + (N > 1 ? `  (${i + 1} / ${N})` : "");
     for (let s = 0; s < per; s++){ const q = pages[(i + 1) * per + s]; if (q != null) new Image().src = src(q); }   // 다음 쪽 미리 받기
   };
+  const speakPage = i => {                                 // 듣고 따라 읽기: mp3 가 없는 책은 이 펼침의 문장(item.say)을 브라우저 목소리로 읽어 준다
+    if (!item.say || a) return;
+    const t = pages.slice(i * per, i * per + per).map(p => item.say[p]).filter(Boolean).join(" ");
+    if (t) say(t);
+  };
   const show = (i, flip) => {
     const from = EB.sp, old = book.querySelector(".leaf");
     if (old) old.remove();
-    EB.sp = i; label(i);
+    EB.sp = i; label(i); speakPage(i);
     if (!flip || per === 1 || from === i){
       for (let s = 0; s < 2; s++) put(i, s);
       if (per === 1 && from !== i){ book.classList.remove("fade"); void book.offsetWidth; book.classList.add("fade"); }
@@ -239,6 +244,7 @@ async function ebookOpen(item){
     show(i, true); return true;
   } };
   show(0, false);
+  if ($("#ebSay")) $("#ebSay").onclick = () => speakPage(EB.sp);
 
   if (!SYNC || SYNC.slug !== B.slug){
     try { SYNC = { slug: B.slug, data: await (await fetch(eb.dir + "sync.json")).json() }; } catch (e) { SYNC = { slug: B.slug, data: {} }; }

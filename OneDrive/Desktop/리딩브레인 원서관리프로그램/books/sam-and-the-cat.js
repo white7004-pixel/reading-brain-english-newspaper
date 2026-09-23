@@ -21,15 +21,22 @@ window.BOOK = {
     qr: "",
     // 출판사 쪽 공식 영상 (Jay Shim 채널). 먼저 이북으로 듣고, 챈트로 리듬을 탄다.
     videos: [
-      { url: "https://youtu.be/EOW9Re0hvb4", title: "📺 이북 — 듣고 따라 읽기", channel: "Jay Shim", views: "", length: "" },
-      { url: "https://youtu.be/ZrTK9i9J01E", title: "🎵 챈트 — 리듬 타며 읽기", channel: "Jay Shim", views: "", length: "" }
+      { url: "https://youtu.be/EOW9Re0hvb4", title: "📺 출판사 이북 영상", channel: "Jay Shim", views: "", length: "" },
+      { url: "https://youtu.be/ZrTK9i9J01E", title: "🎵 챈트 영상", channel: "Jay Shim", views: "", length: "" }
     ],
     // E북: 원장이 받아 온 내지 PDF 를 쪽 그림으로 만들었다 (scripts/make-ebook.py). 0쪽은 표지.
     ebook: { dir: "assets/ebook/sam-and-the-cat/", pages: 24 },
-    // 쪽별 낭독 mp3 는 타입캐스트 크레딧이 채워지면 scripts/make-read-audio.mjs 로 만든다. 그때 src 를 붙이면 쪽마다 소리가 난다.
-    // 지금은 소리 없이 책장만 넘긴다. 소리는 위의 이북 영상이 맡는다.
+    // 듣고 따라 읽기: 쪽을 넘기면 say 에 적힌 그 쪽 문장을 읽어 준다(브라우저 영어 목소리). 아이는 쪽을 짚으며 따라 읽는다.
+    // 쪽별 낭독 mp3 는 타입캐스트 크레딧이 채워지면 scripts/make-read-audio.mjs 로 만들어 src 를 붙인다 — 그러면 형광펜까지 따라간다.
     audio: [
-      { title: "📖 책 넘겨 보기", pages: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24] }
+      { title: "📖 E북 — 듣고 따라 읽기", pages: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+        say: { 1: "Sam and the Cat. Target sounds: ad, am, an, at.", 3: "Characters. Sam. Pam, Sam's sister. Ted, Sam's friend. Sid, Sam's baby brother.",
+               4: "Sam and a mat.", 5: "Pam and a hat.", 6: "Ted and ham.", 7: "Sid and jam.", 8: "A van!",
+               9: "The jam on the mat. The ham on the mat.", 10: "Sam and a bat.", 11: "A cat on the van. The cat is fat.",
+               12: "The jam and ham on the mat.", 13: "The jam and ham, and the fat cat.", 14: "Sam is mad.", 15: "Pam is sad.",
+               16: "Let's chant! Sam and a mat. Pam and a hat. Ted and ham. Sid and jam.",
+               17: "The jam on the mat. The ham on the mat. A cat on the van. The cat is fat. Sam is mad. Pam is sad. That's my jam!",
+               18: "Phonics words. mad, sad, ham, jam, van, bat, cat, fat, hat, mat.", 20: "Sight words. a, and, is, on, the." } }
     ]
   },
 
