@@ -6,7 +6,8 @@
     "test": "node grade.js && node talk-local.js && node debate-local.js && node artest-data.js && node catalog.js && node scripts/test-db.mjs && node scripts/test-talk.mjs && node scripts/test-debate.mjs && node scripts/test-report.mjs && node scripts/check-book.mjs"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.5.8"
+    "@electric-sql/pglite": "0.5.8",
+    "msedge-tts": "^2.0.7"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0"

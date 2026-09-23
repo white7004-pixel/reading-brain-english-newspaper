@@ -26,17 +26,21 @@ window.BOOK = {
     ],
     // E북: 원장이 받아 온 내지 PDF 를 쪽 그림으로 만들었다 (scripts/make-ebook.py). 0쪽은 표지.
     ebook: { dir: "assets/ebook/sam-and-the-cat/", pages: 24 },
-    // 듣고 따라 읽기: 쪽을 넘기면 say 에 적힌 그 쪽 문장을 읽어 준다(브라우저 영어 목소리). 아이는 쪽을 짚으며 따라 읽는다.
-    // 쪽별 낭독 mp3 는 타입캐스트 크레딧이 채워지면 scripts/make-read-audio.mjs 로 만들어 src 를 붙인다 — 그러면 형광펜까지 따라간다.
+    // 듣고 따라 읽기: 펼침마다 낭독 mp3 (scripts/make-read-audio-edge.mjs, 무료 신경망 목소리 Jenny, 천천히 -20%).
+    // 목소리를 바꾸려면 read/ 폴더를 비우고 다른 목소리로 다시 만들면 된다. 아이는 쪽을 짚으며 따라 읽는다.
     audio: [
-      { title: "📖 E북 — 듣고 따라 읽기", pages: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
-        say: { 1: "Sam and the Cat. Target sounds: ad, am, an, at.", 3: "Characters. Sam. Pam, Sam's sister. Ted, Sam's friend. Sid, Sam's baby brother.",
-               4: "Sam and a mat.", 5: "Pam and a hat.", 6: "Ted and ham.", 7: "Sid and jam.", 8: "A van!",
-               9: "The jam on the mat. The ham on the mat.", 10: "Sam and a bat.", 11: "A cat on the van. The cat is fat.",
-               12: "The jam and ham on the mat.", 13: "The jam and ham, and the fat cat.", 14: "Sam is mad.", 15: "Pam is sad.",
-               16: "Let's chant! Sam and a mat. Pam and a hat. Ted and ham. Sid and jam.",
-               17: "The jam on the mat. The ham on the mat. A cat on the van. The cat is fat. Sam is mad. Pam is sad. That's my jam!",
-               18: "Phonics words. mad, sad, ham, jam, van, bat, cat, fat, hat, mat.", 20: "Sight words. a, and, is, on, the." } }
+      { title: "📖 E북 전체 듣기", src: "assets/audio/sam-and-the-cat/read/full.mp3", pages: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24] },
+      { title: "표지", src: "assets/audio/sam-and-the-cat/read/title.mp3", pages: [0,1] },
+      { title: "p.2–3 인물", src: "assets/audio/sam-and-the-cat/read/p02.mp3", pages: [2,3] },
+      { title: "p.4–5", src: "assets/audio/sam-and-the-cat/read/p04.mp3", pages: [4,5] },
+      { title: "p.6–7", src: "assets/audio/sam-and-the-cat/read/p06.mp3", pages: [6,7] },
+      { title: "p.8–9", src: "assets/audio/sam-and-the-cat/read/p08.mp3", pages: [8,9] },
+      { title: "p.10–11", src: "assets/audio/sam-and-the-cat/read/p10.mp3", pages: [10,11] },
+      { title: "p.12–13", src: "assets/audio/sam-and-the-cat/read/p12.mp3", pages: [12,13] },
+      { title: "p.14–15", src: "assets/audio/sam-and-the-cat/read/p14.mp3", pages: [14,15] },
+      { title: "p.16–17 챈트", src: "assets/audio/sam-and-the-cat/read/p16.mp3", pages: [16,17] },
+      { title: "p.18–19 파닉스 낱말", src: "assets/audio/sam-and-the-cat/read/p18.mp3", pages: [18,19] },
+      { title: "p.20–21 사이트워드", src: "assets/audio/sam-and-the-cat/read/p20.mp3", pages: [20,21] }
     ]
   },
 
