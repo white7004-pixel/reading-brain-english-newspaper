@@ -124,3 +124,29 @@
     if (!open) grid.scrollIntoView({ block: 'start' });
   });
 })();
+
+/* 단계 체험 도구 — 슬라이더와 버튼이 같은 값을 본다.
+   자바스크립트가 붙기 전에는 세 단계가 모두 보이고, 붙으면 하나만 남는다. */
+(function () {
+  var range = document.getElementById('stageRange');
+  var wrap = document.getElementById('stageExplorer');
+  if (!range || !wrap) return;
+  var tabs = [].slice.call(wrap.querySelectorAll('.stage-tab'));
+  var panels = [].slice.call(wrap.querySelectorAll('.stage-panel'));
+
+  function show(n) {
+    panels.forEach(function (p) { p.hidden = Number(p.dataset.stage) !== n; });
+    tabs.forEach(function (t) {
+      var on = Number(t.dataset.stage) === n;
+      t.classList.toggle('is-on', on);
+      t.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (range.value !== String(n)) range.value = String(n);
+  }
+
+  range.addEventListener('input', function () { show(Number(range.value)); });
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { show(Number(t.dataset.stage)); });
+  });
+  show(Number(range.value));
+})();
