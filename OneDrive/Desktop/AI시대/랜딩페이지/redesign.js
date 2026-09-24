@@ -142,6 +142,9 @@
       t.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     if (range.value !== String(n)) range.value = String(n);
+    /* 슬라이더는 그냥 두면 스크린리더가 "1" 이라고만 읽는다.
+       단계 이름을 읽어 주도록 값 이름을 같이 바꾼다. */
+    if (tabs[n]) range.setAttribute('aria-valuetext', tabs[n].textContent.trim());
   }
 
   range.addEventListener('input', function () { show(Number(range.value)); });
