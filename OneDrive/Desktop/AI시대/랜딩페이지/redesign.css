@@ -2050,3 +2050,95 @@ select:focus-visible,
 /* 인라인 <style> 에 더 구체적인 규칙이 있어 같은 무게로 맞춘다 */
 .studyforce-center .studyforce-summary-grid span,
 .myuse-prep p { font-size: 14px; }
+
+/* ─── 25. 단계 체험 도구 ─────────────────────────────────────────
+   자바스크립트가 없으면 세 단계가 모두 세로로 보인다.
+   자바스크립트가 붙으면 hidden 으로 하나만 남긴다. */
+.stage-explorer {
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+  padding: var(--us-pad) 40px;
+}
+.stage-ctrl { max-width: 720px; margin: 40px auto 0; }
+.stage-range { width: 100%; accent-color: var(--brand-red); cursor: pointer; }
+.stage-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.stage-tab {
+  padding: 10px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--us-pill);
+  background: #fff;
+  color: var(--brand-navy);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.stage-tab.is-on { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; }
+
+.stage-stack { max-width: 1040px; margin: 28px auto 0; }
+.stage-panel {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 28px;
+  align-items: center;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--us-round);
+  background: #fff;
+}
+.stage-panel + .stage-panel { margin-top: 16px; }
+/* display:grid 가 브라우저 기본 [hidden]{display:none} 을 이긴다. 되돌린다. */
+.stage-panel[hidden] { display: none; }
+.stage-head { margin-bottom: 14px; }
+.stage-head h3 { font-size: 22px; font-weight: 900; color: var(--brand-navy); letter-spacing: -0.02em; }
+.stage-mark {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: var(--us-pill);
+  background: var(--soft-2);
+  color: var(--brand-red);
+  font-size: 13px;
+  font-weight: 700;
+}
+.stage-points { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.stage-points li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--body-text);
+}
+.stage-points li::before {
+  content: '';
+  position: absolute;
+  top: 10px; left: 0;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--brand-red);
+}
+.stage-shot { margin: 0; }
+.stage-shot img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--us-round);
+  background: var(--soft-2);
+}
+.stage-foot {
+  max-width: 1040px;
+  margin: 22px auto 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--body-text);
+  text-align: center;
+}
+.stage-foot a { color: var(--brand-red); font-weight: 700; text-decoration: underline; }
+
+@media (max-width: 760px) {
+  .stage-explorer { padding: var(--us-pad) 20px; }
+  .stage-panel { grid-template-columns: 1fr; gap: 18px; padding: 20px; }
+  .stage-tabs { gap: 6px; }
+  .stage-tab { font-size: 13px; padding: 9px 4px; }
+}
