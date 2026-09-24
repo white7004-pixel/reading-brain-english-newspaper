@@ -4,6 +4,9 @@ scripts/
 tests/
 .claude/
 
+# 디자인 시안 · 작업용
+design-directions.html
+_contact.html
+
 # 페이지에서 쓰지 않는 이미지
-assets/images/kspace-06.jpg
 assets/images/kspace-hero.jpg

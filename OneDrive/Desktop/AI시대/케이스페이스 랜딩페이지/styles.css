@@ -550,3 +550,142 @@ ul { list-style: none; }
   .compare-grid { grid-template-columns: 1fr; }
   .room-detail-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════════
+   움직임과 마감 — 기존 디자인 위에 얹는 층
+   ═══════════════════════════════════════════════ */
+
+/* 스크롤하면 하나씩 올라오며 나타난다 */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s cubic-bezier(0.22, 0.8, 0.3, 1),
+              transform 0.6s cubic-bezier(0.22, 0.8, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-in { opacity: 1; transform: none; }
+/* 같은 줄에 여러 개면 살짝 시차를 둔다 */
+.reveal:nth-child(2) { transition-delay: 0.07s; }
+.reveal:nth-child(3) { transition-delay: 0.14s; }
+.reveal:nth-child(4) { transition-delay: 0.21s; }
+
+/* 히어로 사진이 아주 천천히 밀려든다 */
+.hero__slide { animation: heroFade 25s infinite, heroZoom 25s infinite; }
+@keyframes heroZoom {
+  0%   { transform: scale(1.02); }
+  24%  { transform: scale(1.13); }
+  100% { transform: scale(1.13); }
+}
+/* 히어로 글자는 열리자마자 차례로 올라온다 */
+.hero__inner > * {
+  animation: heroRise 0.7s cubic-bezier(0.22, 0.8, 0.3, 1) backwards;
+}
+.hero__inner > *:nth-child(1) { animation-delay: 0.15s; }
+.hero__inner > *:nth-child(2) { animation-delay: 0.27s; }
+.hero__inner > *:nth-child(3) { animation-delay: 0.39s; }
+.hero__inner > *:nth-child(4) { animation-delay: 0.51s; }
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 스크롤을 내리면 머리띠가 얇아지고 그림자가 생긴다 */
+.site-header {
+  transition: box-shadow 0.25s ease, background 0.25s ease;
+}
+.site-header.is-scrolled {
+  box-shadow: 0 6px 24px rgba(22, 50, 74, 0.09);
+  background: rgba(255, 255, 255, 0.97);
+}
+.site-header__inner { transition: height 0.25s ease; }
+.site-header.is-scrolled .site-header__inner { height: 60px; }
+
+/* 카드에 손을 올리면 살짝 떠오른다 */
+.card,
+.room-detail-card,
+.compare-card--new {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.card:hover,
+.room-detail-card:hover,
+.compare-card--new:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 44px rgba(22, 50, 74, 0.15);
+}
+.room-detail-card { position: relative; }
+.room-detail-card img { transition: transform 0.4s ease; }
+.room-detail-card:hover img { transform: scale(1.05); }
+
+/* 시설 목록도 반응한다 */
+.facility-grid li {
+  transition: transform 0.2s ease, background 0.2s ease, border-left-color 0.2s ease;
+}
+.facility-grid li:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.14);
+}
+.facility-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(127, 224, 212, 0.16);
+  flex-shrink: 0;
+}
+
+/* 구역 제목 위 라벨에 짧은 선을 붙인다 */
+.section__eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 18px; height: 2px;
+  background: currentColor;
+  vertical-align: middle;
+  margin-right: 9px;
+  opacity: 0.7;
+}
+.hero .section__eyebrow::before { display: none; }
+
+/* 단추: 누르는 느낌과 키보드 초점 */
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn--primary:hover { box-shadow: 0 14px 30px rgba(47, 184, 172, 0.34); }
+.btn:focus-visible,
+.faq-item__question:focus-visible,
+.gallery-item:focus-visible,
+.site-nav a:focus-visible {
+  outline: 3px solid var(--color-teal);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+}
+
+/* FAQ 열고 닫힘을 조금 더 부드럽게 */
+.faq-item__answer { transition: max-height 0.3s ease, padding-bottom 0.3s ease; }
+.faq-item__question::after { transition: transform 0.25s ease; }
+.faq-item.is-open .faq-item__question::after { transform: rotate(180deg); }
+
+/* 움직임을 줄이겠다고 한 사람에게는 전부 끈다 */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .hero__slide { animation: none; }
+  .hero__slide:first-child { opacity: 1; }
+  .hero__inner > * { animation: none; }
+  .site-header__inner { transition: none; }
+  .card:hover,
+  .room-detail-card:hover,
+  .compare-card--new:hover,
+  .facility-grid li:hover { transform: none; }
+  .room-detail-card:hover img { transform: none; }
+}
+
+/* 어떤 사진이 넘어와도 히어로 글자가 읽히게 한다 */
+.hero__overlay {
+  background:
+    linear-gradient(100deg, rgba(15,36,56,0.86) 0%, rgba(15,36,56,0.62) 48%, rgba(15,36,56,0.28) 100%),
+    linear-gradient(0deg, rgba(15,36,56,0.55) 0%, rgba(15,36,56,0) 42%);
+}
+@media (max-width: 860px) {
+  .hero__overlay {
+    background:
+      linear-gradient(180deg, rgba(15,36,56,0.74) 0%, rgba(15,36,56,0.78) 45%, rgba(15,36,56,0.84) 100%);
+  }
+}
