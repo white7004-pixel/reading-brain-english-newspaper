@@ -1,0 +1,99 @@
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>읽고 나서 · 리딩브레인</title>
+<link rel="stylesheet" href="app.css">
+</head><body>
+<div class="top">
+  <a class="home" href="library.html">← 서재</a>
+  <div class="sp"></div>
+  <label for="who">이름</label>
+  <input class="who" id="who" placeholder="김리브로" autocomplete="off">
+  <span id="chip"></span>
+</div>
+<main id="main"><p class="sub">불러오는 중…</p></main>
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="catalog.js"></script>
+<script>
+RB.gate();
+RB.chip(document.getElementById("chip"));
+const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const $ = id => document.getElementById(id);
+const NO = new URLSearchParams(location.search).get("no") || "";
+const idx = CATALOG.books.findIndex(b => b[0] === NO);
+
+// 이름을 정하는 법은 app.html 과 똑같이 한다. 로그인한 학생은 고정, 아니면 이 브라우저에 기억한다.
+let WHO = "";
+if (RB.role() === "student") {
+  WHO = RB.whoKey();
+  $("who").hidden = true; document.querySelector("label[for=who]").hidden = true;
+} else {
+  WHO = localStorage.getItem("rb1:who") || "";
+  $("who").value = WHO;
+  $("who").addEventListener("change", () => {
+    WHO = $("who").value.trim();
+    localStorage.setItem("rb1:who", WHO);
+    draw();                                     // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
+  });
+}
+const KEY = () => "rbact:" + WHO;               // 이름이 바뀔 수 있으니 그때그때 셈한다
+// RB.save/RB.load 는 (slug, who, part, data) 네 자리다 (store.js). 이 화면은 학생 한 명의 모든 책 기록을
+// KEY() 한 슬러그 밑에 part="acts" 로 묶어 담는다 — book No. 마다 다른 part 를 쓰지 않는다.
+const PART = "acts";
+
+// 활동 파일은 Book No. 앞 세 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
+function loadAct(done){
+  const tag = document.createElement("script");
+  tag.src = "act/" + NO.slice(0, 3) + ".js";
+  tag.onload = tag.onerror = done;
+  document.head.appendChild(tag);
+}
+
+function draw(){
+  const b = CATALOG.at(idx);
+  const a = (window.ACT || {})[NO];
+  const all = (RB.load(KEY(), WHO, PART) || {}).data || {};
+  const mine = all[NO] || { star: 0, date: "", a: ["", "", ""], note: "", words: "" };
+  if (!a){
+    $("main").innerHTML = `<h1 class="h">${esc(b.title)}</h1>
+      <p class="sub">이 책은 아직 활동이 준비되지 않았습니다.</p>`;
+    return;
+  }
+  $("main").innerHTML = `
+    <h1 class="h">${esc(b.title)}</h1>
+    <p class="sub">${esc(b.author)}${b.series === "No series" ? "" : " · " + esc(b.series)}</p>
+    <div class="row" style="gap:6px; flex-wrap:wrap; margin:6px 0 10px">
+      <span class="count">AR ${b.bl.toFixed(1)}</span><span class="count">Lexile ${esc(b.lexile)}</span>
+      <span class="count">${b.nf ? "논픽션" : "픽션"}</span><span class="count">${esc(b.genre)}</span>
+      <span class="count">${esc(b.theme)}</span>${b.award ? `<span class="count">🏅 ${esc(b.award)}</span>` : ""}
+    </div>
+    <div class="rpcom">${esc(a.s)}</div>
+    <div class="box"><h2>별점</h2>
+      <div class="row" id="stars">${[1,2,3,4,5].map(n =>
+        `<button class="btn ghost" data-n="${n}">${n <= mine.star ? "★" : "☆"}</button>`).join("")}</div>
+      <label>읽은 날 <input type="date" id="date" value="${esc(mine.date)}"></label>
+    </div>
+    ${a.q.map((q, i) => `<div class="box"><h2>${i + 1}. ${esc(q)}</h2>
+      ${a.h[i] ? `<p class="sub">${esc(a.h[i])}</p>` : ""}
+      <textarea id="a${i}" rows="3">${esc(mine.a[i] || "")}</textarea></div>`).join("")}
+    <div class="box"><h2>한 줄 감상</h2><textarea id="note" rows="2">${esc(mine.note)}</textarea></div>
+    <div class="box"><h2>새로 안 낱말</h2><textarea id="words" rows="2">${esc(mine.words)}</textarea></div>
+    <div class="row"><button class="btn on" id="save">저장</button><span id="msg" class="sub"></span></div>`;
+
+  let star = mine.star;
+  $("stars").querySelectorAll("button").forEach(x => x.onclick = () => {
+    star = +x.dataset.n;
+    $("stars").querySelectorAll("button").forEach(y => y.textContent = +y.dataset.n <= star ? "★" : "☆");
+  });
+  $("save").onclick = () => {
+    const now = (RB.load(KEY(), WHO, PART) || {}).data || {};
+    now[NO] = { star: star, date: $("date").value, a: a.q.map((_, i) => $("a" + i).value),
+                note: $("note").value, words: $("words").value };
+    RB.save(KEY(), WHO, PART, now);
+    $("msg").textContent = "저장했습니다.";
+  };
+}
+
+if (idx < 0) $("main").innerHTML = `<p class="sub">책을 찾지 못했습니다. <a href="library.html">서재로</a></p>`;
+else loadAct(draw);
+</script></body></html>

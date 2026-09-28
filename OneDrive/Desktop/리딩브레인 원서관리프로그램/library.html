@@ -156,6 +156,7 @@ LIB.open = async function(i){
         allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : ""}
     <div class="row" style="margin-top:12px; flex-wrap:wrap">
       ${learn ? `<a class="btn" href="app.html?book=${encodeURIComponent(learn)}">학습하기</a>` : ""}
+      <a class="btn" href="read.html?no=${encodeURIComponent(b.no)}">읽고 나서 →</a>
       <a class="btn ghost" href="${esc(yt(b.title))}" target="_blank" rel="noopener">▶ 유튜브에서 찾기</a>
       <button class="btn ghost" id="detX">닫기</button>
     </div>`;
