@@ -1,14 +1,24 @@
 // 첫 화면: 학생 정보로 시험을 시작하고, 학원 정보를 이 브라우저에 기억한다 (에듀냅에서는 로그인 정보를 쓴다).
-import { GRADES } from './core/scale.js';
+import { GRADES, SECTIONS, SECTION_KO } from './core/scale.js';
+import { DAYS, daysOf } from './core/progress.js';
 import { checkName, parseBooks } from './core/student.js';
 
 const $ = (s) => document.querySelector(s);
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
 const status = (sel, text, kind = '') => { const el = $(sel); el.textContent = text; el.className = `status ${kind}`; };
+const today = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD, 이 기기 시간
 
+// 영역마다 요일 체크 — 고른 요일 수가 주 수업 횟수
+const dayPicker = (prefix, plan) => SECTIONS.map((k) => `<fieldset class="days"><legend>${SECTION_KO[k]}</legend>${DAYS.map((d) => `<label><input type="checkbox" name="${prefix}-${k}" value="${d}"${daysOf(plan?.[k]).includes(d) ? ' checked' : ''}>${d}</label>`).join('')}</fieldset>`).join('');
+const readDays = (form, prefix) => Object.fromEntries(SECTIONS.map((k) => [k, [...form.querySelectorAll(`input[name="${prefix}-${k}"]:checked`)].map((i) => i.value)]));
+const noDays = (plan) => SECTIONS.filter((k) => !plan[k].length).map((k) => SECTION_KO[k]);
+
+const a = load('elt:academy', {});
 const sf = $('#student-form');
 sf.grade.innerHTML = GRADES.map((g) => `<option${g === '중2' ? ' selected' : ''}>${g}</option>`).join('');
+sf.start.value = today();
+$('#student-days').innerHTML = dayPicker('s', a.plan);
 if (load('elt:session', null)) $('#resume').hidden = false;
 
 sf.addEventListener('submit', (e) => {
@@ -16,29 +26,36 @@ sf.addEventListener('submit', (e) => {
   const name = sf.name.value.trim();
   const problem = checkName(name);
   if (problem) return status('#student-status', problem, 'error');
+  const plan = readDays(sf, 's');
+  const empty = noDays(plan);
+  if (empty.length) return status('#student-status', `수업 요일을 하나 이상 골라 주세요: ${empty.join(', ')}`, 'error');
   const academy = load('elt:academy', {});
-  const date = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD, 이 기기 시간
-  const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, grade: sf.grade.value, date, academy, pace: academy.pace || 3, sectionIdx: 0, states: {}, used: [], current: null, plays: 0 };
+  const date = today();
+  const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, grade: sf.grade.value, date, start: sf.start.value || date, plan, academy, sectionIdx: 0, states: {}, used: [], current: null, plays: 0 };
   if (!save('elt:session', session)) return status('#student-status', '이 브라우저에 저장할 수 없습니다 (사생활 보호 모드인지 확인해 주세요)', 'error');
   location.href = 'test.html';
 });
 
 const af = $('#academy-form');
-const a = load('elt:academy', {});
-for (const k of ['name', 'phone', 'color', 'pace']) if (a[k]) af[k].value = a[k];
+for (const k of ['name', 'phone', 'color']) if (a[k]) af[k].value = a[k];
 af.books.value = a.booksText || '';
+$('#academy-days').innerHTML = dayPicker('a', a.plan);
 $('#academy-now').textContent = a.name ? `· ${a.name}` : '· 아직 없음';
 
 af.addEventListener('submit', async (e) => {
   e.preventDefault();
   const { books, problems } = parseBooks(af.books.value);
   if (problems.length) return status('#academy-status', problems.join('\n'), 'error');
+  const plan = readDays(af, 'a');
+  const empty = noDays(plan);
+  if (empty.length) return status('#academy-status', `수업 요일을 하나 이상 골라 주세요: ${empty.join(', ')}`, 'error');
   const file = af.logo.files[0];
   let logo = a.logo;
   try { if (file) logo = await readImage(file); } catch { return status('#academy-status', '로고 그림을 읽지 못했습니다', 'error'); }
-  const next = { name: af.name.value.trim(), phone: af.phone.value.trim(), color: af.color.value, pace: Number(af.pace.value) || 3, books, booksText: af.books.value, logo };
+  const next = { name: af.name.value.trim(), phone: af.phone.value.trim(), color: af.color.value, plan, books, booksText: af.books.value, logo };
   if (!save('elt:academy', next)) return status('#academy-status', '저장하지 못했습니다 (로고가 너무 크면 작은 그림으로 바꿔 주세요)', 'error');
   Object.assign(a, next);
+  $('#student-days').innerHTML = dayPicker('s', plan);
   $('#academy-now').textContent = `· ${next.name}`;
   status('#academy-status', '저장했습니다');
 });

@@ -23,6 +23,11 @@
     <form id="student-form" class="grid">
       <label>학생 이름 (성+OO 또는 이니셜)<input name="name" required placeholder="김OO" autocomplete="off"></label>
       <label>학년<select name="grade" required></select></label>
+      <details class="wide sub">
+        <summary>이 학생 진도 — 수업 시작일과 영역별 수업 요일</summary>
+        <label class="short">수업 시작일<input name="start" type="date"></label>
+        <div id="student-days" class="days-grid"></div>
+      </details>
       <button class="wide">시험 시작</button>
     </form>
     <p id="student-status" class="status" role="status"></p>
@@ -35,7 +40,7 @@
       <label>연락처<input name="phone" placeholder="031-000-0000"></label>
       <label>대표 색<input name="color" type="color" value="#03392A"></label>
       <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
-      <label>한 해 진도 (학기 수)<input name="pace" type="number" min="1" max="6" step="0.5" value="3"></label>
+      <div class="wide"><p class="days-title">영역별 수업 요일 (기본값) — 고른 요일 수가 주 수업 횟수입니다. 주 2회면 한 해 3학기씩 나아갑니다.</p><div id="academy-days" class="days-grid"></div></div>
       <label class="wide">영역별 교재 — 원장용 장에만 나옵니다. 줄마다 "영역, 시작 학기, 끝 학기, 교재명"<textarea name="books" rows="4" placeholder="문법, 중2-1, 중3-2, 문법 교재 2권"></textarea></label>
       <button class="wide">저장</button>
     </form>

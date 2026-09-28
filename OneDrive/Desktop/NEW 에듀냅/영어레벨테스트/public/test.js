@@ -163,7 +163,7 @@ if (!session) {
       const st = session.states[k] || { skipped: '응시하지 않음', log: [], est: null };
       return [k, { skipped: st.skipped || '', est: st.est, log: st.log }];
     }));
-    const result = { id: session.id, name: session.name, grade: session.grade, date: session.date, academy: { ...session.academy, logo: undefined }, pace: session.pace, sections };
+    const result = { id: session.id, name: session.name, grade: session.grade, date: session.date, start: session.start || session.date, plan: session.plan, academy: { ...session.academy, logo: undefined }, sections };
     if (!save(`elt:result:${result.id}`, result)) return status('결과를 이 브라우저에 저장하지 못했습니다. 저장 공간을 비운 뒤 이 화면을 새로고침해 주세요.', 'error');
     localStorage.removeItem('elt:session');
     location.replace(`report.html?id=${encodeURIComponent(result.id)}`);
