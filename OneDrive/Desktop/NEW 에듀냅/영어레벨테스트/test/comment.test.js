@@ -14,6 +14,7 @@ test('commentRequest 는 사실만 JSON 으로 넘기고 스키마를 붙인다'
   const sent = JSON.parse(req.content[0].text);
   assert.deepEqual(sent.sections[0], { name: '문법', position: facts.sections[0].position, level: '중2 1학기 3단원', next: '중2 1학기 4단원(접속사)', gap: -1, score: 23, perWeek: 2 });
   assert.deepEqual(sent.skipped, ['듣기']);
+  assert.equal(sent.overall, '고2 12월');
   assert.equal(sent.name, undefined); // 학생 이름은 보내지 않는다
   assert.match(req.system, /학생 이름을 쓰지 않고/);
 });
