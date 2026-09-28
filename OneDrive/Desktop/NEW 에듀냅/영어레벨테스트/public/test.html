@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>영어 레벨테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="test.js"></script>
+</head>
+<body>
+<header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag" id="who"></span></header>
+<main class="app">
+  <p id="sample" class="sample-banner" hidden>문항 은행이 아직 없어 <b>샘플 문항</b>으로 치르는 화면 확인용 시험입니다. 결과는 실제 실력이 아닙니다.</p>
+  <div class="test-top"><span id="section-name"></span><span class="progress-dots" id="dots"></span></div>
+  <section id="intro" class="card" hidden>
+    <h2 id="intro-title"></h2>
+    <p id="intro-text"></p>
+    <button id="intro-go" type="button">시작</button>
+  </section>
+  <section id="item" class="card" hidden>
+    <div id="listen" class="listen" hidden><button id="play" class="btn-ghost" type="button">▶ 듣기</button><span id="plays"></span></div>
+    <div id="passage" class="passage" hidden></div>
+    <p id="question" class="question"></p>
+    <div id="choices" class="choices"></div>
+  </section>
+  <p id="test-status" class="status" role="status"></p>
+</main>
+</body>
+</html>

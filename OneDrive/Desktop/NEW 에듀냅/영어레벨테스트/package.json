@@ -6,7 +6,7 @@
   "type": "module",
   "engines": { "node": ">=20.11" },
   "scripts": {
-    "test": "node --test",
+    "test": "node --test \"test/**/*.test.js\"",
     "local": "node --env-file-if-exists=.env.local scripts/local.js",
     "sample": "node scripts/make-sample.js",
     "gen": "node --env-file-if-exists=.env.local scripts/gen-items.js"
