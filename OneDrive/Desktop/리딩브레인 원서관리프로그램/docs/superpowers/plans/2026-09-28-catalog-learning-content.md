@@ -186,10 +186,18 @@ Expected:
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 9: 커밋**
+- [ ] **Step 9: 작업 부스러기를 git 에서 가린다**
+
+`.gitignore` 에 한 줄 더한다 (`.superpowers/` 는 계획 진행 기록과 묶음 브리프가 쌓이는 자리다):
+
+```
+.superpowers/
+```
+
+- [ ] **Step 10: 커밋**
 
 ```bash
-git add scripts/make-cards.mjs scripts/test-cards.mjs books/cards.js index.html library.html package.json
+git add .gitignore scripts/make-cards.mjs scripts/test-cards.mjs books/cards.js index.html library.html package.json
 git commit -m "$(cat <<'EOF'
 feat(목록): 첫 화면이 책 파일을 전부 받지 않도록 books/cards.js 를 만든다
 
@@ -233,9 +241,10 @@ EOF
 // 아직 안 만든 묶음이 있어도 실패로 보지 않는다 — 만든 것이 옳은지만 본다.
 const fs = require("fs"), path = require("path"), assert = require("assert");
 const ROOT = path.join(__dirname, "..");
-const CATALOG = (() => { const m = { exports: {} }; // catalog.js 는 node 에서 require.main 검사를 하므로 빈 채로 불러온다
-  new Function("module", "require", fs.readFileSync(path.join(ROOT, "catalog.js"), "utf8"))(m, () => ({}));
-  return m.exports.CATALOG || global.CATALOG; })();
+// catalog.js 는 module.exports 가 아니라 window.CATALOG 로만 내보낸다. window 를 흉내 내어 읽는다.
+const win0 = {};
+new Function("window", fs.readFileSync(path.join(ROOT, "catalog.js"), "utf8"))(win0);
+const CATALOG = win0.CATALOG;
 
 const dir = path.join(ROOT, "act");
 const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith(".js")) : [];
@@ -290,7 +299,7 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const pre = (process.argv[2] || "").toUpperCase();
 if (!/^[A-Z0-9]{2}$/.test(pre)) { console.error("쓰는 법: node scripts/act-brief.mjs <앞두글자>"); process.exit(1); }
 
-const run = async (f, name) => { const g = {}; new Function("window", await readFile(join(ROOT, f), "utf8")).call(g, g); return g[name]; };
+const run = async (f, name) => { const g = {}; new Function("window", await readFile(join(ROOT, f), "utf8"))(g); return g[name]; };   // catalog.js·catalog-sum.js 는 window 로 내보낸다
 const C = await run("catalog.js", "CATALOG");
 const SUM = await run("catalog-sum.js", "CATALOG_SUM");
 
@@ -348,8 +357,14 @@ Expected: PASS — `check-act ok — <M0 권수>/4820권 ...`
 <title>읽고 나서 · 리딩브레인</title>
 <link rel="stylesheet" href="app.css">
 </head><body>
-<div class="top"><a class="btn ghost" href="library.html">← 서재</a><span id="chip"></span></div>
-<main class="wrap" id="main"><p class="sub">불러오는 중…</p></main>
+<div class="top">
+  <a class="home" href="library.html">← 서재</a>
+  <div class="sp"></div>
+  <label for="who">이름</label>
+  <input class="who" id="who" placeholder="김리브로" autocomplete="off">
+  <span id="chip"></span>
+</div>
+<main id="main"><p class="sub">불러오는 중…</p></main>
 <script src="config.js"></script>
 <script src="store.js"></script>
 <script src="catalog.js"></script>
@@ -359,9 +374,23 @@ RB.chip(document.getElementById("chip"));
 const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 const $ = id => document.getElementById(id);
 const NO = new URLSearchParams(location.search).get("no") || "";
-const WHO = RB.who();
-const KEY = "rbact:" + WHO;
 const idx = CATALOG.books.findIndex(b => b[0] === NO);
+
+// 이름을 정하는 법은 app.html 과 똑같이 한다. 로그인한 학생은 고정, 아니면 이 브라우저에 기억한다.
+let WHO = "";
+if (RB.role() === "student") {
+  WHO = RB.whoKey();
+  $("who").hidden = true; document.querySelector("label[for=who]").hidden = true;
+} else {
+  WHO = localStorage.getItem("rb1:who") || "";
+  $("who").value = WHO;
+  $("who").addEventListener("change", () => {
+    WHO = $("who").value.trim();
+    localStorage.setItem("rb1:who", WHO);
+    draw();                                     // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
+  });
+}
+const KEY = () => "rbact:" + WHO;               // 이름이 바뀔 수 있으니 그때그때 셈한다
 
 // 활동 파일은 Book No. 앞 두 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
 function loadAct(done){
@@ -374,7 +403,7 @@ function loadAct(done){
 function draw(){
   const b = CATALOG.at(idx);
   const a = (window.ACT || {})[NO];
-  const all = RB.load(KEY) || {};
+  const all = RB.load(KEY()) || {};
   const mine = all[NO] || { star: 0, date: "", a: ["", "", ""], note: "", words: "" };
   if (!a){
     $("main").innerHTML = `<h1 class="h">${esc(b.title)}</h1>
@@ -408,10 +437,10 @@ function draw(){
     $("stars").querySelectorAll("button").forEach(y => y.textContent = +y.dataset.n <= star ? "★" : "☆");
   });
   $("save").onclick = () => {
-    const now = RB.load(KEY) || {};
+    const now = RB.load(KEY()) || {};
     now[NO] = { star: star, date: $("date").value, a: a.q.map((_, i) => $("a" + i).value),
                 note: $("note").value, words: $("words").value };
-    RB.save(KEY, now);
+    RB.save(KEY(), now);
     $("msg").textContent = "저장했습니다.";
   };
 }
@@ -421,7 +450,7 @@ else loadAct(draw);
 </script></body></html>
 ```
 
-`RB.who()` 가 없으면 `store.js` 가 쓰는 이름 키(`rb1:who`)를 읽는 방법을 그대로 따른다 — `store.js` 를 고치지 않는다.
+`RB` 가 내놓는 것은 `online save load drop open students submissions submit putFeedback getSubmission putAudio getAudio dropAudio me whoKey login logout role gate chip talk debate teacher teacherLogin teacherLogout writingReport` 다. `RB.who()` 는 **없다** — 위처럼 `RB.role()`·`RB.whoKey()`·`rb1:who` 를 쓴다. `store.js` 를 고치지 않는다.
 
 - [ ] **Step 7: 서재에 [읽고 나서 →] 단추를 단다**
 
@@ -473,7 +502,7 @@ EOF
 - [ ] **Step 1: 묶음 목록을 뽑는다**
 
 ```bash
-node -e "const fs=require('fs');const m={exports:{}};new Function('module','require',fs.readFileSync('catalog.js','utf8'))(m,()=>({}));const C=m.exports.CATALOG||global.CATALOG;const g={};for(const b of C.books){const p=b[0].slice(0,2);g[p]=(g[p]||0)+1}const e=Object.entries(g).sort((a,b)=>b[1]-a[1]);console.log(e.map(x=>x[0]+':'+x[1]).join(' '));console.log('묶음',e.length,'권',C.books.length)"
+node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync('catalog.js','utf8'))(w);const C=w.CATALOG;const g={};for(const b of C.books){const p=b[0].slice(0,2);g[p]=(g[p]||0)+1}const e=Object.entries(g).sort((a,b)=>b[1]-a[1]);console.log(e.map(x=>x[0]+':'+x[1]).join(' '));console.log('묶음',e.length,'권',C.books.length)"
 ```
 
 Expected: 묶음 이름과 권수가 찍힌다.
@@ -759,7 +788,7 @@ window.BOOK = {
 - [ ] **Step 1: 70권 목록을 뽑는다**
 
 ```bash
-node -e "const fs=require('fs');const m={exports:{}};new Function('module','require',fs.readFileSync('catalog.js','utf8'))(m,()=>({}));const C=m.exports.CATALOG||global.CATALOG;const s=C.series.indexOf('The Berenstain Bears');const r=[];for(const b of C.books)if(b[2]===s)r.push({no:b[0],title:b[1],author:b[3],lexile:b[4],bl:b[5]});fs.writeFileSync('.superpowers/bears.json',JSON.stringify(r,null,1));console.log(r.length+'권')"
+mkdir -p .superpowers && node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync('catalog.js','utf8'))(w);const C=w.CATALOG;const s=C.series.indexOf('The Berenstain Bears');const r=[];for(const b of C.books)if(b[2]===s)r.push({no:b[0],title:b[1],author:b[3],lexile:b[4],bl:b[5]});fs.writeFileSync('.superpowers/bears.json',JSON.stringify(r,null,1));console.log(r.length+'권')"
 ```
 
 시리즈 이름이 정확히 `The Berenstain Bears` 가 아니면 `C.series.filter(x=>/Berenstain/i.test(x))` 로 실제 이름을 먼저 찾는다.
