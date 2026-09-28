@@ -4,7 +4,7 @@
 
 **Goal:** 서재에만 있던 4,820권을 전부 밖으로 꺼낸다 — 모든 책에 간이 학습(B), 내용을 확실히 아는 책에 9단계 학습(A).
 
-**Architecture:** 첫 화면은 무거운 책 파일 대신 `books/cards.js` 한 장을 읽는다. 모든 책은 `read.html?no=<Book No.>` 로 열리고, 질문은 Book No. 앞 두 글자로 쪼갠 `act/<XX>.js` 에 굳혀 둔다. 9단계 학습은 두 번 따로 확인한 책만 `books/<slug>.js` 로 만든다.
+**Architecture:** 첫 화면은 무거운 책 파일 대신 `books/cards.js` 한 장을 읽는다. 모든 책은 `read.html?no=<Book No.>` 로 열리고, 질문은 Book No. 앞 세 글자로 쪼갠 `act/<XXX>.js` 에 굳혀 둔다. 9단계 학습은 두 번 따로 확인한 책만 `books/<slug>.js` 로 만든다.
 
 **Tech Stack:** 정적 HTML + 바닐라 ES5/ES6, 빌드 도구 없음. Node 스크립트는 ESM(`.mjs`). 검사는 `node:assert/strict` 와 `npm test`.
 
@@ -226,9 +226,9 @@ EOF
 **Interfaces:**
 - Consumes: `catalog.js` 의 `window.CATALOG` (`CATALOG.at(i)` → `{ i, no, title, series, author, lexile, bl, nf, genre, theme, award, cover }`), `store.js` 의 `RB.gate()` · `RB.load` · `RB.save` · `RB.chip`
 - Produces:
-  - `act/<XX>.js` → `window.ACT[<Book No.>] = { s: "한 줄 요약", q: ["","",""], h: ["","",""] }` (`XX` 는 Book No. 앞 두 글자)
+  - `act/<XXX>.js` → `window.ACT[<Book No.>] = { s: "한 줄 요약", q: ["","",""], h: ["","",""] }` (`XXX` 는 Book No. 앞 **세** 글자. 세 글자면 54묶음, 평균 89권, 가장 큰 것 S21 이 269권이다. 두 글자면 S2 하나가 1,168권이라 휴대폰이 받기 무겁다)
   - `read.html?no=<Book No.>` — 아이가 답을 적고 저장하는 화면. 저장 키 `rbact:<이름>`
-  - `node scripts/act-brief.mjs <XX>` → `.superpowers/act/<XX>.json` 에 그 묶음 책 목록을 쓰고 경로를 찍는다
+  - `node scripts/act-brief.mjs <XXX>` → `.superpowers/act/<XXX>.json` 에 그 묶음 책 목록을 쓰고 경로를 찍는다
   - `node scripts/check-act.js` — 묶음 파일들 검사
 
 - [ ] **Step 1: 실패하는 검사를 먼저 쓴다**
@@ -237,7 +237,7 @@ EOF
 
 ```js
 // 간이 학습 활동 파일 검사:  node scripts/check-act.js
-// 묶음 파일(act/XX.js)이 규칙을 지키는지, 장서를 얼마나 덮었는지 본다.
+// 묶음 파일(act/XXX.js)이 규칙을 지키는지, 장서를 얼마나 덮었는지 본다.
 // 아직 안 만든 묶음이 있어도 실패로 보지 않는다 — 만든 것이 옳은지만 본다.
 const fs = require("fs"), path = require("path"), assert = require("assert");
 const ROOT = path.join(__dirname, "..");
@@ -252,7 +252,7 @@ assert.ok(files.length, "act/ 에 묶음 파일이 하나도 없다");
 
 const win = { ACT: {} };
 for (const f of files) {
-  assert.ok(/^[A-Z0-9]{2}\.js$/.test(f), `묶음 이름은 Book No. 앞 두 글자여야 한다: ${f}`);
+  assert.ok(/^[A-Z0-9]{3}\.js$/.test(f), `묶음 이름은 Book No. 앞 세 글자여야 한다: ${f}`);
   new Function("window", fs.readFileSync(path.join(dir, f), "utf8"))(win);
 }
 const act = win.ACT;
@@ -269,11 +269,11 @@ for (const no of Object.keys(act)) {
   for (const q of a.q) assert.ok(q && q.trim().length >= 5, `${no}: 빈 질문이 있다`);
   if (row[5] >= 2) for (const h of a.h) assert.ok(h && h.trim(), `${no}: AR 2 이상은 한국어 도움말이 있어야 한다`);
 }
-// 묶음 파일 하나에는 제 앞두글자 책만 들어가야 한다
+// 묶음 파일 하나에는 제 앞세글자 책만 들어가야 한다
 for (const f of files) {
   const one = { ACT: {} };
   new Function("window", fs.readFileSync(path.join(dir, f), "utf8"))(one);
-  for (const no of Object.keys(one.ACT)) assert.equal(no.slice(0, 2), f.slice(0, 2), `${f}: ${no} 는 이 묶음이 아니다`);
+  for (const no of Object.keys(one.ACT)) assert.equal(no.slice(0, 3), f.slice(0, 3), `${f}: ${no} 는 이 묶음이 아니다`);
 }
 const done = Object.keys(act).length, total = CATALOG.books.length;
 console.log(`check-act ok — ${done}/${total}권 (${(100 * done / total).toFixed(1)}%) · 묶음 ${files.length}개`);
@@ -289,7 +289,7 @@ Expected: FAIL — `act/ 에 묶음 파일이 하나도 없다`
 `scripts/act-brief.mjs`:
 
 ```js
-// 묶음 하나의 책 목록을 파일로 뽑는다:  node scripts/act-brief.mjs M0
+// 묶음 하나의 책 목록을 파일로 뽑는다:  node scripts/act-brief.mjs M00
 // 질문을 쓰는 사람(서브에이전트)이 이 파일 하나만 읽으면 되도록 요약까지 붙여 준다.
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
@@ -297,7 +297,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const pre = (process.argv[2] || "").toUpperCase();
-if (!/^[A-Z0-9]{2}$/.test(pre)) { console.error("쓰는 법: node scripts/act-brief.mjs <앞두글자>"); process.exit(1); }
+if (!/^[A-Z0-9]{3}$/.test(pre)) { console.error("쓰는 법: node scripts/act-brief.mjs <앞세글자>"); process.exit(1); }
 
 const run = async (f, name) => { const g = {}; new Function("window", await readFile(join(ROOT, f), "utf8"))(g); return g[name]; };   // catalog.js·catalog-sum.js 는 window 로 내보낸다
 const C = await run("catalog.js", "CATALOG");
@@ -306,7 +306,7 @@ const SUM = await run("catalog-sum.js", "CATALOG_SUM");
 const rows = [];
 for (let i = 0; i < C.books.length; i++) {
   const b = C.books[i];
-  if (b[0].slice(0, 2) !== pre) continue;
+  if (b[0].slice(0, 3) !== pre) continue;
   rows.push({ no: b[0], title: b[1], series: C.series[b[2]], author: b[3], lexile: b[4], bl: b[5],
               nf: !!b[6], genre: C.genre[b[7]], theme: C.theme[b[8]], award: b[9], sum: SUM[i] || "" });
 }
@@ -316,15 +316,15 @@ await writeFile(out, JSON.stringify(rows, null, 1));
 console.log(`${out}  ${rows.length}권`);
 ```
 
-Run: `node scripts/act-brief.mjs M0`
-Expected: `.superpowers/act/M0.json` 이 생기고 권수가 찍힌다.
+Run: `node scripts/act-brief.mjs M00`
+Expected: `.superpowers/act/M00.json` 이 생기고 `84권` 이 찍힌다.
 
 - [ ] **Step 4: 첫 묶음 `act/M00.js` 의 질문을 쓴다**
 
-`node scripts/act-brief.mjs M0` 이 뽑아 준 책들에 대해 질문을 쓴다. 파일 모양:
+`node scripts/act-brief.mjs M00` 이 뽑아 준 84권 전부에 대해 질문을 쓴다. 한 권도 빠뜨리지 않는다. 파일 모양:
 
 ```js
-// 간이 학습 질문 — Book No. M0 묶음. 사람이 아니라 AI 가 한 번 쓰고 굳힌 파일이다.
+// 간이 학습 질문 — Book No. M00 묶음. 사람이 아니라 AI 가 한 번 쓰고 굳힌 파일이다.
 window.ACT = window.ACT || {};
 ACT["M0001"] = { s: "This book introduces different jobs around us. ( a / am / I )",
   q: ["이 책에 나온 직업 중에 가장 해 보고 싶은 것은 무엇인가요?",
@@ -334,7 +334,7 @@ ACT["M0001"] = { s: "This book introduces different jobs around us. ( a / am / I
 ```
 
 **질문을 쓰는 규칙 (이 설계에서 품질을 지키는 유일한 장치):**
-- `s` 는 `.superpowers/act/<XX>.json` 의 `sum` 을 **그대로** 옮긴다. 고쳐 쓰지 않는다.
+- `s` 는 `.superpowers/act/<XXX>.json` 의 `sum` 을 **그대로** 옮긴다. 고쳐 쓰지 않는다. `sum` 이 빈 책은 `s: ""` 로 두고 질문은 제목·갈래·주제만 보고 쓴다.
 - **줄거리를 아는 척하지 않는다.** 요약이 보장하는 사실 안에서만 묻는다.
   - 좋음: "이 책에 나오는 날씨 중에 가장 좋아하는 건 뭐였나요?" (요약이 '날씨를 소개한다'고 말한다)
   - 나쁨: "주인공이 비 오는 날 무엇을 했나요?" (요약에 그런 말이 없다)
@@ -392,10 +392,10 @@ if (RB.role() === "student") {
 }
 const KEY = () => "rbact:" + WHO;               // 이름이 바뀔 수 있으니 그때그때 셈한다
 
-// 활동 파일은 Book No. 앞 두 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
+// 활동 파일은 Book No. 앞 세 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
 function loadAct(done){
   const tag = document.createElement("script");
-  tag.src = "act/" + NO.slice(0, 2) + ".js";
+  tag.src = "act/" + NO.slice(0, 3) + ".js";
   tag.onload = tag.onerror = done;
   document.head.appendChild(tag);
 }
@@ -463,7 +463,7 @@ else loadAct(draw);
 - [ ] **Step 8: 화면으로 확인한다**
 
 Run: `npm run dev` 뒤 `library.html` 에서 `M0001` 을 찾아 열고 [읽고 나서 →] 를 누른다.
-Expected: 별점·읽은 날·질문 3개·감상·낱말 칸이 뜨고, 적고 저장한 뒤 새로고침해도 그대로 남는다. 네트워크 탭에 `act/M0.js` 하나만 받는다(`catalog-sum.js` 는 받지 않는다).
+Expected: 별점·읽은 날·질문 3개·감상·낱말 칸이 뜨고, 적고 저장한 뒤 새로고침해도 그대로 남는다. 네트워크 탭에 `act/M00.js` 하나만 받는다(`catalog-sum.js` 는 받지 않는다).
 
 - [ ] **Step 9: `npm test` 에 잇고 커밋**
 
@@ -492,30 +492,30 @@ EOF
 4,820권을 빠짐없이 덮는다. 컨트롤러가 묶음을 서브에이전트에 나눠 보낸다.
 
 **Files:**
-- Create: `act/<XX>.js` × 남은 묶음 전부
+- Create: `act/<XXX>.js` × 남은 53묶음
 - Modify: 없음
 
 **Interfaces:**
-- Consumes: Task 2 의 `node scripts/act-brief.mjs <XX>` → `.superpowers/act/<XX>.json`, `node scripts/check-act.js`
-- Produces: `act/<XX>.js` — Task 2 가 정한 모양과 규칙 그대로
+- Consumes: Task 2 의 `node scripts/act-brief.mjs <XXX>` → `.superpowers/act/<XXX>.json`, `node scripts/check-act.js`
+- Produces: `act/<XXX>.js` — Task 2 가 정한 모양과 규칙 그대로
 
 - [ ] **Step 1: 묶음 목록을 뽑는다**
 
 ```bash
-node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync('catalog.js','utf8'))(w);const C=w.CATALOG;const g={};for(const b of C.books){const p=b[0].slice(0,2);g[p]=(g[p]||0)+1}const e=Object.entries(g).sort((a,b)=>b[1]-a[1]);console.log(e.map(x=>x[0]+':'+x[1]).join(' '));console.log('묶음',e.length,'권',C.books.length)"
+node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync('catalog.js','utf8'))(w);const C=w.CATALOG;const g={};for(const b of C.books){const p=b[0].slice(0,3);g[p]=(g[p]||0)+1}const e=Object.entries(g).sort((a,b)=>b[1]-a[1]);console.log(e.map(x=>x[0]+':'+x[1]).join(' '));console.log('묶음',e.length,'권',C.books.length)"
 ```
 
-Expected: 묶음 이름과 권수가 찍힌다.
+Expected: 54묶음과 권수가 찍힌다 (가장 큰 것 S21 이 269권, 평균 89권).
 
 - [ ] **Step 2: 견본 세 묶음을 먼저 만든다**
 
 세 벌이 다 보이도록 고른다 — AR 2 미만이 많은 묶음 하나, AR 2~4 하나, AR 4 이상 하나. 각 묶음마다:
 
 ```bash
-node scripts/act-brief.mjs <XX>
+node scripts/act-brief.mjs <XXX>
 ```
 
-찍힌 경로를 서브에이전트에 넘기고, **Task 2 Step 4 의 질문 규칙을 그대로 지시문에 옮겨 적어** `act/<XX>.js` 하나를 직접 쓰게 한다. **결과를 돌려받지 않는다** — 파일만 쓰게 한다.
+찍힌 경로를 서브에이전트에 넘기고, **Task 2 Step 4 의 질문 규칙을 그대로 지시문에 옮겨 적어** `act/<XXX>.js` 하나를 직접 쓰게 한다. **결과를 돌려받지 않는다** — 파일만 쓰게 한다.
 
 - [ ] **Step 3: 견본을 검사하고 원장께 보인다**
 
@@ -526,7 +526,7 @@ Expected: PASS
 
 - [ ] **Step 4: 나머지 묶음을 돌린다**
 
-한 번에 서브에이전트 셋까지. 이미 있는 `act/<XX>.js` 는 건너뛴다. 중간에 끊겨도 만든 파일은 남는다.
+한 번에 서브에이전트 셋까지 (묶음마다 하나). 이미 있는 `act/<XXX>.js` 는 건너뛴다. 중간에 끊겨도 만든 파일은 남는다.
 
 - [ ] **Step 5: 전부 덮였는지 확인한다**
 
