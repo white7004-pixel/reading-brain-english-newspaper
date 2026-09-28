@@ -17,7 +17,7 @@ ACT["M0003"] = { s: "What do you like? Answer the question using the words ( I /
       "내가 좋아하는 것 한 가지와 그 이유를 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0004"] = { s: "What does your mom do for a living? Answer the question using the words ( a / is / mom / my ).",
-  q: ["이 책에서 엄마는 어떤 일을 하고 있었나요?",
+  q: ["이 책은 '엄마는 무슨 일을 하세요?' 하고 물어요. 너라면 뭐라고 답하고 싶나요?",
       "우리 엄마는 어떤 일을 하시나요?",
       "엄마가 하는 일 중에서 멋지다고 생각하는 점을 적어 보세요."],
   h: ["", "", ""] };
@@ -27,7 +27,7 @@ ACT["M0005"] = { s: "What do we see in the picture? Answer the question using th
       "내가 가장 보고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0006"] = { s: "What is it? Look at the picture and answer the question using the words ( a / is / it / of ).",
-  q: ["이 책에서 그림을 보고 무엇인지 맞혀 보았나요? 무엇이었나요?",
+  q: ["이 책은 그림을 보고 '이게 뭘까?' 하고 물어요. 너는 무엇이라고 답했나요?",
       "나는 무언가를 보고 무엇인지 맞혀 본 적이 있나요?",
       "내가 맞히기 어려웠던 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -52,12 +52,12 @@ ACT["M0010"] = { s: "This book shows different machines around us. ( a / can / g
       "내가 갖고 싶은 기계를 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0011"] = { s: "What does your dad have? Answer the question using the words ( dad / had / my ).",
-  q: ["이 책에서 아빠가 가지고 있던 것은 무엇이었나요?",
+  q: ["이 책은 '아빠는 무엇을 가지고 있나요?' 하고 물어요. 너라면 무엇이라고 답하고 싶나요?",
       "우리 아빠가 가지고 있는 것 중에 기억나는 것이 있나요?",
       "아빠가 가진 것 중에 부러운 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0012"] = { s: "Come and see what's here. Look at the picture and make a sentence with the words ( and / come / see / the ).",
-  q: ["이 책에서 와서 보라고 한 것은 무엇이었나요?",
+  q: ["이 책은 와서 무엇을 보라고 초대해요. 책장을 넘기며 너는 무엇을 발견했나요?",
       "누군가에게 와서 보여 주고 싶은 것이 있나요?",
       "내가 친구에게 보여 주고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -87,12 +87,12 @@ ACT["M0017"] = { s: "This book shows some animals near the water. ( a / an / did
       "내가 보고 싶은 물가 동물을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0018"] = { s: "What's in your backpack? Make a sentence with the words ( in / is / my ).",
-  q: ["이 책 속 가방 안에는 무엇이 들어 있었나요?",
+  q: ["이 책은 가방 속에 무엇이 있는지 맞혀 보는 책이에요. 책을 읽으며 너는 무엇을 보았나요?",
       "내 가방 안에는 무엇이 들어 있나요?",
       "내 가방에 새로 넣고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0019"] = { s: "Where is he? Answer the question using the words ( at / he / is / the ).",
-  q: ["이 책에서 그 사람은 어디에 있었나요?",
+  q: ["이 책은 '그는 어디에 있을까요?' 하고 물어요. 책을 보며 너는 그를 찾아보았나요?",
       "나는 오늘 어디에 있었나요?",
       "내가 가장 좋아하는 장소를 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -112,7 +112,7 @@ ACT["M0022"] = { s: "This book introduces the animals in the zoo. ( see / the / 
       "내가 동물원에서 가장 보고 싶은 동물을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0023"] = { s: "Who are you? Look at the picture and make a sentence with the words ( a / am / I / is / it ).",
-  q: ["이 책에서 그림 속 인물은 누구였나요?",
+  q: ["이 책은 '너는 누구니?' 하고 물어요. 책 속 그림을 보며 너는 무엇이라고 답해 보았나요?",
       "누군가 나에게 '너는 누구야?'라고 물으면 나는 어떻게 답할까요?",
       "나를 소개하는 문장을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -122,7 +122,7 @@ ACT["M0024"] = { s: "This book contains different insects and their homes. ( a /
       "내가 좋아하는 곤충을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0025"] = { s: "Where are you? Answer the question with the picture using the words ( a / am / I / it / not / on ).",
-  q: ["이 책에서 그림 속 사람은 어디에 있었나요?",
+  q: ["이 책은 '너는 지금 어디에 있니?' 하고 물어요. 그림을 보며 너는 어디라고 답해 보았나요?",
       "나는 무언가 위에 올라가 본 적이 있나요?",
       "내가 올라가 보고 싶은 곳을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -142,7 +142,7 @@ ACT["M0028"] = { s: "This book shows various sea creatures. ( a / an / big / is 
       "내가 궁금한 바다 생물을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0029"] = { s: "When do you feel happy? Talk about when you feel happy with the words ( a / am / at / I / if / in / on ).",
-  q: ["이 책에서 이야기하는 행복한 순간은 언제였나요?",
+  q: ["이 책은 '너는 언제 행복하니?' 하고 물어요. 책 속 그림을 보며 어떤 순간이 행복해 보였나요?",
       "나는 언제 가장 행복한가요?",
       "나를 행복하게 하는 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -157,7 +157,7 @@ ACT["M0031"] = { s: "Let's see where the cat is and what she can do. ( at / can 
       "내가 고양이에게 시켜 보고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0032"] = { s: "What does he get for baseball game? See the picture with the words ( a / get / go / I / on / see / to / the / will ).",
-  q: ["이 책에서 야구 경기를 위해 가져간 것은 무엇이었나요?",
+  q: ["이 책은 '야구 경기를 위해 무엇을 가져갈까요?' 하고 물어요. 너라면 무엇을 챙기겠나요?",
       "나는 야구를 해 보거나 본 적이 있나요?",
       "내가 야구에서 가장 하고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -172,12 +172,12 @@ ACT["M0034"] = { s: "This book shows colors. What color do you like? ( are / her
       "그 색으로 무엇을 만들거나 그리고 싶은지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0035"] = { s: "On rainy day, where do we go? ( a / am / at / do / go / home / I / is / it / not / to )",
-  q: ["이 책에서 비 오는 날 어디로 갔나요?",
+  q: ["이 책은 '비 오는 날 우리는 어디로 갈까요?' 하고 물어요. 책 속 그림을 보며 너는 어디라고 생각했나요?",
       "비가 오는 날 나는 주로 어디에 있나요?",
       "비 오는 날 내가 하고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0036"] = { s: "What's in the gift box? Will it make the girl happy? (a / be / is / it / no / the / will / with )",
-  q: ["이 책 속 선물 상자 안에는 무엇이 들어 있었나요?",
+  q: ["이 책은 '선물 상자 안에 무엇이 있을까요?' 하고 물어요. 너라면 무엇이 들어 있으면 좋겠나요?",
       "나는 선물을 받아 본 적이 있나요? 무엇을 받았나요?",
       "내가 받고 싶은 선물을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -237,7 +237,7 @@ ACT["M0047"] = { s: "Do you see patterns all around us? Where do you see them?",
       "내가 좋아하는 무늬를 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0048"] = { s: "What are the ten little pigs doing?",
-  q: ["이 책에 나온 열 마리 아기 돼지들은 무엇을 하고 있었나요?",
+  q: ["열 마리 아기 돼지들이 무엇을 하고 있을지 그림을 보며 상상해서 적어 보세요.",
       "나는 돼지를 본 적이 있나요?",
       "내가 돼지에게 해 주고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -247,7 +247,7 @@ ACT["M0049"] = { s: "Read and find out how things grow.",
       "내가 키워 보고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0050"] = { s: "Read and discover how Mr. Noisy builds a house.",
-  q: ["이 책에서 노이지 아저씨는 집을 어떻게 지었나요?",
+  q: ["노이지 아저씨는 집을 짓고 있어요. 내가 집을 짓는다면 어떤 순서로 지을지 생각해 보세요.",
       "나는 무언가를 만들어 본 적이 있나요?",
       "내가 짓고 싶은 집은 어떤 모습인지 적어 보세요."],
   h: ["", "", ""] };
@@ -282,12 +282,12 @@ ACT["M0056"] = { s: "Have fun counting all the legs on the animals and bugs!",
       "내가 궁금한 동물의 다리 수를 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0057"] = { s: "Read and discover what is alive and what isn't!",
-  q: ["이 책에서 살아 있는 것으로 나온 것은 무엇이었나요?",
+  q: ["이 책에서 살아 있는 것으로 나온 것 중에 기억나는 것이 있나요?",
       "나는 살아 있는 것과 살아 있지 않은 것을 구별해 본 적이 있나요?",
       "내가 생각하는 살아 있는 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0058"] = { s: "Where are the foods we eat every day grown?",
-  q: ["이 책에서 우리가 매일 먹는 음식은 어디에서 자란다고 했나요?",
+  q: ["이 책에 나온, 우리가 매일 먹는 음식 중에 기억나는 것이 있나요?",
       "나는 음식이 자라는 곳을 본 적이 있나요?",
       "내가 좋아하는 음식이 어디에서 왔을지 적어 보세요."],
   h: ["", "", ""] };
@@ -302,9 +302,9 @@ ACT["M0060"] = { s: "This book introduces the things that can melt.",
       "내가 본 적 있는 녹는 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0061"] = { s: "The bear goes traveling around the mountain. What will he see and do?",
-  q: ["이 책에서 곰은 산을 넘으며 무엇을 했나요?",
+  q: ["곰은 산을 넘어가며 여행을 해요. 곰이 산에서 무엇을 보았을지 내가 상상해서 적어 보세요.",
       "나는 산에 가 본 적이 있나요?",
-      "내가 산에서 보고 싶은 것을 한 가지 적어 보세요."],
+      "내가 산을 여행한다면 무엇을 하고 싶은지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0062"] = { s: "Read and discover how your five senses help you figure out what's going on.",
   q: ["이 책에서 다섯 가지 감각 중 어떤 것이 나왔나요?",
@@ -317,7 +317,7 @@ ACT["M0063"] = { s: "This book introduces how people say hello all over the worl
       "내가 배우고 싶은 인사법을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0064"] = { s: "Did you know that graphs can be made to track things?",
-  q: ["이 책에서 그래프로 무엇을 기록했나요?",
+  q: ["이 책에 나온 그래프를 보며 무엇을 알 수 있었나요?",
       "나는 그래프나 표를 본 적이 있나요?",
       "내가 그래프로 만들어 보고 싶은 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
@@ -402,14 +402,14 @@ ACT["M0080"] = { s: "It's Valentine's Day. A little girl makes Valentines for he
       "내가 카드를 만들어 주고 싶은 사람을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0081"] = { s: "It's a dog wash day. The kids get everything ready then they wash all sorts of dogs.",
-  q: ["이 책에서 아이들은 강아지 목욕을 위해 무엇을 준비했나요?",
-      "나는 강아지를 씻겨 본 적이 있나요?",
-      "내가 씻겨 주고 싶은 동물을 한 가지 적어 보세요."],
+  q: ["이 책에는 여러 종류의 강아지가 나와요. 그중에 내가 가장 씻겨 주고 싶은 강아지는 어떤 모습일까요?",
+      "나는 강아지나 다른 동물을 씻겨 본 적이 있나요?",
+      "강아지를 목욕시키려면 무엇이 필요할지 내 생각을 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0082"] = { s: "Nicky is a picky eater. She refuses to eat peas and carrots. Her family comes up with a clever plan to overcome her finicky habits.",
   q: ["니키는 어떤 음식을 먹지 않으려 했나요?",
       "나는 먹기 싫은 음식이 있나요?",
-      "가족이 나에게 써 준 방법 중 기억나는 것을 적어 보세요."],
+      "니키의 가족처럼 나라면 편식하는 친구를 위해 어떤 좋은 방법을 생각해 볼 수 있을까요? 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0083"] = { s: "An old man is unhappy with a house of creaky floors, squeaky doors, and windows that go bang. But he learns to be thankful after a goat, cow, and donkey come to stay with him.",
   q: ["할아버지는 시끄러운 집의 어떤 소리들을 싫어했나요?",
@@ -417,7 +417,7 @@ ACT["M0083"] = { s: "An old man is unhappy with a house of creaky floors, squeak
       "내가 감사하게 생각하는 것을 한 가지 적어 보세요."],
   h: ["", "", ""] };
 ACT["M0084"] = { s: "The clown gets a bike for his birthday. The Little Engine helps him ride it.",
-  q: ["꼬마 기관차는 광대가 자전거를 타도록 어떻게 도와주었나요?",
+  q: ["생일 선물로 자전거를 받은 것은 누구였나요?",
       "나는 자전거를 처음 배울 때 누가 도와주었나요?",
       "내가 누군가를 도와준 경험을 한 가지 적어 보세요."],
   h: ["", "", ""] };

@@ -36,10 +36,11 @@ if (RB.role() === "student") {
     draw();                                     // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
   });
 }
-const KEY = () => "rbact:" + WHO;               // 이름이 바뀔 수 있으니 그때그때 셈한다
-// RB.save/RB.load 는 (slug, who, part, data) 네 자리다 (store.js). 이 화면은 학생 한 명의 모든 책 기록을
-// KEY() 한 슬러그 밑에 part="acts" 로 묶어 담는다 — book No. 마다 다른 part 를 쓰지 않는다.
-const PART = "acts";
+// RB.save/RB.load 는 (slug, who, part, data) 네 자리다 (store.js). app.html 과 똑같이
+// 책(Book No.) 하나가 slug 다 — 책마다 따로 저장해야 저장할 때마다 이 학생의 읽은 책 전부를
+// 다시 쓰지 않고, 다른 책·다른 탭이 서로 덮어쓰지 않는다.
+const get = () => (RB.load(NO, WHO, "act") || {}).data || null;
+const put = data => RB.save(NO, WHO, "act", data);
 
 // 활동 파일은 Book No. 앞 세 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
 function loadAct(done){
@@ -52,15 +53,14 @@ function loadAct(done){
 function draw(){
   const b = CATALOG.at(idx);
   const a = (window.ACT || {})[NO];
-  const all = (RB.load(KEY(), WHO, PART) || {}).data || {};
-  const mine = all[NO] || { star: 0, date: "", a: ["", "", ""], note: "", words: "" };
+  const mine = get() || { star: 0, date: "", a: ["", "", ""], note: "", words: "" };
   if (!a){
-    $("main").innerHTML = `<h1 class="h">${esc(b.title)}</h1>
+    $("main").innerHTML = `<h2 class="h">${esc(b.title)}</h2>
       <p class="sub">이 책은 아직 활동이 준비되지 않았습니다.</p>`;
     return;
   }
   $("main").innerHTML = `
-    <h1 class="h">${esc(b.title)}</h1>
+    <h2 class="h">${esc(b.title)}</h2>
     <p class="sub">${esc(b.author)}${b.series === "No series" ? "" : " · " + esc(b.series)}</p>
     <div class="row" style="gap:6px; flex-wrap:wrap; margin:6px 0 10px">
       <span class="count">AR ${b.bl.toFixed(1)}</span><span class="count">Lexile ${esc(b.lexile)}</span>
@@ -86,10 +86,8 @@ function draw(){
     $("stars").querySelectorAll("button").forEach(y => y.textContent = +y.dataset.n <= star ? "★" : "☆");
   });
   $("save").onclick = () => {
-    const now = (RB.load(KEY(), WHO, PART) || {}).data || {};
-    now[NO] = { star: star, date: $("date").value, a: a.q.map((_, i) => $("a" + i).value),
-                note: $("note").value, words: $("words").value };
-    RB.save(KEY(), WHO, PART, now);
+    put({ star: star, date: $("date").value, a: a.q.map((_, i) => $("a" + i).value),
+          note: $("note").value, words: $("words").value });
     $("msg").textContent = "저장했습니다.";
   };
 }
