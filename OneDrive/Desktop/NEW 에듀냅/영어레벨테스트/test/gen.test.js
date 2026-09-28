@@ -32,7 +32,7 @@ test('toItems 는 초안으로 만들고 틀린 것은 버린다', () => {
 });
 
 test('단어 CSV 읽기와 학기 Day 범위 고르기', () => {
-  const list = parseWordsCsv('﻿book,day,word,meaning\n능률 VOCA 중등 기본,1,apple,사과\n능률VOCA 중등 기본,7,run,달리다, 운영하다\n능률 VOCA 중등 필수,1,x,y\n');
+  const list = parseWordsCsv('\uFEFFbook,day,word,meaning\n능률 VOCA 중등 기본,1,apple,사과\n능률VOCA 중등 기본,7,run,달리다, 운영하다\n능률 VOCA 중등 필수,1,x,y\n');
   assert.equal(list.length, 3);
   assert.equal(list[1].meaning, '달리다, 운영하다');
   assert.deepEqual(wordsFor(list, { book: '능률 VOCA 중등 기본', days: [1, 6] }), ['apple (사과)']);

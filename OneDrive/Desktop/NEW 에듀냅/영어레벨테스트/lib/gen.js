@@ -77,7 +77,7 @@ export function toItems(json, { section, step, unit }, makeId) {
 
 // data/words.csv — 첫 줄 제목, 줄마다 book,day,word,meaning (뜻에 쉼표가 있어도 된다). 엑셀에서 "CSV UTF-8" 로 저장한다.
 export function parseWordsCsv(text) {
-  return text.replace(/^﻿/, '').split(/\r?\n/).slice(1).filter((l) => l.trim()).map((l) => {
+  return text.replace(/^\uFEFF/, '').split(/\r?\n/).slice(1).filter((l) => l.trim()).map((l) => {
     const [book, day, word, ...meaning] = l.split(',');
     return { book: book.trim(), day: Number(day), word: word?.trim(), meaning: meaning.join(',').trim() };
   }).filter((w) => w.book && w.day && w.word);
