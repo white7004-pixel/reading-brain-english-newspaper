@@ -159,11 +159,11 @@ footer{padding:10px 20px 30px; font-size:11.5px; color:#a597b0; text-align:cente
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" hidden>이 레벨에는 아직 책이 없어요.</div>
 </main>
-<footer>리딩브레인영어학원 · 새 책은 <code>books/</code> 에 파일을 만들고 <code>books/index.js</code> 에 한 줄 더합니다.</footer>
+<footer>리딩브레인영어학원 · 새 책은 <code>books/</code> 에 파일을 만들고 <code>books/index.js</code> 에 한 줄 더한 뒤 <code>node scripts/make-cards.mjs</code> 를 돌립니다.</footer>
 
 <script src="config.js"></script>
 <script src="store.js"></script>
-<script src="books/index.js"></script>
+<script src="books/cards.js"></script>
 <script>
 RB.gate();
 RB.chip(document.getElementById("chip"));
@@ -183,17 +183,6 @@ const LEVELS = [
   { name: "Lv.5 소설",   ar: "5.5+",    max: Infinity },
 ];
 const lvOf = b => LEVELS.findIndex(l => (parseFloat(b.level.ar) || 0) < l.max);
-
-// 책 파일 하나하나가 window.BOOK 을 덮어쓴다. 하나씩 읽어서 그때그때 챙겨 둔다.
-function load(slug){
-  return new Promise(done => {
-    const tag = document.createElement("script");
-    tag.src = "books/" + slug + ".js";
-    tag.onload  = () => { done(Object.assign({}, window.BOOK)); window.BOOK = null; };
-    tag.onerror = () => done(null);
-    document.head.appendChild(tag);
-  });
-}
 
 const cover = b => b.cover ? `style="background-image:url('${esc(b.cover)}')"` : "";
 function card(b){
@@ -233,13 +222,8 @@ function draw(){
   $("lv").querySelectorAll("button").forEach(x => x.onclick = () => { LV = +x.dataset.i; draw(); });
 }
 
-(async () => {
-  for (const slug of (window.BOOKS || [])){
-    const b = await load(slug);
-    if (b && b.title) LIST.push(b);
-    else console.warn("못 읽은 책:", slug);
-  }
-  LIST.sort((a, c) => parseFloat(a.level.ar) - parseFloat(c.level.ar));  // 쉬운 책부터
+(() => {
+  LIST = (window.BOOK_CARDS || []).slice();          // cards.js 가 이미 쉬운 책부터 차례로 담아 둔다
   $("total").textContent = `모두 ${LIST.length}권 · 쉬운 책부터`;
   // 첫 화면 책장: 표지가 적으면 되풀이해서 채운다
   const cv = LIST.filter(b => b.cover);

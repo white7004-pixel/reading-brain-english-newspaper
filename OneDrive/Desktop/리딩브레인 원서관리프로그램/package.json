@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "test": "node grade.js && node talk-local.js && node debate-local.js && node artest-data.js && node catalog.js && node scripts/test-db.mjs && node scripts/test-talk.mjs && node scripts/test-debate.mjs && node scripts/test-report.mjs && node scripts/check-book.mjs"
+    "test": "node grade.js && node talk-local.js && node debate-local.js && node artest-data.js && node catalog.js && node scripts/test-db.mjs && node scripts/test-talk.mjs && node scripts/test-debate.mjs && node scripts/test-report.mjs && node scripts/check-book.mjs && node scripts/make-cards.mjs --check && node scripts/test-cards.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
