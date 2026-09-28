@@ -1,6 +1,6 @@
 // 리포트용 사실 정리와 틀 문장. AI 가 없거나 실패해도 리포트는 이 문장으로 나온다.
-import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf, positionText, nextUnit, unitName, currentStep } from './scale.js';
-import { position } from './progress.js';
+import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf, positionText, nextUnit, unitName } from './scale.js';
+import { position, score, gradePos } from './progress.js';
 
 export function estLabel(est) {
   if (est.unit == null) return labelOf(est.step);
@@ -28,15 +28,19 @@ export function bookFor(books, section, step) {
   return (books?.[section] ?? []).find((b) => step >= b.from && step <= b.to)?.name ?? '';
 }
 
-// gap = 지금 학기 가운데에서 몇 학기 앞(+)·뒤(−)인지, 0.5 단위
+// gap = 지금 학기 가운데에서 몇 학기 앞(+)·뒤(−)인지, 0.5 단위. score = 100점 환산, perWeek = 주 수업 횟수
 export function commentFacts(result, proj) {
-  const now = currentStep(result.grade, result.date) + 0.5;
+  const now = gradePos(result.grade, result.date);
   const sections = SECTIONS.filter((k) => result.sections[k]?.est).map((k) => {
     const est = result.sections[k].est;
-    return { key: k, name: SECTION_KO[k], position: positionText(k, est), level: estLabel(est), next: nextLabel(k, est), gap: Math.round((position(est) - now) * 2) / 2 };
+    const pos = position(est);
+    return {
+      key: k, name: SECTION_KO[k], position: positionText(k, est), level: estLabel(est), next: nextLabel(k, est),
+      gap: Math.round((pos - now) * 2) / 2, score: score(pos), perWeek: proj?.perSection[k]?.perWeek ?? 2,
+    };
   });
   const skipped = SECTIONS.filter((k) => !result.sections[k]?.est).map((k) => SECTION_KO[k]);
-  return { grade: result.grade, sections, skipped, overall: proj?.overall.label ?? '', pace: proj?.pace ?? null };
+  return { grade: result.grade, sections, skipped, overall: proj?.overall.label ?? '' };
 }
 
 export function templateComment(facts) {
@@ -44,10 +48,12 @@ export function templateComment(facts) {
   if (!s.length) return { summary: '응시한 영역이 없어 결과를 낼 수 없습니다.', directions: [] };
   const top = s[0];
   const low = s.at(-1);
+  const tag = (x) => `${x.name}(${x.level}, ${x.score}점)`;
   const parts = [s.length > 1
-    ? `가장 앞선 영역은 ${top.name}(${top.level})이고, 가장 보완이 필요한 영역은 ${low.name}(${low.level})입니다.`
-    : `${SECTION_TOPIC[top.key]} ${top.level} 수준입니다.`];
+    ? `가장 앞선 영역은 ${tag(top)}이고, 가장 보완이 필요한 영역은 ${tag(low)}입니다.`
+    : `${SECTION_TOPIC[top.key]} ${top.level} 수준(${top.score}점)입니다.`];
   if (facts.overall === '고3 과정 완료') parts.push('이미 고3 과정 수준에 도달했습니다.');
+  else if (facts.overall === '고3 졸업 이후') parts.push('지금 수업 횟수로는 고3 졸업 전에 고3 과정을 모두 마치기 어려워, 횟수를 늘리기를 권합니다.');
   else if (facts.overall) parts.push(`우리 학원 진도로 공부하면 ${facts.overall}에 고3 과정을 마칠 것으로 예상합니다.`);
   const directions = [...s].reverse().slice(0, 3).map((x) => `${SECTION_TOPIC[x.key]} ${x.next}부터 수업을 시작합니다.`);
   return { summary: parts.join(' '), directions };

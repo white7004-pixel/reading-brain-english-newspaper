@@ -36,19 +36,28 @@ const result = {
   },
 };
 
+const proj = { overall: { label: '고2 12월' }, perSection: { vocab: { perWeek: 2 }, grammar: { perWeek: 3 }, reading: { perWeek: 2 } } };
+
 test('commentFacts 는 AI 에 넘길 사실만 모은다', () => {
-  const f = commentFacts(result, { overall: { label: '중3 2학기' }, pace: 3 });
+  const f = commentFacts(result, proj);
   assert.equal(f.grade, '중2');
   assert.deepEqual(f.skipped, ['듣기']);
-  assert.deepEqual(f.sections.map((s) => [s.key, s.level, s.gap]), [['vocab', '중2 1학기 2단원', -1], ['grammar', '중3 2학기 1단원', 2], ['reading', '중2 2학기 4단원', 0.5]]); // 지금 12.5 기준: 11.5 → −1, 14.25 → 1.75 → 2, 13 → 0.5
-  assert.equal(f.overall, '중3 2학기');
+  // 지금 12.5 기준: 11.5 → −1, 14.25 → 1.75 → 2, 13 → 0.5. 점수 = (위치−9)/12×100
+  assert.deepEqual(f.sections.map((s) => [s.key, s.level, s.gap, s.score, s.perWeek]), [
+    ['vocab', '중2 1학기 2단원', -1, 21, 2], ['grammar', '중3 2학기 1단원', 2, 44, 3], ['reading', '중2 2학기 4단원', 0.5, 33, 2],
+  ]);
+  assert.equal(f.overall, '고2 12월');
+  assert.equal(f.pace, undefined);
 });
 
 test('templateComment 는 AI 없이도 총평과 지도 방향을 쓴다', () => {
-  const c = templateComment(commentFacts(result, { overall: { label: '중3 2학기' }, pace: 3 }));
-  assert.match(c.summary, /가장 앞선 영역은 문법\(중3 2학기 1단원\)/);
-  assert.match(c.summary, /가장 보완이 필요한 영역은 단어\(중2 1학기 2단원\)/);
-  assert.match(c.summary, /중3 2학기에 고3 과정을 마칠 것으로 예상합니다/);
+  const f = commentFacts(result, proj);
+  const c = templateComment(f);
+  assert.match(c.summary, /가장 앞선 영역은 문법\(중3 2학기 1단원, 44점\)/);
+  assert.match(c.summary, /가장 보완이 필요한 영역은 단어\(중2 1학기 2단원, 21점\)/);
+  assert.match(c.summary, /고2 12월에 고3 과정을 마칠 것으로 예상합니다/);
+  assert.match(templateComment({ ...f, overall: '고3 졸업 이후' }).summary, /횟수를 늘리기를 권합니다/);
+  assert.match(templateComment({ ...f, overall: '고3 과정 완료' }).summary, /이미 고3 과정 수준에 도달했습니다/);
   assert.equal(c.directions.length, 3);
   assert.match(c.directions[0], /^단어는 중2 1학기 3단원\(어휘대 3\)부터 수업을 시작합니다\.$/);
   assert.deepEqual(templateComment({ sections: [], overall: '' }).directions, []);
