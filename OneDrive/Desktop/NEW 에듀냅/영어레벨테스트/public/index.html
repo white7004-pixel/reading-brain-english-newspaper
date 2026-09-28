@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>에듀냅 영어 레벨테스트 (시험판)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag">시험판 · <a href="review.html">문항 검수</a></span></header>
+<main class="app">
+  <div class="hero">
+    <p class="eyebrow">ENGLISH<span> · 레벨테스트</span></p>
+    <h1>영어 레벨테스트</h1>
+    <p class="lede">단어 · 문법 · 독해 · 듣기 — 중1부터 고3 과정까지, 어느 학기 몇 단원까지 이해했는지 알려 드립니다</p>
+  </div>
+  <section class="card">
+    <h2><span class="step">STEP 01</span>학생 정보 <small>약 45분 · 이어폰을 끼고 봅니다</small></h2>
+    <form id="student-form" class="grid">
+      <label>학생 이름 (성+OO 또는 이니셜)<input name="name" required placeholder="김OO" autocomplete="off"></label>
+      <label>학년<select name="grade" required></select></label>
+      <button class="wide">시험 시작</button>
+    </form>
+    <p id="student-status" class="status" role="status"></p>
+    <p id="resume" class="notes" hidden>치르던 시험이 있습니다. <a href="test.html">이어서 보기</a></p>
+  </section>
+  <details class="card">
+    <summary>리포트에 들어갈 학원 정보 <span id="academy-now"></span></summary>
+    <form id="academy-form" class="grid">
+      <label>학원 이름<input name="name" required placeholder="에듀냅학원"></label>
+      <label>연락처<input name="phone" placeholder="031-000-0000"></label>
+      <label>대표 색<input name="color" type="color" value="#03392A"></label>
+      <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
+      <label>한 해 진도 (학기 수)<input name="pace" type="number" min="1" max="6" step="0.5" value="3"></label>
+      <label class="wide">영역별 교재 — 원장용 장에만 나옵니다. 줄마다 "영역, 시작 학기, 끝 학기, 교재명"<textarea name="books" rows="4" placeholder="문법, 중2-1, 중3-2, 문법 교재 2권"></textarea></label>
+      <button class="wide">저장</button>
+    </form>
+    <p id="academy-status" class="status" role="status"></p>
+  </details>
+</main>
+</body>
+</html>
