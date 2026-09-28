@@ -1,0 +1,7298 @@
+[
+ {
+  "id": "sample-vocab-9-1-1",
+  "section": "vocab",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-1-2",
+  "section": "vocab",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-2-1",
+  "section": "vocab",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-2-2",
+  "section": "vocab",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-3-1",
+  "section": "vocab",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-3-2",
+  "section": "vocab",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-4-1",
+  "section": "vocab",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-9-4-2",
+  "section": "vocab",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-1-1",
+  "section": "vocab",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-1-2",
+  "section": "vocab",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-2-1",
+  "section": "vocab",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-2-2",
+  "section": "vocab",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-3-1",
+  "section": "vocab",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-3-2",
+  "section": "vocab",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-4-1",
+  "section": "vocab",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-10-4-2",
+  "section": "vocab",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-1-1",
+  "section": "vocab",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-1-2",
+  "section": "vocab",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-2-1",
+  "section": "vocab",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-2-2",
+  "section": "vocab",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-3-1",
+  "section": "vocab",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-3-2",
+  "section": "vocab",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-4-1",
+  "section": "vocab",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-11-4-2",
+  "section": "vocab",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-1-1",
+  "section": "vocab",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-1-2",
+  "section": "vocab",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-2-1",
+  "section": "vocab",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-2-2",
+  "section": "vocab",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-3-1",
+  "section": "vocab",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-3-2",
+  "section": "vocab",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-4-1",
+  "section": "vocab",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-12-4-2",
+  "section": "vocab",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-1-1",
+  "section": "vocab",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-1-2",
+  "section": "vocab",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-2-1",
+  "section": "vocab",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-2-2",
+  "section": "vocab",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-3-1",
+  "section": "vocab",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-3-2",
+  "section": "vocab",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-4-1",
+  "section": "vocab",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-13-4-2",
+  "section": "vocab",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-1-1",
+  "section": "vocab",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-1-2",
+  "section": "vocab",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-2-1",
+  "section": "vocab",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-2-2",
+  "section": "vocab",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-3-1",
+  "section": "vocab",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-3-2",
+  "section": "vocab",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-4-1",
+  "section": "vocab",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-14-4-2",
+  "section": "vocab",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-1-1",
+  "section": "vocab",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-1-2",
+  "section": "vocab",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-2-1",
+  "section": "vocab",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-2-2",
+  "section": "vocab",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-3-1",
+  "section": "vocab",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-3-2",
+  "section": "vocab",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-4-1",
+  "section": "vocab",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-15-4-2",
+  "section": "vocab",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-1-1",
+  "section": "vocab",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-1-2",
+  "section": "vocab",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-2-1",
+  "section": "vocab",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-2-2",
+  "section": "vocab",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-3-1",
+  "section": "vocab",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-3-2",
+  "section": "vocab",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-4-1",
+  "section": "vocab",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-16-4-2",
+  "section": "vocab",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-1-1",
+  "section": "vocab",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-1-2",
+  "section": "vocab",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-2-1",
+  "section": "vocab",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-2-2",
+  "section": "vocab",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-3-1",
+  "section": "vocab",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-3-2",
+  "section": "vocab",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-4-1",
+  "section": "vocab",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-17-4-2",
+  "section": "vocab",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-1-1",
+  "section": "vocab",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-1-2",
+  "section": "vocab",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-2-1",
+  "section": "vocab",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-2-2",
+  "section": "vocab",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-3-1",
+  "section": "vocab",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-3-2",
+  "section": "vocab",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-4-1",
+  "section": "vocab",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-18-4-2",
+  "section": "vocab",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-1-1",
+  "section": "vocab",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-1-2",
+  "section": "vocab",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-2-1",
+  "section": "vocab",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-2-2",
+  "section": "vocab",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-3-1",
+  "section": "vocab",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-3-2",
+  "section": "vocab",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-4-1",
+  "section": "vocab",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-19-4-2",
+  "section": "vocab",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-1-1",
+  "section": "vocab",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-1-2",
+  "section": "vocab",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 1단원 · 어휘대 1",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-2-1",
+  "section": "vocab",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-2-2",
+  "section": "vocab",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 2단원 · 어휘대 2",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-3-1",
+  "section": "vocab",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-3-2",
+  "section": "vocab",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 3단원 · 어휘대 3",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-4-1",
+  "section": "vocab",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-vocab-20-4-2",
+  "section": "vocab",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 단어 4단원 · 어휘대 4",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-1-1",
+  "section": "grammar",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 1단원 · be동사·일반동사 현재",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-1-2",
+  "section": "grammar",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 1단원 · be동사·일반동사 현재",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-2-1",
+  "section": "grammar",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 2단원 · 현재진행형",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-2-2",
+  "section": "grammar",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 2단원 · 현재진행형",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-3-1",
+  "section": "grammar",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 3단원 · 과거시제 (be동사·일반동사)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-3-2",
+  "section": "grammar",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 3단원 · 과거시제 (be동사·일반동사)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-4-1",
+  "section": "grammar",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 4단원 · 미래 표현 (will · be going to)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-9-4-2",
+  "section": "grammar",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 1학기 문법 4단원 · 미래 표현 (will · be going to)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-1-1",
+  "section": "grammar",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 1단원 · 조동사 (can · may · must · should)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-1-2",
+  "section": "grammar",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 1단원 · 조동사 (can · may · must · should)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-2-1",
+  "section": "grammar",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 2단원 · 비교 (원급·비교급·최상급)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-2-2",
+  "section": "grammar",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 2단원 · 비교 (원급·비교급·최상급)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-3-1",
+  "section": "grammar",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 3단원 · to부정사 명사적 용법",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-3-2",
+  "section": "grammar",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 3단원 · to부정사 명사적 용법",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-4-1",
+  "section": "grammar",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 4단원 · 동명사 (주어·목적어)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-10-4-2",
+  "section": "grammar",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중1 2학기 문법 4단원 · 동명사 (주어·목적어)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-1-1",
+  "section": "grammar",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 1단원 · 현재완료 (경험·계속·완료·결과)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-1-2",
+  "section": "grammar",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 1단원 · 현재완료 (경험·계속·완료·결과)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-2-1",
+  "section": "grammar",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 2단원 · to부정사 형용사적·부사적 용법",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-2-2",
+  "section": "grammar",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 2단원 · to부정사 형용사적·부사적 용법",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-3-1",
+  "section": "grammar",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 3단원 · 수동태 기본",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-3-2",
+  "section": "grammar",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 3단원 · 수동태 기본",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-4-1",
+  "section": "grammar",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 4단원 · 접속사 (when · because · if · that)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-11-4-2",
+  "section": "grammar",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 1학기 문법 4단원 · 접속사 (when · because · if · that)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-1-1",
+  "section": "grammar",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 1단원 · 관계대명사 who · which · that",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-1-2",
+  "section": "grammar",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 1단원 · 관계대명사 who · which · that",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-2-1",
+  "section": "grammar",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 2단원 · 5형식 (지각·사역동사, want + 목적어 + to)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-2-2",
+  "section": "grammar",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 2단원 · 5형식 (지각·사역동사, want + 목적어 + to)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-3-1",
+  "section": "grammar",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 3단원 · 가주어 it · 의문사 + to부정사",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-3-2",
+  "section": "grammar",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 3단원 · 가주어 it · 의문사 + to부정사",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-4-1",
+  "section": "grammar",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 4단원 · 분사 (현재분사·과거분사 수식)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-12-4-2",
+  "section": "grammar",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중2 2학기 문법 4단원 · 분사 (현재분사·과거분사 수식)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-1-1",
+  "section": "grammar",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 1단원 · 관계대명사 what · 소유격 whose",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-1-2",
+  "section": "grammar",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 1단원 · 관계대명사 what · 소유격 whose",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-2-1",
+  "section": "grammar",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 2단원 · 현재완료진행 · 과거완료",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-2-2",
+  "section": "grammar",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 2단원 · 현재완료진행 · 과거완료",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-3-1",
+  "section": "grammar",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 3단원 · 간접의문문",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-3-2",
+  "section": "grammar",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 3단원 · 간접의문문",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-4-1",
+  "section": "grammar",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 4단원 · 조동사 수동태 · 4·5형식 수동태",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-13-4-2",
+  "section": "grammar",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 1학기 문법 4단원 · 조동사 수동태 · 4·5형식 수동태",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-1-1",
+  "section": "grammar",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 1단원 · 가정법 과거",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-1-2",
+  "section": "grammar",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 1단원 · 가정법 과거",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-2-1",
+  "section": "grammar",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 2단원 · 관계부사 where · when · why · how",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-2-2",
+  "section": "grammar",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 2단원 · 관계부사 where · when · why · how",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-3-1",
+  "section": "grammar",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 3단원 · 분사구문 기초",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-3-2",
+  "section": "grammar",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 3단원 · 분사구문 기초",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-4-1",
+  "section": "grammar",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 4단원 · so ~ that · too ~ to · 의미상 주어",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-14-4-2",
+  "section": "grammar",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 중3 2학기 문법 4단원 · so ~ that · too ~ to · 의미상 주어",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-1-1",
+  "section": "grammar",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 1단원 · 문장 구조 (긴 주어·수일치)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-1-2",
+  "section": "grammar",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 1단원 · 문장 구조 (긴 주어·수일치)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-2-1",
+  "section": "grammar",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 2단원 · 준동사 판별 (동사 자리 vs 준동사)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-2-2",
+  "section": "grammar",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 2단원 · 준동사 판별 (동사 자리 vs 준동사)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-3-1",
+  "section": "grammar",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 3단원 · 관계사 계속적 용법 · 전치사 + 관계대명사",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-3-2",
+  "section": "grammar",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 3단원 · 관계사 계속적 용법 · 전치사 + 관계대명사",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-4-1",
+  "section": "grammar",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 4단원 · 분사구문 심화 (수동·완료)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-15-4-2",
+  "section": "grammar",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 1학기 문법 4단원 · 분사구문 심화 (수동·완료)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-1-1",
+  "section": "grammar",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 1단원 · 가정법 과거완료 · 혼합가정법",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-1-2",
+  "section": "grammar",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 1단원 · 가정법 과거완료 · 혼합가정법",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-2-1",
+  "section": "grammar",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 2단원 · I wish · as if · without / but for",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-2-2",
+  "section": "grammar",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 2단원 · I wish · as if · without / but for",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-3-1",
+  "section": "grammar",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 3단원 · 조동사 + have p.p.",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-3-2",
+  "section": "grammar",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 3단원 · 조동사 + have p.p.",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-4-1",
+  "section": "grammar",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 4단원 · 명사절 (whether · 동격 that)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-16-4-2",
+  "section": "grammar",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고1 2학기 문법 4단원 · 명사절 (whether · 동격 that)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-1-1",
+  "section": "grammar",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 1단원 · 복합관계사 (whoever · whatever · however)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-1-2",
+  "section": "grammar",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 1단원 · 복합관계사 (whoever · whatever · however)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-2-1",
+  "section": "grammar",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 2단원 · 도치 (부정어·장소 부사구·so / neither)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-2-2",
+  "section": "grammar",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 2단원 · 도치 (부정어·장소 부사구·so / neither)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-3-1",
+  "section": "grammar",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 3단원 · 강조 (it ~ that · do 강조)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-3-2",
+  "section": "grammar",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 3단원 · 강조 (it ~ that · do 강조)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-4-1",
+  "section": "grammar",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 4단원 · 병렬 구조",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-17-4-2",
+  "section": "grammar",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 1학기 문법 4단원 · 병렬 구조",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-1-1",
+  "section": "grammar",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 1단원 · 수일치 심화 (부분 표현·the number of)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-1-2",
+  "section": "grammar",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 1단원 · 수일치 심화 (부분 표현·the number of)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-2-1",
+  "section": "grammar",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 2단원 · 특수 수동태 (be said to · 동사구 수동)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-2-2",
+  "section": "grammar",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 2단원 · 특수 수동태 (be said to · 동사구 수동)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-3-1",
+  "section": "grammar",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 3단원 · 생략·대동사",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-3-2",
+  "section": "grammar",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 3단원 · 생략·대동사",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-4-1",
+  "section": "grammar",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 4단원 · 동격·삽입",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-18-4-2",
+  "section": "grammar",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고2 2학기 문법 4단원 · 동격·삽입",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-1-1",
+  "section": "grammar",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 1단원 · 어법 판단: 동사 vs 준동사 종합",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-1-2",
+  "section": "grammar",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 1단원 · 어법 판단: 동사 vs 준동사 종합",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-2-1",
+  "section": "grammar",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 2단원 · 어법 판단: what · that · which",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-2-2",
+  "section": "grammar",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 2단원 · 어법 판단: what · that · which",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-3-1",
+  "section": "grammar",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 3단원 · 어법 판단: 능동 vs 수동",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-3-2",
+  "section": "grammar",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 3단원 · 어법 판단: 능동 vs 수동",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-4-1",
+  "section": "grammar",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 4단원 · 어법 판단: 대명사·형용사 vs 부사",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-19-4-2",
+  "section": "grammar",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 1학기 문법 4단원 · 어법 판단: 대명사·형용사 vs 부사",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-1-1",
+  "section": "grammar",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 1단원 · 가정법 도치 (Were I · Had I)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-1-2",
+  "section": "grammar",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 1단원 · 가정법 도치 (Were I · Had I)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-2-1",
+  "section": "grammar",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 2단원 · 도치·강조 구문 해석",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-2-2",
+  "section": "grammar",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 2단원 · 도치·강조 구문 해석",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-3-1",
+  "section": "grammar",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 3단원 · 긴 문장 구조 (삽입·동격·생략)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-3-2",
+  "section": "grammar",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 3단원 · 긴 문장 구조 (삽입·동격·생략)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-4-1",
+  "section": "grammar",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 4단원 · 수능 어법 종합",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-grammar-20-4-2",
+  "section": "grammar",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "",
+  "question": "[샘플] 고3 2학기 문법 4단원 · 수능 어법 종합",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-1-1",
+  "section": "reading",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 1단원 · 안내문·광고 세부 정보",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-1-2",
+  "section": "reading",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 1단원 · 안내문·광고 세부 정보",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-2-1",
+  "section": "reading",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 2단원 · 짧은 이야기 내용 일치",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-2-2",
+  "section": "reading",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 2단원 · 짧은 이야기 내용 일치",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-3-1",
+  "section": "reading",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 3단원 · 짧은 설명문 주제",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-3-2",
+  "section": "reading",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 3단원 · 짧은 설명문 주제",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-4-1",
+  "section": "reading",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 4단원 · 편지·메일 목적",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-9-4-2",
+  "section": "reading",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 독해 4단원 · 편지·메일 목적",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-1-1",
+  "section": "reading",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 1단원 · 도표·안내문 내용 일치",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-1-2",
+  "section": "reading",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 1단원 · 도표·안내문 내용 일치",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-2-1",
+  "section": "reading",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 2단원 · 인물 심경",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-2-2",
+  "section": "reading",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 2단원 · 인물 심경",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-3-1",
+  "section": "reading",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 3단원 · 주제·제목",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-3-2",
+  "section": "reading",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 3단원 · 주제·제목",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-4-1",
+  "section": "reading",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 4단원 · 지칭 대상",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-10-4-2",
+  "section": "reading",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중1 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 독해 4단원 · 지칭 대상",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-1-1",
+  "section": "reading",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 1단원 · 설명문 내용 일치",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-1-2",
+  "section": "reading",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 1단원 · 설명문 내용 일치",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-2-1",
+  "section": "reading",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 2단원 · 요지·주장",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-2-2",
+  "section": "reading",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 2단원 · 요지·주장",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-3-1",
+  "section": "reading",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 3단원 · 빈칸 (낱말)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-3-2",
+  "section": "reading",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 3단원 · 빈칸 (낱말)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-4-1",
+  "section": "reading",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 4단원 · 무관한 문장",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-11-4-2",
+  "section": "reading",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 독해 4단원 · 무관한 문장",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-1-1",
+  "section": "reading",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 1단원 · 목적·심경",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-1-2",
+  "section": "reading",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 1단원 · 목적·심경",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-2-1",
+  "section": "reading",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 2단원 · 제목",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-2-2",
+  "section": "reading",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 2단원 · 제목",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-3-1",
+  "section": "reading",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 3단원 · 글의 순서",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-3-2",
+  "section": "reading",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 3단원 · 글의 순서",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-4-1",
+  "section": "reading",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 4단원 · 빈칸 (구)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-12-4-2",
+  "section": "reading",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중2 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 독해 4단원 · 빈칸 (구)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-1-1",
+  "section": "reading",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 1단원 · 안내문·도표 (선택지 함정)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-1-2",
+  "section": "reading",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 1단원 · 안내문·도표 (선택지 함정)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-2-1",
+  "section": "reading",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 2단원 · 요지·주제",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-2-2",
+  "section": "reading",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 2단원 · 요지·주제",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-3-1",
+  "section": "reading",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 3단원 · 문장 삽입",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-3-2",
+  "section": "reading",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 3단원 · 문장 삽입",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-4-1",
+  "section": "reading",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 4단원 · 빈칸 (구)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-13-4-2",
+  "section": "reading",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 독해 4단원 · 빈칸 (구)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-1-1",
+  "section": "reading",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 1단원 · 목적·심경 (고1 3월형 입문)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-1-2",
+  "section": "reading",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 1단원 · 목적·심경 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-2-1",
+  "section": "reading",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 2단원 · 주제·제목 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-2-2",
+  "section": "reading",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 2단원 · 주제·제목 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-3-1",
+  "section": "reading",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 3단원 · 순서·삽입 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-3-2",
+  "section": "reading",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 3단원 · 순서·삽입 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-4-1",
+  "section": "reading",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 4단원 · 빈칸·요약 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-14-4-2",
+  "section": "reading",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 중3 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 독해 4단원 · 빈칸·요약 (고1 3월형 입문)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-1-1",
+  "section": "reading",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-1-2",
+  "section": "reading",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-2-1",
+  "section": "reading",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-2-2",
+  "section": "reading",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-3-1",
+  "section": "reading",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-3-2",
+  "section": "reading",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-4-1",
+  "section": "reading",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-15-4-2",
+  "section": "reading",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-1-1",
+  "section": "reading",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-1-2",
+  "section": "reading",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-2-1",
+  "section": "reading",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-2-2",
+  "section": "reading",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-3-1",
+  "section": "reading",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-3-2",
+  "section": "reading",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-4-1",
+  "section": "reading",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-16-4-2",
+  "section": "reading",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고1 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-1-1",
+  "section": "reading",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-1-2",
+  "section": "reading",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-2-1",
+  "section": "reading",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-2-2",
+  "section": "reading",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-3-1",
+  "section": "reading",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-3-2",
+  "section": "reading",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-4-1",
+  "section": "reading",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-17-4-2",
+  "section": "reading",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-1-1",
+  "section": "reading",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-1-2",
+  "section": "reading",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-2-1",
+  "section": "reading",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-2-2",
+  "section": "reading",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-3-1",
+  "section": "reading",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-3-2",
+  "section": "reading",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-4-1",
+  "section": "reading",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-18-4-2",
+  "section": "reading",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고2 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-1-1",
+  "section": "reading",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-1-2",
+  "section": "reading",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-2-1",
+  "section": "reading",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-2-2",
+  "section": "reading",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-3-1",
+  "section": "reading",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-3-2",
+  "section": "reading",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-4-1",
+  "section": "reading",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-19-4-2",
+  "section": "reading",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 1학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-1-1",
+  "section": "reading",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-1-2",
+  "section": "reading",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 1. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 1단원 · 사실 확인 (목적·심경·내용 일치·안내문 — 18·19·25~28번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-2-1",
+  "section": "reading",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-2-2",
+  "section": "reading",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 2. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 2단원 · 중심 내용 (주장·요지·주제·제목 — 20·22~24번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-3-1",
+  "section": "reading",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-3-2",
+  "section": "reading",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 3. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 3단원 · 글의 흐름 (무관한 문장·순서·삽입 — 35~39번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-4-1",
+  "section": "reading",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-reading-20-4-2",
+  "section": "reading",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "This is a sample passage for 고3 2학기, unit 4. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 독해 4단원 · 추론 (함축 의미·빈칸·요약 — 21·31~34·40번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-1-1",
+  "section": "listening",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 1단원 · 알맞은 그림 고르기",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-1-2",
+  "section": "listening",
+  "step": 9,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 1단원 · 알맞은 그림 고르기",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-2-1",
+  "section": "listening",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 2단원 · 대화 장소·관계",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-2-2",
+  "section": "listening",
+  "step": 9,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 2단원 · 대화 장소·관계",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-3-1",
+  "section": "listening",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 3단원 · 세부 정보 (시각·숫자)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-3-2",
+  "section": "listening",
+  "step": 9,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 3단원 · 세부 정보 (시각·숫자)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-4-1",
+  "section": "listening",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 4단원 · 짧은 대화 이어질 응답",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-9-4-2",
+  "section": "listening",
+  "step": 9,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 1학기 듣기 4단원 · 짧은 대화 이어질 응답",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-1-1",
+  "section": "listening",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 1단원 · 부탁한 일·할 일",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-1-2",
+  "section": "listening",
+  "step": 10,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 1단원 · 부탁한 일·할 일",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-2-1",
+  "section": "listening",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 2단원 · 세부 정보 (날짜·장소)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-2-2",
+  "section": "listening",
+  "step": 10,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 2단원 · 세부 정보 (날짜·장소)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-3-1",
+  "section": "listening",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 3단원 · 대화 목적",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-3-2",
+  "section": "listening",
+  "step": 10,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 3단원 · 대화 목적",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-4-1",
+  "section": "listening",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 4단원 · 짧은 대화 이어질 응답",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-10-4-2",
+  "section": "listening",
+  "step": 10,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중1 2학기 듣기 4단원 · 짧은 대화 이어질 응답",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-1-1",
+  "section": "listening",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 1단원 · 의견",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-1-2",
+  "section": "listening",
+  "step": 11,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 1단원 · 의견",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-2-1",
+  "section": "listening",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 2단원 · 금액 (간단한 계산)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-2-2",
+  "section": "listening",
+  "step": 11,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 2단원 · 금액 (간단한 계산)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-3-1",
+  "section": "listening",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 3단원 · 언급되지 않은 것",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-3-2",
+  "section": "listening",
+  "step": 11,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 3단원 · 언급되지 않은 것",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-4-1",
+  "section": "listening",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 4단원 · 이어질 응답",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-11-4-2",
+  "section": "listening",
+  "step": 11,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 1학기 듣기 4단원 · 이어질 응답",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-1-1",
+  "section": "listening",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 1단원 · 이유",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-1-2",
+  "section": "listening",
+  "step": 12,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 1단원 · 이유",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-2-1",
+  "section": "listening",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 2단원 · 도표",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-2-2",
+  "section": "listening",
+  "step": 12,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 2단원 · 도표",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-3-1",
+  "section": "listening",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 3단원 · 내용 불일치",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-3-2",
+  "section": "listening",
+  "step": 12,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 3단원 · 내용 불일치",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-4-1",
+  "section": "listening",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 4단원 · 상황에 알맞은 말",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-12-4-2",
+  "section": "listening",
+  "step": 12,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중2 2학기 듣기 4단원 · 상황에 알맞은 말",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-1-1",
+  "section": "listening",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 1단원 · 목적·요지",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-1-2",
+  "section": "listening",
+  "step": 13,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 1단원 · 목적·요지",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-2-1",
+  "section": "listening",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 2단원 · 금액 (할인 계산)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-2-2",
+  "section": "listening",
+  "step": 13,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 2단원 · 금액 (할인 계산)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-3-1",
+  "section": "listening",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 3단원 · 언급되지 않은 것 (담화)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-3-2",
+  "section": "listening",
+  "step": 13,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 3단원 · 언급되지 않은 것 (담화)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-4-1",
+  "section": "listening",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 4단원 · 긴 대화 이어질 응답",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-13-4-2",
+  "section": "listening",
+  "step": 13,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 1학기 듣기 4단원 · 긴 대화 이어질 응답",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-1-1",
+  "section": "listening",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 1단원 · 사실 파악 (고1 3월형 입문)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-1-2",
+  "section": "listening",
+  "step": 14,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 1단원 · 사실 파악 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-2-1",
+  "section": "listening",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 2단원 · 의도 파악 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-2-2",
+  "section": "listening",
+  "step": 14,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 2단원 · 의도 파악 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-3-1",
+  "section": "listening",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 3단원 · 이어질 응답 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-3-2",
+  "section": "listening",
+  "step": 14,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 3단원 · 이어질 응답 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-4-1",
+  "section": "listening",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 4단원 · 상황에 알맞은 말 (고1 3월형 입문)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-14-4-2",
+  "section": "listening",
+  "step": 14,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 중3 2학기 듣기 4단원 · 상황에 알맞은 말 (고1 3월형 입문)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-1-1",
+  "section": "listening",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-1-2",
+  "section": "listening",
+  "step": 15,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-2-1",
+  "section": "listening",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-2-2",
+  "section": "listening",
+  "step": 15,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-3-1",
+  "section": "listening",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-3-2",
+  "section": "listening",
+  "step": 15,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-4-1",
+  "section": "listening",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-15-4-2",
+  "section": "listening",
+  "step": 15,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 1학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-1-1",
+  "section": "listening",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-1-2",
+  "section": "listening",
+  "step": 16,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-2-1",
+  "section": "listening",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-2-2",
+  "section": "listening",
+  "step": 16,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-3-1",
+  "section": "listening",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-3-2",
+  "section": "listening",
+  "step": 16,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-4-1",
+  "section": "listening",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-16-4-2",
+  "section": "listening",
+  "step": 16,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고1 2학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-1-1",
+  "section": "listening",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-1-2",
+  "section": "listening",
+  "step": 17,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-2-1",
+  "section": "listening",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-2-2",
+  "section": "listening",
+  "step": 17,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-3-1",
+  "section": "listening",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-3-2",
+  "section": "listening",
+  "step": 17,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-4-1",
+  "section": "listening",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-17-4-2",
+  "section": "listening",
+  "step": 17,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 1학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-1-1",
+  "section": "listening",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-1-2",
+  "section": "listening",
+  "step": 18,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-2-1",
+  "section": "listening",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-2-2",
+  "section": "listening",
+  "step": 18,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-3-1",
+  "section": "listening",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-3-2",
+  "section": "listening",
+  "step": 18,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-4-1",
+  "section": "listening",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-18-4-2",
+  "section": "listening",
+  "step": 18,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고2 2학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-1-1",
+  "section": "listening",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-1-2",
+  "section": "listening",
+  "step": 19,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-2-1",
+  "section": "listening",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-2-2",
+  "section": "listening",
+  "step": 19,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-3-1",
+  "section": "listening",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-3-2",
+  "section": "listening",
+  "step": 19,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-4-1",
+  "section": "listening",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-19-4-2",
+  "section": "listening",
+  "step": 19,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 1학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-1-1",
+  "section": "listening",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-1-2",
+  "section": "listening",
+  "step": 20,
+  "unit": 1,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 1.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 1단원 · 사실 파악 (그림 불일치·금액·도표·언급 안 된 것 — 4·6·8~10번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-2-1",
+  "section": "listening",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "오답 다",
+   "정답"
+  ],
+  "answer": 3,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-2-2",
+  "section": "listening",
+  "step": 20,
+  "unit": 2,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 2.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 2단원 · 의도 파악 (목적·의견·요지·이유 — 1~3·7번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-3-1",
+  "section": "listening",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "정답",
+   "오답 나",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 0,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-3-2",
+  "section": "listening",
+  "step": 20,
+  "unit": 3,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 3.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 3단원 · 이어질 응답 (짧은 대화·긴 대화 — 11~14번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-4-1",
+  "section": "listening",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "정답",
+   "오답 다",
+   "오답 라"
+  ],
+  "answer": 1,
+  "explain_ko": "화면 확인용 샘플 문항"
+ },
+ {
+  "id": "sample-listening-20-4-2",
+  "section": "listening",
+  "step": 20,
+  "unit": 4,
+  "kind": "샘플",
+  "sample": true,
+  "status": "ok",
+  "passage": "W: This is a sample dialogue for unit 4.\nM: Great. Choose the answer marked 정답.",
+  "question": "[샘플] 고3 2학기 듣기 4단원 · 담화 (상황에 맞는 말·세트 담화 — 15~17번형)",
+  "choices": [
+   "오답 가",
+   "오답 나",
+   "정답",
+   "오답 라"
+  ],
+  "answer": 2,
+  "explain_ko": "화면 확인용 샘플 문항"
+ }
+]
