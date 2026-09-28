@@ -1,8 +1,8 @@
-// 리포트: 학부모용 1장(위치·막대·예상 진도·총평), 원장용 1장(문항 기록·흔들린 구간·다음 단원·교재·지도 방향).
+// 리포트 (Klai형 설계서): 학부모용 = 표지 + 응시한 영역마다 1쪽, 원장용 = 1쪽. 교재명은 원장용에만.
 // 숫자는 전부 core 가 계산한다. AI 는 총평 문장만 쓰고, 실패하면 틀 문장이 남는다. 글은 눌러서 고칠 수 있다.
-import { SECTIONS, SECTION_KO, MIN_STEP, labelOf, positionText, currentStep } from './core/scale.js';
-import { project, position, END } from './core/progress.js';
-import { commentFacts, templateComment, shaky, bookFor, nextLabel } from './core/summary.js';
+import { SECTIONS, SECTION_KO, labelOf } from './core/scale.js';
+import { project, position, score, levelOf, gradePos, gapText, daysOf, ym } from './core/progress.js';
+import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel } from './core/summary.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -15,27 +15,32 @@ try { result = JSON.parse(localStorage.getItem(`elt:result:${id}`)); } catch { /
 if (!result) {
   status('결과를 찾지 못했습니다. 시험을 본 기기와 브라우저에서 열어 주세요.', 'error');
 } else {
-  const ests = Object.fromEntries(SECTIONS.filter((k) => result.sections[k].est).map((k) => [k, result.sections[k].est]));
-  const proj = project({ grade: result.grade, date: result.date, ests, pace: result.pace });
+  const start = result.start || result.date;
+  const taken = SECTIONS.filter((k) => result.sections[k].est);
+  const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
+  const proj = project({ grade: result.grade, start, ests, days: result.plan || {} });
   const facts = commentFacts(result, proj);
   const c = templateComment(facts);
   if (/^#[0-9a-f]{6}$/i.test(result.academy?.color ?? '')) document.documentElement.style.setProperty('--brand', result.academy.color);
-  $('#sheet1').innerHTML = sheet1(result, proj, c);
-  $('#sheet2').innerHTML = sheet2(result, c);
-  $('#print').onclick = () => print();
-  $('#png1').onclick = () => png('#sheet1', '학부모용');
-  $('#png2').onclick = () => png('#sheet2', '원장용');
+  $('#parent').innerHTML = cover(result, proj, c) + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start)).join('');
+  $('#director').innerHTML = director(result, c);
+  $('#print-parent').onclick = () => printOnly('print-parent');
+  $('#print-director').onclick = () => printOnly('print-director');
+  $('#png').onclick = png;
   fillComment(facts);
 }
 
-function header(r, title) {
+function logoMark(r) {
   const a = r.academy || {};
   let logo = a.logo;
   if (!logo) {
     try { logo = JSON.parse(localStorage.getItem('elt:academy'))?.logo; } catch { /* 로고 없이 이름만 */ }
   }
-  const mark = /^data:image\//.test(logo ?? '') ? `<img src="${esc(logo)}" alt="">` : `<b>${esc(a.name)}</b>`;
-  return `<header><div><h1>${esc(title)}</h1><div class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</div></div>${mark}</header>`;
+  return /^data:image\//.test(logo ?? '') ? `<img src="${esc(logo)}" alt="">` : `<b>${esc(a.name)}</b>`;
+}
+
+function band(r, title) {
+  return `<div class="band"><div class="band-logo">${logoMark(r)}</div><div class="band-title">${esc(title)}</div></div>`;
 }
 
 function footer(r) {
@@ -43,35 +48,82 @@ function footer(r) {
   return `<footer><span>${esc(a.name)}</span><span>${esc(a.phone)}</span></footer>`;
 }
 
-function sheet1(r, proj, c) {
-  const now = currentStep(r.grade, r.date);
-  const pct = (p) => Math.max(0, Math.min(100, ((p - MIN_STEP) / (END - MIN_STEP)) * 100));
+function cover(r, proj, c) {
+  const a = r.academy || {};
+  const now = gradePos(r.grade, r.date);
+  const taken = SECTIONS.filter((k) => r.sections[k].est);
+  const pos = Object.fromEntries(taken.map((k) => [k, position(r.sections[k].est)]));
+  const avg = taken.length ? taken.reduce((sum, k) => sum + pos[k], 0) / taken.length : null;
   const rows = SECTIONS.map((k) => {
     const s = r.sections[k];
-    if (!s.est) return `<b>${SECTION_KO[k]}</b><span>${esc(s.skipped || '응시하지 않음')}</span>`;
-    return `<b>${SECTION_KO[k]}</b><span class="${s.est.step > now ? 'up' : ''}">${esc(positionText(k, s.est))}</span>`;
+    if (!s.est) return `<tr class="off"><td>${SECTION_KO[k]}</td><td colspan="3">${esc(s.skipped || '응시하지 않음')}</td></tr>`;
+    return `<tr><td>${SECTION_KO[k]}</td><td>${esc(estLabel(s.est))}</td><td>${gapText(pos[k], now)}</td><td><b>${score(pos[k])}</b> / 100</td></tr>`;
   }).join('');
-  const bars = SECTIONS.filter((k) => r.sections[k].est).map((k) => {
-    const est = r.sections[k].est;
-    return `<div class="bar"><b>${SECTION_KO[k]}</b><div class="track"><div class="fill${est.step > now ? ' up' : ''}" style="width:${pct(position(est))}%"></div><div class="now" style="left:${pct(now + 0.5)}%"></div></div></div>`;
-  }).join('');
-  const done = proj?.overall.label === '고3 과정 완료';
-  const road = proj ? `
-    <h2>우리 학원 예상 진도</h2>
-    <p class="big" contenteditable>${done ? '이미 고3 과정 수준에 도달했습니다' : `우리 학원에서 <b>${esc(proj.overall.label)}</b>에 고3 과정 완료 예상`}</p>
-    <table class="roadmap"><thead><tr><th>시기</th>${Object.keys(proj.rows[0].cells).map((k) => `<th>${SECTION_KO[k]}</th>`).join('')}</tr></thead>
-    <tbody>${proj.rows.map((row) => `<tr><td>${esc(row.when)}</td>${Object.values(row.cells).map((v) => `<td class="${v === '완료' ? 'done' : ''}">${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>
-    <p class="small">한 해에 ${proj.pace}학기씩 나아갈 때의 예상입니다 (학교 진도는 한 해 2학기). 조금 빠르면 ${esc(proj.high.label)}, 조금 느리면 ${esc(proj.low.label)}입니다.</p>` : '';
-  return `${header(r, '영어 레벨테스트 결과')}
-    <h2>영역별 현재 위치</h2><div class="pos">${rows}</div>
-    <h2>학년 대비 위치</h2><div class="bars">${bars}</div>
-    <p class="small">막대는 중1 1학기부터 고3 2학기까지 얼마나 왔는지, 붉은 선은 지금 학년입니다. 금색은 학년보다 앞선 영역입니다.</p>
-    ${road}
-    <h2>총평</h2><p id="summary" contenteditable>${esc(c.summary)}</p>
-    ${footer(r)}`;
+  const total = avg == null ? '' : `<tr class="total"><td>전체</td><td>${levelOf(avg)}</td><td>${gapText(avg, now)}</td><td><b>${score(avg)}</b> / 100</td></tr>`;
+  const hrow = (cls, p, text) => `<div class="hrow"><div class="hbar ${cls}"><i style="width:${score(p)}%"></i></div><span>${esc(text)}</span></div>`;
+  const pair = (title, p, cls = '') => `<div class="pair ${cls}"><h3>${esc(title)}</h3>${hrow('me', p, `${levelOf(p)} · ${score(p)}점`)}${hrow('grade', now, `지금 학년 · ${score(now)}점`)}</div>`;
+  const bars = avg == null ? '' : `<div class="legend"><span class="me">본인</span><span class="grade">지금 학년</span></div>
+    <div class="pairs">${pair('전체', avg, 'total')}${taken.map((k) => pair(SECTION_KO[k], pos[k])).join('')}</div>`;
+  return `<article class="sheet cover">${band(r, '영어 레벨테스트 결과')}
+    <div class="info"><div><b>시험</b><span>영어 레벨테스트</span></div><div><b>이름</b><span>${esc(r.name)}</span></div><div><b>학원(학년)</b><span>${esc(a.name)} (${esc(r.grade)})</span></div><div><b>응시일</b><span>${esc(r.date)}</span></div></div>
+    <h2>테스트 결과</h2>
+    <div class="boxes3"><div><b>전체 수준</b><strong>${avg == null ? '-' : levelOf(avg)}</strong></div><div><b>학년 대비</b><strong>${avg == null ? '-' : gapText(avg, now)}</strong></div><div><b>고3 과정 완료 예상</b><strong>${esc(proj?.overall.label ?? '-')}</strong></div></div>
+    <p id="summary" class="summary" contenteditable>${esc(c.summary)}</p>
+    <h2>영역별 점수</h2>
+    <table class="scores"><thead><tr><th>영역</th><th>현재 수준</th><th>학년 대비</th><th>점수</th></tr></thead><tbody>${rows}${total}</tbody></table>
+    ${bars}
+    <p class="small">점수는 중1 1학기 시작을 0점, 고3 과정 끝을 100점으로 둔 위치입니다. 맞힌 개수가 아닙니다.</p>
+    ${footer(r)}</article>`;
 }
 
-function sheet2(r, c) {
+function sectionPage(r, proj, k, n, start) {
+  const est = r.sections[k].est;
+  const p = position(est);
+  const now = gradePos(r.grade, r.date);
+  const road = proj.perSection[k];
+  const max = Math.max(proj.left, road.months, 1);
+  const w = (m) => Math.round((m / max) * 100);
+  const need = !road.done ? '10년 넘게' : road.months ? ym(road.months) : '완료';
+  const late = road.done && road.months > proj.left ? ' · 학교 졸업 뒤' : '';
+  return `<article class="sheet section-page">
+    <div class="page-head"><div><p class="kicker">영역별 분석</p><h2>${n}. ${SECTION_KO[k]}</h2></div><span class="small">수업 시작일 ${esc(start)}</span></div>
+    <div class="panel">
+      <h3>▶ 테스트 결과</h3>
+      <div class="result-grid">
+        <div>
+          <div class="span"><span>고3 2월까지<br>남은 기간</span><div><div class="sbar grey" style="width:${w(proj.left)}%">${ym(proj.left)}</div></div></div>
+          <div class="span"><span>우리 학원 진도로<br>고3 과정까지</span><div><div class="sbar dark" style="width:${w(road.months)}%">${need}${late}</div></div></div>
+        </div>
+        <div class="boxes"><div><b>현재 수준</b><strong>${esc(estLabel(est))}</strong></div><div><b>학년 대비</b><strong>${gapText(p, now)}</strong></div></div>
+      </div>
+      <hr>
+      <h3>▶ 진도 설정</h3>
+      <p class="plan">주 <em>${road.perWeek}회</em> (수업 요일: <em>${esc(daysOf(r.plan?.[k]).join('·'))}</em>)</p>
+      <p class="small">주 2회일 때 한 해 3학기씩 나아갑니다. 시험 기간(4·6·9·11월)은 빼고 셉니다.</p>
+      <h3>▶ 목표: 고3 과정 완료</h3>
+      <div class="card-w">${goal(p, now, road)}</div>
+      <h3>▶ 학습 로드맵</h3>
+      <div class="card-w">${timeline(road.points)}</div>
+    </div>
+    ${footer(r)}</article>`;
+}
+
+function goal(p, now, road) {
+  const end = road.months === 0 ? '도달' : road.done ? `${road.points.at(-1).when} 예상` : '고3 졸업 이후';
+  return `<div class="goal"><div class="goal-line"></div>
+    <div class="pin" style="left:${score(p)}%"><small>${esc(levelOf(p))}</small><span>본인</span></div>
+    <div class="tick" style="left:${score(now)}%">▲<b>지금 학년</b></div>
+    <div class="tick" style="left:100%">▲<b>고3 과정 완료</b><small>${esc(end)}</small></div></div>`;
+}
+
+// 점이 5개를 넘으면 두 줄 (둘째 줄은 거꾸로 — ㄹ자)
+function timeline(points) {
+  const rows = [];
+  for (let i = 0; i < points.length; i += 5) rows.push(points.slice(i, i + 5));
+  return `<div class="road">${rows.map((row, i) => `<div class="road-row${i % 2 ? ' rev' : ''}">${row.map((pt) => `<div class="road-pt${pt.done ? ' done' : ''}"><b>${esc(pt.level)}</b><i></i><span>${esc(pt.when)}</span></div>`).join('')}</div>`).join('')}</div>`;
+}
+
+function director(r, c) {
   const logs = SECTIONS.map((k) => {
     const s = r.sections[k];
     if (!s.log.length) return `<div><h2>${SECTION_KO[k]}</h2><p class="small">${esc(s.skipped || '응시하지 않음')}</p></div>`;
@@ -83,9 +135,16 @@ function sheet2(r, c) {
       </tbody></table>
       <p class="small">${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
   }).join('');
-  return `${header(r, '레벨테스트 상세 (원장용)')}<div class="logs">${logs}</div>
+  return `${band(r, '레벨테스트 상세 (원장용)')}<p class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>
     <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>
     ${footer(r)}`;
+}
+
+// 인쇄할 쪽만 남긴다 (나머지는 print CSS 가 숨김)
+function printOnly(cls) {
+  document.body.classList.add(cls);
+  addEventListener('afterprint', () => document.body.classList.remove(cls), { once: true });
+  print();
 }
 
 async function fillComment(facts) {
@@ -103,12 +162,12 @@ async function fillComment(facts) {
   }
 }
 
-async function png(sel, label) {
+async function png() {
   try {
-    const url = await window.htmlToImage.toPng($(sel), { pixelRatio: 2, backgroundColor: '#ffffff' });
+    const url = await window.htmlToImage.toPng($('#parent .sheet'), { pixelRatio: 2, backgroundColor: '#ffffff' });
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${result.name}-레벨테스트-${label}.png`;
+    a.download = `${result.name}-레벨테스트-표지.png`;
     a.click();
   } catch {
     status('그림으로 저장하지 못했습니다. 인쇄 / PDF 를 써 주세요.', 'error');

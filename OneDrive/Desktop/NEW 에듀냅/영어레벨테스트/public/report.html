@@ -14,9 +14,9 @@
 <body>
 <header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag"><a href="index.html">새 학생</a></span></header>
 <main class="app">
-  <div class="toolbar"><button id="print" type="button">인쇄 / PDF</button><button id="png1" class="btn-ghost" type="button">학부모용 PNG</button><button id="png2" class="btn-ghost" type="button">원장용 PNG</button></div>
+  <div class="toolbar"><button id="print-parent" type="button">학부모용 인쇄 / PDF</button><button id="print-director" class="btn-ghost" type="button">원장용 인쇄 / PDF</button><button id="png" class="btn-ghost" type="button">표지 PNG</button></div>
   <p id="report-status" class="status no-print" role="status"></p>
-  <div class="sheets"><article id="sheet1" class="sheet"></article><article id="sheet2" class="sheet"></article></div>
+  <div class="sheets"><div id="parent" class="pages"></div><article id="director" class="sheet"></article></div>
 </main>
 </body>
 </html>
