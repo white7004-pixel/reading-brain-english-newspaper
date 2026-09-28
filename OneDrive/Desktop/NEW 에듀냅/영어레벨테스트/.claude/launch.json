@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "level-test", "runtimeExecutable": "node", "runtimeArgs": ["--env-file-if-exists=.env.local", "scripts/local.js"], "port": 4320 }
+  ]
+}
