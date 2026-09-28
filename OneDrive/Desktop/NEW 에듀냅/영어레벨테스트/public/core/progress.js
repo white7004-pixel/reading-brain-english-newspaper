@@ -1,64 +1,102 @@
-// 예상 진도 (설계서 5.1). 숫자는 전부 여기서 계산하고 AI 에는 결과만 넘긴다.
-import { SECTIONS, GRADES, MAX_STEP, gradeIndex, labelOf, termOf } from './scale.js';
+// 예상 진도 (Klai형 설계서 3장). 숫자는 전부 여기서 계산하고 AI 에는 결과만 넘긴다.
+import { SECTIONS, GRADES, MIN_STEP, MAX_STEP, gradeIndex, labelOf, currentStep } from './scale.js';
 
-export const DEFAULT_PACE = 3; // 한 해에 오르는 학기 수 (학교의 1.5배)
 export const END = MAX_STEP + 1; // 고3 2학기 4단원까지 마친 자리
+export const DAYS = ['월', '화', '수', '목', '금', '토'];
+export const DEFAULT_DAYS = ['화', '목'];
+export const EXAM_MONTHS = [4, 6, 9, 11]; // 시험 기간 — 진도가 나가지 않는 달
+export const PACE_PER_WEEK = 1.5; // 주 1회 수업이 한 해에 나아가는 학기 수 (주 2회 = 3학기)
+const MAX_MONTHS = 120;
+const MAX_POINTS = 10;
 
 // ponytail: 단원을 확인하지 못한 영역은 그 학기의 절반(2단원)으로 본다.
 export function position(est) {
   return est.step + (est.unit ?? 2) / 4;
 }
 
-// 학년은 3월에 오른다
+// 중1 1학기 시작 0점 ~ 고3 과정 끝 100점
+export function score(pos) {
+  return Math.max(0, Math.min(100, Math.round(((pos - MIN_STEP) / (END - MIN_STEP)) * 100)));
+}
+
+export function levelOf(pos) {
+  return pos >= END ? '고3 과정 완료' : labelOf(Math.floor(pos));
+}
+
+// 지금 학년의 학기 한가운데
+export function gradePos(grade, date) {
+  return currentStep(grade, date) + 0.5;
+}
+
+export function gapText(pos, now) {
+  const n = Math.round(pos - now);
+  return n > 0 ? `${n}학기 앞섬` : n < 0 ? `${-n}학기 뒤` : '학년 수준';
+}
+
+export function daysOf(days) {
+  return Array.isArray(days) && days.length >= 1 && days.length <= DAYS.length ? days : DEFAULT_DAYS;
+}
+
+// 학년은 3월에 오른다. date 는 'YYYY-MM-DD' 또는 'YYYY-MM'
 export function schoolYear(date) {
   const y = Number(date.slice(0, 4));
   return Number(date.slice(5, 7)) >= 3 ? y : y - 1;
 }
 
-export function addMonths(date, n) {
-  const d = new Date(`${date}T00:00:00Z`);
-  d.setUTCDate(1); // 말일(예: 8월 31일)이 다음 달로 넘치지 않게 — 리포트는 학기만 쓴다
-  d.setUTCMonth(d.getUTCMonth() + n);
-  return d.toISOString().slice(0, 10);
+const monthIndex = (date) => Number(date.slice(0, 4)) * 12 + Number(date.slice(5, 7)) - 1;
+const monthOf = (i) => `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}`;
+
+export function monthLabel(grade, start, month) {
+  const gi = gradeIndex(grade) + schoolYear(month) - schoolYear(start);
+  return gi > GRADES.length ? '고3 졸업 이후' : `${GRADES[gi - 1]} ${Number(month.slice(5, 7))}월`;
 }
 
-export function gradeAt(grade, from, to) {
-  const gi = gradeIndex(grade) + schoolYear(to) - schoolYear(from);
-  return gi > 12 ? '고3 졸업 이후' : `${GRADES[gi - 1]} ${termOf(to)}학기`;
+// 수업 시작 달부터 고3 2월까지 (두 달 모두 셈)
+export function monthsLeft(grade, start) {
+  const endYear = schoolYear(start) + GRADES.length - gradeIndex(grade) + 1; // 고3 학년도의 이듬해 2월
+  return Math.max(0, monthIndex(`${endYear}-02`) - monthIndex(start) + 1);
 }
 
-const round1 = (n) => Math.round(n * 10) / 10;
-
-function doneLabel(grade, date, years) {
-  return years <= 0 ? '고3 과정 완료' : gradeAt(grade, date, addMonths(date, Math.round(years * 12)));
+export function ym(months) {
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  return y && m ? `${y}년 ${m}개월` : y ? `${y}년` : `${m}개월`;
 }
 
-export function project({ grade, date, ests, pace = DEFAULT_PACE }) {
+function thin(points) {
+  if (points.length <= MAX_POINTS) return points;
+  const k = (points.length - 1) / (MAX_POINTS - 1);
+  return Array.from({ length: MAX_POINTS }, (_, i) => points[Math.round(i * k)]);
+}
+
+// 수업 시작 달부터 한 달씩: 시험 달이 아니면 주 횟수만큼 나아가고, 학기가 바뀔 때마다 점을 찍는다.
+export function roadmap({ est, days, grade, start }) {
+  const perWeek = daysOf(days).length;
+  const perMonth = (PACE_PER_WEEK * perWeek) / (12 - EXAM_MONTHS.length);
+  const first = monthIndex(start);
+  let pos = position(est);
+  const point = (i, done = false) => {
+    const month = monthOf(first + i);
+    return { month, when: monthLabel(grade, start, month), level: done ? '고3 과정 완료' : levelOf(pos), done };
+  };
+  if (pos >= END) return { perWeek, months: 0, done: true, points: [point(0, true)] };
+  const points = [point(0)];
+  for (let i = 1; i <= MAX_MONTHS; i++) {
+    if (EXAM_MONTHS.includes(((first + i) % 12) + 1)) continue;
+    const before = Math.floor(pos);
+    pos += perMonth;
+    if (pos >= END) return { perWeek, months: i, done: true, points: thin([...points, point(i, true)]) };
+    if (Math.floor(pos) > before) points.push(point(i));
+  }
+  return { perWeek, months: MAX_MONTHS, done: false, points: thin(points) };
+}
+
+export function project({ grade, start, ests, days = {} }) {
   const taken = SECTIONS.filter((k) => ests[k]);
   if (!taken.length) return null;
-  const p = pace >= 1 && pace <= 6 ? pace : DEFAULT_PACE;
-  const years = (k, v) => Math.max(0, END - position(ests[k])) / v;
-  const at = (v) => {
-    const section = taken.reduce((a, k) => (years(k, v) > years(a, v) ? k : a));
-    const y = years(section, v);
-    return { years: round1(y), label: doneLabel(grade, date, y), section };
-  };
-  const overall = at(p);
-  const rows = [];
-  const last = Math.min(6, Math.max(1, Math.ceil(years(overall.section, p))));
-  for (let n = 0; n <= last; n++) {
-    const when = addMonths(date, 12 * n);
-    rows.push({
-      when: `${n === 0 ? '지금' : `${n}년 뒤`} (${gradeAt(grade, date, when)})`,
-      cells: Object.fromEntries(taken.map((k) => {
-        const pos = position(ests[k]) + p * n;
-        return [k, pos >= END ? '완료' : labelOf(Math.floor(pos))];
-      })),
-    });
-  }
-  return {
-    pace: p,
-    perSection: Object.fromEntries(taken.map((k) => [k, { years: round1(years(k, p)), label: doneLabel(grade, date, years(k, p)) }])),
-    overall, low: at(p - 0.5), high: at(p + 0.5), rows,
-  };
+  const perSection = Object.fromEntries(taken.map((k) => [k, roadmap({ est: ests[k], days: days[k], grade, start })]));
+  const slow = taken.reduce((a, k) => (perSection[k].months > perSection[a].months ? k : a));
+  const r = perSection[slow];
+  const label = r.months === 0 ? '고3 과정 완료' : r.done ? r.points.at(-1).when : '고3 졸업 이후';
+  return { perSection, left: monthsLeft(grade, start), overall: { section: slow, months: r.months, label } };
 }
