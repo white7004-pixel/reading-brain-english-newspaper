@@ -30,8 +30,12 @@ if (!result) {
 
 function header(r, title) {
   const a = r.academy || {};
-  const logo = /^data:image\//.test(a.logo ?? '') ? `<img src="${a.logo}" alt="">` : `<b>${esc(a.name)}</b>`;
-  return `<header><div><h1>${esc(title)}</h1><div class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</div></div>${logo}</header>`;
+  let logo = a.logo;
+  if (!logo) {
+    try { logo = JSON.parse(localStorage.getItem('elt:academy'))?.logo; } catch { /* 로고 없이 이름만 */ }
+  }
+  const mark = /^data:image\//.test(logo ?? '') ? `<img src="${esc(logo)}" alt="">` : `<b>${esc(a.name)}</b>`;
+  return `<header><div><h1>${esc(title)}</h1><div class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</div></div>${mark}</header>`;
 }
 
 function footer(r) {

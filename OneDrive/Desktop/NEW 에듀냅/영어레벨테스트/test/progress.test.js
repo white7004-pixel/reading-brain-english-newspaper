@@ -10,7 +10,8 @@ test('위치와 날짜 도우미', () => {
   assert.equal(position({ step: 11, unit: null }), 11.5);
   assert.equal(position({ step: 20, unit: 4 }), 21);
   assert.equal(schoolYear('2027-02-10'), 2026);
-  assert.equal(addMonths('2026-03-10', 38), '2029-05-10');
+  assert.equal(addMonths('2026-03-10', 38), '2029-05-01'); // addMonths 는 이제 늘 1일로 맞춘다 (학기 계산에는 일자가 안 쓰인다)
+  assert.ok(addMonths('2026-08-31', 6).startsWith('2027-02')); // 말일이 다음 달로 넘치지 않는다
   assert.equal(gradeAt('중1', '2026-03-10', '2029-05-10'), '고1 1학기');
   assert.equal(gradeAt('고2', '2026-09-01', '2028-03-02'), '고3 졸업 이후');
 });

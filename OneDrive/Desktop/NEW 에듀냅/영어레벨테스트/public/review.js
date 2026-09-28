@@ -6,6 +6,7 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const KEY = 'elt:review';
 const STATUS_KO = { draft: '검수 전', ok: '통과', rejected: '버림' };
+const shaped = (d) => (Array.isArray(d) ? d : []).filter((i) => i && i.id && Array.isArray(i.choices) && SECTIONS.includes(i.section));
 const status = (t, k = '') => { $('#review-status').textContent = t; $('#review-status').className = `status ${k}`; };
 
 let items = await loadItems();
@@ -13,23 +14,27 @@ $('#f-section').innerHTML = SECTIONS.map((k) => `<option value="${k}">${SECTION_
 $('#f-step').innerHTML = '<option value="">전체</option>' + SCALE.map((s) => `<option value="${s.step}">${labelOf(s.step)}</option>`).join('');
 for (const sel of ['#f-section', '#f-step', '#f-status']) $(sel).onchange = draw;
 $('#file').onchange = async (e) => {
-  try {
-    const data = JSON.parse(await e.target.files[0].text());
-    if (!Array.isArray(data)) throw new Error();
-    items = data;
-    keep();
-    draw();
-  } catch {
-    status('items.json 모양의 파일이 아닙니다', 'error');
-  }
+  let data;
+  try { data = JSON.parse(await e.target.files[0].text()); } catch { data = null; }
+  const clean = shaped(data);
+  if (!clean.length) { status('items.json 모양의 파일이 아닙니다', 'error'); return; }
+  const dropped = (Array.isArray(data) ? data.length : 0) - clean.length;
+  items = clean;
+  keep();
+  draw();
+  if (dropped > 0) status(`모양이 맞지 않는 ${dropped}개는 뺐습니다`, 'warn');
 };
 $('#download').onclick = download;
 draw();
 
 async function loadItems() {
-  try { const d = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(d)) return d; } catch { /* 파일에서 */ }
-  try { const r = await fetch('data/items.json', { cache: 'no-store' }); if (r.ok) return await r.json(); } catch { /* 빈 은행 */ }
-  return [];
+  let fromFile = [];
+  try { const r = await fetch('data/items.json', { cache: 'no-store' }); if (r.ok) fromFile = shaped(await r.json()); } catch { /* 빈 은행 */ }
+  let saved = [];
+  try { saved = shaped(JSON.parse(localStorage.getItem(KEY))); } catch { /* 임시 저장 없음 */ }
+  if (!saved.length) return fromFile;
+  const savedIds = new Set(saved.map((i) => i.id));
+  return [...saved, ...fromFile.filter((i) => !savedIds.has(i.id))];
 }
 
 function keep() {

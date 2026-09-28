@@ -17,6 +17,7 @@ export function schoolYear(date) {
 
 export function addMonths(date, n) {
   const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(1); // 말일(예: 8월 31일)이 다음 달로 넘치지 않게 — 리포트는 학기만 쓴다
   d.setUTCMonth(d.getUTCMonth() + n);
   return d.toISOString().slice(0, 10);
 }

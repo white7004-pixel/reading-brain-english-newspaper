@@ -24,7 +24,7 @@ http.createServer(async (req, res) => {
   } catch {
     res.statusCode = 400; return res.end(); // %E0 같은 깨진 주소
   }
-  if (!file.startsWith(ROOT)) { res.statusCode = 403; return res.end(); }
+  if (!file.startsWith(ROOT + path.sep)) { res.statusCode = 403; return res.end(); }
   try {
     const data = await readFile(file);
     res.setHeader('content-type', TYPES[path.extname(file)] || 'application/octet-stream');

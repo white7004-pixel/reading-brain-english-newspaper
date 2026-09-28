@@ -55,12 +55,8 @@ function advance(s) {
   return finish(s, { step: s.unitStep, unit: 4 });
 }
 
-// 2마당에서 그 단원 문항이 은행에 없을 때: 그 단원을 건너뛴다.
-export function skip(s) {
-  if (s.done || s.phase !== 2) return s;
-  if (s.extra) return finish(s, { step: s.unitStep, unit: 4 });
-  return advance(s);
-}
+// 2마당에서 그 단원 문항이 없으면 확인한 데까지로 끝낸다.
+export const skip = stop;
 
 // 문항 상한, 또는 1마당에서 문항을 더 찾지 못했을 때: 있는 답으로 끝낸다.
 export function stop(s) {

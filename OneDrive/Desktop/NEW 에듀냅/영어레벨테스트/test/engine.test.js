@@ -69,9 +69,10 @@ test('문항 상한: 1마당에서 닿으면 단원은 null', () => {
   assert.deepEqual(s.est, { step: 12, unit: null });
 });
 
-test('skip 은 2마당 단원을 건너뛰고, stop 은 있는 답으로 끝낸다', () => {
+test('skip 은 이제 stop 과 같다: 2마당에서 그 단원 문항이 없으면 확인한 데까지로 끝낸다', () => {
   const p2 = run(start('grammar', 11), [true, false, true, false]);
-  assert.equal(skip(p2).unit, 2);
+  assert.deepEqual(skip(p2), stop(p2));
+  assert.equal(skip(p2).est.unit, null); // 2마당 답이 하나도 없을 때 skip 하면 unit 이 null
   assert.deepEqual(stop(p2).est, { step: 13, unit: null });
   assert.deepEqual(stop(run(p2, [true, true])).est, { step: 13, unit: 2 });
   assert.equal(stop(start('grammar', 11)).est, null);
