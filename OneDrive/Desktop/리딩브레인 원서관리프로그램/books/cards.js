@@ -134,6 +134,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "berenstain-bears-learn-about-strangers",
+  "title": "The Berenstain Bears Learn about Strangers",
+  "author": "Stan and Jan Berenstain",
+  "series": "The Berenstain Bears",
+  "level": {
+   "ar": "3.6",
+   "lexile": "500L",
+   "rb": "다독 3단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/4196958-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "berenstain-bears-in-the-dark",
+  "title": "The Berenstain Bears in the Dark",
+  "author": "Stan and Jan Berenstain",
+  "series": "The Berenstain Bears",
+  "level": {
+   "ar": "3.8",
+   "lexile": "470L",
+   "rb": "다독 3단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/4272635-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "flat-stanley",
   "title": "Flat Stanley: His Original Adventure!",
   "author": "Jeff Brown",
@@ -144,6 +172,20 @@ window.BOOK_CARDS = [
    "rb": "정독 2단계"
   },
   "cover": "assets/covers/flat-stanley.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "berenstain-bears-too-much-junk-food",
+  "title": "The Berenstain Bears and Too Much Junk Food",
+  "author": "Stan and Jan Berenstain",
+  "series": "The Berenstain Bears",
+  "level": {
+   "ar": "4.0",
+   "lexile": "550L",
+   "rb": "다독 4단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/6378038-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -221,5 +263,8 @@ window.BOOK_BY_NO = {
  "M3069": "flat-stanley",
  "S4191": "holes",
  "S4309": "charlie-and-the-chocolate-factory",
- "S5084": "harry-potter-sorcerers-stone"
+ "S5084": "harry-potter-sorcerers-stone",
+ "S3788": "berenstain-bears-in-the-dark",
+ "S3779": "berenstain-bears-learn-about-strangers",
+ "S4441": "berenstain-bears-too-much-junk-food"
 };

@@ -15,5 +15,8 @@ window.BOOKS = [
   "charlie-and-the-chocolate-factory",
   "harry-potter-sorcerers-stone",
   "lets-celebrate-birthdays",
-  "life-in-a-castle"
+  "life-in-a-castle",
+  "berenstain-bears-in-the-dark",
+  "berenstain-bears-learn-about-strangers",
+  "berenstain-bears-too-much-junk-food"
 ];
