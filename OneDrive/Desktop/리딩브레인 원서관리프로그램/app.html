@@ -417,7 +417,7 @@ function voiceTip(){
 async function sayMix(text, onEnd){
   stopSay();
   const my = ++SAY_ID;
-  // 문장 단위로 끊는다. (?<= ) 뒤돌아보기 정규식은 옛 사파리·카톡 브라우저에서 화면 전체를 멈추게 해서 쓰지 않는다
+  // 문장 단위로 끊는다. 뒤돌아보기(lookbehind) 정규식은 옛 사파리·카톡 브라우저에서 화면 전체를 멈추게 해서 쓰지 않는다
   for (const s of (String(text).match(/[^.!?…\n]+[.!?…]*/g) || []).map(x => x.trim()).filter(Boolean)){
     if (my !== SAY_ID) return;                   // 도중에 멈추거나 다른 설명이 시작됐다
     await speakLine(s);

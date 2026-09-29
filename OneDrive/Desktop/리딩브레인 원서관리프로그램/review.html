@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>리딩브레인 첨삭</title>
+<link rel="stylesheet" href="app.css">
+<style>
+.list{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px}
+.item{
+  background:#fff; border:1px solid var(--line); border-radius:7px; padding:13px 15px;
+  text-align:left; width:100%;
+}
+.item:hover{border-color:var(--navy)}
+.item b{display:block; color:var(--navy); font-size:15px}
+.item span{font-size:12.5px; color:#6b747d}
+.item .st{display:inline-block; margin-top:6px; padding:1px 7px; border-radius:3px; font-size:11.5px; font-weight:700}
+.st.wait{background:var(--soft); color:#6b747d}
+.st.done{background:var(--ok-bg); color:var(--ok)}
+.edit{
+  background:#fff; border:1px solid var(--line); border-radius:7px;
+  padding:16px 18px; white-space:pre-wrap; line-height:2.05; font-size:15px;
+  user-select:text;
+}
+.edit mark{background:#fdf0c8; border-bottom:2px solid #d9a400; padding:1px 0}
+.rub input.pt{width:52px; font:inherit; padding:5px 7px; border:1px solid var(--line); border-radius:5px; text-align:center}
+.rub input.nt{width:100%; font:inherit; padding:5px 9px; border:1px solid var(--line); border-radius:5px}
+textarea.all{
+  font:inherit; width:100%; padding:11px 13px; border:1px solid var(--line);
+  border-radius:6px; resize:vertical; line-height:1.65;
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="home" href="index.html">← 목록</a>
+  <div class="bk"><b>첨삭 · Teacher</b><span id="sub2">학생이 낸 글을 고쳐 주고 피드백을 남깁니다</span></div>
+  <div class="sp"></div>
+  <span class="saved" id="saved"></span>
+  <span id="chip"></span>
+</div>
+
+<main>
+  <section id="pick"></section>
+  <section id="work" hidden></section>
+</main>
+
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="grade.js"></script>
+<script src="report.js"></script>
+<script>
+RB.gate("teacher");
+RB.chip(document.getElementById("chip"));
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+let CUR = null, NOTES = [], REP = null, BOOK = null;
+let flash;
+function flashSaved(m){ $("#saved").textContent = m || "저장됨"; clearTimeout(flash); flash = setTimeout(()=>$("#saved").textContent="",1800); }
+
+const RUBRIC = [
+  { c: "A 분석", hint: "책 속 장면을 들고 챕터를 밝혔나" },
+  { c: "B 구성", hint: "의견 → 근거 → 반박 → 마무리 순서인가" },
+  { c: "C 표현", hint: "자기 생각이 드러나는 문장이 있나" },
+  { c: "D 언어", hint: "문장 끝·대문자·철자" },
+];
+
+/* ───────── 제출함 ───────── */
+// 서버를 쓰면 모든 학생이 낸 글, 아니면 이 컴퓨터에서 낸 글
+let LIST = [];
+async function drawPick(){
+  try {
+    LIST = RB.online
+      ? (await RB.teacher("teacher_submissions")).map(s => Object.assign({}, s.body,
+          { slug: s.slug, title: s.title, who: s.who, student_id: s.student_id,
+            class_name: s.class_name, feedback: s.feedback }))
+      : RB.submissions();
+  } catch (e) { $("#pick").innerHTML = `<div class="empty">서버에서 못 읽었습니다: ${esc(e.message)}</div>`; return; }
+  const all = LIST;
+  $("#work").hidden = true; $("#pick").hidden = false;
+  $("#pick").innerHTML = `
+    <h2 class="h">제출함</h2>
+    <p class="sub">학생이 온라인 학습 <b>서술형</b> 탭에서 제출한 글이 여기 쌓입니다. 눌러서 첨삭하세요.</p>
+    ${all.length ? `<div class="list">${all.map((s,i) => `
+      <button class="item" data-i="${i}">
+        <b>${esc(s.who)}</b>
+        <span>${esc(s.title)}${s.class_name ? " · " + esc(s.class_name) : ""}</span>
+        <span class="st ${s.feedback ? "done" : "wait"}">${s.feedback ? "첨삭 완료" : "첨삭 대기"}</span>
+      </button>`).join("")}</div>`
+    : `<div class="empty">아직 제출된 글이 없습니다.<br>
+        학생이 온라인 학습의 서술형 탭에서 제출하면 여기 뜹니다.</div>`}`;
+  $("#pick").querySelectorAll(".item").forEach(b =>
+    b.onclick = () => open(LIST[+b.dataset.i]));
+}
+
+/* ───────── 첨삭 화면 ───────── */
+// 책 파일 읽기 (AI 에게 책 내용을 알려 주고, 리포트에 표지·레벨을 넣는다)
+const BOOKS = {};
+function loadBook(slug){
+  if (BOOKS[slug]) return Promise.resolve(BOOKS[slug]);
+  return new Promise(done => {
+    const tag = document.createElement("script");
+    tag.src = "books/" + slug + ".js";
+    tag.onload = () => { BOOKS[slug] = window.BOOK; window.BOOK = null; done(BOOKS[slug]); };
+    tag.onerror = () => done(null);
+    document.head.appendChild(tag);
+  });
+}
+
+async function open(sub){
+  CUR = sub;
+  REP = sub.feedback && sub.feedback.report ? sub.feedback.report : null;
+  BOOK = await loadBook(sub.slug);
+  NOTES = (sub.feedback && sub.feedback.notes ? sub.feedback.notes.slice() : []);
+  const f = sub.feedback || {};
+  $("#pick").hidden = true; $("#work").hidden = false;
+  $("#work").innerHTML = `
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn ghost" id="back">← 제출함</button>
+      <h2 class="h" style="margin:0">${esc(sub.who)} · ${esc(sub.title)}</h2>
+    </div>
+    <div class="prompt">${esc(sub.prompt)}</div>
+
+    <div class="box">
+      <div class="row">
+        <h2 class="h" style="margin:0">✨ AI 첨삭 리포트</h2>
+        <div class="sp" style="flex:1"></div>
+        <button class="btn" id="ai">${REP ? "AI 로 다시 만들기" : "AI 첨삭 초안 만들기"}</button>
+      </div>
+      <p class="sub" style="margin:6px 0 0">AI 가 총평·점수·교정·단어·원어민 표현·다음 미션과 복습 워크시트를 만듭니다.
+        <b>점선 글자는 눌러서 고치고</b>, 맞지 않는 항목은 × 로 빼세요. <b>첨삭 저장</b>을 눌러야 학생에게 보입니다.</p>
+      <div id="aist" class="count" style="margin-top:8px"></div>
+      <div id="rptbar" class="row" style="margin-top:10px" hidden>
+        <button class="btn ghost" id="prRep">리포트 인쇄 / PDF</button>
+        <button class="btn ghost" id="wsToggle">복습 워크시트 보기</button>
+        <button class="btn ghost" id="prWs" hidden>워크시트 인쇄 / PDF</button>
+      </div>
+      <div id="rpt"></div>
+      <div id="rws" hidden></div>
+    </div>
+
+    <h2 class="h" style="margin-top:22px">직접 표시하기 <span class="count">(선택)</span></h2>
+    <div class="hintbar">고칠 곳을 <b>마우스로 드래그</b>해서 고른 다음 아래 <b>고칠 곳 표시</b> 를 누르세요.</div>
+    <div class="edit" id="txt"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="addnote">고칠 곳 표시</button>
+      <span class="count" id="sel">고른 곳이 없습니다</span>
+    </div>
+    <div class="notes" id="notes"></div>
+
+    <h2 class="h" style="margin-top:22px">준거별 점수</h2>
+    <table class="t rub">
+      <tr><th>준거</th><th style="width:70px">점수 /5</th><th>한 마디</th></tr>
+      ${RUBRIC.map((r,i) => {
+        const s = (f.scores || [])[i] || {};
+        return `<tr><td><b>${r.c}</b><div style="font-size:12.5px;color:#6b747d">${r.hint}</div></td>
+          <td><input class="pt" type="number" min="0" max="5" step="1" data-i="${i}" value="${s.pt != null ? s.pt : ""}"></td>
+          <td><input class="nt" data-i="${i}" value="${esc(s.note || "")}" placeholder="예) 챕터 번호가 없어요"></td></tr>`;
+      }).join("")}
+    </table>
+
+    <h2 class="h" style="margin-top:22px">총평</h2>
+    <p class="sub">잘한 것 하나, 다음에 고칠 것 하나. 두 가지면 충분합니다.</p>
+    <textarea class="all" id="overall" rows="4"
+      placeholder="근거에 챕터를 밝힌 것이 좋았어요. 다음에는 반박 문장을 한 줄 더 써 봅시다.">${esc(f.overall || "")}</textarea>
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="save">첨삭 저장</button>
+      <button class="btn ghost" id="print">인쇄 / PDF</button>
+      <span class="count">저장하면 학생 화면(서술형 탭)에 바로 보입니다.</span>
+    </div>`;
+
+  $("#back").onclick = drawPick;
+  $("#print").onclick = () => print();
+  paint();
+  paintReport();
+  $("#ai").onclick = makeReport;
+  $("#prRep").onclick = () => RBReport.print($("#rpt"));
+  $("#prWs").onclick = () => RBReport.print($("#rws"));
+  $("#wsToggle").onclick = () => {
+    REP = RBReport.collect($("#rpt"), REP);
+    const show = $("#rws").hidden;
+    $("#rws").hidden = !show; $("#prWs").hidden = !show;
+    $("#wsToggle").textContent = show ? "복습 워크시트 닫기" : "복습 워크시트 보기";
+    if (show) $("#rws").innerHTML = RBReport.worksheet(CUR, REP, rpOpts());
+  };
+
+  document.addEventListener("selectionchange", showSel);
+  $("#addnote").onclick = addNote;
+  $("#save").onclick = save;
+}
+
+const rpOpts = () => ({ name: CUR.who, cover: BOOK && BOOK.cover,
+  level: BOOK ? `AR ${BOOK.level.ar}${BOOK.level.rb ? " · " + BOOK.level.rb : ""}` : "", at: CUR.feedback && CUR.feedback.at });
+
+function paintReport(){
+  $("#rptbar").hidden = !REP;
+  if (!REP){ $("#rpt").innerHTML = ""; return; }
+  $("#rpt").innerHTML = RBReport.report(CUR, REP, Object.assign({ edit: true }, rpOpts()));
+  $("#rpt").querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    REP = RBReport.remove(RBReport.collect($("#rpt"), REP), b.dataset.del);
+    paintReport();
+  });
+  $("#rws").innerHTML = ""; $("#rws").hidden = true; $("#prWs").hidden = true;
+  $("#wsToggle").textContent = "복습 워크시트 보기";
+}
+
+async function makeReport(){
+  if (!RB.online){ $("#aist").textContent = "AI 첨삭은 서버(Supabase)를 연결한 뒤에 쓸 수 있습니다."; return; }
+  if (!BOOK){ $("#aist").textContent = "책 파일을 읽지 못했습니다: books/" + CUR.slug + ".js"; return; }
+  if (REP && !confirm("지금 리포트를 지우고 새로 만들까요? 고친 내용도 사라집니다.")) return;
+  $("#ai").disabled = true;
+  $("#aist").textContent = "AI 가 글을 읽고 첨삭하는 중입니다… (30초~1분쯤 걸려요)";
+  try {
+    REP = await RB.writingReport({ book: BOOK, name: CUR.who, prompt: CUR.prompt,
+      labels: CUR.labels, parts: CUR.parts, text: CUR.text });
+    $("#aist").textContent = "초안이 나왔습니다. 확인하고 고친 뒤 첨삭 저장을 누르세요.";
+    paintReport();
+  } catch (e) {
+    $("#aist").textContent = {
+      busy: "AI 가 지금 바빠요. 잠시 뒤에 다시 눌러 주세요.",
+      refusal: "AI 가 이 글을 첨삭하지 못했습니다. 직접 첨삭해 주세요.",
+      no_ai_key: "서버에 AI 키(ANTHROPIC_API_KEY)가 아직 없습니다.",
+      not_teacher: "선생님 로그인이 필요합니다.",
+    }[e.code] || "AI 첨삭을 만들지 못했습니다: " + e.message;
+  } finally { $("#ai").disabled = false; }
+}
+
+function paint(){
+  const t = CUR.text;
+  const ms = NOTES.slice().sort((a,b) => a.start - b.start);
+  let out = "", last = 0;
+  ms.forEach(m => {
+    out += esc(t.slice(last, m.start)) + `<mark>${esc(t.slice(m.start, m.end))}</mark>`;
+    last = m.end;
+  });
+  out += esc(t.slice(last));
+  $("#txt").innerHTML = out || "(빈 글)";
+
+  $("#notes").innerHTML = ms.map((m,k) => `
+    <div class="note"><i>${k+1}</i>
+      <div><span class="q">${esc(CUR.text.slice(m.start, m.end))}</span>${esc(m.note)}</div>
+      <button class="del" data-s="${m.start}" title="지우기">×</button>
+    </div>`).join("");
+  $("#notes").querySelectorAll(".del").forEach(b =>
+    b.onclick = () => { NOTES = NOTES.filter(n => n.start !== +b.dataset.s); paint(); });
+}
+
+/* 드래그한 곳이 원문 몇 번째 글자인지 — mark 태그가 섞여 있어 직접 세야 한다 */
+function offsetIn(host, node, off){
+  let n = 0, stop = false;
+  (function walk(el){
+    for (const c of el.childNodes){
+      if (stop) return;
+      if (c === node){ n += off; stop = true; return; }
+      if (c.nodeType === 3) n += c.nodeValue.length;
+      else walk(c);
+    }
+  })(host);
+  return n;
+}
+function currentRange(){
+  const s = getSelection();
+  if (!s || s.isCollapsed || s.rangeCount === 0) return null;
+  const host = $("#txt");
+  if (!host || !host.contains(s.anchorNode) || !host.contains(s.focusNode)) return null;
+  let a = offsetIn(host, s.anchorNode, s.anchorOffset);
+  let b = offsetIn(host, s.focusNode,  s.focusOffset);
+  if (a > b) [a, b] = [b, a];
+  return a === b ? null : { start: a, end: b };
+}
+function showSel(){
+  if (!$("#sel")) return;
+  const r = currentRange();
+  $("#sel").textContent = r ? `고른 곳 · "${CUR.text.slice(r.start, r.end)}"` : "고른 곳이 없습니다";
+}
+function addNote(){
+  const r = currentRange();
+  if (!r){ alert("먼저 고칠 곳을 마우스로 드래그해 주세요."); return; }
+  if (NOTES.some(n => r.start < n.end && n.start < r.end)){
+    alert("이미 표시한 곳과 겹칩니다."); return;
+  }
+  const note = prompt(`"${CUR.text.slice(r.start, r.end)}"\n\n어떻게 고칠까요?`, "");
+  if (note === null || !note.trim()) return;
+  NOTES.push({ start: r.start, end: r.end, note: note.trim() });
+  getSelection().removeAllRanges();
+  paint();
+}
+async function save(){
+  const scores = RUBRIC.map((r,i) => ({
+    c: r.c,
+    pt: +($(`input.pt[data-i="${i}"]`).value || 0),
+    note: $(`input.nt[data-i="${i}"]`).value.trim()
+  }));
+  if (REP) REP = RBReport.collect($("#rpt"), REP);
+  const fb = { at: Date.now(), notes: NOTES, scores, overall: $("#overall").value.trim(), report: REP };
+  if (RB.online){
+    try { await RB.teacher("teacher_feedback", { p_student: CUR.student_id, p_slug: CUR.slug, p_feedback: fb }); }
+    catch (e) { alert("저장하지 못했습니다. 인터넷을 확인하고 다시 눌러 주세요."); return; }
+    CUR.feedback = fb;
+  } else {
+    RB.putFeedback(CUR.slug, CUR.who, fb);
+    CUR = RB.getSubmission(CUR.slug, CUR.who);
+  }
+  flashSaved("첨삭 저장됨");
+}
+
+drawPick();
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>리딩브레인 원서 워크시트</title>
+<link rel="stylesheet" href="sheet.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <a class="home" href="index.html" title="책 목록">← 목록</a>
+  <b>리딩브레인 원서 워크시트</b>
+  <input class="who" id="who" placeholder="이름" autocomplete="off">
+  <button class="go" id="gradeBtn">채점하기</button>
+  <button id="resetBtn">다시 풀기</button>
+  <span id="gsum"></span>
+  <span class="spacer"></span>
+  <button id="ansBtn">정답 보기</button>
+  <button onclick="print()">PDF 다운로드 · 인쇄</button>
+  <small id="bookname"></small>
+  <span id="chip"></span>
+</div>
+
+<div id="sheets"></div>
+
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="grade.js"></script>
+<script>
+RB.gate();
+let B, WHO = "";
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+// {{정답}} → 밑줄 칸. 화면에서는 .in 에 타이핑하고, 채점은 .ans 와 비교한다.
+// 칸 너비는 정답 길이에 맞추되 최소 4em. mode "key" 는 문장 답 — grade.js 참고.
+const blank = (a, w, mode) =>
+  `<span class="blank"${mode ? ` data-mode="${mode}"` : ""} style="min-width:${w}em"><span class="in"></span><span class="ans">${a}</span></span>`;
+function fill(text, mode){
+  return esc(text).replace(/\{\{(.*?)\}\}/g, (_, a) =>
+    blank(a, Math.max(4, a.length * 0.62 + 2).toFixed(1), mode));
+}
+
+// 가정학습지는 빈칸 없이 그대로 보여 준다
+function plain(text){
+  return esc(text).replace(/\{\{(.*?)\}\}/g, (_, a) => `<b class="kw">${a}</b>`);
+}
+
+const guide = (ko, en) =>
+  `<div class="instruction"><span class="ko">${ko}</span><span class="en">${en}</span></div>`;
+
+let PAGE = 0;
+function head(name){
+  return `
+  <div class="brandbar">
+    <img class="mark" src="assets/logo-mark.png" alt="Reading Brain">
+    <div class="bname"><strong>READING BRAIN</strong><span>Reading Is The Only Way!</span></div>
+    <div class="tab">${name}</div>
+  </div>
+  <div class="info">
+    <div class="cover" ${B.cover?`style="background-image:url('${B.cover}')"`:""}>${B.cover?"":"표지"}</div>
+    <div class="f bk"><b>Book</b><i>${esc(B.title)}</i><u>${esc(B.series||"")}</u></div>
+    <div class="f"><b>Author</b><i>${esc(B.author)}</i></div>
+    <div class="f"><b>Level</b><i>AR ${esc(B.level.ar)} · ${esc(B.level.lexile)}</i><u>${esc(B.level.rb||"")}</u></div>
+    <div class="f"><b>Award</b><i>${(B.awards||[]).length ? esc(B.awards[0]) : "&ndash;"}</i>${
+      (B.awards||[]).length > 1 ? `<u>${esc(B.awards.slice(1).join(" · "))}</u>` : ""}</div>
+    <div class="f fill"><b>이름 Name</b><i></i></div>
+  </div>`;
+}
+const foot = name => `<div class="foot"><span>리딩브레인영어학원 · Reading Brain</span><span class="r">${esc(B.title)} · ${name}<b class="pg">${++PAGE}</b></span></div>`;
+const sheet = (name, inner) => `<div class="sheet">${head(name)}<div class="pad">${inner}</div>${foot(name)}</div>`;
+
+/* ① 단어 */
+function vocabSheet(){
+  const rows = B.vocabulary.map((v,i) => `
+    <tr${i===0 ? ' class="egrow"' : ''}>
+      <td class="no">${i+1}</td>
+      <td class="w">${blank(esc(v.word), 6)}${
+        i===0 ? '<span class="egtag">보기</span>' : ''}</td>
+      <td class="m">${v.en ? `<span class="en">${esc(v.en)}</span>` : ""}<span class="kow">${esc(v.pos)} ${esc(v.ko)}</span></td>
+      <td>${fill(v.ex)}</td>
+    </tr>`).join("");
+  return sheet("Word Test", `
+    ${guide("뜻을 보고 단어를 쓴 다음, 문장의 빈칸도 채우세요.", "Write the word that matches the meaning, then complete the sentence.")}
+    <table class="vocab">
+      <tr><th>No</th><th>Word</th><th>뜻 Meaning (영영 · 한글)</th><th>Sentence Example</th></tr>
+      ${rows}
+    </table>
+    ${B.defSource ? `<div class="src">영영 뜻 출처 · English definitions from ${esc(B.defSource)}</div>` : ""}`);
+}
+
+/* ⓪ 단어장 — 집에서 공부해 오는 장 */
+function wordListSheet(){
+  const rows = B.vocabulary.map((v,i) => `
+    <tr>
+      <td class="no">${i+1}</td>
+      <td class="w"><b>${esc(v.word)}</b><span class="pos">${esc(v.pos)}</span></td>
+      <td class="m">${v.en ? `<span class="en">${esc(v.en)}</span>` : ""}<span class="kow">${esc(v.ko)}</span></td>
+      <td>${plain(v.ex)}</td>
+      <td class="chk3">☐ ☐ ☐</td>
+    </tr>`).join("");
+  const sh = B.shadowing && B.shadowing.videos && B.shadowing.videos[0];
+  const shadow = sh ? `
+    <div class="shadow">
+      <b>SHADOWING</b>
+      <span class="t">${esc(sh.title)}</span>
+      ${B.shadowing.qr ? `<span class="qr"><img src="${B.shadowing.qr}" alt="QR">
+        <span class="cap"><b>휴대폰으로 찍으세요</b>낭독을 들으며<br>따라 읽습니다</span></span>` : ""}
+    </div>` : "";
+  return sheet("Word List", `
+    ${guide("집에서 소리 내어 세 번 읽고, 읽을 때마다 오른쪽 칸에 표시하세요.", "Read aloud three times at home. Tick a box each time.")}
+    ${shadow}
+    <table class="vocab wl3">
+      <tr><th>No</th><th>Word</th><th>뜻 Meaning (영영 · 한글)</th><th>Sentence Example</th><th>3번<br>읽기</th></tr>
+      ${rows}
+    </table>
+    ${B.defSource ? `<div class="src">영영 뜻 출처 · English definitions from ${esc(B.defSource)}</div>` : ""}`);
+}
+
+/* ② 독해 — 서술형 */
+function compSheet(){
+  const cls = s => s === "평가·적용" ? " s4" : (s === "추론·예측" ? " s3" : "");
+  const SKILL_EN = { "사실찾기":"Recall", "어휘":"Vocabulary", "주제·요점":"Main Idea",
+                     "추론·예측":"Inference", "평가·적용":"Evaluate" };
+  const qs = B.comprehension.map((c,i) => `
+    <div class="q${i===0 ? ' egrow' : ''}">
+      <div class="ask">Q${i+1}. ${esc(c.q)}<span class="ref">${esc(c.ref)}</span>${
+        i===0 ? '<span class="egtag">보기 Example</span>' : ''}${
+        c.skill ? `<span class="skill${cls(c.skill)}">${esc(c.skill)} ${esc(SKILL_EN[c.skill]||"")}</span>` : ""}</div>
+      <div class="frame">${fill(c.frame, "key")}</div>
+    </div>`).join("");
+  return sheet("Comprehension", `
+    ${guide("책을 펴 놓고 푸세요. 답은 문장으로 씁니다 — 회색 글씨가 이미 앞부분을 알려 줍니다.", "Open the book. Answer in full sentences — the grey words start it for you.")}
+    ${qs}`);
+}
+
+/* ③ 영영문법 — 책 문장에서 규칙을 찾는다 */
+// [[ ]] 는 빨간 밑줄로 표시할 부분이다. {{ }} 는 학생이 채우는 칸이다.
+const mk = t => esc(t).replace(/\[\[(.*?)\]\]/g, (_, a) => `<u>${a}</u>`);
+
+function grammarSheet(){
+  const g = B.grammar;
+  const cards = g.points.map((p, i) => `
+    <div class="gr">
+      <div class="nm">${i+1}. ${esc(p.name)}<span>${esc(p.ko)}</span></div>
+      <div class="sent">${mk(p.sent)}</div>
+      <div class="rule"><b>Why?</b>${esc(p.why)}</div>
+      <div class="try"><b>YOU TRY</b>${fill(p.try)}</div>
+    </div>`).join("");
+  return sheet("Grammar", `
+    ${guide("빨간 부분을 보고 규칙을 읽은 뒤, 아래 칸에 같은 방식으로 직접 써 보세요.",
+            "Look at the red part, read the rule, then write your own the same way.")}
+    ${cards}
+    <div class="gr">
+      <div class="nm">Find It Yourself<span>직접 찾기</span></div>
+      <div class="rule"><b>Task</b>${esc(g.find)}</div>
+      <div class="lines"><div></div><div></div><div></div></div>
+    </div>`);
+}
+
+/* ④ 입시문법 — 내신·수능 유형으로 같은 문법을 다시 */
+function examSheet(){
+  const e = B.grammar.exam;
+  const rows = arr => arr.map((r, i) => `
+    <tr><td class="n">${i+1}</td><td>${mk(r.q)}</td><td class="a">${fill("{{" + r.a + "}}")}</td></tr>`).join("");
+  const writes = e.write.map((w, i) => `
+    <div class="q">
+      <div class="ask">${i+1}. ${esc(w.ko)}<span class="ref">${esc(w.cond)}</span></div>
+      <div class="frame">${fill("{{" + w.a + "}}")}</div>
+    </div>`).join("");
+  return sheet("Exam Grammar", `
+    ${guide("앞 장에서 배운 그 문법이 시험에는 이렇게 나옵니다. 오른쪽 칸에 답만 씁니다.",
+            "The same grammar, in the shape your school test uses. Write the answer on the right.")}
+    <div class="gcap">① 어법 선택<i>괄호 안에서 알맞은 것을 고르시오 · Choose the correct one</i></div>
+    <table class="exq">${rows(e.choose)}</table>
+    <div class="gcap">② 어법 판단<i>밑줄 친 곳을 바르게 고치시오 · Correct the underlined part</i></div>
+    <table class="exq">${rows(e.fix)}</table>
+    <div class="gcap">③ 조건 영작<i>주어진 말을 써서 영어 문장을 완성하시오</i></div>
+    ${writes}`);
+}
+
+/* ⑤ 요약 지도 — 서술형 */
+function summarySheet(){
+  const s = B.summaryMap;
+  const scenes = s.scenes.map((sc,i) => `
+    ${i ? '<div class="arrow">▼</div>' : ''}
+    <div class="scene${i===0 ? ' egrow' : ''}">
+      <div class="tag">${esc(sc.label)}</div>
+      ${sc.given ? `<div class="given">${esc(sc.given)}</div>` : ''}
+      <div class="mine">${fill(sc.frame, "key")}</div>
+    </div>`).join("");
+  const swbst = (s.swbst || []).map(r =>
+    `<tr><td class="k">${esc(r.k)}</td><td>${fill(r.v, "key")}</td></tr>`).join("");
+  return sheet("Summary Map", `
+    ${guide("빈칸을 채워 이야기를 정리하고, 다 쓰면 그것만 보고 이야기를 말해 보세요.", "Fill in the map. Then close the book and retell the story.")}
+    ${swbst ? `<table class="swbst">${swbst}</table>` : ""}
+    <div class="setting">
+      <div><b>Place</b>${fill(s.setting.place, "key")}</div>
+      <div><b>Time</b>${fill(s.setting.time, "key")}</div>
+    </div>
+    ${scenes}`);
+}
+
+/* ④ 마인드맵 — 생각 고도화 */
+function mindSheet(){
+  const m = B.mindMap;
+  const boxes = m.branches.map(b => `
+    <div class="mm-box">
+      <div class="lab">${esc(b.label)}</div>
+      <div class="ask">${esc(b.ask)}</div>
+      <div class="lines"><div></div><div></div><div></div></div>
+      <div class="deep">
+        <div class="t">${esc(b.deeper)}</div>
+        <div class="l"></div><div class="l"></div>
+      </div>
+    </div>`).join("");
+  const drops = m.branches.slice(0, m.branches.length <= 4 ? 2 : 3).map(()=>"<i></i>").join("");
+  return sheet("Mind Map", `
+    ${guide("위 줄은 책에서 찾아 쓰고, 빨간 → 아래 칸에는 내 생각을 쓰세요.", "Top lines: find it in the book. Red arrow: write your own thinking.")}
+    <div class="mm-center">${esc(m.center)}</div>
+    <div class="mm-stem"></div>
+    <div class="mm-bar"></div>
+    <div class="mm-drops">${drops}</div>
+    <div class="mm-grid${m.branches.length <= 4 ? " two" : ""}">${boxes}</div>`);
+}
+
+/* ⑤ IB 탐구 — Factual → Conceptual → Debatable */
+function ibSheet(){
+  const ib = B.ib;
+  const rung = (n, cls, title, note, qs, lines) => `
+    <div class="rung ${cls}">
+      <div class="rt">${n}. ${title}<em>${note}</em></div>
+      <div class="qq">${qs.map(q=>`<p>· ${esc(q)}</p>`).join("")}</div>
+      ${'<div class="wl"></div>'.repeat(lines)}
+    </div>`;
+  return sheet("IB Inquiry", `
+    ${guide("1단은 책에 답이 있습니다. 3단은 정답이 없으니 편을 정하고 까닭을 쓰세요.", "Step 1 is in the book. Step 3 has no right answer — pick a side and say why.")}
+    <div class="ibmeta">
+      <div><b>Key concept</b>${esc(ib.keyConcept)}</div>
+      <div><b>Related concepts</b>${ib.relatedConcepts.map(esc).join(" · ")}</div>
+      <div><b>Global context</b>${esc(ib.globalContext)}</div>
+    </div>
+    <div class="soi"><b>Statement of Inquiry</b> &nbsp;${esc(ib.statement)}</div>
+    ${rung(1,"r1","Factual","What ... ? — the book answers it · 책에 답이 있다", ib.factual, 2)}
+    ${rung(2,"r2","Conceptual","How / Why ... ? — go beyond the book · 책 밖으로 넓힌다", ib.conceptual, 3)}
+    ${rung(3,"r3","Debatable","Only you can answer — pick a side, give reasons · 편을 정하고 근거를 대라", ib.debatable, 6)}
+    <div class="lp"><b>Learner Profile</b> &nbsp;Which one were you today? Tick one and say why. · 오늘 나는 어떤 사람이었나요? 하나 고르고 이유를 쓰세요.<br>
+      ${ib.learnerProfile.map(p=>`<span>${esc(p)}</span>`).join("")}
+      <div class="wl" style="margin-top:4px"></div></div>`);
+}
+
+/* ⑥ 논술형 */
+function essaySheet(){
+  const e = B.essay;
+  // 첫 단계(Title)는 표에 넣지 않고 한 줄 띠로 뺀다 — A4 한 장에 맞추기 위해서다.
+  const [t, ...body] = e.steps;
+  const titleBar = `
+    <div class="titlebar"><b>${esc(t.part)}</b>
+      <span class="eg"><b>e.g.</b> ${esc(t.eg)}</span>
+      <span class="tline"></span></div>`;
+  const rows = body.map(st => `
+    <tr>
+      <td>
+        <div class="part">${esc(st.part)}</div>
+        <div class="bubble">${esc(st.ask)}</div>
+      </td>
+      <td>
+        <div class="eg"><b>e.g.</b> ${esc(st.eg)}</div>
+        ${'<div class="write"></div>'.repeat(st.lines)}
+      </td>
+    </tr>`).join("");
+  const cond = e.conditions ? `
+    <div class="cond"><b>조건 Conditions</b> — 아래를 모두 지켜서 쓰세요. Follow all of them.
+      <ol>${e.conditions.map(c=>`<li>${esc(c)}</li>`).join("")}</ol></div>` : "";
+  const rub = e.rubric ? `
+    <div class="rubcap">다 쓰고 나서 스스로 확인하기 · Check yourself after writing</div>
+    <table class="rubric">
+      ${e.rubric.map(r=>`<tr><td class="k">${esc(r.c)}</td><td>${esc(r.d)}</td><td class="chk">☐ Yes &nbsp; ☐ No</td></tr>`).join("")}
+    </table>` : "";
+  return sheet("Writing", `
+    ${guide("① 조건을 읽고 ② 오른쪽 e.g. 를 본 다음 ③ 그 아래에 내 문장을 쓰세요.", "1) Read the conditions  2) Look at the e.g.  3) Write your own below it.")}
+    <div class="prompt">${esc(e.prompt)}</div>
+    <div class="toprow">
+      ${cond}
+      <div class="exbox"><b>Useful expressions</b><br>${e.expressions.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+    </div>
+    ${titleBar}
+    <table class="essay">
+      <tr><th>Plot</th><th>Examples / My Ideas</th></tr>
+      ${rows}
+    </table>
+    ${rub}`);
+}
+
+function render(){
+  B = window.BOOK;
+  // AR 2점 미만은 크게, 4점 미만은 조금 크게. 저학년일수록 혼자 읽어야 하니까.
+  const ar = parseFloat(B.level.ar);
+  const band = B.band || (ar < 2 ? "low" : ar < 4 ? "mid" : "high");
+  document.body.classList.add("lv-" + band);
+  document.getElementById("sheets").innerHTML =
+    wordListSheet() + vocabSheet() + compSheet() + grammarSheet() + examSheet() +
+    summarySheet() + mindSheet() + ibSheet() + essaySheet();
+  document.getElementById("bookname").textContent = `${B.title} · AR ${B.level.ar}`;
+
+  online();
+
+  // 인쇄 넘침 자가점검 — 문항을 늘리면 A4 한 장을 넘어간다. 넘으면 위에 경고가 뜬다.
+  requestAnimationFrame(() => {
+    const probe = document.createElement("div");
+    probe.style.height = "297mm";
+    document.body.appendChild(probe);
+    const limit = probe.getBoundingClientRect().height;
+    probe.remove();
+    // 0.1px 만 넘어도 인쇄하면 한 장이 더 나온다. 정수로 재면 그걸 놓친다.
+    const over = [...document.querySelectorAll(".sheet")]
+      .filter(s => s.getBoundingClientRect().height > limit + 0.05)
+      .map(s => s.querySelector(".tab").textContent);
+    if (over.length) {
+      console.warn("A4 한 장을 넘었습니다:", over);
+      document.getElementById("bookname").textContent += ` · ⚠ A4 넘침: ${over.join(", ")}`;
+    }
+  });
+
+  const btn = document.getElementById("ansBtn");
+  btn.onclick = () => {
+    const on = document.body.classList.toggle("answers");
+    btn.classList.toggle("on", on);
+    btn.textContent = on ? "정답 숨기기 (교사용)" : "정답 보기";
+  };
+}
+
+/* ── 온라인으로 풀기 ──
+   화면에서는 빈칸·줄에 바로 타이핑한다. 인쇄하면 그대로 밑줄이라 손으로도 푼다.
+   쓴 것은 이름별로 이 브라우저에 저장된다 (store.js). */
+const $ = s => document.querySelector(s);
+const fields = () => [...document.querySelectorAll("#sheets [contenteditable]")];
+
+async function online(){
+  document.querySelectorAll(".blank .in, .write, .wl, .lines div").forEach(el => {
+    if (el.closest(".egrow")) return;                    // 보기 줄은 이미 답이 적혀 있다
+    try { el.contentEditable = "plaintext-only"; } catch { el.contentEditable = "true"; }
+    el.spellcheck = false;
+  });
+
+  RB.chip($("#chip"));
+  if (RB.role() === "student"){
+    // 로그인한 학생: 이름 고정, 서버에 저장. 정답 보기는 선생님만.
+    WHO = RB.whoKey();
+    $("#who").hidden = true; $("#ansBtn").hidden = true;
+    await RB.open(B.slug);
+    restore();
+    document.querySelectorAll(".info .fill i").forEach(i => i.textContent = RB.me().name);
+  } else {
+    WHO = localStorage.getItem("rb1:who") || "";
+    $("#who").value = WHO;
+    restore();
+    $("#who").addEventListener("change", () => {
+      WHO = $("#who").value.trim();
+      localStorage.setItem("rb1:who", WHO);
+      clearMarks(); restore();
+    });
+  }
+
+  let t;
+  $("#sheets").addEventListener("input", e => {
+    const b = e.target.closest(".blank");
+    if (b) unmark(b);                                    // 고치면 그 칸의 채점 표시는 지운다
+    clearTimeout(t);
+    t = setTimeout(() => RB.save(B.slug, WHO, "sheet", fields().map(f => f.textContent)), 400);
+  });
+  // 빈칸에서 Enter 는 줄바꿈이 아니라 다음 칸으로
+  $("#sheets").addEventListener("keydown", e => {
+    if (e.key !== "Enter" || !e.target.matches(".blank .in")) return;
+    e.preventDefault();
+    const all = fields(), i = all.indexOf(e.target);
+    if (all[i + 1]) all[i + 1].focus();
+  });
+
+  $("#gradeBtn").onclick = gradeAll;
+  $("#resetBtn").onclick = () => {
+    if (!confirm("쓴 답을 모두 지우고 처음부터 풀까요?")) return;
+    fields().forEach(f => f.textContent = "");
+    clearMarks();
+    RB.drop(B.slug, WHO, "sheet");
+  };
+}
+
+function restore(){
+  const r = RB.load(B.slug, WHO, "sheet");
+  fields().forEach((f, i) => f.textContent = (r && r.data[i]) || "");
+  document.querySelectorAll(".info .fill i").forEach(i => i.textContent = WHO);
+}
+
+function unmark(b){
+  b.classList.remove("g-ok", "g-check", "g-no");
+  if (b.nextElementSibling && b.nextElementSibling.matches(".fixans")) b.nextElementSibling.remove();
+}
+function clearMarks(){
+  document.querySelectorAll(".blank").forEach(unmark);
+  document.querySelectorAll(".gscore").forEach(x => x.remove());
+  $("#gsum").textContent = "";
+}
+
+// 정답이 정해진 칸만 채점한다. 마인드맵·IB·논술 줄은 선생님이 본다.
+function gradeAll(){
+  clearMarks();
+  let ok = 0, chk = 0, tot = 0;
+  document.querySelectorAll(".sheet").forEach(sh => {
+    let o = 0, n = 0;
+    sh.querySelectorAll(".blank").forEach(b => {
+      if (b.closest(".egrow")) return;
+      const ans = b.querySelector(".ans").textContent;
+      const r = RBGrade.grade(b.querySelector(".in").textContent, ans, b.dataset.mode);
+      if (r === "skip") return;
+      n++;
+      if (r === "ok") o++;
+      if (r === "check") chk++;
+      b.classList.add("g-" + r);
+      if (r !== "ok") b.insertAdjacentHTML("afterend",
+        `<span class="fixans" title="${r === "check" ? "선생님 확인" : "정답"}">${esc(ans)}</span>`);
+    });
+    if (n) sh.querySelector(".brandbar").insertAdjacentHTML("beforeend", `<span class="gscore">${o} / ${n}</span>`);
+    ok += o; tot += n;
+  });
+  $("#gsum").innerHTML = tot
+    ? `<b>${Math.round(ok / tot * 100)}점</b> 맞음 ${ok} · 틀림 ${tot - ok - chk}${chk ? ` · <i>선생님 확인 ${chk}</i>` : ""}`
+    : "";
+  RB.save(B.slug, WHO, "sheetScore", { ok, check: chk, total: tot });
+  const firstUnmarked = document.querySelector(".g-no, .g-check");
+  if (firstUnmarked) firstUnmarked.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+
+// 책은 주소로 고른다:  worksheets.html?book=hi-fly-guy
+// 안 적으면 charlottes-web 을 연다.
+const slug = new URLSearchParams(location.search).get("book") || "charlottes-web";
+const tag = document.createElement("script");
+tag.src = "books/" + slug + ".js";
+tag.onload = render;
+tag.onerror = () => document.getElementById("sheets").innerHTML =
+  '<div class="sheet"><div class="pad"><p style="padding:20mm">책 파일이 없습니다: books/' + slug + '.js</p></div></div>';
+document.head.appendChild(tag);
+</script>
+</body>
+</html>
