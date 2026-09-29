@@ -16,14 +16,15 @@ window.BOOK = {
 
   evidence: {
     by: "두 사람이 등장인물·사건 세 마디·결말을 각자 기억으로 적어 서로 맞춰 보았다",
+    source: "학원 장서 목록의 한 줄 요약을 바닥으로 삼고, 두 사람의 기억 중 요약과 어긋나지 않는 것만 남겼다",
     characters: ["Papa Bear", "Mama Bear", "Brother Bear", "Sister Bear"],
     beats: [
       "the family eats too much junk food and grows heavy and sluggish",
-      "Mama starts a healthy-eating campaign and clears the junk food out",
-      "Papa and the cubs resist at first, then join in with exercise"
+      "Mama Bear notices this and lays down the law, starting a healthy-eating campaign and clearing the junk food out",
+      "Papa and the cubs join in with more exercise and healthier eating"
     ],
     ending: "the family settles into healthier eating and regular exercise",
-    checked: "확인하는 쪽이 제목·저자만 받고 따로 적은 것이 위와 같았다 (2026-09-29)"
+    checked: "두 사람의 기억을 학원 장서 목록의 한 줄 요약과 대조했고, 요약과 어긋난 부분은 요약에 맞춰 바로잡았다 (2026-09-29)"
   },
 
   shadowing: { query: "\"The Berenstain Bears and Too Much Junk Food\" read aloud" },
@@ -36,8 +37,8 @@ window.BOOK = {
     { word: "sluggish",  pos: "adj.", audio: "assets/audio/berenstain-bears-too-much-junk-food/sluggish.mp3",  en: "moving slowly and without much energy", ko: "굼뜬, 느릿느릿한", ex: "The cubs felt {{sluggish}} and tired all day.", ex_ko: "아이들은 하루 종일 굼뜨고 피곤함을 느꼈어요.", pic: "🐌" },
     { word: "healthy",   pos: "adj.", audio: "assets/audio/berenstain-bears-too-much-junk-food/healthy.mp3",   en: "good for your body", ko: "건강한, 건강에 좋은", ex: "Mama decided the family needed {{healthy}} food.", ex_ko: "엄마는 가족에게 건강한 음식이 필요하다고 결심했어요.", pic: "🥗" },
     { word: "campaign",  pos: "n.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/campaign.mp3",  en: "a planned set of actions to change something", ko: "캠페인, 운동", ex: "Mama started a {{campaign}} for healthy eating.", ex_ko: "엄마는 건강하게 먹기 캠페인을 시작했어요.", pic: "📣" },
-    { word: "clear out", pos: "v.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/clear-out.mp3", en: "to remove things from a place completely", ko: "치우다, 없애다", ex: "Mama {{cleared out}} all the junk food from the kitchen.", ex_ko: "엄마는 부엌에서 정크푸드를 모두 치웠어요.", pic: "🧹" },
-    { word: "resist",    pos: "v.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/resist.mp3",    en: "to try to stop yourself from accepting something, or to push against it", ko: "저항하다, 반대하다", ex: "At first, Papa and the cubs {{resisted}} the new healthy rules.", ex_ko: "처음에 아빠와 아이들은 새로운 건강 규칙에 저항했어요.", pic: "✋" },
+    { word: "clear out", pos: "v.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/clear-out.mp3", en: "to remove things from a place completely", ko: "치우다, 없애다", ex: "Mama {{cleared out}} all the junk food from the house.", ex_ko: "엄마는 집에서 정크푸드를 모두 치웠어요.", pic: "🧹" },
+    { word: "notice",    pos: "v.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/notice.mp3",    en: "to see or become aware of something", ko: "알아차리다, 눈치채다", ex: "Mama {{noticed}} that her family was getting heavy and sluggish.", ex_ko: "엄마는 가족이 무거워지고 굼떠진 것을 알아차렸어요.", pic: "👀" },
     { word: "exercise",  pos: "n.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/exercise.mp3",  en: "physical activity that keeps your body strong and healthy", ko: "운동", ex: "The family began to {{exercise}} together every day.", ex_ko: "가족은 매일 함께 운동을 하기 시작했어요.", pic: "🏃" },
     { word: "energy",    pos: "n.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/energy.mp3",    en: "the strength and power to be active and do things", ko: "에너지, 활력", ex: "Healthy food gave the family more {{energy}}.", ex_ko: "건강한 음식은 가족에게 더 많은 활력을 주었어요.", pic: "⚡" },
     { word: "habit",     pos: "n.",   audio: "assets/audio/berenstain-bears-too-much-junk-food/habit.mp3",     en: "something you do often and regularly, almost without thinking", ko: "습관", ex: "Healthy eating and exercise became a new {{habit}} for the family.", ex_ko: "건강하게 먹고 운동하는 것이 가족의 새로운 습관이 되었어요.", pic: "🔁" }
@@ -49,10 +50,10 @@ window.BOOK = {
       frame: "They eat too much junk food and become {{heavy and sluggish}}." },
     { ref: "middle", skill: "사실찾기",  q: "What does Mama decide to do about it?",
       frame: "Mama starts {{a healthy-eating campaign}} and {{clears the junk food out of the house}}." },
-    { ref: "middle", skill: "추론·예측", q: "How do Papa and the cubs react to Mama's new rules at first?",
-      frame: "They {{resist at first}} because {{they are used to eating junk food and do not want to change}}." },
-    { ref: "middle", skill: "사실찾기",  q: "What finally helps Papa and the cubs accept the new, healthier way?",
-      frame: "They {{join in with exercise}} along with the healthier eating." },
+    { ref: "middle", skill: "추론·예측", q: "Why do you think Mama decides to lay down the law about food?",
+      frame: "She probably decides this because {{the family has grown heavy and sluggish, and she wants them to be healthier}}." },
+    { ref: "middle", skill: "사실찾기",  q: "What do Papa and the cubs do to help the family become healthier?",
+      frame: "They {{join in with exercise}} along with eating healthier food." },
     { ref: "end", skill: "사실찾기",  q: "How does the family live by the end of the story?",
       frame: "The family settles into {{healthier eating and regular exercise}}." },
     { ref: "end", skill: "평가·적용", q: "Do you think it is hard to change eating habits the way the Bear family did? Say what you think.",
@@ -67,24 +68,24 @@ window.BOOK = {
       why: "Not a cold, not a lost appetite. Too much junk food makes the family heavy and sluggish." },
     { q: "Who starts the healthy-eating campaign?",
       a: ["Papa Bear", "Mama Bear", "Brother Bear", "Sister Bear"], c: 1,
-      why_ko: "이 변화를 시작한 건 엄마예요. 아빠와 아이들은 오히려 처음엔 반대했어요.",
-      why: "Mama is the one who starts the change. Papa and the cubs actually resist at first." },
+      why_ko: "이 변화를 시작한 건 엄마예요. 가족이 무겁고 굼떠진 걸 알아차린 것도 엄마였어요.",
+      why: "Mama is the one who starts the change — she is the one who notices the family has grown heavy and sluggish." },
     { q: "What does Mama do first?",
       a: ["She buys even more junk food", "She clears the junk food out of the house", "She calls a doctor right away", "She moves the family to a new house"], c: 1,
       why_ko: "엄마는 집 안의 정크푸드를 싹 치워 버려요. 이게 캠페인의 첫걸음이에요.",
       why: "Mama clears all the junk food out of the house. That is the first step of her campaign." },
-    { q: "How do Papa and the cubs feel about the new rules at first?",
-      a: ["They are excited right away", "They resist at first", "They are angry at Mama forever", "They do not notice anything has changed"], c: 1,
-      why_ko: "처음부터 좋아한 건 아니에요. 아빠와 아이들은 처음엔 저항했어요.",
-      why: "Not excited at first — Papa and the cubs resist the change in the beginning." },
-    { q: "What helps the family finally accept the healthier way of living?",
-      a: ["Buying even more junk food", "Joining in with exercise", "Moving to a new house", "Ignoring Mama's rules completely"], c: 1,
-      why_ko: "운동을 함께 시작하면서 가족은 건강한 생활에 마음을 열어요.",
-      why: "Joining in with exercise is what finally brings Papa and the cubs on board with the healthier way." },
+    { q: "What do Papa and the cubs do to support the healthy changes?",
+      a: ["They ignore the new rules completely", "They join in with exercise and healthier eating", "They move out of the house", "They complain to a neighbor"], c: 1,
+      why_ko: "아빠와 아이들도 함께해요. 운동과 건강한 식사에 동참하죠.",
+      why: "Papa and the cubs join in — they add exercise and healthier eating to their days." },
+    { q: "What do Papa and the cubs do that helps the family become healthier?",
+      a: ["They buy even more junk food", "They join in with exercise together", "They move to a new house", "They ignore Mama's rules completely"], c: 1,
+      why_ko: "아빠와 아이들이 운동에 함께 동참하면서 가족은 더 건강해져요.",
+      why: "Papa and the cubs join in with exercise together, and that helps the whole family become healthier." },
     { q: "Who exercises together as a family?",
       a: ["Only Mama exercises", "Only the cubs exercise", "Papa and the cubs join in with Mama", "Only Papa exercises alone"], c: 2,
-      why_ko: "결국 가족 전체가 함께 운동을 해요. 처음엔 반대했던 아빠와 아이들도 동참해요.",
-      why: "In the end, the whole family exercises together — Papa and the cubs join in with Mama." },
+      why_ko: "가족 전체가 함께 운동을 해요. 아빠와 아이들도 엄마와 함께 동참하죠.",
+      why: "The whole family exercises together — Papa and the cubs join in with Mama." },
     { q: "How does the family look at the beginning of the story?",
       a: ["Thin and full of energy", "Heavy and sluggish", "Sick and coughing", "Exactly the same as always"], c: 1,
       why_ko: "이야기 시작 부분에서 가족은 정크푸드를 너무 많이 먹어서 무겁고 굼떠 보여요.",
@@ -121,8 +122,8 @@ window.BOOK = {
         given: "",
         frame: "Mama {{starts a healthy-eating campaign}} and {{clears the junk food out of the house}}." },
       { label: "End",
-        given: "Papa and the cubs resist the change at first.",
-        frame: "They {{join in with exercise}}, and the family settles into {{healthier eating and regular exercise}}." }
+        given: "Mama's new healthy-eating rules take hold in the house.",
+        frame: "Papa and the cubs {{join in with exercise}}, and the family settles into {{healthier eating and regular exercise}}." }
     ]
   },
 
@@ -134,8 +135,8 @@ window.BOOK = {
         deeper: "Why can eating too much junk food make you feel heavy and tired?" },
       { label: "Mama's Campaign",  ask: "What does Mama do to help the family change?",
         deeper: "Why does she need to clear the junk food out completely, not just eat less of it?" },
-      { label: "Resisting Change", ask: "How do Papa and the cubs react to the new rules at first?",
-        deeper: "Why is it hard to change a habit you are used to?" },
+      { label: "Getting Healthy Together", ask: "What do Papa and the cubs do to join the new healthy changes?",
+        deeper: "Why does exercise help alongside healthy eating?" },
       { label: "Exercise",         ask: "What do Papa and the cubs start doing along with healthy eating?",
         deeper: "How does exercise help alongside healthy eating?" },
       { label: "Me",               ask: "What is one healthy habit you could start this week?",
@@ -154,7 +155,7 @@ window.BOOK = {
       "What does Mama do to start the change?"
     ],
     conceptual: [
-      "Why do Papa and the cubs resist the change at first?",
+      "Why might a parent decide to change what the whole family eats?",
       "How does exercise help the family alongside healthy eating?"
     ],
     debatable: [
@@ -166,7 +167,7 @@ window.BOOK = {
 
   // ── ⑥ 논술형 (PEEL + 조건제시형 + 채점 자기점검) ───────
   essay: {
-    prompt: "Mama cleared out the junk food and started a healthy-eating campaign, even though Papa and the cubs resisted at first. Do you think Mama did the right thing? Write your opinion.",
+    prompt: "Mama noticed her family was getting heavy and sluggish, so she cleared out the junk food and started a healthy-eating campaign. Do you think Mama did the right thing? Write your opinion.",
     conditions: [
       "5문장 이상 쓸 것 · Write at least 5 sentences",
       "책 속 장면을 한 가지 넣을 것 · Use one scene from the book",
@@ -242,10 +243,10 @@ window.BOOK = {
         stuck: "질문을 소리 내어 읽게 한 뒤 \"Now say it as an answer.\"" },
 
       { stage: "Comprehension", min: "",
-        say: "Question three asks WHY Papa and the cubs resist at first. Think about how hard it is to give up a favorite food.",
+        say: "Question three asks WHY Mama decides to lay down the law. Think about how the family was feeling before she acted.",
         do: "추론 문항에서는 혼자 두지 않는다. 같이 읽고 시작한다.",
-        exp: "They resist because they are used to eating junk food and do not want to change.",
-        stuck: "\"Do you ever not want to try something new? Why not?\"" },
+        exp: "She decides this because the family has grown heavy and sluggish, and she wants them to be healthier.",
+        stuck: "\"How did the family feel before Mama made the change? Why would that make a parent want to act?\"" },
 
       { stage: "Summary Map", min: "35~45분",
         say: "Somebody — Wanted — But — So — Then. Five boxes, and the whole book is inside.",
@@ -263,11 +264,11 @@ window.BOOK = {
         do: "윗줄은 5분 안에 끝낸다.",
         stuck: "한 가지를 골라 같이 채운다." },
 
-      { stage: "Mind Map (Resisting Change)", min: "",
-        say: "Stop at Resisting Change. Don't just tell me that they resisted — tell me why change is hard.",
+      { stage: "Mind Map (Getting Healthy Together)", min: "",
+        say: "Stop at Getting Healthy Together. Don't just tell me what Papa and the cubs did — tell me why exercise helps alongside eating well.",
         do: "→ 칸에서 반드시 멈춘다. 여기가 오늘의 핵심이다.",
-        exp: "Because it is hard to give up food you are used to eating.",
-        stuck: "\"You said what they did. Now — why is a new habit hard to start?\"" },
+        exp: "Because moving your body and eating well work together to make you feel good.",
+        stuck: "\"You said what they did. Now — why does exercise help too, not just food?\"" },
 
       { stage: "IB Inquiry", min: "55~65분",
         say: "Step 1, the book answers it. Step 2, the book helps but you finish it. Step 3, only you know the answer.",
@@ -302,8 +303,8 @@ window.BOOK = {
         { en: "Is it easy or hard to change a habit? Why?", ko: "습관을 바꾸는 건 쉬울까, 어려울까? 왜 그럴까?" }
       ],
       during: [
-        { en: "Why do you think Papa and the cubs resist Mama's new rules at first?", ko: "아빠와 아이들은 왜 처음에 엄마의 새 규칙에 저항했을까?" },
-        { en: "What finally changes their minds?", ko: "결국 무엇이 그들의 마음을 바꿨을까?" }
+        { en: "Why do you think Mama decides she has to make a change for the whole family?", ko: "엄마는 왜 가족 전체를 위해 변화를 결심했을까?" },
+        { en: "How do Papa and the cubs help the change succeed?", ko: "아빠와 아이들은 이 변화가 잘 되도록 어떻게 도왔을까?" }
       ],
       after: [
         { en: "Do you think the family is happier by the end of the story? Why?", ko: "이야기 끝에서 가족은 더 행복해졌을까? 왜 그렇게 생각하니?" },
@@ -315,7 +316,7 @@ window.BOOK = {
       { sheet: "Word Test",     point: "5분 제한. 못 쓴 칸은 비워 두게 한다.", miss: "철자를 몰라 멈춰 있다. 넘어가라고 미리 말해 준다." },
       { sheet: "Comprehension", point: "질문을 답의 앞부분으로 바꾸는 훈련을 먼저 시킨다.", miss: "단어 하나로 답한다. 질문을 다시 읽고 문장으로 바꾸게 한다." },
       { sheet: "Summary Map",   point: "다 쓴 뒤 책을 덮고 말로 다시 하게 한다.", miss: "책 문장을 그대로 베낀다." },
-      { sheet: "Mind Map",      point: "'Resisting Change' 가지에서 반드시 멈춘다.", miss: "→ 칸에 또 줄거리를 쓴다." },
+      { sheet: "Mind Map",      point: "'Getting Healthy Together' 가지에서 반드시 멈춘다.", miss: "→ 칸에 또 줄거리를 쓴다." },
       { sheet: "IB Inquiry",    point: "1·2단은 말로, 3단만 글로.", miss: "Debatable에 '둘 다 맞다'라고 쓴다. 편을 정하게 한다." },
       { sheet: "Writing",       point: "조건 4개를 먼저 소리 내어 읽는다.", miss: "근거 대신 감상만 쓴다. 책 속 장면이 없으면 근거가 아니다." }
     ],
