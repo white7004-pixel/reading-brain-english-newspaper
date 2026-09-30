@@ -160,8 +160,10 @@ const causeTable = (items, causes) => {
 export function studentPage({ academy, meta, items }, student, stats, text) {
   const wrong = new Set(student.wrong.map((w) => w.no));
   const causes = text.causes.length ? causeTable(items, text.causes) : '<p>틀린 문항이 없습니다.</p>';
+  // 종이에는 학생 이름을 넣지 않는다. 손으로 적을 자리만 두고, 파일 이름으로만 구분한다.
   return sheet(`${student.label}-${meta.subject}리포트`, `
-    ${header(academy, `${student.label} 학생 시험 분석 리포트`, `${examName(meta)} ${meta.subject}`)}
+    ${header(academy, `${meta.subject} 시험 분석 리포트`, `${examName(meta)}`)}
+    <p class="r-line r-who"><b>학생</b><i></i></p>
     <section class="r-row">
       ${nums([
         [`${esc(stats.score)}<small> / ${esc(stats.total)}</small>`, '추정 점수*'],

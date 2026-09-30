@@ -93,18 +93,29 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .tools { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin: 0 auto 8px; width: 210mm; max-width: 100%; }
 .tools button { padding: 7px 14px; font-size: 14px; flex: none; }
 .fit-warn { color: var(--accent); font-size: 13px; }
+.pick { flex-direction: row; align-items: center; gap: 8px; font-size: 13px; color: var(--cream-2); }
+.pick select { width: auto; }
 /* 종이 위의 색 — 학원 대표 색(--brand, app.js 가 #pages 에 넣는다)에서 뽑되 아주 아껴 쓴다.
    색으로 칸을 채우지 않는다. 글자는 먹색, 칸은 가는 선, 학원 색은 위쪽 띠·학원 이름·표 머리 선·비율 눈금에만.
    relative color 를 모르는 브라우저에서는 대표 색을 그대로 쓴다 */
-.page { --brand-ink: var(--brand); --track: #eceef2; --zebra: #fafbfc; }
+.page {
+  --brand-ink: var(--brand); --track: #eceef2; --zebra: #fafbfc; --tint: #f5f7fa; --tint-2: #eef1f6;
+  /* 테마가 갈아끼우는 것들 */
+  --paper: #fff; --pad-x: 10mm; --pad-t: 8mm; --pad-b: 7mm; --radius: 2px;
+  --head-font: var(--serif); --sub-font: var(--sans);
+  --thead-fill: transparent; --thead-color: var(--muted);
+  --verdict-bg: var(--brand-ink); --verdict-fg: #fff;
+}
 @supports (color: oklch(from red l c h)) {
   .page {
     --brand-ink: oklch(from var(--brand) clamp(.32, l, .5) clamp(.04, c, .13) h); /* 너무 밝지도 튀지도 않게 */
     --track: oklch(from var(--brand) .94 .012 h);
     --zebra: oklch(from var(--brand) .987 .004 h);
+    --tint: oklch(from var(--brand) .972 .012 h);
+    --tint-2: oklch(from var(--brand) .935 .025 h);
   }
 }
-.page { color-scheme: light; width: 210mm; height: 297mm; overflow: hidden; margin: 0; padding: 8mm 10mm 7mm; background: #fff; color: var(--ink);
+.page { color-scheme: light; width: 210mm; height: 297mm; overflow: hidden; margin: 0; padding: var(--pad-t) var(--pad-x) var(--pad-b); background: var(--paper); color: var(--ink);
   font-size: calc(10pt * var(--fit, 1)); line-height: 1.45; word-break: keep-all;
   box-shadow: 0 10px 34px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: .8em; border-top: 2mm solid var(--brand-ink);
   -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -112,19 +123,23 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .r-head { display: flex; align-items: baseline; gap: 1em; padding-bottom: .5em; border-bottom: .4mm solid var(--ink); }
 .r-academy { margin: 0; flex: none; max-width: 30%; display: flex; align-items: center; gap: .5em; color: var(--brand-ink); font-weight: 700; font-size: .92em; line-height: 1.25; letter-spacing: -.02em; }
 .r-logo { max-height: 2.6em; max-width: 6em; object-fit: contain; }
-.r-head h2 { flex: 1; min-width: 0; margin: 0; font: 700 1.5em/1.25 var(--serif); letter-spacing: -.045em; color: var(--ink); }
+.r-head h2 { flex: 1; min-width: 0; margin: 0; font: 700 1.5em/1.25 var(--head-font); letter-spacing: -.045em; color: var(--ink); }
 /* 시험 정보 한 줄 (날짜·시간·구성·범위) */
 .r-line { margin-top: -.62em; display: flex; flex-wrap: wrap; gap: .1em 1.1em; align-items: baseline; font-size: .84em; color: var(--muted); }
 .r-range b { color: var(--brand-ink); font-weight: 700; margin-right: .35em; }
+/* 학생 이름은 종이에 넣지 않는다 — 원장님이 손으로 적을 자리만 둔다 */
+.r-who { gap: .6em; }
+.r-who b { color: var(--brand-ink); font-weight: 700; }
+.r-who i { display: inline-block; width: 30mm; border-bottom: .3mm solid var(--line); }
 /* 한 줄 총평 — 종이에서 유일하게 색을 채우는 곳 */
-.r-verdict { display: flex; gap: .9em; align-items: baseline; background: var(--brand-ink); color: #fff; border-radius: 2px; padding: .5em .8em .6em; }
-.r-verdict > b { flex: none; font-size: .78em; font-weight: 600; letter-spacing: .08em; color: rgba(255,255,255,.65); }
+.r-verdict { display: flex; gap: .9em; align-items: baseline; background: var(--verdict-bg); color: var(--verdict-fg); border-radius: var(--radius); padding: .5em .8em .6em; }
+.r-verdict > b { flex: none; font-size: .78em; font-weight: 600; letter-spacing: .08em; opacity: .65; }
 .r-verdict p { font-weight: 600; line-height: 1.5; }
 /* 출제 경향 요약 */
 .r-trend { margin: 0; padding-left: 1.15em; display: grid; gap: .24em; }
 .r-trend li::marker { color: var(--brand-ink); }
 .r-sub { flex: none; max-width: 34%; color: var(--muted); font-size: .88em; text-align: right; line-height: 1.3; }
-.page h3 { font: 700 1.02em/1.3 var(--sans); letter-spacing: -.03em; margin: 0 0 .4em; color: var(--ink); display: flex; gap: .45em; align-items: center; }
+.page h3 { font: 700 1.02em/1.3 var(--sub-font); letter-spacing: -.03em; margin: 0 0 .4em; color: var(--ink); display: flex; gap: .45em; align-items: center; }
 .page h3::before { content: ''; flex: none; width: .5em; height: .5em; border-radius: 50%; background: var(--brand-ink); }
 .page h3 .d { font-family: var(--sans); letter-spacing: 0; font-weight: 600; }
 .r-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; align-items: start; }
@@ -133,13 +148,13 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .r-nums { align-self: stretch; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: .2mm solid var(--line); border-bottom: .2mm solid var(--line); padding: .5em 0; }
 .r-nums div { display: flex; flex-direction: column; justify-content: center; gap: .15em; padding: 0 .8em; text-align: center; border-left: .2mm solid var(--line); }
 .r-nums div:first-child { border-left: 0; }
-.r-nums b { font: 700 1.6em/1.1 var(--serif); letter-spacing: -.04em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.r-nums b { font: 700 1.6em/1.1 var(--head-font); letter-spacing: -.04em; color: var(--ink); font-variant-numeric: tabular-nums; }
 .r-nums b small { font-size: .55em; color: var(--muted); }
 .r-nums span { font-size: .78em; line-height: 1.3; color: var(--muted); }
 /* 분석표 — 가로 선만. 선은 mm(인쇄), 글자·여백은 em(--fit) */
 .t { width: 100%; border-collapse: collapse; font-size: .82em; line-height: 1.35; }
 .t th, .t td { border: 0; border-bottom: .2mm solid var(--line); padding: .3em .5em; text-align: left; overflow-wrap: anywhere; }
-.t thead th { color: var(--muted); font-weight: 600; font-size: .92em; letter-spacing: .02em; white-space: nowrap; border-bottom: .4mm solid var(--brand-ink); padding-bottom: .22em; }
+.t thead th { background: var(--thead-fill); color: var(--thead-color); font-weight: 600; font-size: .92em; letter-spacing: .02em; white-space: nowrap; border-bottom: .4mm solid var(--brand-ink); padding-bottom: .22em; }
 .t tbody tr:last-child > * { border-bottom: 0; }
 .t .grp { color: var(--muted); font-weight: 600; text-align: left; white-space: nowrap; vertical-align: top; padding-top: .45em; }
 .t tr:has(> .grp) > * { border-top: .2mm solid var(--line); padding-top: .45em; } /* 구분이 바뀌는 줄만 살짝 띄운다 */
@@ -176,7 +191,7 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .t-2 { table-layout: fixed; }
 .t-2 th:first-child { width: 7em; }
 .r-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: .35em; }
-.r-grid li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .15em .2em; padding: .3em .35em; border: .2mm solid var(--line); border-radius: 2px; font-size: .9em; line-height: 1.2; }
+.r-grid li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .15em .2em; padding: .3em .35em; border: .2mm solid var(--line); border-radius: var(--radius); font-size: .9em; line-height: 1.2; }
 .r-grid b { font-size: 1.2em; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
 .r-grid span { color: var(--muted); white-space: nowrap; }
 .r-grid li > :nth-child(even) { justify-self: end; }
@@ -198,6 +213,64 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .page [contenteditable]:hover { outline: 1px dashed var(--line); }
 .page :focus-visible { outline-color: var(--brand-ink); }
 
+/* ---------- 리포트 디자인 다섯 가지 (#pages[data-theme]) ----------
+   어느 테마든 학원 대표 색(--brand)에서 색을 뽑는다. 바탕·글꼴·표 머리글 모양만 다르다. */
+
+/* 2. 신문 — 아이보리 종이에 명조. 머리글 아래 겹선 */
+#pages[data-theme=news] .page {
+  --paper: #FCFAF4; --head-font: 'Nanum Myeongjo', var(--serif); --sub-font: 'Nanum Myeongjo', var(--serif);
+  --line: #ded8ca; --zebra: #f7f3e9; --track: #e7e1d2; --radius: 0;
+  border-top-width: 1mm;
+}
+#pages[data-theme=news] .r-head { border-bottom: .9mm double var(--ink); padding-bottom: .45em; }
+#pages[data-theme=news] .r-head h2 { font-size: 1.72em; letter-spacing: -.02em; }
+#pages[data-theme=news] .page h3 { font-size: 1.08em; }
+#pages[data-theme=news] .page h3::before { width: .9em; height: .35mm; border-radius: 0; }
+#pages[data-theme=news] .t thead th { border-bottom-color: var(--ink); }
+
+/* 3. 모던 — 고딕에 둥근 표, 표 머리글만 옅은 학원색 */
+#pages[data-theme=modern] .page {
+  --head-font: 'Gothic A1', var(--sans); --sub-font: 'Gothic A1', var(--sans);
+  --radius: 7px; --thead-fill: var(--tint-2); --thead-color: var(--brand-ink);
+  border-top-width: 0; --pad-t: 10mm;
+}
+#pages[data-theme=modern] .r-head h2 { letter-spacing: -.055em; }
+#pages[data-theme=modern] .t { border-radius: var(--radius); overflow: hidden; }
+#pages[data-theme=modern] .t thead th { border-bottom-width: .2mm; padding: .35em .5em; }
+#pages[data-theme=modern] .page h3::before { width: .45em; height: .45em; }
+
+/* 4. 소프트 — 옅은 학원색 바탕에 흰 표. 부드러운 글꼴 */
+#pages[data-theme=soft] .page {
+  --paper: var(--tint); --head-font: 'Gowun Dodum', var(--sans); --sub-font: 'Gowun Dodum', var(--sans);
+  --radius: 10px; --zebra: transparent; --track: var(--tint-2); --line: rgba(0,0,0,.09);
+  --pad-t: 10mm; --pad-x: 11mm; border-top-width: 0;
+}
+#pages[data-theme=soft] .r-head { border-bottom: 0; }
+#pages[data-theme=soft] .t { background: #fff; border-radius: var(--radius); overflow: hidden; }
+#pages[data-theme=soft] .t th, #pages[data-theme=soft] .t td { padding: .34em .6em; }
+#pages[data-theme=soft] .r-nums { border: 0; background: #fff; border-radius: var(--radius); padding: .7em 0; }
+#pages[data-theme=soft] .r-points { border: 0; background: #fff; border-radius: var(--radius); padding: .45em .7em; }
+#pages[data-theme=soft] .r-foot { border-top-color: rgba(0,0,0,.12); }
+
+/* 5. 임팩트 — 학원색 머리띠. 카톡·블로그에서 가장 눈에 띈다 */
+#pages[data-theme=bold] .page {
+  --head-font: 'Gothic A1', var(--sans); --sub-font: 'Gothic A1', var(--sans);
+  --pad-t: 0; --radius: 3px; --verdict-bg: var(--tint); --verdict-fg: var(--ink);
+  border-top-width: 0;
+}
+#pages[data-theme=bold] .r-head {
+  margin: 0 calc(-1 * var(--pad-x)); padding: 6mm var(--pad-x) 5mm;
+  background: var(--brand-ink); color: #fff; border-bottom: 0;
+}
+#pages[data-theme=bold] .page.card-news .r-head { padding: 52px var(--pad-x) 42px; }
+#pages[data-theme=bold] .r-head h2 { color: #fff; font-weight: 800; letter-spacing: -.05em; }
+#pages[data-theme=bold] .r-academy { color: rgba(255,255,255,.88); }
+#pages[data-theme=bold] .r-sub { color: rgba(255,255,255,.72); }
+#pages[data-theme=bold] .r-verdict { border-left: .7mm solid var(--brand-ink); }
+#pages[data-theme=bold] .r-verdict > b { color: var(--brand-ink); opacity: 1; }
+#pages[data-theme=bold] .r-line { margin-top: 0; }
+#pages[data-theme=bold] .page h3::before { width: .45em; height: .45em; }
+
 @media (max-width: 480px) {
   .site { padding: 12px 16px; }
   .hero { padding: 32px 0 24px; }
@@ -206,7 +279,7 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 }
 
 /* 카드뉴스: 카톡·블로그용 세로 1080×1350. A4 와 같은 조각을 쓰되 크기만 다르다 */
-.page.card-news { width: 1080px; height: 1350px; padding: 64px 56px; font-size: calc(24px * var(--fit, 1)); display: flex; flex-direction: column; }
+.page.card-news { width: 1080px; height: 1350px; --pad-x: 56px; --pad-t: 64px; --pad-b: 56px; font-size: calc(24px * var(--fit, 1)); display: flex; flex-direction: column; }
 .sheet.card-news .tools { width: 1080px; }
 .page.card-news .r-head h2 { font-size: 2.1em; }
 .page.card-news .r-head { margin-bottom: .9em; }

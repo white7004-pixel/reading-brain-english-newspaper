@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage } from '../public/report.js';
-import { examStats } from '../public/lib.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage } from '../public/report.js';
+import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
   assert.match(sheet('이름', '<p>가</p>', 'card-news'), /class="page card-news"/);
@@ -95,6 +95,18 @@ test('문항이 많으면 전 문항 표를 둘째 장으로 뺀다', () => {
   // 앞장에는 전 문항 표가 없고 뒷장에 있다
   assert.equal(html.match(/전 문항 분석표/g).length, 1);
   assert.equal(schoolPage(ctx, school).match(/class="page"/g).length, 1);
+});
+
+test('학생 리포트 종이에는 학생 이름이 들어가지 않는다', () => {
+  const student = { label: '김OO', wrong: [{ no: 2, chosen: '' }] };
+  const stats = studentStats(items, student.wrong);
+  const text = { summary: '기본 개념은 안정적입니다.', causes: [{ no: 2, cause: '단서 놓침·추론 오류', explain: '근거를 못 찾았을 수 있습니다.' }], directions: ['오답 재풀이'] };
+  const html = studentPage(ctx, student, stats, text);
+  // 인쇄되는 종이(.page) 안에는 이름이 없다. 파일 이름(data-png)에만 남아 원장님이 구분한다.
+  const page = html.slice(html.indexOf('<article'));
+  assert.doesNotMatch(page, /김OO/);
+  assert.match(html, /data-png="김OO-영어리포트"/);
+  assert.match(page, /학생<\/b>/); // 손으로 적을 자리
 });
 
 test('A4 도 AI 글을 그대로 넣지 않는다', () => {

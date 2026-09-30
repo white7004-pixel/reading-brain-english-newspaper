@@ -134,6 +134,7 @@ academyForm.addEventListener('submit', (e) => {
   state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src };
   store.set('academy', state.academy);
   showAcademy();
+setTheme(store.get('theme'));
   academyForm.closest('details').open = false;
 });
 
@@ -370,6 +371,19 @@ $('#save-cards').addEventListener('click', async (e) => {
     button.disabled = false; // 중간에 실패해도 다시 누를 수 있게 되돌린다
   }
 });
+
+// ---------- 리포트 디자인 고르기 ----------
+// 다섯 가지는 style.css 의 #pages[data-theme] 에 있다. 글꼴이 바뀌면 높이도 바뀌므로 다시 한 장에 맞춘다.
+const THEMES = ['classic', 'news', 'modern', 'soft', 'bold'];
+function setTheme(name) {
+  const theme = THEMES.includes(name) ? name : 'classic';
+  $('#pages').dataset.theme = theme;
+  $('#theme').value = theme;
+  store.set('theme', theme);
+  fitAll();
+  document.fonts.ready.then(fitAll); // 처음 고른 글꼴은 늦게 들어온다
+}
+$('#theme').addEventListener('change', (e) => setTheme(e.target.value));
 
 $('#print').addEventListener('click', () => window.print());
 
