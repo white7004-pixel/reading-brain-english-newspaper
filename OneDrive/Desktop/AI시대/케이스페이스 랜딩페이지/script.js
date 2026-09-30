@@ -132,4 +132,24 @@ document.addEventListener('DOMContentLoaded', () => {
       header.classList.toggle('is-scrolled', !entry.isIntersecting);
     }).observe(sentinel);
   }
+
+  initPauseOffscreen();
+
+  // 화면 밖으로 나간 사진 띠는 멈춘다.
+  // 폰에서 보이지도 않는 애니메이션이 계속 도는 것이 끊김의 큰 몫이다.
+  function initPauseOffscreen() {
+    if (!('IntersectionObserver' in window)) return;
+    const tracks = document.querySelectorAll('.gallery-track, .review-track');
+    if (!tracks.length) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle('is-offscreen', !entry.isIntersecting);
+      });
+    }, { rootMargin: '120px 0px' });
+
+    // 도는 상태로 시작한다. 감시자가 화면을 벗어난 것을 본 뒤에만 멈춘다.
+    // 이렇게 해야 감시자가 어긋나도 갤러리가 멈춘 채로 굳지 않는다.
+    tracks.forEach(t => io.observe(t));
+  }
 });

@@ -689,3 +689,29 @@ ul { list-style: none; }
       linear-gradient(180deg, rgba(15,36,56,0.74) 0%, rgba(15,36,56,0.78) 45%, rgba(15,36,56,0.84) 100%);
   }
 }
+
+/* ═══════════════════════════════════════════════
+   모바일에서 사진이 돌아갈 때 끊기지 않게
+   ═══════════════════════════════════════════════ */
+
+/* 화면 밖으로 나간 띠는 멈춘다 — 폰이 헛돌지 않게 */
+.gallery-track.is-offscreen .gallery-grid,
+.review-track.is-offscreen .review-shot-grid {
+  animation-play-state: paused;
+}
+
+@media (max-width: 860px) {
+  /* 좁은 화면일수록 같은 속도가 훨씬 빠르게 느껴진다. 두 배로 늦춘다 */
+  .gallery-grid { animation-duration: 66s; }
+  .review-shot-grid { animation-duration: 92s; }
+
+  /* 히어로 사진은 폰에서 작은 판을 쓴다 (1.9MB → 0.6MB) */
+  .hero__slide:nth-child(1) { background-image: url('assets/images/md/kspace-01.jpg') !important; }
+  .hero__slide:nth-child(2) { background-image: url('assets/images/md/kspace-09.jpg') !important; }
+  .hero__slide:nth-child(3) { background-image: url('assets/images/md/kspace-03.jpg') !important; }
+  .hero__slide:nth-child(4) { background-image: url('assets/images/md/kspace-04.jpg') !important; }
+  .hero__slide:nth-child(5) { background-image: url('assets/images/md/kspace-07.jpg') !important; }
+
+  /* 폰에서는 히어로 확대를 끈다. 전체화면 다섯 장을 계속 키우는 건 부담만 된다 */
+  .hero__slide { animation: heroFade 25s infinite; }
+}
