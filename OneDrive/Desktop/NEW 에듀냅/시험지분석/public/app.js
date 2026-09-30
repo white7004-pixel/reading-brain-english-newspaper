@@ -159,6 +159,10 @@ $('#upload-form').addEventListener('submit', async (e) => {
     setStatus('#upload-status', '');
     show('#step-confirm');
     $('#step-students').hidden = false;
+    // 원장님이 더 누르지 않아도 되게 바로 분석까지 간다. 고칠 곳이 있으면 문항표에서 고치고
+    // '리포트 만들기' 를 다시 누르면 새로 만들어진다. 학원 정보가 없는 등 못 가는 경우는
+    // make-report 가 그 자리에서 이유를 알려 준다.
+    $('#make-report').click();
   } catch (err) {
     setStatus('#upload-status', `${err.message} — 버튼을 다시 누르면 다시 시도합니다`, true);
   } finally {

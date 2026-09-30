@@ -25,10 +25,15 @@
     <form id="upload-form" class="grid">
       <label class="wide">시험지 사진 또는 PDF (1~6쪽, 쪽 순서대로 선택)<input name="pages" type="file" accept="image/*,application/pdf,.pdf" multiple required></label>
       <label class="wide">정답지 사진 또는 PDF (있으면, 2쪽까지)<input name="answers" type="file" accept="image/*,application/pdf,.pdf" multiple></label>
-      <label>과목 (알면 골라 주세요)<select name="subject"><option value="">— AI가 읽습니다</option></select></label>
-      <label>학년 (알면 골라 주세요)<select name="grade"><option value="">— AI가 읽습니다</option></select></label>
-      <p class="hint wide">골라 두시면 그 학년 교육과정을 함께 보내 AI가 영역·세부 포인트를 더 정확히 적습니다.</p>
-      <button class="wide">AI로 문항표 만들기</button>
+      <button class="wide">올리면 바로 분석합니다</button>
+      <details class="wide">
+        <summary>과목·학년을 직접 골라 두기 (안 하셔도 됩니다)</summary>
+        <div class="grid">
+          <label>과목<select name="subject"><option value="">— AI가 읽습니다</option></select></label>
+          <label>학년<select name="grade"><option value="">— AI가 읽습니다</option></select></label>
+          <p class="hint wide">골라 두시면 그 학년 교육과정을 함께 보내 AI가 영역·세부 포인트를 더 정확히 적습니다.</p>
+        </div>
+      </details>
     </form>
     <datalist id="unit-list"></datalist>
     <p id="upload-status" class="status" role="status"></p>
