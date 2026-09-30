@@ -2,6 +2,7 @@
 import { GRADES, SECTIONS, SECTION_KO } from './core/scale.js';
 import { DAYS, daysOf } from './core/progress.js';
 import { checkName, parseBooks } from './core/student.js';
+import { nextSet } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -31,8 +32,10 @@ sf.addEventListener('submit', (e) => {
   if (empty.length) return status('#student-status', `수업 요일을 하나 이상 골라 주세요: ${empty.join(', ')}`, 'error');
   const academy = load('elt:academy', {});
   const date = today();
-  const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, grade: sf.grade.value, date, start: sf.start.value || date, plan, academy, sectionIdx: 0, states: {}, used: [], current: null, plays: 0 };
+  const set = nextSet(load('elt:lastSet', null));
+  const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, grade: sf.grade.value, date, start: sf.start.value || date, plan, academy, set, stage: 1, s1: { i: 0, log: [], started: false }, w2: { i: 0, log: [], started: false }, shownAt: null, sectionIdx: 0, states: {}, used: [], current: null, plays: 0 };
   if (!save('elt:session', session)) return status('#student-status', '이 브라우저에 저장할 수 없습니다 (사생활 보호 모드인지 확인해 주세요)', 'error');
+  save('elt:lastSet', set);
   location.href = 'test.html';
 });
 
