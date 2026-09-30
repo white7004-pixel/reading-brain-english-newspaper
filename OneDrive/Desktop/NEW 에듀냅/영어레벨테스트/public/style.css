@@ -372,7 +372,7 @@ body.exam {
 .exam label { color: var(--muted); }
 .exam input, .exam select, .exam textarea { color: var(--ink); background: #fff; border-color: var(--rule); }
 .exam input:hover, .exam select:hover, .exam textarea:hover { border-color: #9fb0a8; }
-.exam input::placeholder, .exam textarea::placeholder { color: #8a9690; }
+.exam input::placeholder, .exam textarea::placeholder { color: #66736d; }
 .exam select option { background: #fff; color: var(--ink); }
 .exam input[type=color] { background: #fff; border-color: var(--rule); }
 .exam input[type=file] { color: var(--muted); }

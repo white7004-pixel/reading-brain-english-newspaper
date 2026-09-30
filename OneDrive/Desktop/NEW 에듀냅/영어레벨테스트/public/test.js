@@ -4,7 +4,7 @@ import { SECTIONS, SECTION_KO, startStep, stepData } from './core/scale.js';
 import { start, nextQuery, answer, skip, stop, LIMITS, adaptiveRail } from './core/engine.js';
 import { usable, pick, readiness } from './core/bank.js';
 import { usableForm, checkWrite, isWrite, stage1Score, levelStep, railFor, MIN_STAGE1, PASS } from './core/forms.js';
-import { showMC, showWrite, startTimer, stopTimer } from './form-ui.js';
+import { showMC, showWrite, startTimer, stopTimer, picking } from './form-ui.js';
 
 const $ = (s) => document.querySelector(s);
 const WPM_AT_RATE_1 = 170; // [추정] 브라우저 음성 rate 1.0 의 분당 단어 수. 실제 기기에서 재서 맞춘다.
@@ -20,6 +20,8 @@ const load = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch 
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
 const status = (text, kind = '') => { $('#test-status').textContent = text; $('#test-status').className = `status ${kind}`; };
 const keep = () => save('elt:session', session);
+// 안내·1차 결과 단추는 뜬 뒤 400ms 동안 누름을 받지 않는다 (마지막 문항의 두 번 누름이 넘어오지 않게)
+const armed = (fn) => { const t = performance.now(); return () => { if (performance.now() - t >= 400) fn(); }; };
 
 const session = load('elt:session');
 if (!session) {
@@ -54,7 +56,7 @@ if (!session) {
     show('#intro');
     $('#intro-title').textContent = title;
     $('#intro-text').textContent = text;
-    $('#intro-go').onclick = go;
+    $('#intro-go').onclick = armed(go);
   }
 
   // ── 1차 문제지 ──
@@ -77,7 +79,7 @@ if (!session) {
     $('#gate-title').textContent = `1차 점수 ${r.score}점`;
     $('#gate-text').textContent = r.passed ? `${PASS}점 이상이라 2차로 넘어갑니다. 2차는 단어·문법·독해·듣기와 쓰기입니다.` : '1차 시험이 끝났습니다. 결과지를 보여 드립니다.';
     $('#gate-go').textContent = r.passed ? '2차 시작' : '결과 보기';
-    $('#gate-go').onclick = () => { session.stage = r.passed ? 2 : 'end'; keep(); route(); };
+    $('#gate-go').onclick = armed(() => { session.stage = r.passed ? 2 : 'end'; keep(); route(); });
   }
 
   // ── 2차 쓰기 블록 ──
@@ -106,7 +108,7 @@ if (!session) {
       stopTimer();
       window.speechSynthesis?.cancel();
       const correct = !res.timeout && !res.dontKnow && (isWrite(it) ? checkWrite(it, res.entries) : res.choice === it.answer);
-      push({ id: it.id, no: it.no, area: it.area, level: it.level, point: it.point || '', correct, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: session.shownAt ? Date.now() - session.shownAt : 0, given: res.entries ?? res.choice ?? null });
+      push({ id: it.id, no: it.no, area: it.area, level: it.level, point: it.point || '', correct, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: session.shownAt ? (res.at ?? Date.now()) - session.shownAt : 0, given: res.entries ?? res.choice ?? null });
       session.shownAt = null;
       session.current = null;
       keep();
@@ -189,7 +191,7 @@ if (!session) {
   function choose(section, item, res) {
     stopTimer();
     window.speechSynthesis?.cancel();
-    const rec = { itemId: item.id, step: item.step, unit: item.unit, kind: item.kind, correct: !res.timeout && !res.dontKnow && res.choice === item.answer, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: session.shownAt ? Date.now() - session.shownAt : 0 };
+    const rec = { itemId: item.id, step: item.step, unit: item.unit, kind: item.kind, correct: !res.timeout && !res.dontKnow && res.choice === item.answer, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: session.shownAt ? (res.at ?? Date.now()) - session.shownAt : 0 };
     session.states[section] = answer(session.states[section], rec);
     session.used.push(item.id);
     session.current = null;
@@ -240,7 +242,7 @@ if (!session) {
     $('#plays').textContent = playsText(true);
     const rate = Math.min(1.3, Math.max(0.6, stepData(item.step ?? levelStep(item.level)).gen.wpm / WPM_AT_RATE_1));
     await say(item.script ?? item.passage, rate, item.id);
-    if (session.current !== item.id) return; // 듣는 사이에 답했다
+    if (session.current !== item.id || picking()) return; // 듣는 사이에 답했다 (고른 줄을 칠해 둔 사이 포함)
     if (!session.shownAt) { session.shownAt = Date.now(); keep(); startTimer(session.shownAt, () => done({ timeout: true })); }
     $('#plays').textContent = playsText();
     $('#play').disabled = session.plays >= MAX_PLAYS;
@@ -252,7 +254,7 @@ if (!session) {
     const male = voices.find((v) => v !== female && /male|david|guy|daniel|mark|alex|fred/i.test(v.name)) || voices.find((v) => v !== female) || female;
     const lines = script.split('\n').map((l) => l.trim()).filter(Boolean);
     return lines.reduce((p, line) => p.then(() => new Promise((resolve) => {
-      if (session.current !== id) return resolve(); // 답해서 다음 문항으로 넘어갔으면 남은 줄은 읽지 않는다
+      if (session.current !== id || picking()) return resolve(); // 답해서 다음 문항으로 넘어갔으면 남은 줄은 읽지 않는다
       const m = /^([WM]):\s*(.*)$/.exec(line);
       const u = new SpeechSynthesisUtterance(m ? m[2] : line);
       u.lang = 'en-US';

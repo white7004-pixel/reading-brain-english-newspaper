@@ -3,6 +3,9 @@ import { marked, SECONDS } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
 let tick = null;
+let pending = false; // 고른 줄을 칠해 두고 넘어가기를 기다리는 중
+export const picking = () => pending;
+const GUARD_MS = 300; // 문항이 뜬 직후의 누름·Enter 는 앞 문항에서 넘어온 것으로 보고 무시
 const PICK_MS = 180; // 고른 줄이 칠해진 것을 잠깐 보여 준 뒤 넘어간다
 const en = (s) => !/[ㄱ-ㅎ가-힣]/.test(s); // 한글이 없으면 영어 글꼴(Literata)
 
@@ -39,18 +42,23 @@ export function showMC(it, done) {
   $('#choices').hidden = false;
   text(it);
   layout(false);
+  pending = false;
   const shownAt = performance.now();
   const pickOne = (res, b) => {
-    if (performance.now() - shownAt < 300 || b.disabled) return;
+    if (performance.now() - shownAt < GUARD_MS || b.disabled) return;
+    const at = Date.now(); // 걸린 시간은 누른 때까지 (칠해 두는 PICK_MS 는 빼고)
+    pending = true;
     for (const x of $('#choices').children) x.disabled = true;
     b.classList.add('pick');
     clearInterval(tick); // 칠한 채 기다리는 동안 시간이 다 되어 모름으로 넘어가지 않게
-    setTimeout(() => done(res), PICK_MS);
+    $('#play').disabled = true;
+    window.speechSynthesis?.cancel();
+    setTimeout(() => done({ ...res, at }), PICK_MS);
   };
   const row = (mark, html, res, cls) => { const b = button(`<i aria-hidden="true">${mark}</i><span>${html}</span>`, () => pickOne(res, b), cls); return b; };
   $('#choices').replaceChildren(
     ...it.choices.map((c, i) => row(i + 1, marked(c), { choice: i }, en(c) ? 'en' : '')),
-    row('?', '모름 — 모르면 짐작하지 말고 이것을 고르세요', { dontKnow: true }, 'dont-know'),
+    row('?', '모름', { dontKnow: true }, 'dont-know'),
   );
 }
 
@@ -62,6 +70,9 @@ export function showWrite(it, done) {
   $('#hint').hidden = !it.hint_ko;
   $('#hint').textContent = it.hint_ko || '';
   layout(true);
+  pending = false;
+  const shownAt = performance.now();
+  const early = () => performance.now() - shownAt < GUARD_MS;
   const parts = String(it.template).split('{}');
   const line = $('#write-line');
   const inputs = [];
@@ -76,13 +87,18 @@ export function showWrite(it, done) {
     inp.setAttribute('autocorrect', 'off');
     inp.setAttribute('autocapitalize', 'off');
     inp.setAttribute('aria-label', `${i + 1}번째 칸`);
-    inp.onkeydown = (e) => { if (e.key === 'Enter' && i < parts.length - 2) { e.preventDefault(); inputs[i + 1].focus(); } };
+    // Enter 를 누르고 있으면(repeat) 칸을 건너 빈 답으로 내 버리지 않게 무시한다
+    inp.onkeydown = (e) => {
+      if (e.key !== 'Enter') return;
+      if (e.repeat || early()) return e.preventDefault();
+      if (i < parts.length - 2) { e.preventDefault(); inputs[i + 1].focus(); }
+    };
     inputs.push(inp);
     line.append(inp);
   });
   const submit = $('#write button');
   submit.disabled = false;
-  $('#write').onsubmit = (e) => { e.preventDefault(); submit.disabled = true; done({ entries: inputs.map((x) => x.value) }); };
+  $('#write').onsubmit = (e) => { e.preventDefault(); if (early() || submit.disabled) return; submit.disabled = true; done({ entries: inputs.map((x) => x.value), at: Date.now() }); };
   inputs[0]?.focus();
 }
 
