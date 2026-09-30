@@ -2,6 +2,222 @@
  "stage1": {
   "A": [
    {
+    "id": "s1-A-1",
+    "no": 1,
+    "area": "listening",
+    "level": "중1",
+    "kind": "그림 정보",
+    "question": "대화를 듣고, 두 사람의 반 티셔츠 디자인으로 가장 알맞은 것을 고르시오.",
+    "script": "M: Emma, is that the design for our class T-shirt?\nW: Yes. We'll wear it on sports day. Look, there's a lion on the front.\nM: Cool. Is our class number under the lion?\nW: No, it's on the back. And the T-shirt is yellow.\nM: Yellow? I thought we chose white.\nW: We did, but white gets dirty too fast.",
+    "choices": [
+     "흰 티셔츠 앞면에 사자가 있고, 반 번호는 뒷면에 있는 디자인",
+     "노란 티셔츠 앞면에 사자가 있고, 반 번호는 뒷면에 있는 디자인",
+     "노란 티셔츠 앞면에 사자가 있고, 그 아래에 반 번호가 있는 디자인",
+     "노란 티셔츠 앞면에 별이 있고, 반 번호는 뒷면에 있는 디자인"
+    ],
+    "explain_ko": "앞면에 사자, 반 번호는 뒷면, 색은 흰색에서 노란색으로 바뀌었다. 흰색·사자 아래 번호는 대화에서 나왔다가 아니라고 한 것이다.",
+    "answer": 1,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-2",
+    "no": 2,
+    "area": "listening",
+    "level": "중1",
+    "kind": "관계",
+    "question": "대화를 듣고, 두 사람의 관계로 가장 적절한 것을 고르시오.",
+    "script": "M: Hello. Are you here for a family photo?\nW: Yes. It's for my grandma's seventieth birthday.\nM: Great. Please sit here, and your brother can stand behind you.\nW: Like this? Should I take off my glasses?\nM: No, they look nice. Now, everyone, look at the camera and smile.\nW: Did my brother close his eyes?\nM: Yes, he did. Let's take one more.",
+    "choices": [
+     "미용사 – 손님",
+     "안경점 직원 – 손님",
+     "할머니 – 손녀",
+     "사진사 – 손님"
+    ],
+    "explain_ko": "가족사진을 찍으러 온 손님에게 자리를 잡아 주고 카메라를 보라고 하므로 사진사와 손님이다. 안경·할머니는 대화에 나온 말로 만든 오답이다.",
+    "answer": 3,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-3",
+    "no": 3,
+    "area": "listening",
+    "level": "중2",
+    "kind": "심정",
+    "question": "대화를 듣고, 남자의 마지막 심정으로 가장 적절한 것을 고르시오.",
+    "script": "W: Tom, you look down. What's wrong?\nM: My family was going to go fishing at the river this Saturday, but my dad has to work.\nW: Oh, that's too bad. You were looking forward to it.\nM: Yes. I wanted to catch a really big fish this time.\nW: Maybe you can go next weekend.\nM: Wait, my dad just sent me a message. He doesn't have to work after all!\nW: Really? So you can go?\nM: Yes! And my uncle is bringing his boat. I can't wait!",
+    "choices": [
+     "실망한",
+     "걱정하는",
+     "신이 난",
+     "미안한"
+    ],
+    "explain_ko": "처음에는 낚시를 못 가서 실망했지만, 아빠가 일하지 않아도 된다는 소식에 삼촌 배까지 타게 되어 마지막에는 신이 났다. '실망한'은 처음 심정이다.",
+    "answer": 2,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-4",
+    "no": 4,
+    "area": "listening",
+    "level": "중2",
+    "kind": "부탁한 일",
+    "question": "대화를 듣고, 여자가 남자에게 부탁한 일로 가장 적절한 것을 고르시오.",
+    "script": "W: Sam, the students from Canada are visiting our school this Friday.\nM: I know. Our class is having a welcome party for them, right?\nW: Yes. Emily is drawing a big welcome sign, and Mr. Hall will bring snacks.\nM: What about name tags?\nW: Jason and I are making them tonight. But we still need someone to take photos at the party.\nM: I have a good camera at home.\nW: Great. Can you do it for us? We want to make a photo book for them.\nM: Sure. I'll bring my camera on Friday.",
+    "choices": [
+     "환영 표지판 그리기",
+     "간식 가져오기",
+     "이름표 만들기",
+     "환영 파티 사진 찍기"
+    ],
+    "explain_ko": "여자는 파티에서 사진 찍을 사람이 필요하다며 카메라가 있는 남자에게 부탁했다. 표지판은 Emily, 간식은 Mr. Hall, 이름표는 여자와 Jason이 맡았다.",
+    "answer": 3,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-5",
+    "no": 5,
+    "area": "listening",
+    "level": "중3",
+    "kind": "의견",
+    "question": "대화를 듣고, 남자의 의견으로 가장 적절한 것을 고르시오.",
+    "script": "W: Dad, I'm going to bake banana bread for Grandpa's visit tomorrow.\nM: Sounds great, Olivia. Do you have a recipe?\nW: Yes, but I want to make it my own way. I'll use honey instead of sugar and add some chocolate chips.\nM: Is this your first time making banana bread?\nW: Yes. Why?\nM: When you try a recipe for the first time, I think you should follow it exactly. Then you'll know how it's supposed to taste. If you change many things at once and the bread fails, you won't know what went wrong. Next time, you can change one thing and see the difference.\nW: Okay. I'll use sugar this time.",
+    "choices": [
+     "설탕 대신 꿀을 넣으면 더 건강한 빵을 만들 수 있다.",
+     "처음 만드는 요리는 요리법을 그대로 따라 해야 한다.",
+     "손님이 오는 날에는 처음 해 보는 요리를 하지 않는 것이 좋다.",
+     "요리를 잘하려면 여러 재료를 한꺼번에 바꿔 보아야 한다."
+    ],
+    "explain_ko": "아빠는 처음 해 보는 요리법은 그대로 따라 해야 맛이 어때야 하는지 알고, 한꺼번에 여러 가지를 바꾸면 무엇이 잘못됐는지 모른다고 한다. 꿀·설탕, 할아버지 방문은 대화에 나온 말로 만든 오답이다.",
+    "answer": 1,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-6",
+    "no": 6,
+    "area": "listening",
+    "level": "중3",
+    "kind": "이어질 응답",
+    "question": "대화를 듣고, 여자의 마지막 말에 이어질 남자의 응답으로 가장 적절한 것을 고르시오.",
+    "script": "M: Excuse me. Do you have these hiking boots in size nine?\nW: Let me check our stock. I'm sorry, but size nine is sold out in brown.\nM: Oh no. My family is going hiking in the mountains this week. I really need new boots.\nW: I can order a pair for you. They'll arrive on Friday.\nM: Friday is too late. We're leaving on Wednesday morning.\nW: I see. Well, we have the same boots in size nine, but in gray. Would you like to try them on?",
+    "choices": [
+     "Great. I'll pick them up on Friday, then.",
+     "No problem. I'll wait until the brown ones arrive.",
+     "Sure. The color isn't important to me.",
+     "Thanks, but size nine is too big for me."
+    ],
+    "explain_ko": "갈색은 금요일에나 오는데 수요일에 떠나야 하므로, 같은 치수의 회색을 신어 보겠다는 응답이 알맞다. 금요일에 찾으러 오겠다는 말은 떠나는 날 뒤라 맞지 않는다.",
+    "answer": 2,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-7",
+    "no": 7,
+    "area": "listening",
+    "level": "고1",
+    "kind": "목적",
+    "question": "대화를 듣고, 여자가 전화한 목적으로 가장 적절한 것을 고르시오.",
+    "script": "M: Hello, Brush and Color Art Studio. This is Mark speaking.\nW: Hi, Mark. This is Karen Wells. My son Tyler takes your watercolor class on Tuesdays.\nM: Oh, yes. Tyler is doing really well. His painting of the harbor last week was wonderful.\nW: Thank you. He loves your class. Actually, that's why I'm calling. Starting next month, he has swimming practice on Tuesdays, but he doesn't want to give up painting.\nM: I see. We have the same watercolor class on Thursdays at four thirty.\nW: That would be perfect. Is there any space in that class?\nM: Yes, there are two spots left. Should I move him to Thursdays from next month?\nW: Yes, please. And does he need to bring anything new?\nM: No, the same brushes and paper will be fine.",
+    "choices": [
+     "아들의 미술 수업 요일을 바꾸려고",
+     "아들의 그림을 칭찬해 준 것에 감사하려고",
+     "아들의 수영 수업을 신청하려고",
+     "수업에 새로 필요한 준비물을 물어보려고"
+    ],
+    "explain_ko": "화요일에 수영 연습이 생겨 아들의 수채화 수업을 목요일로 옮기려고 전화했다. 칭찬·수영·준비물은 대화 중에 곁들여 나온 이야기다.",
+    "answer": 0,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-8",
+    "no": 8,
+    "area": "listening",
+    "level": "고1",
+    "kind": "금액",
+    "question": "대화를 듣고, 여자가 지불할 금액을 고르시오.",
+    "script": "W: Hi. I'd like to buy some souvenirs for my friends back home.\nM: Sure. These keychains are very popular. They're five dollars each.\nW: They're cute. I'll take four. And how much is this mug with the lighthouse on it?\nM: It's fifteen dollars. If you buy two mugs, the second one is half price.\nW: I only need one. It's for my aunt.\nM: Okay. Anything else?\nW: What about these postcards?\nM: They're one dollar each, but they're free if you spend thirty dollars or more.\nW: Great. Then I'll take three postcards, too. Oh, wait. My friend Jake already has a keychain like this. I'll take three keychains, not four.\nM: No problem. So, three keychains, one mug, and three postcards.\nW: That's right. Here's my card.",
+    "choices": [
+     "$33",
+     "$30",
+     "$35",
+     "$38"
+    ],
+    "explain_ko": "열쇠고리 3개 $15 + 머그 1개 $15 = $30이고, $30 이상이라 엽서 3장은 무료다. $35는 열쇠고리 4개로 계산한 값, $33은 엽서 값을 더한 값이다.",
+    "answer": 1,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-9",
+    "no": 9,
+    "area": "listening",
+    "level": "고2",
+    "kind": "내용 불일치",
+    "question": "다음을 듣고, 학교 앨범 사진 촬영에 관한 내용과 일치하지 않는 것을 고르시오.",
+    "script": "M: Hello, everyone. This is Nathan Hughes, your student council president. I'd like to tell you about Yearbook Photo Day. Photos for this year's yearbook will be taken next Tuesday and Wednesday in the school auditorium. First-year students will have their photos taken on Tuesday, and second- and third-year students will have theirs taken on Wednesday. Please wear your school uniform, and don't forget your name tag. Each photo takes only about two minutes, so your homeroom teacher will send you there in small groups during class time. If you are absent on your day, you can come to the make-up session next Monday after school. Also, the photographers will take a group photo of every club on Thursday at lunchtime. Club leaders should sign up at the student council room by this Friday. Thank you.",
+    "choices": [
+     "동아리 단체 사진은 목요일 방과 후에 찍는다.",
+     "2학년과 3학년은 수요일에 사진을 찍는다.",
+     "교복을 입고 이름표를 가져와야 한다.",
+     "결석한 학생은 다음 주 월요일 방과 후에 찍을 수 있다."
+    ],
+    "explain_ko": "동아리 단체 사진은 목요일 점심시간에 찍는다. '방과 후'는 결석자 보충 촬영(월요일)에 나온 말이다.",
+    "answer": 0,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-10",
+    "no": 10,
+    "area": "listening",
+    "level": "고2",
+    "kind": "도표",
+    "question": "다음 표를 보면서 대화를 듣고, 두 사람이 예약할 고래 관찰 투어를 고르시오.\n투어 | 출발 시각 | 걸리는 시간 | 1인 가격 | 점심\nA | 8:00 | 3시간 | $45 | 없음\nB | 9:30 | 4시간 | $60 | 있음\nC | 10:00 | 2시간 | $40 | 없음\nD | 1:00 (오후) | 4시간 | $55 | 있음",
+    "script": "W: Honey, let's book a whale-watching tour for the last day of our trip. Here are four tours.\nM: Great. The kids will love it. Look, the eight o'clock tour is cheap.\nW: Eight? Remember how hard it was to wake the kids up yesterday? I don't think we can make it.\nM: You're right. Then how about the ten o'clock one? It's the cheapest of all.\nW: But it's only two hours long. The hotel staff told me the whales usually stay far from the shore, so we need at least three hours.\nM: Okay. Then we have two choices left. The nine thirty tour includes lunch.\nW: It does, but it costs too much. We said we'd spend no more than fifty-five dollars per person.\nM: Then this one is perfect. It includes lunch, too.\nW: Good. Let's book it now.",
+    "choices": [
+     "A",
+     "B",
+     "D",
+     "C"
+    ],
+    "explain_ko": "8시 출발(A)은 아이들이 못 일어나서, 2시간짜리(C)는 너무 짧아서, 1인 $60(B)은 예산 $55를 넘어서 빠진다. 남는 것은 D다.",
+    "answer": 2,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-11",
+    "no": 11,
+    "area": "listening",
+    "level": "고3",
+    "kind": "요지",
+    "question": "다음을 듣고, 여자가 하는 말의 요지로 가장 적절한 것을 고르시오.",
+    "script": "W: Hello, listeners. This is Rebecca Stone with Family on the Road. When parents plan a family vacation, they usually decide everything themselves: where to stay, what to see, and where to eat. Then they wonder why their children look bored in the back seat. Here's my suggestion. Give each child one part of the trip to plan. A ten-year-old can choose the restaurant for one dinner. A teenager can research a museum and decide which rooms the family will visit first. Of course, you can set a budget and a few simple rules. But once the choice is made, try to follow it, even if it isn't what you would pick. Children who plan part of a trip pay more attention, ask more questions, and remember the places much longer. Their small decisions turn them from passengers into real travelers. So on your next vacation, share the map.",
+    "choices": [
+     "가족 여행의 예산과 규칙은 부모가 미리 정해 두어야 한다.",
+     "자녀와 여행할 때는 박물관처럼 배울 것이 많은 곳을 골라야 한다.",
+     "여행 일정은 여유 있게 짜서 자녀가 지루하지 않게 해야 한다.",
+     "가족 여행 계획의 일부를 자녀에게 맡기면 자녀가 여행에 더 깊이 참여한다."
+    ],
+    "explain_ko": "아이마다 여행의 한 부분을 계획하게 하면 더 집중하고 오래 기억한다는 것이 요지다. 예산·규칙, 박물관은 예로 든 세부 내용이다.",
+    "answer": 3,
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-12",
+    "no": 12,
+    "area": "listening",
+    "level": "고3",
+    "kind": "상황에 알맞은 말",
+    "question": "다음 상황 설명을 듣고, Grace가 Owen에게 할 말로 가장 적절한 것을 고르시오.",
+    "script": "W: Grace and her classmate Owen meet every Saturday at a café near their school to study for their chemistry exam. They usually study there from ten until two. The café used to be quiet, but last month a music class started next door, and now it gets very noisy after eleven. Owen suggests moving to the city library, but Grace knows that all of the library's study rooms are booked for the whole month. Then she remembers that her aunt's bakery is closed on Saturdays, and there is a large table in the back room. She calls her aunt, and her aunt says they are welcome to use it. So Grace wants to suggest to Owen that they study at the bakery from next Saturday. In this situation, what would Grace most likely say to Owen?",
+    "choices": [
+     "How about studying in the back room of my aunt's bakery from next week?",
+     "Why don't we book a study room at the city library?",
+     "Let's come to the café earlier, before the music class starts.",
+     "Could you ask the music teacher to keep the noise down?"
+    ],
+    "explain_ko": "도서관 스터디룸은 한 달 내내 예약이 차 있고, 이모가 토요일에 쉬는 빵집 뒷방을 써도 된다고 했으므로 그곳에서 공부하자고 제안한다. 일찍 와도 2시까지 공부하므로 소음을 피할 수 없다.",
+    "answer": 0,
+    "status": "draft"
+   },
+   {
     "id": "s1-A-13",
     "no": 13,
     "area": "reading",
@@ -657,6 +873,222 @@
    }
   ],
   "B": [
+   {
+    "id": "s1-B-1",
+    "no": 1,
+    "area": "listening",
+    "level": "중1",
+    "kind": "장소",
+    "question": "대화를 듣고, 두 사람이 대화하는 장소로 가장 적절한 곳을 고르시오.",
+    "script": "M: Hi. I'd like to send this box to my uncle in Chicago.\nW: Sure. Please put it on the scale. It's three kilograms.\nM: How long will it take to get there?\nW: About five days. If you need it faster, express takes two days.\nM: It's a birthday present, so two days, please. Can I also buy some stamps?\nW: Of course. Here you are.",
+    "choices": [
+     "선물 가게",
+     "공항",
+     "은행",
+     "우체국"
+    ],
+    "explain_ko": "상자를 저울에 올려 무게를 재고, 배송 기간(보통 5일·빠른 배송 2일)을 고르고, 우표를 산다. 선물 가게는 생일 선물, 공항은 Chicago 에서 떠올리게 한 오답이다.",
+    "answer": 3,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-2",
+    "no": 2,
+    "area": "listening",
+    "level": "중1",
+    "kind": "할 일",
+    "question": "대화를 듣고, 여자가 대화 직후에 할 일로 가장 적절한 것을 고르시오.",
+    "script": "W: Jake, what's that poster?\nM: The chess club is looking for new members. You like chess, don't you?\nW: Yes, I play with my grandpa every weekend. How can I join?\nM: Write your name on the sign-up sheet in Room 205. Today is the last day.\nW: Really? Then I'll go there right now.\nM: Good idea. The first meeting is next Monday.",
+    "choices": [
+     "할아버지와 체스 두기",
+     "동아리 포스터 붙이기",
+     "205호에 가서 신청서에 이름 쓰기",
+     "체스 동아리 첫 모임에 가기"
+    ],
+    "explain_ko": "오늘이 마감이라 지금 바로 205호에 가서 이름을 쓰겠다고 했다. 할아버지와는 주말에, 첫 모임은 다음 주 월요일.",
+    "answer": 2,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-3",
+    "no": 3,
+    "area": "listening",
+    "level": "중2",
+    "kind": "금액",
+    "question": "대화를 듣고, 남자가 지불할 금액을 고르시오.",
+    "script": "M: Excuse me. How do I use these machines? It's my first time at this laundromat.\nW: Sure. The washing machines are four dollars, and the dryers are three dollars.\nM: I have a lot of clothes, so I need two washing machines.\nW: Then you'll need two dryers, too. But the big dryer is only five dollars, and it can dry both loads.\nM: Great. I'll use the big one. Do I need to buy soap?\nW: It's one dollar a box, but you can use your own.\nM: I brought my own. Thanks.",
+    "choices": [
+     "$13",
+     "$14",
+     "$15",
+     "$9"
+    ],
+    "explain_ko": "세탁기 2대 $8 + 큰 건조기 1대 $5 = $13. 비누는 가져와서 사지 않는다. $14는 건조기 2대, $15는 건조기 2대와 비누, $9는 세탁기 1대.",
+    "answer": 0,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-4",
+    "no": 4,
+    "area": "listening",
+    "level": "중2",
+    "kind": "부탁한 일",
+    "question": "대화를 듣고, 여자가 남자에게 부탁한 일로 가장 적절한 것을 고르시오.",
+    "script": "W: Ethan, are you busy this Saturday morning?\nM: Not really. Why?\nW: I volunteer at the Oak Street Food Bank every weekend. This week, a lot of food boxes arrived, and we need more people.\nM: What do you do there?\nW: We sort cans and bags of rice and put them on the shelves. Could you come and help us?\nM: Sure. Should I bring anything?\nW: Just wear comfortable shoes. Oh, and my mom will drive us there, so you don't need to take the bus.\nM: Great. I'll be ready at nine.",
+    "choices": [
+     "푸드뱅크에서 음식 정리 돕기",
+     "푸드뱅크까지 차로 태워 주기",
+     "편한 신발 빌려주기",
+     "음식 상자 기부하기"
+    ],
+    "explain_ko": "토요일에 와서 통조림과 쌀을 분류해 선반에 놓는 일을 도와 달라고 했다. 차는 여자의 엄마가 태워 주고, 신발은 편한 것을 신고 오라는 말뿐이다.",
+    "answer": 0,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-5",
+    "no": 5,
+    "area": "listening",
+    "level": "중3",
+    "kind": "내용 불일치",
+    "question": "다음을 듣고, Pine Valley Chalk Art Day에 관한 내용과 일치하지 않는 것을 고르시오.",
+    "script": "W: Hello, residents. The third Pine Valley Chalk Art Day will be held on Saturday, October twelfth. Anyone can take part, from small children to grandparents. Participants will draw pictures on the sidewalk of Main Street between ten a.m. and three p.m. This year's theme is Our Town in the Future. Chalk will be given to everyone for free, so you don't need to bring your own. If it rains, the event will move to the following Saturday. To join, please sign up on the town website by October fifth. The best three drawings will appear on the town calendar next year.",
+    "choices": [
+     "올해 주제는 '미래의 우리 마을'이다.",
+     "분필은 각자 준비해 와야 한다.",
+     "비가 오면 다음 주 토요일로 미뤄진다.",
+     "10월 5일까지 마을 웹사이트에서 신청해야 한다."
+    ],
+    "explain_ko": "분필은 모두에게 무료로 나눠 주므로 가져올 필요가 없다고 했다. 나머지는 방송 내용과 같다.",
+    "answer": 1,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-6",
+    "no": 6,
+    "area": "listening",
+    "level": "중3",
+    "kind": "이어질 응답",
+    "question": "대화를 듣고, 남자의 마지막 말에 대한 여자의 응답으로 가장 적절한 것을 고르시오.",
+    "script": "M: Mia, you look full of energy these days. What's your secret?\nW: I started jumping rope every morning. I do it for ten minutes before breakfast.\nM: Only ten minutes? That's not much.\nW: It's harder than you think. At first, I couldn't even do two minutes.\nM: I want to try it, too. But I live on the fifth floor, and the people downstairs might hear the noise.\nW: Don't do it inside. I go to the playground next to our apartment.\nM: That's a good idea. But I don't have a jump rope.\nW: I have an extra one.\nM: Great. Then can I join you tomorrow? What time should I meet you?",
+    "choices": [
+     "Let's meet at the playground at seven.",
+     "Jumping rope is good for your heart.",
+     "I bought my jump rope last month.",
+     "Sorry, but I don't like jumping rope."
+    ],
+    "explain_ko": "내일 몇 시에 만날지 물었으므로 시각과 장소를 알려 주는 말이 알맞다. 나머지는 물음에 답하지 않거나 대화와 어긋난다.",
+    "answer": 0,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-7",
+    "no": 7,
+    "area": "listening",
+    "level": "고1",
+    "kind": "목적",
+    "question": "다음을 듣고, 남자가 하는 말의 목적으로 가장 적절한 것을 고르시오.",
+    "script": "M: Good afternoon, residents of Cedar Hills. This is Paul Grant from the town environment team. Every year, our town throws away tons of things like toasters, lamps, and torn jackets. But many of them are not really broken. They just need a small fix. So we're starting the Cedar Hills Repair Café. On the first Sunday of every month, volunteers who are good at fixing things will be at the town hall from one to five. Bring your broken items, and they will repair them with you for free. You can also learn how to fix things by yourself. Let's give our old things a second life and make less trash together. We hope to see you there.",
+    "choices": [
+     "물건 수리를 도울 자원봉사자를 모집하려고",
+     "쓰레기 분리배출 방법을 안내하려고",
+     "마을 회관 운영 시간 변경을 알리려고",
+     "고장 난 물건을 무료로 함께 고쳐 주는 수리 카페를 알리려고"
+    ],
+    "explain_ko": "매달 첫 일요일 마을 회관에서 여는 수리 카페를 소개하고 참여를 권한다. 봉사자는 이미 있다고 말할 뿐 모집하지 않는다.",
+    "answer": 3,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-8",
+    "no": 8,
+    "area": "listening",
+    "level": "고1",
+    "kind": "금액",
+    "question": "대화를 듣고, 여자가 지불할 금액을 고르시오.",
+    "script": "M: Welcome to the Sky Valley Balloon Festival. How can I help you?\nW: Hi. I'd like to buy tickets for the balloon ride for my family.\nM: Sure. Tickets are forty dollars for adults and twenty-five dollars for children under twelve.\nW: There are two adults and two children. My daughter is eight, and my son is thirteen.\nM: Then your son needs an adult ticket. So that's three adult tickets and one child ticket.\nW: I see. I have a coupon from the festival website. Can I use it?\nM: Let me see. This coupon gives you ten percent off, but only on adult tickets.\nW: That's fine. Also, can we get a photo of our family in the balloon?\nM: Yes. A printed photo is ten dollars.\nW: Great. I'll take one photo.",
+    "choices": [
+     "$133",
+     "$155",
+     "$143",
+     "$132"
+    ],
+    "explain_ko": "13세 아들은 어른 요금 → 어른 3장 $120의 10% 할인 $108 + 어린이 1장 $25 + 사진 $10 = $143. $133은 사진 뺌, $155는 할인 뺌, $132는 아들을 어린이로 셈.",
+    "answer": 2,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-9",
+    "no": 9,
+    "area": "listening",
+    "level": "고2",
+    "kind": "언급되지 않은 것",
+    "question": "다음을 듣고, 방송 동아리 On Air의 신입 회원 모집에 관해 언급되지 않은 것을 고르시오.",
+    "script": "W: Good morning, everyone. I'm Hannah Wells, the president of On Air, our school's radio club. We're looking for new members for this semester. Every Tuesday and Thursday, we broadcast a twenty-minute lunchtime show with music, school news, and interviews with teachers. New members can work as hosts, writers, or sound engineers. Don't worry if you have no experience. Senior members will teach you how to use the equipment during a two-week training period. We'll choose six new members this year. If you're interested, send us a one-minute recording of yourself introducing your favorite song. The deadline is next Friday, and we'll announce the results on the school website. Come and make your voice heard!",
+    "choices": [
+     "모집 인원",
+     "동아리실 위치",
+     "지원 방법",
+     "교육 기간"
+    ],
+    "explain_ko": "모집 인원(6명), 지원 방법(1분 녹음 파일), 교육 기간(2주)은 말했지만 동아리실이 어디인지는 말하지 않았다.",
+    "answer": 1,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-10",
+    "no": 10,
+    "area": "listening",
+    "level": "고2",
+    "kind": "도표",
+    "question": "다음 표를 보면서 대화를 듣고, 여자가 지원할 아르바이트를 고르시오.\n아르바이트 | 요일 | 시급 | 가는 방법\nA 카페 | 주말 | $13 | 버스 20분\nB 꽃집 | 평일 저녁 | $14 | 걸어서 10분\nC 빵집 | 주말 | $12 | 걸어서 15분\nD 영화관 | 주말 | $11 | 걸어서 5분",
+    "script": "M: Chloe, what are you looking at?\nW: A list of part-time jobs for students, Dad. I want to earn some money for my winter trip.\nM: Good for you. But you have piano lessons on weekday evenings, right?\nW: Yes, so I can only work on weekends.\nM: Okay. What about the pay?\nW: I'd like to get at least twelve dollars an hour.\nM: Then you have two choices left. The café pays the most.\nW: Right, but I'd have to take the bus for twenty minutes, and the bus doesn't come often on weekends.\nM: You don't want to wait at the bus stop in the cold. How about a place you can walk to?\nW: Good idea. Then I'll apply for this one.",
+    "choices": [
+     "A 카페",
+     "B 꽃집",
+     "C 빵집",
+     "D 영화관"
+    ],
+    "explain_ko": "주말만(B 제외), 시급 12달러 이상(D 제외), 버스가 아닌 걸어갈 곳(A 제외) → C 빵집.",
+    "answer": 2,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-11",
+    "no": 11,
+    "area": "listening",
+    "level": "고3",
+    "kind": "요지",
+    "question": "다음을 듣고, 남자가 하는 말의 요지로 가장 적절한 것을 고르시오.",
+    "script": "M: Hello, listeners. This is Coach Ryan Mitchell with Fit for Life. Have you ever stopped exercising for a few weeks because of a cold, exams, or a busy schedule? When people come back, they often try to start exactly where they stopped. If they used to run five kilometers, they run five kilometers on the first day. But after a break, your muscles, heart, and lungs are not at the same level as before. Pushing them too hard can lead to injuries or make you so sore that you give up again. So when you return, begin with about half of what you used to do. Then add a little more each week and listen to your body. It may feel slow, but it's the safest way to get back to your old level. Remember, the goal is not one great workout but a habit you can keep.",
+    "choices": [
+     "운동 전에는 반드시 충분히 몸을 풀어야 한다.",
+     "감기에 걸렸을 때는 운동을 완전히 쉬어야 한다.",
+     "체력을 기르려면 매일 5킬로미터씩 달려야 한다.",
+     "운동을 쉬었다가 다시 시작할 때는 예전보다 낮은 강도에서 시작해 조금씩 늘려야 한다."
+    ],
+    "explain_ko": "쉬었다 돌아오면 예전의 절반쯤으로 시작해 매주 조금씩 늘리라는 것이 핵심이다. 감기·5킬로미터는 예로 나온 말일 뿐이고, 준비 운동은 말하지 않았다.",
+    "answer": 3,
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-12",
+    "no": 12,
+    "area": "listening",
+    "level": "고3",
+    "kind": "상황에 알맞은 말",
+    "question": "다음 상황 설명을 듣고, Ivy가 Mr. Cole에게 할 말로 가장 적절한 것을 고르시오.",
+    "script": "W: Ivy is a volunteer at her neighborhood's clothing swap, an event where people trade clothes they no longer wear instead of throwing them away. The rule is simple. People can bring up to five pieces of clothing that are clean and in good condition, and they can take the same number home. This afternoon, a man named Mr. Cole arrives with a large bag. When Ivy checks it, she finds that most of the shirts have holes or stains that won't come out. She doesn't want to embarrass him, but she can't put these clothes on the tables. Then she remembers the textile recycling box at the entrance of the hall, where damaged clothes are collected and made into cleaning cloths. In this situation, what would Ivy most likely say to Mr. Cole?",
+    "choices": [
+     "You can bring up to five pieces of clothing and take the same number home.",
+     "I'm sorry, but we can only take clean clothes in good shape. You could put these in the recycling box at the entrance.",
+     "Thank you! These shirts will be really popular at today's swap.",
+     "Why don't you just throw these shirts in the trash can over there?"
+    ],
+    "explain_ko": "구멍·얼룩 난 옷은 받을 수 없음을 정중히 알리고 입구의 의류 재활용함을 안내해야 한다. 규칙만 되풀이하거나, 받아 주거나, 버리라는 말은 상황에 맞지 않는다.",
+    "answer": 1,
+    "status": "draft"
+   },
    {
     "id": "s1-B-13",
     "no": 13,
