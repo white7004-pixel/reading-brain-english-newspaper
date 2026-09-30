@@ -299,6 +299,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-viking-ships-at-sunrise",
+  "title": "Viking Ships at Sunrise",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #15",
+  "level": {
+   "ar": "3.3",
+   "lexile": "570L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424173-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-hour-of-the-olympics",
+  "title": "Hour of the Olympics",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #16",
+  "level": {
+   "ar": "3.3",
+   "lexile": "380L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424174-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "sarah-plain-and-tall",
   "title": "Sarah, Plain and Tall",
   "author": "Patricia MacLachlan",
@@ -461,5 +489,7 @@ window.BOOK_BY_NO = {
  "S3256": "magic-tree-house-lions-at-lunchtime",
  "S3257": "magic-tree-house-polar-bears-past-bedtime",
  "S3258": "magic-tree-house-vacation-under-the-volcano",
- "S3259": "magic-tree-house-day-of-the-dragon-king"
+ "S3259": "magic-tree-house-day-of-the-dragon-king",
+ "S3260": "magic-tree-house-viking-ships-at-sunrise",
+ "M3070": "magic-tree-house-hour-of-the-olympics"
 };
