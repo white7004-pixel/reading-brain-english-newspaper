@@ -42,10 +42,10 @@ window.BOOK = {
     { word: "notice",      pos: "v.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/notice.mp3",      en: "to see or become aware of something", ko: "알아차리다, 눈치채다", ex: "Papa and Mama {{noticed}} Sister's habit of talking to strangers.", ex_ko: "아빠와 엄마는 시스터의 습관을 알아차렸어요.", pic: "👀" },
     { word: "rule",        pos: "n.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/rule.mp3",        en: "something you must do, or must not do, to stay safe", ko: "규칙", ex: "Sister's parents taught her the important {{rules}} of safety.", ex_ko: "시스터의 부모님은 중요한 안전 규칙을 가르쳐 주었어요.", pic: "📋" },
     { word: "safety",      pos: "n.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/safety.mp3",      en: "the state of being free from danger or harm", ko: "안전", ex: "The rules were all about {{safety}} around strangers.", ex_ko: "그 규칙들은 낯선 사람 주변에서의 안전에 관한 것이었어요.", pic: "🛡️" },
-    { word: "important",   pos: "adj.", audio: "assets/audio/berenstain-bears-learn-about-strangers/important.mp3",   en: "having great value or meaning; serious", ko: "중요한", ex: "Papa and Mama said the rules were very {{important}}.", ex_ko: "아빠와 엄마는 그 규칙이 아주 중요하다고 말했어요.", pic: "❗" },
-    { word: "teach",       pos: "v.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/teach.mp3",       en: "to help someone learn something", ko: "가르치다", ex: "Her parents decided to {{teach}} her the safety rules.", ex_ko: "부모님은 시스터에게 안전 규칙을 가르치기로 했어요.", pic: "👩‍🏫" },
-    { word: "learn",       pos: "v.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/learn.mp3",       en: "to gain knowledge or a skill", ko: "배우다", ex: "Sister worked hard to {{learn}} the rules.", ex_ko: "시스터는 규칙을 배우려고 열심히 노력했어요.", pic: "📖" },
-    { word: "careful",     pos: "adj.", audio: "assets/audio/berenstain-bears-learn-about-strangers/careful.mp3",     en: "paying close attention in order to avoid danger or mistakes", ko: "조심스러운, 신중한", ex: "After learning the rules, Sister became more {{careful}} around strangers.", ex_ko: "규칙을 배운 뒤 시스터는 낯선 사람 주변에서 더 조심스러워졌어요.", pic: "🧐" },
+    { word: "important",   pos: "adj.", audio: "assets/audio/berenstain-bears-learn-about-strangers/important.mp3",   en: "having great value or meaning; serious", ko: "중요한", ex: "Her parents showed her the {{important}} rules of safety.", ex_ko: "부모님은 시스터에게 중요한 안전 규칙을 보여 주었어요.", pic: "❗" },
+    { word: "teach",       pos: "v.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/teach.mp3",       en: "to help someone learn something", ko: "가르치다", ex: "Her parents {{teach}} her the important rules of safety.", ex_ko: "부모님은 시스터에게 중요한 안전 규칙을 가르쳐 주었어요.", pic: "👩‍🏫" },
+    { word: "learn",       pos: "v.",   audio: "assets/audio/berenstain-bears-learn-about-strangers/learn.mp3",       en: "to gain knowledge or a skill", ko: "배우다", ex: "Sister {{learns}} the rules so she can stay safe.", ex_ko: "시스터는 안전하게 지낼 수 있도록 규칙을 배웠어요.", pic: "📖" },
+    { word: "careful",     pos: "adj.", audio: "assets/audio/berenstain-bears-learn-about-strangers/careful.mp3",     en: "paying close attention in order to avoid danger or mistakes", ko: "조심스러운, 신중한", ex: "You should be {{careful}} around a stranger.", ex_ko: "낯선 사람 주변에서는 조심해야 해요.", pic: "🧐" },
     { word: "safe",        pos: "adj.", audio: "assets/audio/berenstain-bears-learn-about-strangers/safe.mp3",        en: "free from danger or harm", ko: "안전한", ex: "Following the rules helps Sister stay {{safe}}.", ex_ko: "규칙을 따르는 것이 시스터가 안전하게 지내도록 도와줘요.", pic: "✅" }
   ],
 
@@ -55,10 +55,10 @@ window.BOOK = {
       frame: "She has gotten into the habit of {{talking to strangers}}." },
     { ref: "beginning", skill: "사실찾기",  q: "Who notices this habit?",
       frame: "{{Her parents, Papa and Mama Bear,}} notice it." },
-    { ref: "middle", skill: "사실찾기",  q: "What do Papa and Mama decide to do about it?",
-      frame: "They decide to {{show her the important rules of safety}}." },
-    { ref: "middle", skill: "추론·예측", q: "Why do you think Papa and Mama want to teach Sister these rules, instead of just telling her to stop?",
-      frame: "They probably want her to understand {{why talking to strangers can be unsafe, not just follow an order}}." },
+    { ref: "middle", skill: "사실찾기",  q: "What do Papa and Mama do about it?",
+      frame: "They {{show her the important rules of safety}}." },
+    { ref: "middle", skill: "추론·예측", q: "Why do you think talking to strangers can be a bad habit? Say what you think.",
+      frame: "I think it can be a bad habit because {{                    }}." },
     { ref: "end", skill: "사실찾기",  q: "What does Sister do with the rules her parents teach her?",
       frame: "She {{learns the important safety rules}}." },
     { ref: "end", skill: "평가·적용", q: "Do you think it is important for children to learn safety rules like these? Say what you think.",
@@ -79,21 +79,21 @@ window.BOOK = {
       a: ["Her teacher", "Her parents", "A stranger", "Her friend"], c: 1,
       why_ko: "선생님도 친구도 아니에요. 시스터의 습관을 알아차린 건 부모님, 아빠와 엄마였어요.",
       why: "Not her teacher, not a friend. Her parents, Papa and Mama, are the ones who notice." },
-    { q: "What do Papa and Mama decide to do?",
+    { q: "What do Papa and Mama do about Sister's habit?",
       a: ["Punish Sister", "Show her the important rules of safety", "Ignore the habit", "Move to a new town"], c: 1,
-      why_ko: "벌을 주거나 무시한 게 아니에요. 부모님은 중요한 안전 규칙을 가르쳐 주기로 했어요.",
-      why: "Not punishment, not ignoring it. They decide to show her the important safety rules." },
+      why_ko: "벌을 주거나 무시한 게 아니에요. 부모님은 중요한 안전 규칙을 보여 주었어요.",
+      why: "Not punishment, not ignoring it. They show her the important safety rules." },
     { q: "What do the rules mainly teach Sister about?",
       a: ["How to cook", "Safety around strangers", "How to ride a bike", "How to make more friends"], c: 1,
       why_ko: "요리나 자전거가 아니에요. 규칙은 낯선 사람 주변에서의 안전에 관한 것이었어요.",
       why: "Not cooking, not bike riding. The rules are about staying safe around strangers." },
-    { q: "Why do Papa and Mama teach Sister the rules instead of just telling her to stop?",
-      a: ["So she understands why it matters, not just follows an order", "Because they are too busy to watch her", "Because they want her to be scared of everyone", "Because a teacher asked them to"], c: 0,
-      why_ko: "그냥 하지 말라고 하는 게 아니라 왜 중요한지 이해시키려는 거예요. 그래야 진짜로 규칙을 따르게 되니까요.",
-      why: "They want Sister to understand the reason, not just obey — that is what makes a rule really stick." },
+    { q: "Who are the \"strangers\" in this story?",
+      a: ["People Sister does not know", "Sister's teachers", "Sister's brothers", "Sister's best friends"], c: 0,
+      why_ko: "'낯선 사람'은 모르는 사람이에요. 시스터가 이야기하던 대상은 자기가 모르는 사람들이었어요.",
+      why: "A stranger is someone you do not know. The people Sister talks to are people she does not know." },
     { q: "What does Sister do with the rules her parents teach her?",
       a: ["She ignores them", "She learns them", "She forgets them right away", "She teaches them to a stranger"], c: 1,
-      why_ko: "무시하거나 바로 잊어버린 게 아니에요. 시스터는 그 규칙들을 잘 배웠어요.",
+      why_ko: "무시하거나 바로 잊어버린 게 아니에요. 시스터는 그 규칙들을 배웠어요.",
       why: "Not ignoring, not forgetting. Sister learns the rules her parents teach her." },
     { q: "How do the safety rules help Sister?",
       a: ["They make her afraid to leave the house", "They help her stay safe around people she does not know", "They help her make more friends", "They have nothing to do with safety"], c: 1,
@@ -111,13 +111,13 @@ window.BOOK = {
 
   // ── ③ 요약 지도 (서술형) ───────────────────────────────
   summaryMap: {
-    setting: { place: "{{the Bear family's home}}", time: "{{one day}}" },
+    setting: { place: "{{                    }}", time: "{{                    }}" },
     swbst: [
       { k: "Somebody", v: "{{Sister Bear}}" },
-      { k: "Wanted",   v: "{{to be friendly and talk to the people she meets}}" },
-      { k: "But",      v: "{{talking to strangers is not safe, and she did not know the rules}}" },
-      { k: "So",       v: "{{Papa and Mama noticed her habit and taught her the important rules of safety}}" },
-      { k: "Then",     v: "{{Sister learned the rules and became more careful and safe}}" }
+      { k: "Wanted",   v: "{{to keep talking to people she did not know}}" },
+      { k: "But",      v: "{{talking to strangers was a bad habit}}" },
+      { k: "So",       v: "{{Papa and Mama noticed her habit and showed her the important rules of safety}}" },
+      { k: "Then",     v: "{{Sister learned the important rules of safety so she could stay safe}}" }
     ],
     scenes: [
       { label: "Beginning",
@@ -125,10 +125,10 @@ window.BOOK = {
         frame: "{{Her parents, Papa and Mama, notice this habit}}." },
       { label: "Middle",
         given: "",
-        frame: "Papa and Mama {{decide to teach her}} {{the important rules of safety}}." },
+        frame: "Papa and Mama {{show her}} {{the important rules of safety}}." },
       { label: "End",
         given: "Sister learns the rules her parents teach her.",
-        frame: "She becomes {{more careful and safe around strangers}}." }
+        frame: "She {{learns the rules}} so she can {{stay safe}}." }
     ]
   },
 
@@ -137,13 +137,13 @@ window.BOOK = {
     center: "The Berenstain Bears Learn about Strangers",
     branches: [
       { label: "Sister Bear", ask: "What habit does Sister have at the start of the story?",
-        deeper: "Why might a friendly habit like talking to everyone also be risky?" },
-      { label: "Noticing",    ask: "How do Papa and Mama find out about Sister's habit?",
+        deeper: "Why do you think talking to people you do not know is a bad habit?" },
+      { label: "Noticing",    ask: "What do Papa and Mama notice about Sister?",
         deeper: "Why is it important for parents to notice habits like this?" },
       { label: "The Rules",   ask: "What do the safety rules teach Sister?",
-        deeper: "Why do rules work better than just being told \"don't do that\"?" },
+        deeper: "Why do you think safety rules matter when you meet someone you do not know?" },
       { label: "Learning",    ask: "What does Sister do with the rules her parents teach her?",
-        deeper: "Why does understanding a rule help more than just memorizing it?" },
+        deeper: "How can you remember a safety rule when you need it?" },
       { label: "Me",          ask: "What would you do if you met someone you did not know?",
         deeper: "Who are the trusted adults you could tell?" }
     ]
@@ -154,14 +154,14 @@ window.BOOK = {
     keyConcept: "Responsibility",
     relatedConcepts: ["Safety", "Family"],
     globalContext: "Identities and relationships — how families teach each other to stay safe (가족은 서로에게 안전을 어떻게 가르치는가)",
-    statement: "Learning and understanding safety rules can help keep you safe, even from a habit you did not know was risky.",
+    statement: "Learning safety rules can help you stay safe around people you do not know.",
     factual: [
       "What habit does Sister Bear have at the start of the story?",
       "What do Papa and Mama teach her?"
     ],
     conceptual: [
-      "Why might a friendly habit also be an unsafe one?",
-      "How does understanding a rule help more than simply being told to stop?"
+      "Why might talking to people you do not know be unsafe?",
+      "How can safety rules help a person stay safe?"
     ],
     debatable: [
       "Should children always be careful around people they do not know?",
@@ -187,7 +187,7 @@ window.BOOK = {
       { part: "E — Evidence",    ask: "What happened in the book? Write the scene.",
         eg: "In the book, Sister had a habit of talking to strangers, so Papa and Mama taught her the safety rules.", lines: 2 },
       { part: "E — Explanation", ask: "Why does that scene prove your point?",
-        eg: "This shows that even a friendly habit can be unsafe if you do not know the rules to protect yourself.", lines: 2 },
+        eg: "This shows that talking to strangers can be a bad habit, and the rules help a child stay safe.", lines: 2 },
       { part: "C — Counter",     ask: "What would someone who disagrees say? How do you answer them?",
         eg: "Some people say rules are boring to learn, but they are what helps Sister stay safe.", lines: 2 },
       { part: "L — Link",        ask: "Say your opinion again in different words.",
@@ -248,15 +248,15 @@ window.BOOK = {
         stuck: "질문을 소리 내어 읽게 한 뒤 \"Now say it as an answer.\"" },
 
       { stage: "Comprehension", min: "",
-        say: "Question four asks WHY the parents teach instead of just saying stop. Think about which one actually works better.",
+        say: "Question four asks what YOU think. Why can talking to strangers be a bad habit? Any answer is fine if you give a reason.",
         do: "추론 문항에서는 혼자 두지 않는다. 같이 읽고 시작한다.",
-        exp: "They want her to understand why it matters, not just follow an order.",
-        stuck: "\"If someone just says 'stop' with no reason, do you really remember it later?\"" },
+        exp: "It can be a bad habit because you do not know if the person is safe.",
+        stuck: "\"If you do not know a person, do you know if they are kind? What could go wrong?\"" },
 
       { stage: "Summary Map", min: "35~45분",
         say: "Somebody — Wanted — But — So — Then. Five boxes, and the whole book is inside.",
         do: "다섯 칸을 손가락으로 짚으며 리듬처럼 외우게 한다.",
-        exp: "Somebody: Sister Bear / Wanted: to be friendly / But: talking to strangers is not safe",
+        exp: "Somebody: Sister Bear / Wanted: to keep talking to people she did not know / But: talking to strangers was a bad habit",
         stuck: "\"Who is the story about? What habit does she have?\"" },
 
       { stage: "Summary Map", min: "",
@@ -270,10 +270,10 @@ window.BOOK = {
         stuck: "한 가지를 골라 같이 채운다." },
 
       { stage: "Mind Map (The Rules)", min: "",
-        say: "Stop at The Rules. Don't just tell me what the rules say — tell me why a rule works better than just being told 'don't'.",
+        say: "Stop at The Rules. Don't just tell me what the rules say — tell me why you think safety rules matter around people you don't know.",
         do: "→ 칸에서 반드시 멈춘다. 여기가 오늘의 핵심이다.",
-        exp: "Because a rule you understand is easier to remember and follow.",
-        stuck: "\"You said what the rules are. Now — why do they work better than just a warning?\"" },
+        exp: "Because rules help you stay safe when you do not know the person.",
+        stuck: "\"You said what the rules are. Now — why do they matter?\"" },
 
       { stage: "IB Inquiry", min: "55~65분",
         say: "Step 1, the book answers it. Step 2, the book helps but you finish it. Step 3, only you know the answer.",
@@ -283,7 +283,7 @@ window.BOOK = {
       { stage: "IB Inquiry", min: "",
         say: "Should children always be careful around people they don't know? Pick a side. You cannot sit in the middle today.",
         do: "1·2단은 말로만. 3단(Debatable)만 글로 받는다.",
-        exp: "I think you should always be careful, because even a friendly habit like Sister's can be unsafe.",
+        exp: "I think you should always be careful, because you do not know if a stranger is safe.",
         stuck: "손을 들게 한다. \"Always careful? Or only sometimes?\"" },
 
       { stage: "Writing", min: "65~80분",
@@ -309,10 +309,10 @@ window.BOOK = {
       ],
       during: [
         { en: "Why do you think Sister got into the habit of talking to strangers?", ko: "시스터는 왜 낯선 사람과 이야기하는 습관이 들었을까?" },
-        { en: "Why do Papa and Mama teach the rules instead of just saying 'don't do that'?", ko: "아빠와 엄마는 왜 그냥 '하지 마'라고만 하지 않고 규칙을 가르쳐 줄까?" }
+        { en: "What do you think Papa and Mama notice about Sister?", ko: "아빠와 엄마는 시스터에게서 무엇을 알아차렸을까?" }
       ],
       after: [
-        { en: "Why does understanding a rule help more than just being told to stop?", ko: "규칙을 이해하는 것이 그냥 하지 말라는 말보다 왜 더 도움이 될까?" },
+        { en: "Why do you think safety rules matter?", ko: "안전 규칙은 왜 중요하다고 생각하니?" },
         { en: "What is one rule from this book you want to remember?", ko: "이 책에서 꼭 기억하고 싶은 규칙 하나는 뭐니?" }
       ]
     },

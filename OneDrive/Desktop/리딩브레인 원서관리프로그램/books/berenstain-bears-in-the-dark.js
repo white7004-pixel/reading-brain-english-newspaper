@@ -42,11 +42,11 @@ window.BOOK = {
     { word: "darkness",   pos: "n.",   audio: "assets/audio/berenstain-bears-in-the-dark/darkness.mp3",   en: "the state of having no light", ko: "어둠", ex: "She could not sleep in the {{darkness}}.", ex_ko: "그녀는 어둠 속에서 잠을 이룰 수 없었어요.", pic: "🌑" },
     { word: "fear",       pos: "n.",   audio: "assets/audio/berenstain-bears-in-the-dark/fear.mp3",       en: "a strong feeling of being afraid", ko: "두려움, 공포", ex: "Sister could not shake off her {{fear}} of the dark.", ex_ko: "시스터는 어둠에 대한 두려움을 떨쳐낼 수 없었어요.", pic: "😟" },
     { word: "idea",       pos: "n.",   audio: "assets/audio/berenstain-bears-in-the-dark/idea.mp3",       en: "a plan or thought about what to do", ko: "생각, 아이디어", ex: "Papa Bear had some good {{ideas}} to help her.", ex_ko: "아빠 베어는 그녀를 도울 좋은 생각들이 있었어요.", pic: "💡" },
-    { word: "helpful",    pos: "adj.", audio: "assets/audio/berenstain-bears-in-the-dark/helpful.mp3",    en: "useful; giving help", ko: "도움이 되는", ex: "Papa's {{helpful}} ideas made Sister feel better.", ex_ko: "아빠의 도움이 되는 생각들이 시스터의 기분을 나아지게 했어요.", pic: "🤲" },
-    { word: "comfort",    pos: "n.",   audio: "assets/audio/berenstain-bears-in-the-dark/comfort.mp3",    en: "a good feeling that comes when worry or fear goes away", ko: "위로, 편안함", ex: "Papa's ideas gave Sister {{comfort}} at night.", ex_ko: "아빠의 생각들이 밤마다 시스터에게 위로가 되었어요.", pic: "🤗" },
+    { word: "helpful",    pos: "adj.", audio: "assets/audio/berenstain-bears-in-the-dark/helpful.mp3",    en: "useful; giving help", ko: "도움이 되는", ex: "Papa Bear had {{helpful}} ideas to help Sister.", ex_ko: "아빠 베어에게는 시스터를 도울 도움이 되는 생각들이 있었어요.", pic: "🤲" },
+    { word: "comfort",    pos: "n.",   audio: "assets/audio/berenstain-bears-in-the-dark/comfort.mp3",    en: "a good feeling that comes when worry or fear goes away", ko: "위로, 편안함", ex: "A kind word can give a scared child {{comfort}}.", ex_ko: "다정한 말 한마디는 무서워하는 아이에게 위로가 될 수 있어요.", pic: "🤗" },
     { word: "face",       pos: "v.",   audio: "assets/audio/berenstain-bears-in-the-dark/face.mp3",       en: "to deal with something difficult instead of avoiding it", ko: "(문제·두려움에) 맞서다", ex: "With Papa's help, Sister learned to {{face}} her fear.", ex_ko: "아빠의 도움으로 시스터는 두려움에 맞서는 법을 배웠어요.", pic: "🧭" },
     { word: "conquer",    pos: "v.",   audio: "assets/audio/berenstain-bears-in-the-dark/conquer.mp3",    en: "to successfully deal with and overcome a problem or fear", ko: "극복하다, 이겨 내다", ex: "In the end, Sister {{conquered}} her fear of the dark.", ex_ko: "결국 시스터는 어둠에 대한 두려움을 극복했어요.", pic: "🏆" },
-    { word: "calm",       pos: "adj.", audio: "assets/audio/berenstain-bears-in-the-dark/calm.mp3",       en: "quiet and peaceful, not worried or afraid", ko: "차분한, 평온한", ex: "Thanks to Papa, Sister felt {{calm}} again at night.", ex_ko: "아빠 덕분에 시스터는 밤에 다시 차분해졌어요.", pic: "😌" }
+    { word: "calm",       pos: "adj.", audio: "assets/audio/berenstain-bears-in-the-dark/calm.mp3",       en: "quiet and peaceful, not worried or afraid", ko: "차분한, 평온한", ex: "It is hard to feel {{calm}} when you are afraid of the dark.", ex_ko: "어둠이 무서울 때는 차분한 마음을 갖기 어려워요.", pic: "😌" }
   ],
 
   // ── ② 독해 (서술형) ────────────────────────────────────
@@ -80,7 +80,7 @@ window.BOOK = {
       why_ko: "책을 읽고 난 뒤 시스터는 어둠이 무서워졌어요. 흥분하거나 배고픈 게 아니었어요.",
       why: "After the book, Sister feels afraid of the dark — not excited, not hungry." },
     { q: "What is Sister's problem at night?",
-      a: ["She is too hot", "She cannot sleep because she is afraid of the dark", "She cannot find her toy", "She hears her parents arguing"], c: 1,
+      a: ["She is too hot", "She cannot sleep because she is afraid of the dark", "She cannot find her toy", "She has a stomachache"], c: 1,
       why_ko: "더워서도 장난감을 못 찾아서도 아니에요. 어둠이 무서워서 잠을 못 자는 게 문제였어요.",
       why: "Not the heat, not a lost toy. Her problem is simple — the dark scares her and she cannot sleep." },
     { q: "Who helps Sister Bear with her fear?",
@@ -91,10 +91,10 @@ window.BOOK = {
       a: ["He tells her to just ignore it", "He comes up with good ideas to help her", "He reads her another scary book", "He sends her to bed with no help at all"], c: 1,
       why_ko: "무시하라고 하거나 또 무서운 책을 읽어 준 게 아니에요. 아빠는 시스터를 도울 좋은 생각들을 냈어요.",
       why: "Not \"just ignore it,\" not another scary book. Papa comes up with good ideas to help her." },
-    { q: "How does Papa's help make Sister feel?",
-      a: ["More scared than before", "Comforted and calm", "Confused", "Angry at Papa"], c: 1,
-      why_ko: "아빠의 생각들 덕분에 시스터는 위로받고 차분해졌어요. 더 무서워진 게 아니에요.",
-      why: "Papa's ideas give Sister comfort, and she feels calm — not more scared." },
+    { q: "Why does Sister Bear need Papa's ideas?",
+      a: ["She is afraid of the dark after reading a scary book", "She lost her favorite toy", "She wants to learn to cook", "She is late for school"], c: 0,
+      why_ko: "무서운 책을 읽고 어둠이 무서워졌기 때문이에요. 아빠는 그 두려움을 이겨 내도록 도우려고 좋은 생각들을 냈어요.",
+      why: "Sister reads a scary book and becomes afraid of the dark. Papa has good ideas to help her conquer that fear." },
     { q: "What happens to Sister's fear by the end of the story?",
       a: ["It gets worse", "She conquers her fear of the dark", "She moves to a new room", "She stays afraid forever"], c: 1,
       why_ko: "결국 시스터는 어둠에 대한 두려움을 극복해요. 좋은 결말이죠.",
@@ -106,12 +106,12 @@ window.BOOK = {
     { q: "What might be a reason not to read a scary book right before bed?",
       a: ["Scary books are always boring", "A scary story can stay in your mind and make it hard to fall asleep", "Scary books never have pictures", "Scary books are too long to finish"], c: 1,
       why_ko: "무서운 이야기는 불을 끈 뒤에도 머릿속에 계속 남아서 잠들기 어렵게 만들 수 있어요. 이 책이 보여 준 것과 같은 이유예요.",
-      why: "A scary story can linger in your mind after the lights go out, which is exactly what happens to Sister in this book." }
+      why: "A scary story can linger in your mind after the lights go out. It fits what happens to Sister: she reads a scary book, then becomes afraid of the dark." }
   ],
 
   // ── ③ 요약 지도 (서술형) ───────────────────────────────
   summaryMap: {
-    setting: { place: "{{the Bear family's house}}", time: "{{one night, after reading a scary book}}" },
+    setting: { place: "{{                    }}", time: "{{                    }}" },
     swbst: [
       { k: "Somebody", v: "{{Sister Bear}}" },
       { k: "Wanted",   v: "{{to feel calm and fall asleep at night}}" },
@@ -125,7 +125,7 @@ window.BOOK = {
         frame: "Afterward, she becomes {{afraid of the dark}} and cannot {{fall asleep}}." },
       { label: "Middle",
         given: "",
-        frame: "Papa Bear notices her fear and {{comes up with good ideas}} to help her." },
+        frame: "Papa Bear {{comes up with good ideas}} to help her." },
       { label: "End",
         given: "With Papa's help, Sister faces her fear.",
         frame: "She {{conquers her fear of the dark}}." }
@@ -138,7 +138,7 @@ window.BOOK = {
     branches: [
       { label: "Sister Bear",    ask: "How does Sister feel after reading the scary book, and why?",
         deeper: "Can a story affect how we feel even after it ends?" },
-      { label: "The Scary Book", ask: "What does the scary book do to Sister's imagination?",
+      { label: "The Scary Book", ask: "What happens to Sister after she reads the scary book?",
         deeper: "Why might reading something scary right before bed make a fear feel bigger?" },
       { label: "Papa's Ideas",   ask: "What kind of person is Papa in this story?",
         deeper: "Why does having a caring helper make a fear easier to face?" },
