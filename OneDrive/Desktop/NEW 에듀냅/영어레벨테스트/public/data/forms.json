@@ -1,0 +1,1881 @@
+{
+ "stage1": {
+  "A": [
+   {
+    "id": "s1-A-13",
+    "no": 13,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-A-p1",
+    "passage": "Today is Art Day at my school, so we do not have math or English. We paint pictures all morning. I paint my dog, and my friend Mina paints the sea. Our teacher puts __them__ on the wall.",
+    "question": "What does Mina paint?",
+    "choices": [
+     "a dog",
+     "the sea",
+     "the wall",
+     "her teacher"
+    ],
+    "explain_ko": "my friend Mina paints the sea → 바다를 그린다.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-A-14",
+    "no": 14,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-A-p1",
+    "passage": "Today is Art Day at my school, so we do not have math or English. We paint pictures all morning. I paint my dog, and my friend Mina paints the sea. Our teacher puts __them__ on the wall.",
+    "question": "What does __them__ mean?",
+    "choices": [
+     "the pictures",
+     "the teachers",
+     "the friends",
+     "the dogs"
+    ],
+    "explain_ko": "선생님이 벽에 붙이는 것은 우리가 그린 그림(pictures)이다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-A-15",
+    "no": 15,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-A-p2",
+    "passage": "I have a small hamster, and his name is Bobo. He sleeps all day and plays at night. At night, he runs on his wheel and eats seeds. I love Bobo very much.",
+    "question": "What is the story about?",
+    "choices": [
+     "my best friend at school",
+     "a night at the zoo",
+     "a new wheel for my bike",
+     "my pet hamster"
+    ],
+    "explain_ko": "글 전체가 햄스터 Bobo 이야기이다.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-16",
+    "no": 16,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-A-p2",
+    "passage": "I have a small hamster, and his name is Bobo. He sleeps all day and plays at night. At night, he runs on his wheel and eats seeds. I love Bobo very much.",
+    "question": "When does Bobo sleep?",
+    "choices": [
+     "during the day",
+     "at night",
+     "after dinner",
+     "only on weekends"
+    ],
+    "explain_ko": "He sleeps all day → 낮 동안 잔다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-A-17",
+    "no": 17,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-A-p3",
+    "passage": "Hana took a paper-making class at the community center. She tore old newspapers into small pieces. She put them in warm water and mixed them into a thick soup. She spread the soup on a screen and pressed the water out. The next day, the paper was _____, so Hana wrote a card on it.",
+    "question": "Which word best fits in the blank?",
+    "choices": [
+     "wet",
+     "torn",
+     "dry",
+     "gone"
+    ],
+    "explain_ko": "다음 날 종이가 말라서(dry) 그 위에 카드를 쓸 수 있었다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-18",
+    "no": 18,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-A-p3",
+    "passage": "Hana took a paper-making class at the community center. She tore old newspapers into small pieces. She put them in warm water and mixed them into a thick soup. She spread the soup on a screen and pressed the water out. The next day, the paper was _____, so Hana wrote a card on it.",
+    "question": "What did Hana put in the warm water?",
+    "choices": [
+     "a thick card",
+     "small pieces of old newspaper",
+     "a screen",
+     "some soup from home"
+    ],
+    "explain_ko": "She tore old newspapers into small pieces. She put them in warm water.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-A-19",
+    "no": 19,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-A-p4",
+    "passage": "The clock on the old tower in Saebit Town stopped last month. People looked up and saw the wrong time. So Mr. Yoon, a clock repairman, climbed up the tower. He cleaned the inside of the clock and changed a broken part. It took him three days. Now the clock rings every hour again.",
+    "question": "What is the best title for the story?",
+    "choices": [
+     "A New Tower for the Town",
+     "Fixing the Town Clock",
+     "How to Tell the Time",
+     "Mr. Yoon's Clock Shop"
+    ],
+    "explain_ko": "멈춘 마을 시계탑의 시계를 고친 이야기이다.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-A-20",
+    "no": 20,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-A-p4",
+    "passage": "The clock on the old tower in Saebit Town stopped last month. People looked up and saw the wrong time. So Mr. Yoon, a clock repairman, climbed up the tower. He cleaned the inside of the clock and changed a broken part. It took him three days. Now the clock rings every hour again.",
+    "question": "Which is true about the story?",
+    "choices": [
+     "The clock stopped last year.",
+     "Mr. Yoon fixed the clock in three days.",
+     "Mr. Yoon built a new tower.",
+     "The clock rings only in the morning."
+    ],
+    "explain_ko": "It took him three days. 멈춘 때는 지난달, 탑은 그대로, 시계는 매시간 울린다.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-A-21",
+    "no": 21,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-A-p5",
+    "passage": "Dear students,\nNext Friday is Career Day at Hanbit Elementary School. A firefighter, Ms. Park, will visit our school. She will tell you about her job and show you her fire truck. You can also try on her helmet and ask her questions. Please come to the playground at 10 a.m. Don't forget to bring a pencil and a notebook. Thank you!",
+    "question": "Why did the writer write this?",
+    "choices": [
+     "to tell students about a firefighter's visit",
+     "to ask students to become firefighters",
+     "to thank a firefighter for her help",
+     "to tell students about a fire at school"
+    ],
+    "explain_ko": "소방관이 학교에 온다는 것을 알리는 안내문이다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-A-22",
+    "no": 22,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-A-p5",
+    "passage": "Dear students,\nNext Friday is Career Day at Hanbit Elementary School. A firefighter, Ms. Park, will visit our school. She will tell you about her job and show you her fire truck. You can also try on her helmet and ask her questions. Please come to the playground at 10 a.m. Don't forget to bring a pencil and a notebook. Thank you!",
+    "question": "What should students bring?",
+    "choices": [
+     "a pencil and a notebook",
+     "a helmet and a notebook",
+     "a pencil and some water",
+     "a hat and a camera"
+    ],
+    "explain_ko": "Don't forget to bring a pencil and a notebook.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-A-23",
+    "no": 23,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-A-p6",
+    "passage": "Minho joined the school table tennis club this spring. At first, he could not hit the ball well. It often went into the net, and some friends laughed. But Minho did not _____. He practiced for an hour every day after school. His coach helped him, too. After two months, he won his first game. Now he is one of the best players in the club.",
+    "question": "Which is NOT true about Minho?",
+    "choices": [
+     "His coach did not help him.",
+     "He joined the club this spring.",
+     "He practiced every day after school.",
+     "He won a game after two months."
+    ],
+    "explain_ko": "His coach helped him, too. → 코치가 도와주었다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-A-24",
+    "no": 24,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-A-p6",
+    "passage": "Minho joined the school table tennis club this spring. At first, he could not hit the ball well. It often went into the net, and some friends laughed. But Minho did not _____. He practiced for an hour every day after school. His coach helped him, too. After two months, he won his first game. Now he is one of the best players in the club.",
+    "question": "Which best fits in the blank?",
+    "choices": [
+     "practice at all",
+     "join the club",
+     "give up",
+     "like his coach"
+    ],
+    "explain_ko": "친구들이 웃었지만 포기하지 않고(give up) 매일 연습했다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-25",
+    "no": 25,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-A-p7",
+    "passage": "Have you ever looked at your shadow at different times of the day? In the morning, the sun is low in the sky, so your shadow is long. At noon, the sun is high above your head. Then your shadow becomes very short. In the late afternoon, the sun goes down again, and your shadow grows _____. Long ago, people used shadows like a clock. They put a stick in the ground and watched its shadow move. So a shadow can tell us the time of day.",
+    "question": "이 글의 주제로 가장 알맞은 것은?",
+    "choices": [
+     "해가 뜨고 지는 시각",
+     "하루 동안 그림자 길이가 바뀌는 까닭과 그 쓰임",
+     "시계가 처음 만들어진 나라",
+     "그림자놀이를 하는 방법"
+    ],
+    "explain_ko": "해의 높이에 따라 그림자 길이가 바뀌고, 옛사람들은 이것을 시계처럼 썼다.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-A-26",
+    "no": 26,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-A-p7",
+    "passage": "Have you ever looked at your shadow at different times of the day? In the morning, the sun is low in the sky, so your shadow is long. At noon, the sun is high above your head. Then your shadow becomes very short. In the late afternoon, the sun goes down again, and your shadow grows _____. Long ago, people used shadows like a clock. They put a stick in the ground and watched its shadow move. So a shadow can tell us the time of day.",
+    "question": "빈칸에 들어갈 말로 가장 알맞은 것은?",
+    "choices": [
+     "shorter",
+     "longer",
+     "smaller",
+     "rounder"
+    ],
+    "explain_ko": "해가 다시 낮아지면 아침처럼 그림자가 길어진다(longer).",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-A-27",
+    "no": 27,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-A-p8",
+    "passage": "Last weekend, my family visited Jungang Market, an old market in our town.\n(A) After lunch, we walked to the other side of the market. There, an old man was making wooden toys by hand. My little brother bought a small wooden horse from __him__.\n(B) First, we went to the food street. There were many small shops selling hot rice cakes, fish cakes, and dumplings. We sat down at a tiny table and ate lunch there.\n(C) Before we went home, Mom bought some fresh fruit. It was a long but happy day.",
+    "question": "주어진 첫 문장 다음에 이어질 글의 순서로 가장 알맞은 것은?",
+    "choices": [
+     "(A)-(C)-(B)",
+     "(B)-(A)-(C)",
+     "(B)-(C)-(A)",
+     "(C)-(A)-(B)"
+    ],
+    "answer": 1,
+    "explain_ko": "First(B) → After lunch(A) → Before we went home(C).",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-28",
+    "no": 28,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-A-p8",
+    "passage": "Last weekend, my family visited Jungang Market, an old market in our town.\n(A) After lunch, we walked to the other side of the market. There, an old man was making wooden toys by hand. My little brother bought a small wooden horse from __him__.\n(B) First, we went to the food street. There were many small shops selling hot rice cakes, fish cakes, and dumplings. We sat down at a tiny table and ate lunch there.\n(C) Before we went home, Mom bought some fresh fruit. It was a long but happy day.",
+    "question": "밑줄 친 __him__ 이 가리키는 사람은?",
+    "choices": [
+     "나의 남동생",
+     "음식 거리의 가게 주인",
+     "엄마에게 과일을 판 사람",
+     "나무 장난감을 손으로 만들던 노인"
+    ],
+    "explain_ko": "남동생은 나무 장난감을 만들던 노인(an old man)에게서 말을 샀다.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-29",
+    "no": 29,
+    "area": "reading",
+    "level": "중1",
+    "passageId": "s1-A-p9",
+    "passage": "Every day, at the same times, weather stations around the world send big balloons high into the sky. These weather balloons are filled with a gas that is lighter than air, so they rise quickly. Each balloon carries a small box with tools inside. As it goes up, the box measures the temperature and how wet the air is. Then it sends this information back to the ground. The air gets thinner higher up, so the balloon slowly grows bigger. At about thirty kilometers, it becomes as big as a small house and finally pops. The box falls back to Earth with a small parachute. Scientists use the information to tell us tomorrow's weather.",
+    "question": "이 글의 제목으로 가장 알맞은 것은?",
+    "choices": [
+     "How to Make a Paper Balloon",
+     "Why the Air Is Getting Dirty",
+     "Weather Balloons: Helpers in the Sky",
+     "The Tallest House in the World"
+    ],
+    "explain_ko": "날씨 풍선이 하늘로 올라가며 날씨 정보를 모으는 과정을 설명하는 글이다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-30",
+    "no": 30,
+    "area": "reading",
+    "level": "중1",
+    "passageId": "s1-A-p9",
+    "passage": "Every day, at the same times, weather stations around the world send big balloons high into the sky. These weather balloons are filled with a gas that is lighter than air, so they rise quickly. Each balloon carries a small box with tools inside. As it goes up, the box measures the temperature and how wet the air is. Then it sends this information back to the ground. The air gets thinner higher up, so the balloon slowly grows bigger. At about thirty kilometers, it becomes as big as a small house and finally pops. The box falls back to Earth with a small parachute. Scientists use the information to tell us tomorrow's weather.",
+    "question": "이 글의 내용과 일치하지 않는 것은?",
+    "choices": [
+     "풍선에는 공기보다 가벼운 기체가 들어 있다.",
+     "풍선에 달린 상자가 기온과 공기 속 물기를 잰다.",
+     "풍선은 높이 올라갈수록 점점 작아진다.",
+     "상자는 작은 낙하산을 달고 땅으로 떨어진다."
+    ],
+    "explain_ko": "the balloon slowly grows bigger → 올라갈수록 점점 커진다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-31",
+    "no": 31,
+    "area": "reading",
+    "level": "중1",
+    "passageId": "s1-A-p10",
+    "passage": "Dear Mayor Choi,\nMy name is Seojin Lee, and I am a student at Daehan Middle School. Every day, about fifty students ride bikes to our school. Riding a bike is healthy, and it does not make the air dirty. However, the road in front of our school is very dangerous. Cars and buses drive fast there, and there is no special road for bikes. Last month, one of my friends almost had an accident. I am writing to ask you to make a safe bike lane on this road. Then more students will ride bikes, and everyone will be safer. Thank you for reading my letter.\nSincerely,\nSeojin Lee",
+    "question": "이 글을 쓴 목적으로 가장 알맞은 것은?",
+    "choices": [
+     "자전거를 타면 건강해진다는 것을 알리려고",
+     "친구가 사고를 당할 뻔한 일을 전하려고",
+     "학교에 자전거 보관대를 늘려 달라고 부탁하려고",
+     "학교 앞 도로에 자전거 전용 길을 만들어 달라고 요청하려고"
+    ],
+    "explain_ko": "I am writing to ask you to make a safe bike lane on this road.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-32",
+    "no": 32,
+    "area": "phonics",
+    "level": "초3",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "k__i__te",
+     "b__i__ke",
+     "t__i__me",
+     "s__i__t"
+    ],
+    "explain_ko": "sit 의 i 는 짧은 [이], 나머지는 [아이].",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-33",
+    "no": 33,
+    "area": "phonics",
+    "level": "초4",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "__c__at",
+     "__c__up",
+     "__c__ake",
+     "__c__ity"
+    ],
+    "explain_ko": "city 의 c 는 [ㅅ], 나머지는 [ㅋ].",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-34",
+    "no": 34,
+    "area": "grammar",
+    "level": "초4",
+    "question": "빈칸에 들어갈 말로 알맞은 것은?\nThere are two _____ in the park.",
+    "choices": [
+     "bench",
+     "benchs",
+     "a bench",
+     "benches"
+    ],
+    "explain_ko": "two 뒤에는 복수형, ch 로 끝나면 -es → benches.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-35",
+    "no": 35,
+    "area": "grammar",
+    "level": "초5",
+    "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: Does your brother like soccer?\nB: Yes, he _____ soccer every Sunday.",
+    "choices": [
+     "play",
+     "playing",
+     "plays",
+     "to play"
+    ],
+    "explain_ko": "주어 he(3인칭 단수) 현재 → plays.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-36",
+    "no": 36,
+    "area": "grammar",
+    "level": "초6",
+    "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: _____ you go to the museum yesterday?\nB: Yes, I did. I saw many old coins.",
+    "choices": [
+     "Did",
+     "Do",
+     "Were",
+     "Are"
+    ],
+    "explain_ko": "yesterday, 일반동사 go 의 과거 의문문 → Did.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-A-37",
+    "no": 37,
+    "area": "grammar",
+    "level": "중1",
+    "question": "빈칸에 들어갈 말로 알맞은 것은?\nI went to the library _____ some books about space.",
+    "choices": [
+     "borrow",
+     "borrowed",
+     "to borrow",
+     "borrows"
+    ],
+    "explain_ko": "'~하기 위해'(목적) → to부정사 to borrow.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-38",
+    "no": 38,
+    "area": "form",
+    "level": "초5",
+    "question": "[watch] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "My grandpa {} the news every evening.",
+    "hint_ko": "[우리 할아버지는 매일 저녁 뉴스를 보신다.]",
+    "answers": [
+     [
+      "watches"
+     ]
+    ],
+    "explain_ko": "3인칭 단수 현재, ch 로 끝나면 -es → watches",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-39",
+    "no": 39,
+    "area": "form",
+    "level": "초5",
+    "question": "[do not] 과거 부정의 줄임말로 바꾸어 쓰세요.",
+    "template": "Tom {} clean his room yesterday.",
+    "hint_ko": "[Tom 은 어제 방을 청소하지 않았다.]",
+    "answers": [
+     [
+      "didn't"
+     ]
+    ],
+    "explain_ko": "과거 부정 did not → 줄임말 didn't + 동사원형",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-40",
+    "no": 40,
+    "area": "form",
+    "level": "초6",
+    "question": "[swim] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "Look! The children {} {} in the pool.",
+    "hint_ko": "[봐! 아이들이 수영장에서 수영하고 있어.]",
+    "answers": [
+     [
+      "are"
+     ],
+     [
+      "swimming"
+     ]
+    ],
+    "explain_ko": "현재진행 are + swimming (m 을 한 번 더 쓴다)",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-41",
+    "no": 41,
+    "area": "form",
+    "level": "초6",
+    "question": "[be, not] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "My parents {} at home last night.",
+    "hint_ko": "[우리 부모님은 어젯밤에 집에 계시지 않았다.]",
+    "answers": [
+     [
+      "weren't",
+      "were not"
+     ]
+    ],
+    "explain_ko": "복수 주어 + 과거 → were not (weren't)",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-42",
+    "no": 42,
+    "area": "form",
+    "level": "중1",
+    "question": "[visit] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "I {} {} Jeju Island three times.",
+    "hint_ko": "[나는 제주도에 세 번 가 본 적이 있다.]",
+    "answers": [
+     [
+      "have"
+     ],
+     [
+      "visited"
+     ]
+    ],
+    "explain_ko": "경험의 현재완료 have + 과거분사 visited",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-43",
+    "no": 43,
+    "area": "sentence",
+    "level": "초5",
+    "question": "그는 피아노를 잘 친다. (play, piano, well)",
+    "template": "{} {} {} {} {}.",
+    "answers": [
+     [
+      "He"
+     ],
+     [
+      "plays"
+     ],
+     [
+      "the"
+     ],
+     [
+      "piano"
+     ],
+     [
+      "well"
+     ]
+    ],
+    "explain_ko": "He plays the piano well. 악기 앞에는 the",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-44",
+    "no": 44,
+    "area": "sentence",
+    "level": "초6",
+    "question": "나는 우주 비행사가 되고 싶다. (want, be, astronaut)",
+    "template": "{} {} {} {} {} {}.",
+    "answers": [
+     [
+      "I"
+     ],
+     [
+      "want"
+     ],
+     [
+      "to"
+     ],
+     [
+      "be"
+     ],
+     [
+      "an"
+     ],
+     [
+      "astronaut"
+     ]
+    ],
+    "explain_ko": "I want to be an astronaut. want to + 동사원형, 모음 앞 an",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-45",
+    "no": 45,
+    "area": "sentence",
+    "level": "초6",
+    "question": "너는 어제 왜 학교에 늦었니? (why, late, school, yesterday)",
+    "template": "{} {} {} {} {} {} {}?",
+    "answers": [
+     [
+      "Why"
+     ],
+     [
+      "were"
+     ],
+     [
+      "you"
+     ],
+     [
+      "late"
+     ],
+     [
+      "for",
+      "to"
+     ],
+     [
+      "school"
+     ],
+     [
+      "yesterday"
+     ]
+    ],
+    "explain_ko": "Why were you late for school yesterday? be동사 과거 의문문",
+    "status": "draft"
+   },
+   {
+    "id": "s1-A-46",
+    "no": 46,
+    "area": "sentence",
+    "level": "중1",
+    "question": "이것은 이 도시에서 가장 높은 건물이다. (tall, building, city)",
+    "template": "{} {} {} {} {} {} {} {}.",
+    "answers": [
+     [
+      "This",
+      "It"
+     ],
+     [
+      "is"
+     ],
+     [
+      "the"
+     ],
+     [
+      "tallest"
+     ],
+     [
+      "building"
+     ],
+     [
+      "in"
+     ],
+     [
+      "this",
+      "the"
+     ],
+     [
+      "city"
+     ]
+    ],
+    "explain_ko": "This is the tallest building in this city. the + 최상급",
+    "status": "draft"
+   }
+  ],
+  "B": [
+   {
+    "id": "s1-B-13",
+    "no": 13,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-B-p1",
+    "passage": "Our school library is on the second floor. It has many books about animals and dinosaurs. I go there every Tuesday with my class. I can take two books home for one week.",
+    "question": "How many books can I take home?",
+    "choices": [
+     "one book",
+     "three books",
+     "four books",
+     "two books"
+    ],
+    "explain_ko": "I can take two books home → 두 권을 빌려 갈 수 있다.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-B-14",
+    "no": 14,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-B-p1",
+    "passage": "Our school library is on the second floor. It has many books about animals and dinosaurs. I go there every Tuesday with my class. I can take two books home for one week.",
+    "question": "What is the story about?",
+    "choices": [
+     "my favorite animal",
+     "my classroom on the second floor",
+     "a trip to a bookstore",
+     "our school library"
+    ],
+    "explain_ko": "글 전체가 학교 도서관 이야기이다.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-B-15",
+    "no": 15,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-B-p2",
+    "passage": "Mom and I planted bean seeds in a small pot. We put __it__ by the window. I give the seeds water every morning. Today, I saw a tiny green leaf, and I am so happy!",
+    "question": "What does __it__ mean?",
+    "choices": [
+     "the window",
+     "the leaf",
+     "the pot",
+     "Mom"
+    ],
+    "explain_ko": "창가에 둔 것은 씨앗을 심은 작은 화분(pot)이다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-16",
+    "no": 16,
+    "area": "reading",
+    "level": "초3",
+    "passageId": "s1-B-p2",
+    "passage": "Mom and I planted bean seeds in a small pot. We put __it__ by the window. I give the seeds water every morning. Today, I saw a tiny green leaf, and I am so happy!",
+    "question": "Which is true about the story?",
+    "choices": [
+     "Mom and I planted apple seeds.",
+     "I give the seeds water every morning.",
+     "The pot is in the garden.",
+     "I saw a big red flower today."
+    ],
+    "explain_ko": "I give the seeds water every morning. 심은 것은 콩, 화분은 창가, 본 것은 작은 초록 잎.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-B-17",
+    "no": 17,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-B-p3",
+    "passage": "It rained all day on Monday. Sora wanted to play outside, but she had to stay home. So she made paper boats with her little brother. They put the boats in a bowl of water and played with them. In the evening, the rain stopped, and they saw a rainbow over the hill.",
+    "question": "What is the best title for the story?",
+    "choices": [
+     "A Sunny Day at the Beach",
+     "A Rainy Day at Home",
+     "Sora's New Umbrella",
+     "A Boat Trip on the River"
+    ],
+    "explain_ko": "비 오는 날 집에서 종이배를 만들며 논 이야기이다.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-B-18",
+    "no": 18,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-B-p3",
+    "passage": "It rained all day on Monday. Sora wanted to play outside, but she had to stay home. So she made paper boats with her little brother. They put the boats in a bowl of water and played with them. In the evening, the rain stopped, and they saw a rainbow over the hill.",
+    "question": "What did Sora and her brother see in the evening?",
+    "choices": [
+     "a rainbow",
+     "a boat on the river",
+     "their friends outside",
+     "a hill of snow"
+    ],
+    "explain_ko": "they saw a rainbow over the hill → 무지개를 보았다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-B-19",
+    "no": 19,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-B-p4",
+    "passage": "Mr. Kang has a small bakery near my house. Every morning, he gets up at four to _____ bread and cakes. His bakery opens at seven. People love his cream buns. By noon, there are no cream buns left. So I always go there early on Saturday morning.",
+    "question": "Which word best fits in the blank?",
+    "choices": [
+     "eat",
+     "buy",
+     "bake",
+     "wash"
+    ],
+    "explain_ko": "빵집 주인이 가게 문을 열기 전 새벽에 빵을 굽는다(bake).",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-20",
+    "no": 20,
+    "area": "reading",
+    "level": "초4",
+    "passageId": "s1-B-p4",
+    "passage": "Mr. Kang has a small bakery near my house. Every morning, he gets up at four to _____ bread and cakes. His bakery opens at seven. People love his cream buns. By noon, there are no cream buns left. So I always go there early on Saturday morning.",
+    "question": "Why do I go to the bakery early?",
+    "choices": [
+     "The cream buns are all gone by noon.",
+     "The bakery closes at seven.",
+     "Mr. Kang gives free bread in the morning.",
+     "I have a class on Saturday afternoon."
+    ],
+    "explain_ko": "By noon, there are no cream buns left. So I always go there early.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-B-21",
+    "no": 21,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-B-p5",
+    "passage": "Hello, everyone!\nOur school band will have a concert on June 12. The concert will start at 4 p.m. in the school hall. Fifteen students will play the drums, the flute, and the violin. They practiced every Monday and Wednesday for three months. Parents and friends are welcome, and the concert is free. Please do not eat or drink in the hall. Come and enjoy the music with us!",
+    "question": "Why did the writer write this?",
+    "choices": [
+     "to ask students to join the school band",
+     "to invite people to a school band concert",
+     "to sell tickets for a music show",
+     "to tell students about new music classes"
+    ],
+    "explain_ko": "학교 밴드 공연에 와 달라고 알리는 안내문이다.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-B-22",
+    "no": 22,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-B-p5",
+    "passage": "Hello, everyone!\nOur school band will have a concert on June 12. The concert will start at 4 p.m. in the school hall. Fifteen students will play the drums, the flute, and the violin. They practiced every Monday and Wednesday for three months. Parents and friends are welcome, and the concert is free. Please do not eat or drink in the hall. Come and enjoy the music with us!",
+    "question": "Which is NOT true about the concert?",
+    "choices": [
+     "People have to pay to see it.",
+     "It will start at 4 p.m.",
+     "It will be in the school hall.",
+     "The band practiced for three months."
+    ],
+    "explain_ko": "the concert is free → 돈을 내지 않아도 된다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-B-23",
+    "no": 23,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-B-p6",
+    "passage": "My pen pal, Aino, lives in Finland. Last week, she sent me a letter and a photo. Every February, her town has a snow festival. People make big animals out of snow, and children slide down the hills. This year, Aino and her dad made a snow bear. It was taller than her dad! At the end of her letter, she wrote, \"Snow is _____ here in winter, so please visit me!\"",
+    "question": "What did Aino send to the writer?",
+    "choices": [
+     "a small snow bear",
+     "a ticket to the festival",
+     "a map of Finland",
+     "a letter and a photo"
+    ],
+    "explain_ko": "she sent me a letter and a photo → 편지와 사진을 보냈다.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-B-24",
+    "no": 24,
+    "area": "reading",
+    "level": "초5",
+    "passageId": "s1-B-p6",
+    "passage": "My pen pal, Aino, lives in Finland. Last week, she sent me a letter and a photo. Every February, her town has a snow festival. People make big animals out of snow, and children slide down the hills. This year, Aino and her dad made a snow bear. It was taller than her dad! At the end of her letter, she wrote, \"Snow is _____ here in winter, so please visit me!\"",
+    "question": "Which best fits in the blank?",
+    "choices": [
+     "hard to find",
+     "very hot",
+     "everywhere",
+     "not allowed"
+    ],
+    "explain_ko": "눈 축제가 열리는 곳이니 겨울에 눈이 어디에나(everywhere) 있다며 놀러 오라고 한다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-25",
+    "no": 25,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-B-p7",
+    "passage": "Do you know how children played one hundred years ago? At Dasom Toy Museum, you can find out. The museum has more than two thousand old toys, such as wooden tops, paper dolls, and tin cars. Most of them were made by hand at home. You cannot touch the toys in the glass boxes, but you can play with the toys in the play room. On the second floor, visitors can make their own simple toys, like a paper doll. The museum is open every day except Mondays.",
+    "question": "이 글의 제목으로 가장 알맞은 것은?",
+    "choices": [
+     "How to Make a Paper Doll",
+     "The First Toy Factory",
+     "Popular Games for Children Today",
+     "A Museum Full of Old Toys"
+    ],
+    "explain_ko": "옛날 장난감을 모아 둔 박물관을 소개하는 글이다.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-B-26",
+    "no": 26,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-B-p7",
+    "passage": "Do you know how children played one hundred years ago? At Dasom Toy Museum, you can find out. The museum has more than two thousand old toys, such as wooden tops, paper dolls, and tin cars. Most of them were made by hand at home. You cannot touch the toys in the glass boxes, but you can play with the toys in the play room. On the second floor, visitors can make their own simple toys, like a paper doll. The museum is open every day except Mondays.",
+    "question": "이 글의 내용과 일치하는 것은?",
+    "choices": [
+     "박물관의 장난감은 대부분 공장에서 만들었다.",
+     "2층에서 간단한 장난감을 직접 만들 수 있다.",
+     "유리 상자 안의 장난감을 만져 볼 수 있다.",
+     "박물관은 일요일마다 문을 닫는다."
+    ],
+    "explain_ko": "On the second floor, visitors can make their own simple toys.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-B-27",
+    "no": 27,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-B-p8",
+    "passage": "Last summer, my family went camping by a lake for the first time.\n(A) After dinner, we sat around the fire and roasted marshmallows. Then we looked up at the sky. There were so many stars!\n(B) The next morning, I woke up early because of the birds. I walked to the lake with my sister and saw fish jumping out of the water.\n(C) When we arrived, Dad and I put up the tent. It was harder than I thought, but we did it together. Mom made a fire for dinner.",
+    "question": "주어진 첫 문장 다음에 이어질 글의 순서로 가장 알맞은 것은?",
+    "choices": [
+     "(A)-(C)-(B)",
+     "(B)-(A)-(C)",
+     "(C)-(A)-(B)",
+     "(C)-(B)-(A)"
+    ],
+    "answer": 2,
+    "explain_ko": "When we arrived(C) → After dinner(A) → The next morning(B).",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-28",
+    "no": 28,
+    "area": "reading",
+    "level": "초6",
+    "passageId": "s1-B-p8",
+    "passage": "Last summer, my family went camping by a lake for the first time.\n(A) After dinner, we sat around the fire and roasted marshmallows. Then we looked up at the sky. There were so many stars!\n(B) The next morning, I woke up early because of the birds. I walked to the lake with my sister and saw fish jumping out of the water.\n(C) When we arrived, Dad and I put up the tent. It was harder than I thought, but we did it together. Mom made a fire for dinner.",
+    "question": "글쓴이가 다음 날 아침 일찍 일어난 까닭은?",
+    "choices": [
+     "물고기를 잡으려고",
+     "텐트 안이 추워서",
+     "새소리 때문에",
+     "여동생이 깨워서"
+    ],
+    "explain_ko": "I woke up early because of the birds.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-29",
+    "no": 29,
+    "area": "reading",
+    "level": "중1",
+    "passageId": "s1-B-p9",
+    "passage": "Every day, people throw away a lot of plastic bottles. But many of them are never recycled because people throw them out the wrong way. Recycling a bottle is easy if you follow three simple steps. First, empty the bottle and wash it with water. Second, take off the label, because the label is made of a different kind of plastic. Third, press the bottle flat and put the cap back on. Then put it in the plastic bin, not the general trash. When bottles are clean and in the right bin, factories can turn them into new things like clothes, bags, and shoes. So a small effort at home can make a big _____ for our planet.",
+    "question": "이 글의 주제로 가장 알맞은 것은?",
+    "choices": [
+     "플라스틱 병을 올바르게 분리 배출하는 방법",
+     "플라스틱으로 옷을 만드는 공장",
+     "플라스틱 병 대신 유리병을 써야 하는 이유",
+     "집에서 쓰레기를 줄이는 여러 가지 습관"
+    ],
+    "explain_ko": "플라스틱 병을 재활용되게 내놓는 세 단계를 설명하는 글이다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-B-30",
+    "no": 30,
+    "area": "reading",
+    "level": "중1",
+    "passageId": "s1-B-p9",
+    "passage": "Every day, people throw away a lot of plastic bottles. But many of them are never recycled because people throw them out the wrong way. Recycling a bottle is easy if you follow three simple steps. First, empty the bottle and wash it with water. Second, take off the label, because the label is made of a different kind of plastic. Third, press the bottle flat and put the cap back on. Then put it in the plastic bin, not the general trash. When bottles are clean and in the right bin, factories can turn them into new things like clothes, bags, and shoes. So a small effort at home can make a big _____ for our planet.",
+    "question": "빈칸에 들어갈 말로 가장 알맞은 것은?",
+    "choices": [
+     "problem",
+     "mistake",
+     "difference",
+     "noise"
+    ],
+    "explain_ko": "집에서의 작은 노력이 지구에 큰 차이(difference)를 만든다.",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-31",
+    "no": 31,
+    "area": "reading",
+    "level": "중1",
+    "passageId": "s1-B-p10",
+    "passage": "Do you love animals? Hanul Animal Shelter is looking for volunteers this winter. We take care of about forty dogs and cats that have no home. Every day, they need food, clean water, and a warm place to sleep. They also need people to play with them and take them for walks. Volunteers will help us feed the animals, clean their rooms, and walk the dogs. You must be at least twelve years old, and students under fifteen should come with a parent. We are open from 10 a.m. to 5 p.m. every Saturday and Sunday. If you are interested, please call us at 031-555-2040. The animals are waiting for you!",
+    "question": "이 글을 쓴 목적으로 가장 알맞은 것은?",
+    "choices": [
+     "동물 보호소에서 일할 자원봉사자를 모집하려고",
+     "집 없는 동물을 입양해 달라고 부탁하려고",
+     "동물 보호소의 문 여는 시간이 바뀐 것을 알리려고",
+     "보호소에 동물 먹이를 기부해 달라고 요청하려고"
+    ],
+    "explain_ko": "Hanul Animal Shelter is looking for volunteers → 자원봉사자 모집 광고이다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-B-32",
+    "no": 32,
+    "area": "phonics",
+    "level": "초3",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "h__o__t",
+     "b__o__x",
+     "d__o__g",
+     "n__o__se"
+    ],
+    "explain_ko": "nose 의 o 는 [오우], 나머지는 짧은 [아].",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-B-33",
+    "no": 33,
+    "area": "phonics",
+    "level": "초4",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "__ch__air",
+     "s__ch__ool",
+     "__ch__ick",
+     "lun__ch__"
+    ],
+    "explain_ko": "school 의 ch 는 [ㅋ], 나머지는 [취].",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-B-34",
+    "no": 34,
+    "area": "grammar",
+    "level": "초4",
+    "question": "빈칸에 들어갈 말로 알맞은 것은?\nThere _____ a cat on the sofa.",
+    "choices": [
+     "are",
+     "is",
+     "am",
+     "be"
+    ],
+    "explain_ko": "a cat(단수) 앞에는 There is.",
+    "status": "draft",
+    "answer": 1
+   },
+   {
+    "id": "s1-B-35",
+    "no": 35,
+    "area": "grammar",
+    "level": "초5",
+    "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: Can your sister ride a bike?\nB: No, she _____. She is only three.",
+    "choices": [
+     "can't",
+     "doesn't",
+     "isn't",
+     "don't"
+    ],
+    "explain_ko": "Can 으로 물으면 can / can't 로 답한다.",
+    "status": "draft",
+    "answer": 0
+   },
+   {
+    "id": "s1-B-36",
+    "no": 36,
+    "area": "grammar",
+    "level": "초6",
+    "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: What did you eat for breakfast?\nB: I _____ some toast and milk.",
+    "choices": [
+     "eat",
+     "eated",
+     "ate",
+     "eating"
+    ],
+    "explain_ko": "did 로 물은 과거 → eat 의 과거형 ate (불규칙).",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-37",
+    "no": 37,
+    "area": "grammar",
+    "level": "중1",
+    "question": "빈칸에 들어갈 말로 알맞은 것은?\nMy bag is _____ than yours.",
+    "choices": [
+     "heavy",
+     "heaviest",
+     "more heavy",
+     "heavier"
+    ],
+    "explain_ko": "than 앞은 비교급, y 로 끝나면 y 를 i 로 → heavier.",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-B-38",
+    "no": 38,
+    "area": "form",
+    "level": "초5",
+    "question": "[study] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "My sister {} English every night.",
+    "hint_ko": "[우리 언니는 매일 밤 영어를 공부한다.]",
+    "answers": [
+     [
+      "studies"
+     ]
+    ],
+    "explain_ko": "3인칭 단수 현재, 자음 + y 는 y 를 i 로 바꾸고 -es → studies",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-39",
+    "no": 39,
+    "area": "form",
+    "level": "초5",
+    "question": "[do not] 과거 부정의 줄임말로 바꾸어 쓰세요.",
+    "template": "We {} have P.E. class last Friday.",
+    "hint_ko": "[우리는 지난 금요일에 체육 수업이 없었다.]",
+    "answers": [
+     [
+      "didn't"
+     ]
+    ],
+    "explain_ko": "과거 부정 did not → 줄임말 didn't + 동사원형 have",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-40",
+    "no": 40,
+    "area": "form",
+    "level": "초6",
+    "question": "[write] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "Be quiet! My brother {} {} a letter.",
+    "hint_ko": "[조용히 해! 형이 편지를 쓰고 있어.]",
+    "answers": [
+     [
+      "is"
+     ],
+     [
+      "writing"
+     ]
+    ],
+    "explain_ko": "현재진행 is + writing (e 를 빼고 -ing)",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-41",
+    "no": 41,
+    "area": "form",
+    "level": "초6",
+    "question": "[buy] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "Mom {} a new bag for me last week.",
+    "hint_ko": "[엄마는 지난주에 나에게 새 가방을 사 주셨다.]",
+    "answers": [
+     [
+      "bought"
+     ]
+    ],
+    "explain_ko": "last week → 과거, buy 의 불규칙 과거 bought",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-42",
+    "no": 42,
+    "area": "form",
+    "level": "중1",
+    "question": "[live] 알맞은 꼴로 바꾸어 쓰세요.",
+    "template": "My uncle {} {} in Jeonju since 2019.",
+    "hint_ko": "[우리 삼촌은 2019년부터 전주에 살고 있다.]",
+    "answers": [
+     [
+      "has"
+     ],
+     [
+      "lived"
+     ]
+    ],
+    "explain_ko": "since + 과거 시점 → 계속의 현재완료 has + lived",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-43",
+    "no": 43,
+    "area": "sentence",
+    "level": "초5",
+    "question": "우리 엄마는 매일 아침 달리신다. (run, every, morning)",
+    "template": "{} {} {} {} {}.",
+    "answers": [
+     [
+      "My"
+     ],
+     [
+      "mom",
+      "mother"
+     ],
+     [
+      "runs"
+     ],
+     [
+      "every"
+     ],
+     [
+      "morning"
+     ]
+    ],
+    "explain_ko": "My mom runs every morning. 3인칭 단수 현재 runs",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-44",
+    "no": 44,
+    "area": "sentence",
+    "level": "초6",
+    "question": "내 남동생은 자전거를 탈 수 있다. (can, ride, bike)",
+    "template": "{} {} {} {} {} {}.",
+    "answers": [
+     [
+      "My"
+     ],
+     [
+      "brother"
+     ],
+     [
+      "can"
+     ],
+     [
+      "ride"
+     ],
+     [
+      "a",
+      "his"
+     ],
+     [
+      "bike",
+      "bicycle"
+     ]
+    ],
+    "explain_ko": "My brother can ride a bike. can + 동사원형",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-45",
+    "no": 45,
+    "area": "sentence",
+    "level": "초6",
+    "question": "너는 지난 일요일에 무엇을 했니? (what, do, last, Sunday)",
+    "template": "{} {} {} {} {} {}?",
+    "answers": [
+     [
+      "What"
+     ],
+     [
+      "did"
+     ],
+     [
+      "you"
+     ],
+     [
+      "do"
+     ],
+     [
+      "last"
+     ],
+     [
+      "Sunday"
+     ]
+    ],
+    "explain_ko": "What did you do last Sunday? 일반동사 과거 의문문 did + 주어 + 동사원형",
+    "status": "draft"
+   },
+   {
+    "id": "s1-B-46",
+    "no": 46,
+    "area": "sentence",
+    "level": "중1",
+    "question": "우리는 할머니를 찾아뵙기 위해 기차를 탔다. (take, train, visit, grandmother)",
+    "template": "{} {} {} {} {} {} {} {}.",
+    "answers": [
+     [
+      "We"
+     ],
+     [
+      "took"
+     ],
+     [
+      "a",
+      "the"
+     ],
+     [
+      "train"
+     ],
+     [
+      "to"
+     ],
+     [
+      "visit"
+     ],
+     [
+      "our",
+      "my"
+     ],
+     [
+      "grandmother",
+      "grandma"
+     ]
+    ],
+    "explain_ko": "We took a train to visit our grandmother. '~하기 위해'(목적) → to부정사",
+    "status": "draft"
+   }
+  ]
+ },
+ "write2": {
+  "A": [
+   {
+    "id": "w2-A-1",
+    "no": 1,
+    "area": "form",
+    "level": "중2",
+    "point": "불규칙 과거",
+    "question": "[teach] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "Ms. Park {} us how to make kimchi last Friday.",
+    "hint_ko": "[박 선생님은 지난 금요일에 우리에게 김치 만드는 법을 가르쳐 주셨다.]",
+    "answers": [
+     [
+      "taught"
+     ]
+    ],
+    "explain_ko": "last Friday → 과거. teach 의 과거형은 불규칙 taught",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-2",
+    "no": 2,
+    "area": "form",
+    "level": "중2",
+    "point": "과거진행",
+    "question": "[lie] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "When I got home, my cat {} {} on the sofa.",
+    "hint_ko": "[내가 집에 왔을 때, 고양이는 소파에 누워 있었다.] (과거진행형)",
+    "answers": [
+     [
+      "was"
+     ],
+     [
+      "lying"
+     ]
+    ],
+    "explain_ko": "과거진행 was + -ing. lie 는 ie 를 y 로 바꿔 lying",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-3",
+    "no": 3,
+    "area": "form",
+    "level": "중2",
+    "point": "수동태",
+    "question": "[write] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "This letter {} {} by my grandmother fifty years ago.",
+    "hint_ko": "[이 편지는 50년 전에 우리 할머니가 쓰셨다.] (과거 시제)",
+    "answers": [
+     [
+      "was"
+     ],
+     [
+      "written"
+     ]
+    ],
+    "explain_ko": "편지가 쓰인 것이므로 수동태 be + 과거분사. 과거라서 was written",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-4",
+    "no": 4,
+    "area": "form",
+    "level": "중3",
+    "point": "과거완료",
+    "question": "[leave] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "When we arrived at the station, the train {} already {}.",
+    "hint_ko": "[우리가 역에 도착했을 때, 기차는 이미 떠나 버렸었다.]",
+    "answers": [
+     [
+      "had"
+     ],
+     [
+      "left"
+     ]
+    ],
+    "explain_ko": "도착한 과거보다 더 먼저 일어난 일 → 과거완료 had + left",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-5",
+    "no": 5,
+    "area": "form",
+    "level": "중3",
+    "point": "품사 바꾸기 (명사 → 형용사, 목적격 보어)",
+    "question": "[danger] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "The heavy snow made the mountain road {}.",
+    "hint_ko": "[폭설로 산길이 위험해졌다.]",
+    "answers": [
+     [
+      "dangerous"
+     ]
+    ],
+    "explain_ko": "make + 목적어 + 형용사(목적격 보어). 명사 danger → 형용사 dangerous",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-6",
+    "no": 6,
+    "area": "form",
+    "level": "중3",
+    "point": "관계대명사",
+    "question": "[who] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "I have a friend {} father is a firefighter.",
+    "hint_ko": "[나에게는 아버지가 소방관인 친구가 있다.]",
+    "answers": [
+     [
+      "whose"
+     ]
+    ],
+    "explain_ko": "friend 의 아버지 → 소유격 관계대명사 whose",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-7",
+    "no": 7,
+    "area": "form",
+    "level": "고1",
+    "point": "가정법 과거완료",
+    "question": "[know] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "If I {} {} your phone number, I would have called you.",
+    "hint_ko": "[내가 네 전화번호를 알았더라면, 너에게 전화했을 텐데.]",
+    "answers": [
+     [
+      "had"
+     ],
+     [
+      "known"
+     ]
+    ],
+    "explain_ko": "과거 사실의 반대 → If + had + 과거분사, would have + 과거분사",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-8",
+    "no": 8,
+    "area": "form",
+    "level": "고1",
+    "point": "부정어 도치",
+    "question": "[do] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "Rarely {} my father come home before nine.",
+    "hint_ko": "[우리 아버지는 9시 전에 집에 오시는 일이 거의 없다.] (현재 시제)",
+    "answers": [
+     [
+      "does"
+     ]
+    ],
+    "explain_ko": "부정어 Rarely 가 앞에 오면 도치 → 조동사 does + 주어 + 동사원형",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-9",
+    "no": 9,
+    "area": "sentence",
+    "level": "중3",
+    "point": "분사 수식",
+    "question": "이것은 50년 전에 지어진 다리이다. (bridge, build, years, ago)",
+    "template": "{} {} {} {} {} {} {} {}.",
+    "answers": [
+     [
+      "This"
+     ],
+     [
+      "is"
+     ],
+     [
+      "a",
+      "the"
+     ],
+     [
+      "bridge"
+     ],
+     [
+      "built"
+     ],
+     [
+      "50",
+      "fifty"
+     ],
+     [
+      "years"
+     ],
+     [
+      "ago"
+     ]
+    ],
+    "explain_ko": "This is a bridge built 50 years ago. 과거분사 built 가 뒤에서 bridge 를 꾸민다",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-10",
+    "no": 10,
+    "area": "sentence",
+    "level": "고1",
+    "point": "분사구문",
+    "question": "위에서 보면, 그 섬은 하트처럼 보인다. (see, above, island, look, heart)",
+    "template": "{} {} {}, {} {} {} {} {} {}.",
+    "answers": [
+     [
+      "Seen"
+     ],
+     [
+      "from"
+     ],
+     [
+      "above"
+     ],
+     [
+      "the",
+      "this"
+     ],
+     [
+      "island"
+     ],
+     [
+      "looks"
+     ],
+     [
+      "like"
+     ],
+     [
+      "a"
+     ],
+     [
+      "heart"
+     ]
+    ],
+    "explain_ko": "Seen from above, the island looks like a heart. 섬이 '보이는' 것이므로 수동 분사구문 (Being) Seen",
+    "status": "draft"
+   },
+   {
+    "id": "w2-A-11",
+    "no": 11,
+    "area": "sentence",
+    "level": "고1",
+    "point": "조건절 + too ~ to",
+    "question": "그 상자가 너무 무거워서 들 수 없으면, 우리는 아빠께 도움을 청할 것이다. (box, heavy, lift, ask, Dad, help)",
+    "template": "{} {} {} {} {} {} {} {}, we'll {} {} {} {}.",
+    "answers": [
+     [
+      "If"
+     ],
+     [
+      "the",
+      "that"
+     ],
+     [
+      "box"
+     ],
+     [
+      "is"
+     ],
+     [
+      "too"
+     ],
+     [
+      "heavy"
+     ],
+     [
+      "to"
+     ],
+     [
+      "lift"
+     ],
+     [
+      "ask"
+     ],
+     [
+      "Dad"
+     ],
+     [
+      "for",
+      "to"
+     ],
+     [
+      "help"
+     ]
+    ],
+    "explain_ko": "If the box is too heavy to lift, we'll ask Dad for help. 조건절은 현재 시제, too + 형용사 + to부정사 = 너무 ~해서 …할 수 없다",
+    "status": "draft"
+   }
+  ],
+  "B": [
+   {
+    "id": "w2-B-1",
+    "no": 1,
+    "area": "form",
+    "level": "중2",
+    "point": "불규칙 과거",
+    "question": "[catch] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "My uncle {} a huge fish at the lake last Sunday.",
+    "hint_ko": "[우리 삼촌은 지난 일요일에 호수에서 커다란 물고기를 잡으셨다.]",
+    "answers": [
+     [
+      "caught"
+     ]
+    ],
+    "explain_ko": "last Sunday → 과거. catch 의 과거형은 불규칙 caught",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-2",
+    "no": 2,
+    "area": "form",
+    "level": "중2",
+    "point": "과거진행",
+    "question": "[swim] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "At 3 p.m. yesterday, the children {} {} in the river.",
+    "hint_ko": "[어제 오후 세 시에, 아이들은 강에서 수영하고 있었다.] (과거진행형)",
+    "answers": [
+     [
+      "were"
+     ],
+     [
+      "swimming"
+     ]
+    ],
+    "explain_ko": "과거진행 were + -ing. swim 은 단모음 + 단자음이라 m 을 한 번 더 써서 swimming",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-3",
+    "no": 3,
+    "area": "form",
+    "level": "중2",
+    "point": "수동태",
+    "question": "[hold] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "The school festival {} {} in the gym last Saturday.",
+    "hint_ko": "[학교 축제는 지난 토요일에 체육관에서 열렸다.] (과거 시제)",
+    "answers": [
+     [
+      "was"
+     ],
+     [
+      "held"
+     ]
+    ],
+    "explain_ko": "축제가 '열린' 것이므로 수동태 be + 과거분사. 과거라서 was held (hold-held-held)",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-4",
+    "no": 4,
+    "area": "form",
+    "level": "중3",
+    "point": "현재완료",
+    "question": "[lose] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "Oh no! I {} {} my wallet, so I can't pay for this now.",
+    "hint_ko": "[이런! 지갑을 잃어버려서 지금 이걸 계산할 수가 없어.] (현재완료)",
+    "answers": [
+     [
+      "have"
+     ],
+     [
+      "lost"
+     ]
+    ],
+    "explain_ko": "잃어버린 결과가 지금까지 이어짐 → 현재완료 have + 과거분사 lost",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-5",
+    "no": 5,
+    "area": "form",
+    "level": "중3",
+    "point": "품사 바꾸기 (명사 → 형용사, 목적격 보어)",
+    "question": "[health] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "Walking every day keeps your heart {}.",
+    "hint_ko": "[매일 걸으면 심장이 건강하게 유지된다.]",
+    "answers": [
+     [
+      "healthy"
+     ]
+    ],
+    "explain_ko": "keep + 목적어 + 형용사(목적격 보어). 명사 health → 형용사 healthy",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-6",
+    "no": 6,
+    "area": "form",
+    "level": "중3",
+    "point": "관계대명사 (전치사 + 목적격)",
+    "question": "[who] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "The boy with {} I shared my umbrella is in my class.",
+    "hint_ko": "[내가 우산을 같이 쓴 그 남자아이는 우리 반이다.]",
+    "answers": [
+     [
+      "whom"
+     ]
+    ],
+    "explain_ko": "shared my umbrella with the boy → 전치사 with 뒤의 목적격 관계대명사는 whom (전치사 바로 뒤에는 who·that 을 쓰지 않는다)",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-7",
+    "no": 7,
+    "area": "form",
+    "level": "고1",
+    "point": "가정법 과거완료",
+    "question": "[bring] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "If you {} {} a map, we would not have gotten lost.",
+    "hint_ko": "[네가 지도를 가져왔더라면, 우리는 길을 잃지 않았을 텐데.]",
+    "answers": [
+     [
+      "had"
+     ],
+     [
+      "brought"
+     ]
+    ],
+    "explain_ko": "과거 사실의 반대 → If + had + 과거분사(brought), would have + 과거분사",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-8",
+    "no": 8,
+    "area": "form",
+    "level": "고1",
+    "point": "부정어 도치",
+    "question": "[do] 알맞은 형태로 바꾸어 쓰세요.",
+    "template": "Little {} Minsu know that his friends were planning a party for him.",
+    "hint_ko": "[민수는 친구들이 자기를 위해 파티를 준비하고 있다는 것을 전혀 몰랐다.] (과거 시제)",
+    "answers": [
+     [
+      "did"
+     ]
+    ],
+    "explain_ko": "부정어 Little 이 앞에 오면 도치 → 조동사 did + 주어 + 동사원형 know",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-9",
+    "no": 9,
+    "area": "sentence",
+    "level": "중3",
+    "point": "분사 수식",
+    "question": "빨간 모자를 쓰고 있는 남자가 우리 코치님이다. (man, wear, red, cap, coach)",
+    "template": "{} {} {} {} {} {} {} {} {}.",
+    "answers": [
+     [
+      "The"
+     ],
+     [
+      "man"
+     ],
+     [
+      "wearing"
+     ],
+     [
+      "a",
+      "the"
+     ],
+     [
+      "red"
+     ],
+     [
+      "cap"
+     ],
+     [
+      "is"
+     ],
+     [
+      "our",
+      "my"
+     ],
+     [
+      "coach"
+     ]
+    ],
+    "explain_ko": "The man wearing a red cap is our coach. 현재분사 wearing 이 이끄는 말이 뒤에서 man 을 꾸민다",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-10",
+    "no": 10,
+    "area": "sentence",
+    "level": "고1",
+    "point": "분사구문 (부정)",
+    "question": "열쇠가 없어서, 나는 집 밖에서 기다렸다. (not, have, key, wait, outside, house)",
+    "template": "{} {} {} {}, {} {} {} {} {}.",
+    "answers": [
+     [
+      "Not"
+     ],
+     [
+      "having"
+     ],
+     [
+      "a",
+      "the",
+      "my"
+     ],
+     [
+      "key"
+     ],
+     [
+      "I"
+     ],
+     [
+      "waited"
+     ],
+     [
+      "outside"
+     ],
+     [
+      "the",
+      "my"
+     ],
+     [
+      "house"
+     ]
+    ],
+    "explain_ko": "Not having a key, I waited outside the house. 이유를 나타내는 분사구문, 부정어 not 은 분사 앞에 둔다",
+    "status": "draft"
+   },
+   {
+    "id": "w2-B-11",
+    "no": 11,
+    "area": "sentence",
+    "level": "고1",
+    "point": "조건절 + enough to",
+    "question": "수영할 수 있을 만큼 날씨가 따뜻하면, 우리는 해변에 갈 것이다. (it, warm, enough, to, swim, go, beach)",
+    "template": "{} {} {} {} {} {} {}, we'll {} {} {} {}.",
+    "answers": [
+     [
+      "If",
+      "When"
+     ],
+     [
+      "it"
+     ],
+     [
+      "is",
+      "gets"
+     ],
+     [
+      "warm"
+     ],
+     [
+      "enough"
+     ],
+     [
+      "to"
+     ],
+     [
+      "swim"
+     ],
+     [
+      "go"
+     ],
+     [
+      "to"
+     ],
+     [
+      "the"
+     ],
+     [
+      "beach"
+     ]
+    ],
+    "explain_ko": "If it is warm enough to swim, we'll go to the beach. 조건절은 미래라도 현재 시제, 형용사 + enough + to부정사 = …할 만큼 충분히 ~한",
+    "status": "draft"
+   }
+  ]
+ }
+}
