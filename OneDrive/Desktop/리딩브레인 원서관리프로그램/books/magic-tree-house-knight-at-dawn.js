@@ -35,7 +35,19 @@ window.BOOK = {
     checked: "장서 요약(\"medieval England\", \"magic tree house\", \"travel back in time\")과 소개글(\"the Middle Ages\", \"the magic treehouse\", \"travel back\")을 한 줄씩 맞춰 보았고 어긋나는 곳이 없었다. 소개글에만 있는 것(잭 여덟 살 · 애니가 여동생 · 성을 탐험 · 신비한 기사의 도움)은 요약과 부딪히지 않아 남겼다. 주제어 Castles/Knights and knighthood/Middle Ages/Time travel 이 같은 것을 가리켜 한 번 더 받쳐 주었다. 여기 밖의 사건·인물·결말은 전부 들어냈다 (2026-09-30)",
   },
 
-  shadowing: { query: "\"The Knight at Dawn\" read aloud" },
+  // 낭독 영상 — 유튜브에서 찾아 붙였다 (2026-09-30). 영상을 내려받지 않고 유튜브가 그대로 재생한다.
+  shadowing: {
+    query: "\"The Knight at Dawn\" read aloud",
+    searchUrl: "https://youtu.be/Qf9TH12wMh0",
+    videos: [
+      { url: "https://youtu.be/Qf9TH12wMh0", title: "The Knight at Dawn — Read Aloud Graphic Novel",
+        channel: "Brightly Storytime", views: "88,464", length: "7:48" },
+      { url: "https://youtu.be/2wb2n0Dx4ao", title: "The Knight at Dawn — Full Audiobook",
+        channel: "The Story Harbor", views: "72,166", length: "40:22" },
+      { url: "https://youtu.be/gYmFo5_8x-g", title: "The Knight at Dawn — Chapter 3: Across the Bridge",
+        channel: "New World English", views: "10,717", length: "6:28" }
+    ]
+  },
 
   // ── ① 단어 ─────────────────────────────────────────────
   // 낱말은 제목·요약·소개글·첫 문장·주제어에 실제로 나오는 말에서만 골랐다.
@@ -65,6 +77,58 @@ window.BOOK = {
 
   // ── ② 독해 (서술형) ────────────────────────────────────
   // ref 에 장(chapter) 번호를 쓰지 않는다. 우리는 어느 장에서 무슨 일이 일어나는지 확인하지 않았다.
+  // ── 문법 ───────────────────────────────────────────────
+  // 보기 문장은 우리가 지었다. 책에서 따온 문장이 아니다 — 다만 담긴 사실은 근거 안의 것뿐이다.
+  // couldn't 만은 책의 첫 문장("Jack couldn't sleep.")이라 그대로 쓴다.
+  grammar: {
+    points: [
+      { name: "a / an", ko: "부정관사",
+        sent: "Jack has [[a]] younger sister, and they have [[an]] amazing tree house.",
+        why_ko: "모음 소리(아·에·이·오·우) 앞에는 an, 나머지는 a! 철자가 아니라 '소리'로 정해요. an amazing, a sister.",
+        why: "Use \"a\" before a consonant sound, and \"an\" before a vowel sound (a, e, i, o, u).",
+        try: "I read {{a}} book and ate {{an}} orange." },
+      { name: "Past Simple (-ed)", ko: "과거형",
+        sent: "Jack and Annie [[traveled]] back in time and [[explored]] a castle.",
+        why_ko: "이미 끝난 일은 동사 뒤에 -ed 를 붙여요. travel → traveled, explore → explored.",
+        why: "Add -ed to the verb for something that already finished.",
+        try: "Yesterday I {{walked}} to school and {{opened}} the door." },
+      { name: "couldn't = could not", ko: "could 의 줄임말",
+        sent: "The book begins, \"Jack [[couldn't]] sleep.\" It means he [[could not]] sleep.",
+        why_ko: "couldn't 는 could not 을 줄인 말이에요. 뜻은 똑같아요 — '~할 수 없었다'.",
+        why: "\"Couldn't\" is the short form of \"could not.\" The meaning is the same.",
+        try: "I {{couldn't}} find my shoes. = I {{could not}} find my shoes." }
+    ],
+    find: "책에서 -ed 로 끝나는 과거형 동사를 세 개 찾아 쓰세요. · Find three verbs ending in -ed.",
+    exam: {
+      choose: [
+        { q: "Annie is (a / an) eight-year-old boy's sister.", a: "an",
+          why_ko: "eight 는 '에이'로 모음 소리로 시작해요. 모음 소리 앞에는 an!" },
+        { q: "They found (a / an) magic tree house.", a: "a",
+          why_ko: "magic 은 '매'로 자음 소리로 시작해요. 자음 소리 앞에는 a!" },
+        { q: "Jack and Annie (travel / traveled) back in time.", a: "traveled",
+          why_ko: "이미 일어난 일이니 과거형 traveled 예요." },
+        { q: "They (explore / explored) a castle in the Middle Ages.", a: "explored",
+          why_ko: "중세로 간 것은 지난 일이에요. explore 의 과거형은 explored." },
+        { q: "Jack (couldn't / could'nt) sleep.", a: "couldn't",
+          why_ko: "줄임표(')는 빠진 글자 o 자리에 와요. could not → couldn't." }
+      ],
+      fix: [
+        { q: "Jack and Annie [[travel]] back in time last night.", a: "traveled",
+          why_ko: "last night 은 지난 일이에요. 과거형 traveled 로 고쳐요." },
+        { q: "A knight [[help]] them in the castle.", a: "helped",
+          why_ko: "이야기 속에서 이미 일어난 일이니 helped 예요." },
+        { q: "Annie is [[a]] older sister? No — she is [[a]] younger sister.", a: "an",
+          why_ko: "older 는 '오'로 모음 소리로 시작해요. an older 가 맞아요." }
+      ],
+      write: [
+        { ko: "잭은 잠을 잘 수 없었다.", cond: "could not", a: "Jack could not sleep.",
+          why_ko: "'~할 수 없었다'는 could not + 동사원형이에요. couldn't sleep 도 맞아요." },
+        { ko: "그들은 성을 탐험했다.", cond: "explore, 과거형", a: "They explored a castle.",
+          why_ko: "explore 의 과거형은 explored. 관사 a 를 빠뜨리지 마세요." }
+      ]
+    }
+  },
+
   comprehension: [
     { ref: "책 전체", skill: "사실찾기", q: "Who are the two children in this story?",
       frame: "They are {{Jack and his younger sister Annie}}." },
@@ -375,5 +439,14 @@ window.BOOK = {
       { c: "C 표현 Voice",        pt: 5, yes: "자기 생각이 드러나는 문장이 있다", no: "책 문장을 그대로 옮겼다" },
       { c: "D 언어 Language",     pt: 5, yes: "문장이 끝나고, 대문자·철자가 맞다", no: "한 문장이 끝없이 이어진다" }
     ]
+  },
+
+  // ── 낭독녹음 ───────────────────────────────────────────
+  // 근거(장서 요약 · 출판사 소개글 · 첫 문장)가 말하는 것만 우리 말로 다시 쓴 글이다.
+  // 근거가 결말을 말하지 않으므로 마지막 줄에서 아이를 책으로 보낸다.
+  // [[비슷한말|책낱말]] 의 오른쪽은 근거에 실제로 나오는 말만 넣었다.
+  readAloud: {
+    scene: "잭과 애니가 마법 나무집을 타고 중세 영국의 성으로 가는 이야기",
+    text: "Jack [[could not|couldn't]] sleep. He and his younger sister Annie went to their magic [[treehouse|tree house]]. The tree house took them back in time to the [[medieval period|Middle Ages]], in England. There they explored a great [[building|castle]]. A [[strange|mysterious]] knight helped them. What happened after that? Open the book and find out."
   }
 };
