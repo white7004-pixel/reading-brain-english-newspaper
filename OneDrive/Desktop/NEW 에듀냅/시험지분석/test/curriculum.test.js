@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import 국어 from '../public/curriculum/국어.js';
+import 영어 from '../public/curriculum/영어.js';
 
-const 과목자료 = [국어];
+const 과목자료 = [국어, 영어];
 
 test('자료는 정해진 모양을 지킨다', () => {
   for (const 자료 of 과목자료) {
@@ -80,4 +81,18 @@ test('모르는 과목·학년은 빈 배열이다', () => {
   assert.deepEqual(areasFor('국어', '초5'), []);
   assert.deepEqual(unitsFor('국어', ''), []);
   assert.deepEqual(pointsFor('', '중2'), []);
+});
+
+test('영어도 여섯 학년이 다 걸리고 받은 만큼 다 들어 있다', () => {
+  for (const 학년 of GRADES) assert.ok(areasFor('영어', 학년).length, 학년);
+  assert.deepEqual(areasFor('영어', '중2'), ['이해', '표현']);
+  // 고2·3 은 영어Ⅰ·Ⅱ(이해·표현)와 영어 독해와 작문(독해·작문)이 겹친다
+  assert.deepEqual(areasFor('영어', '고3'), ['이해', '표현', '독해', '작문']);
+  const 수 = (이름) => 영어.과정.find((c) => c.이름 === 이름).영역.reduce((n, d) => n + d.성취기준.length, 0);
+  assert.equal(수('중학교 영어'), 21);
+  assert.equal(수('공통영어1'), 16);
+  assert.equal(수('공통영어2'), 17);
+  assert.equal(수('영어 I'), 16);
+  assert.equal(수('영어 Ⅱ'), 17);
+  assert.equal(수('영어 독해와 작문'), 17);
 });
