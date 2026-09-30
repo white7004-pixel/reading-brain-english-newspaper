@@ -50,6 +50,7 @@ function card(it) {
   el.innerHTML = `
     <div><span class="tag ${esc(it.status)}">${STATUS_KO[it.status] || esc(it.status)}</span><span class="tag">${esc(it.no)}번</span><span class="tag">${esc(AREA_KO[it.area] || it.area)}</span><span class="tag">${esc(it.level)}</span>${it.point ? `<span class="tag">${esc(it.point)}</span>` : ''}</div>
     ${it.area === 'reading' ? `<label>지문 (밑줄은 __말__)<textarea data-k="passage" rows="6">${esc(it.passage)}</textarea></label>` : ''}
+    ${it.area === 'listening' ? `<label>대본 (한 줄에 한 사람, 여자는 W: · 남자는 M:)<textarea data-k="script" rows="8">${esc(it.script)}</textarea></label>` : ''}
     <label>질문<textarea data-k="question" rows="2">${esc(it.question)}</textarea></label>
     ${write ? `
       <label>문장 틀 (칸 자리는 {})<input data-k="template" value="${esc(it.template)}"></label>

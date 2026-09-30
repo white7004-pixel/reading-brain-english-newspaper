@@ -1,8 +1,8 @@
 // 1차 문제지·2차 쓰기 블록 (설계서 2026-09-30). 순수 함수 — 채점, 검사, 수준 판정. 브라우저·Node 공용.
 export const LEVELS = ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'];
-export const MC_AREAS = ['reading', 'phonics', 'grammar'];
+export const MC_AREAS = ['listening', 'reading', 'phonics', 'grammar'];
 export const WRITE_AREAS = ['form', 'sentence'];
-export const AREA_KO = { reading: '독해', phonics: '파닉스', grammar: '문법', form: '어형 쓰기', sentence: '영작' };
+export const AREA_KO = { listening: '듣기', reading: '독해', phonics: '파닉스', grammar: '문법', form: '어형 쓰기', sentence: '영작' };
 export const PASS = 80;
 export const MIN_STAGE1 = 20;
 export const SECONDS = 90;
@@ -10,6 +10,8 @@ export const SECONDS = 90;
 export const isWrite = (it) => WRITE_AREAS.includes(it?.area);
 export const blanks = (template) => (String(template ?? '').match(/\{\}/g) || []).length;
 export const nextSet = (last) => (last === 'A' ? 'B' : 'A');
+// 듣기 수준(중1~고3) → 그 학년 1학기 단계. 말 빠르기(scale 의 wpm)를 찾을 때 쓴다.
+export const levelStep = (level) => 9 + 2 * (LEVELS.indexOf(level) - LEVELS.indexOf('중1'));
 
 const norm = (s) => String(s ?? '').trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[.,!?]+$/, '').replace(/\s+/g, ' ').trim();
 
@@ -37,6 +39,7 @@ export function validateForm(it) {
     else if (new Set(c.map((x) => String(x).trim())).size !== 4) p.push('선택지 중복');
     if (![0, 1, 2, 3].includes(it.answer)) p.push('정답');
     if (it.area === 'reading' && !String(it.passage ?? '').trim()) p.push('지문');
+    if (it.area === 'listening' && !String(it.script ?? '').trim()) p.push('대본');
   }
   return p;
 }
@@ -50,8 +53,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 export const marked = (s) => esc(s).replace(/(?<!_)__([^_\s](?:[^_]*[^_\s])?)__(?!_)/g, '<u>$1</u>');
 
 // ── 1차 점수와 수준 (설계서 7장) ──
-export const LEVEL_AREAS = { reading: '독해', grammar: '문법', writing: '쓰기' };
-const GROUP = { reading: 'reading', grammar: 'grammar', form: 'grammar', sentence: 'writing' };
+export const LEVEL_AREAS = { listening: '듣기', reading: '독해', grammar: '문법', writing: '쓰기' };
+const GROUP = { listening: 'listening', reading: 'reading', grammar: 'grammar', form: 'grammar', sentence: 'writing' };
 
 export function stage1Score(log) {
   const total = log.length;
@@ -81,8 +84,9 @@ export function areaLevels(log) {
 }
 
 const rank = (s) => { const m = /^(.+) 수준 아래$/.exec(s); return m ? LEVELS.indexOf(m[1]) - 0.5 : LEVELS.indexOf(s); };
+// 듣기(중1~고3 문항)는 수업 시작 수준을 정하는 데 넣지 않는다
 export function startLevel(levels) {
-  const vals = Object.keys(LEVEL_AREAS).map((k) => levels[k]).filter(Boolean);
+  const vals = ['reading', 'grammar', 'writing'].map((k) => levels[k]).filter(Boolean);
   return vals.length ? vals.reduce((a, b) => (rank(b) < rank(a) ? b : a)) : null;
 }
 

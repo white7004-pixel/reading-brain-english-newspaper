@@ -3,7 +3,7 @@
 import { SECTIONS, SECTION_KO, startStep, stepData } from './core/scale.js';
 import { start, nextQuery, answer, skip, stop, LIMITS } from './core/engine.js';
 import { usable, pick, readiness } from './core/bank.js';
-import { usableForm, checkWrite, isWrite, stage1Score, MIN_STAGE1, PASS } from './core/forms.js';
+import { usableForm, checkWrite, isWrite, stage1Score, levelStep, MIN_STAGE1, PASS } from './core/forms.js';
 import { showMC, showWrite, startTimer, stopTimer } from './form-ui.js';
 
 const $ = (s) => document.querySelector(s);
@@ -30,6 +30,7 @@ if (!session) {
   const { items: bank, sample: bankSample } = await loadBank();
   const forms = await loadForms(session.set || 'A');
   const voices = await englishVoices();
+  if (!voices) forms.stage1 = forms.stage1.filter((i) => i.area !== 'listening'); // 영어 음성이 없으면 1차 듣기는 빼고 센다
   route();
 
   function route() {
@@ -63,7 +64,8 @@ if (!session) {
     $('#section-name').textContent = `1차 · ${session.s1.i + 1} / ${forms.stage1.length}`;
     dots(0, 0);
     if (!session.s1.started) {
-      return intro(`1차 (${forms.stage1.length}문항)`, '영어 글 읽기, 소리, 문법, 쓰기 문제입니다. 문항마다 90초 안에 답합니다. 모르면 "모름"을 고르세요.', () => { session.s1.started = true; keep(); route(); });
+      const listen = forms.stage1.some((i) => i.area === 'listening') ? `듣기, 영어 글 읽기, 소리, 문법, 쓰기 문제입니다. ${INTRO.listening}` : '영어 글 읽기, 소리, 문법, 쓰기 문제입니다.';
+      return intro(`1차 (${forms.stage1.length}문항)`, `${listen} 문항마다 90초 안에 답합니다. 모르면 "모름"을 고르세요.`, () => { session.s1.started = true; keep(); route(); });
     }
     ask(it, (rec) => { session.s1.log.push(rec); session.s1.i += 1; });
   }
@@ -91,24 +93,34 @@ if (!session) {
   }
 
   // 문제지 문항(1차·쓰기) 하나: 답하거나 시간이 다 되면 기록하고 다음으로
+  // 듣기 문항은 첫 듣기가 끝난 때부터 90초
   function ask(it, push) {
     show('#item');
-    $('#listen').hidden = true;
-    if (!session.shownAt) { session.shownAt = Date.now(); keep(); }
+    const listening = it.area === 'listening';
+    $('#listen').hidden = !listening;
+    if (listening && session.current !== it.id) { session.current = it.id; session.plays = 0; session.shownAt = null; keep(); }
+    if (!listening && !session.shownAt) { session.shownAt = Date.now(); keep(); }
     let fired = false;
     const done = (res) => {
       if (fired) return;
       fired = true;
       stopTimer();
+      window.speechSynthesis?.cancel();
       const correct = !res.timeout && !res.dontKnow && (isWrite(it) ? checkWrite(it, res.entries) : res.choice === it.answer);
-      push({ id: it.id, no: it.no, area: it.area, level: it.level, point: it.point || '', correct, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: Date.now() - session.shownAt, given: res.entries ?? res.choice ?? null });
+      push({ id: it.id, no: it.no, area: it.area, level: it.level, point: it.point || '', correct, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: session.shownAt ? Date.now() - session.shownAt : 0, given: res.entries ?? res.choice ?? null });
       session.shownAt = null;
+      session.current = null;
       keep();
       route();
     };
     if (isWrite(it)) showWrite(it, done);
     else showMC(it, done);
-    startTimer(session.shownAt, () => done({ timeout: true }));
+    if (listening) {
+      $('#plays').textContent = playsText();
+      $('#play').disabled = session.plays >= MAX_PLAYS;
+      $('#play').onclick = () => play(it, done);
+    }
+    if (session.shownAt) startTimer(session.shownAt, () => done({ timeout: true }));
   }
 
   // ── 2차 적응형 4영역 ──
@@ -207,8 +219,8 @@ if (!session) {
     keep();
     $('#play').disabled = true;
     $('#plays').textContent = '듣는 중…';
-    const rate = Math.min(1.3, Math.max(0.6, stepData(item.step).gen.wpm / WPM_AT_RATE_1));
-    await say(item.passage, rate, item.id);
+    const rate = Math.min(1.3, Math.max(0.6, stepData(item.step ?? levelStep(item.level)).gen.wpm / WPM_AT_RATE_1));
+    await say(item.script ?? item.passage, rate, item.id);
     if (session.current !== item.id) return; // 듣는 사이에 답했다
     if (!session.shownAt) { session.shownAt = Date.now(); keep(); startTimer(session.shownAt, () => done({ timeout: true })); }
     $('#plays').textContent = playsText();

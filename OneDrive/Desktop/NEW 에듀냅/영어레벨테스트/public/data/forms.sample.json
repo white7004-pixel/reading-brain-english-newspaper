@@ -1,6 +1,7 @@
 {
   "stage1": {
     "A": [
+      { "id": "sampleA-1", "no": 1,"area": "listening", "level": "중1", "question": "[샘플] 대화를 듣고, 두 사람이 만나기로 한 시각을 고르시오.", "script": "M: Jenny, do you want to play badminton after school?\nW: Sure. How about four o'clock?\nM: I have a piano lesson until four. Can we meet at five?\nW: Five is fine. See you at the park.", "choices": ["3시", "4시", "5시", "6시"],"answer": 2,"explain_ko": "4시는 남자가 피아노 수업이 있어 안 되고, 5시로 정했다.", "status": "ok" },
       { "id": "sampleA-13", "no": 13, "area": "reading", "level": "초3", "passageId": "sampleA-p1", "passage": "Tom has a small dog. The dog is brown. It likes to run in the park.", "question": "[샘플] What color is the dog?", "choices": ["brown", "black", "white", "gray"], "answer": 0, "explain_ko": "The dog is brown.", "status": "ok", "sample": true },
       { "id": "sampleA-14", "no": 14, "area": "reading", "level": "초3", "passageId": "sampleA-p1", "passage": "Tom has a small dog. The dog is brown. It likes to run in the park.", "question": "[샘플] Where does the dog like to __run__?", "choices": ["at school", "in the park", "in the kitchen", "on the bus"], "answer": 1, "explain_ko": "run in the park", "status": "ok", "sample": true },
       { "id": "sampleA-32", "no": 32, "area": "phonics", "level": "초3", "question": "[샘플] 밑줄 친 부분의 소리가 다른 것은?", "choices": ["c__a__t", "h__a__t", "m__a__p", "c__a__ke"], "answer": 3, "explain_ko": "cake 의 a 는 [에이]", "status": "ok", "sample": true },

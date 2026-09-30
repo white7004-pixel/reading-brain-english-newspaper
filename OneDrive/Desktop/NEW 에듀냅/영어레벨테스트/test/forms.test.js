@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary } from '../public/core/forms.js';
+import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -32,6 +32,16 @@ test('validateForm 은 문제를 이름으로 돌려준다', () => {
   assert.deepEqual(validateForm(wr({ answers: [[' ']] })), ['인정 답']);
   assert.deepEqual(validateForm(wr({ template: 'no blank', answers: [['a']] })), ['문장 틀', '칸 수']);
   assert.deepEqual(validateForm(wr({ area: 'essay' })), ['영역']);
+});
+
+test('validateForm: 듣기는 대본이 있어야 한다', () => {
+  const li = mc({ area: 'listening', level: '중2', no: 3, script: 'W: Hi.\nM: Hello.' });
+  assert.deepEqual(validateForm(li), []);
+  assert.deepEqual(validateForm({ ...li, script: '  ' }), ['대본']);
+});
+
+test('levelStep: 듣기 수준을 학기 단계로 (말 빠르기용)', () => {
+  assert.deepEqual(['중1', '중2', '중3', '고1', '고2', '고3'].map(levelStep), [9, 11, 13, 15, 17, 19]);
 });
 
 test('usableForm: 통과했고 올바른 문항만, 번호 순', () => {
@@ -83,11 +93,17 @@ test('areaLevels: 3분의 2 이상 맞히면 다음 학년, 없는 학년은 건
     r('sentence', '초5', false),
     r('phonics', '초3', true), r('phonics', '초4', false),
   ];
-  assert.deepEqual(areaLevels(log), { reading: '초4', grammar: '중1', writing: '초5 수준 아래', phonics: { correct: 1, total: 2 } });
+  assert.deepEqual(areaLevels(log), { listening: null, reading: '초4', grammar: '중1', writing: '초5 수준 아래', phonics: { correct: 1, total: 2 } });
+});
+
+test('areaLevels: 듣기는 중1부터 학년마다 두 문항, 둘 다 맞혀야 다음 학년', () => {
+  const log = [r('listening', '중1', true), r('listening', '중1', true), r('listening', '중2', true), r('listening', '중2', false), r('listening', '중3', true), r('listening', '중3', true)];
+  assert.equal(areaLevels(log).listening, '중1');
+  assert.equal(areaLevels([r('listening', '중1', false), r('listening', '중1', true)]).listening, '중1 수준 아래');
 });
 
 test('areaLevels: 문항이 없는 영역은 null', () => {
-  assert.deepEqual(areaLevels([]), { reading: null, grammar: null, writing: null, phonics: { correct: 0, total: 0 } });
+  assert.deepEqual(areaLevels([]), { listening: null, reading: null, grammar: null, writing: null, phonics: { correct: 0, total: 0 } });
 });
 
 test('startLevel 은 가장 낮은 수준, phonicsNote 는 하나라도 틀리면', () => {
@@ -95,6 +111,7 @@ test('startLevel 은 가장 낮은 수준, phonicsNote 는 하나라도 틀리�
   assert.equal(startLevel({ reading: '초6', grammar: '초4', writing: '초4 수준 아래' }), '초4 수준 아래');
   assert.equal(startLevel({ reading: '초3 수준 아래', grammar: null, writing: '초4 수준 아래' }), '초3 수준 아래');
   assert.equal(startLevel({ reading: null, grammar: null, writing: null }), null);
+  assert.equal(startLevel({ listening: '중1 수준 아래', reading: '초6', grammar: '중1', writing: '초6' }), '초6'); // 듣기는 시작 수준에 넣지 않는다
   assert.equal(phonicsNote({ phonics: { correct: 1, total: 2 } }), '파닉스 복습 권장');
   assert.equal(phonicsNote({ phonics: { correct: 2, total: 2 } }), '');
   assert.equal(phonicsNote({ phonics: { correct: 0, total: 0 } }), '');
