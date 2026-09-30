@@ -80,6 +80,25 @@ test('문항마다 출처를 받아 통계까지 넘긴다', () => {
   assert.match(reportRequest({ mode: 'school', meta, items: items.map((it) => ({ ...it, source: '인터넷' })) }).content[0].text, /"source":""/);
 });
 
+test('시험 정보에 날짜·시간·범위를, 문항에 단원을 받는다', () => {
+  const m = EXTRACT_SCHEMA.properties.meta.properties;
+  ['date', 'minutes', 'range'].forEach((k) => assert.ok(m[k], k));
+  assert.ok(EXTRACT_SCHEMA.properties.items.items.properties.unit);
+  // 학교 분석 글에는 출제 경향 항목이 들어간다
+  assert.ok(SCHOOL_SCHEMA.properties.trends);
+
+  const full = { ...meta, date: '2026-09-30', minutes: 45, range: '동아(이병민) 5과 · 6과' };
+  const withUnit = items.map((it, i) => ({ ...it, unit: i ? '6과' : '5과' }));
+  const r = reportRequest({ mode: 'school', meta: full, items: withUnit });
+  assert.match(r.content[0].text, /"range":"동아\(이병민\) 5과 · 6과"/);
+  assert.match(r.content[0].text, /"byUnit":\[\{"label":"5과"/);
+
+  // 날짜·시간·범위·단원은 없어도 된다 (시험지에 안 적혀 있을 수 있다)
+  const bare = reportRequest({ mode: 'school', meta, items });
+  assert.match(bare.content[0].text, /"date":"","minutes":0,"range":""/);
+  assert.match(bare.content[0].text, /"byUnit":\[\]/);
+});
+
 test('reportRequest 는 같은 번호가 두 번 있으면 막는다', () => {
   assert.throws(() => reportRequest({ mode: 'school', meta, items: [items[0], { ...items[1], no: 1 }] }), (e) => e instanceof UserError && e.message === '1번 문항이 두 번 있습니다');
 });

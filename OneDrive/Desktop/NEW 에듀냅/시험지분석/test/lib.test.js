@@ -32,6 +32,31 @@ test('examStats 는 학원 글이 쓰는 표(유형·배점·출처·고난도 �
   assert.deepEqual(s.hard, { count: 2, points: 70, pct: 67 });
 });
 
+test('학원 분석지가 늘 적는 단원·체감 난이도·킬러 문항도 낸다', () => {
+  const withUnit = [
+    { ...items[0], unit: '5과' }, { ...items[1], unit: '6과' }, { ...items[2], unit: '5과' },
+  ];
+  const s = examStats(withUnit);
+  // 단원은 시험지에 나온 순서대로 (미리 정해진 목록이 없다)
+  assert.deepEqual(s.byUnit.map((r) => [r.label, r.count, r.points, r.pct, r.nos]), [
+    ['5과', 2, 70, 67, [1, 3]],
+    ['6과', 1, 30, 33, [2]],
+  ]);
+  // 체감 난이도는 다섯 칸 중 몇째인지 (보통=3)
+  assert.deepEqual([s.overallScore, s.overallLabel], [4, '조금 어려움']);
+  // 킬러(상) 문항만 따로 — 중상까지 세는 hard 와 다르다
+  assert.deepEqual(s.killer, { count: 1, points: 40, pct: 33 });
+  assert.equal(s.hard.count, 2);
+  // 교과서에서 나온 비율
+  assert.equal(s.textbookPct, 67);
+});
+
+test('단원이 없는 문항표에서는 단원 표를 만들지 않는다', () => {
+  const s = examStats(items);
+  assert.deepEqual(s.byUnit, []);
+  assert.equal(s.textbookPct, 67);
+});
+
 test('영역별 표에는 그 영역의 문항 번호가 함께 있다', () => {
   const s = examStats(items);
   assert.deepEqual(s.byArea.map((r) => r.nos), [[1], [2], [3]]);

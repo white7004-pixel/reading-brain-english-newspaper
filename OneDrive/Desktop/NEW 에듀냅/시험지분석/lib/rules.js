@@ -119,9 +119,9 @@ const DIFFICULTY = `## 난이도 기준 (그 학년 기준)
 const classifyOf = (s) => `## ${s} 영역 분류표\n${GUIDE[s].classify}`;
 
 export const EXTRACT_SCHEMA = obj({
-  meta: obj({ subject: oneOf(SUBJECT_NAMES), school: str, grade: str, term: str, exam: str }),
+  meta: obj({ subject: oneOf(SUBJECT_NAMES), school: str, grade: str, term: str, exam: str, date: str, minutes: int, range: str }),
   items: arr(obj({
-    no: int, kind: oneOf(KINDS), points: { type: 'number' }, area: oneOf(AREAS), subtype: str,
+    no: int, kind: oneOf(KINDS), points: { type: 'number' }, unit: str, area: oneOf(AREAS), subtype: str,
     difficulty: oneOf(DIFF5), source: oneOf([...SOURCES, '']), answer: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
   })),
   notes: str,
@@ -129,6 +129,7 @@ export const EXTRACT_SCHEMA = obj({
 
 export const SCHOOL_SCHEMA = obj({
   overview: str,
+  trends: arr(str),
   keyItems: arr(obj({ no: int, why: str })),
   strategy: arr(obj({ area: str, tip: str })),
 });
@@ -150,7 +151,10 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 �
 - school: 학교 이름 그대로 (예: 에듀냅중학교)
 - grade: 중1~중3, 고1~고3 형식
 - term: 1학기 / 2학기
-- exam: 중간고사 / 기말고사 (그 밖이면 적힌 그대로)
+- exam: 중간고사 / 기말고사 (그 밖이면 적힌 그대로. "2학기 1차 정기고사"처럼 적혀 있으면 그대로)
+- date: 시험 날짜 YYYY-MM-DD. 안 보이면 빈 문자열
+- minutes: 시험 시간(분). 안 보이면 0
+- range: 출제 범위를 적힌 그대로 한 줄로. 교과서 출판사·저자·단원명이 보이면 함께 (예: 동아(이병민) 5과 Love, Act, Save! · 6과 Growing Teens / I. 수와 식의 계산, II. 일차부등식). 안 보이면 빈 문자열
 
 ## 할 일
 사진에 있는 모든 문항을 번호 순서대로 한 줄씩 적습니다. 한 문항이 두 쪽에 걸쳐도 한 줄입니다.
@@ -160,6 +164,7 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 �
 - no: 문항 번호. 서술형이 "서술형 1"처럼 따로 번호가 매겨져 있으면 객관식 마지막 번호 뒤에 이어 붙이고 reason 앞에 "(서술형 1)"을 적습니다.
 - kind: 객관식 / 서술형 (단답형도 서술형)
 - points: 시험지에 적힌 배점. 안 보이면 남은 점수를 나눈 추정값을 쓰고 unsure 에 points 를 넣습니다.
+- unit: 그 문항이 나온 교과서 단원. 시험지·범위에 적힌 말 그대로 짧게 (5과 / I. 수와 식의 계산 / 3단원 - 문학의 수용). 같은 단원은 늘 똑같이 적습니다. 알 수 없으면 빈 문자열
 - area, subtype: 그 과목의 분류표에서만 고릅니다.
 - difficulty: 아래 기준으로 5단계.
 - source: 문항이 어디서 왔는지 (${SOURCES.join(' / ')}). 교과서=교과서 본문·단어·활동 그대로, 부교재=학교가 쓴 자습서·워크북·프린트 느낌, 외부=교과서 밖 지문·자료, 기출변형=기출 문항의 숫자·조건만 바꾼 꼴.
@@ -184,6 +189,9 @@ const TONE = `## 말투
 const schoolSystem = (s) => `당신은 한국 입시학원의 ${s} 내신 분석 담당 강사입니다. 원장님이 확인한 문항표와 계산된 통계로 학부모께 드릴 "학교 시험 분석" 글을 씁니다.
 
 ## 쓰는 것
+- trends: 출제 경향 3~5개. 한 항목은 한 문장(90자 이내)으로, 원장님이 학부모께 그대로 읽어 줄 수 있게 씁니다.
+  받은 통계에서 드러나는 것만 씁니다 (어느 단원·영역에 몰렸는지, 교과서 안에서 나왔는지 밖에서 나왔는지, 어디서 점수가 갈렸는지, 서술형이 무엇을 요구했는지).
+  단원 통계(byUnit)가 있으면 단원 이야기를 반드시 한 줄 넣습니다. 통계에 없는 사실을 지어내지 않습니다.
 - overview: 총평 2~3문장(180자 이내). 시험의 성격(교과서 기본형인지, 응용·추론형인지, 서술형 비중), 어려웠던 지점, 전체 난이도.
 - keyItems: 변별 문항 3개. 난이도 중상·상이면서 배점이 높은 문항을 우선합니다. why 는 왜 어려웠는지 1문장(60자 이내) (함정 선택지, 학년보다 높은 개념, 추론 단계).
 - strategy: 이 시험에 나온 영역마다 1문장(40자 이내)씩 다음 시험 대비 방법. 구체적인 공부 활동으로 (예: ${GUIDE[s].strategy}).
@@ -225,7 +233,10 @@ function imageBlocks(list, min, max, label) {
 
 function cleanMeta(m) {
   const pick = (k) => String(m?.[k] ?? '').slice(0, 40).trim();
-  const out = { subject: pick('subject'), school: pick('school'), grade: pick('grade'), term: pick('term'), exam: pick('exam') };
+  const out = {
+    subject: pick('subject'), school: pick('school'), grade: pick('grade'), term: pick('term'), exam: pick('exam'),
+    date: pick('date'), minutes: Math.max(0, Math.min(300, Math.round(Number(m?.minutes) || 0))), range: String(m?.range ?? '').slice(0, 120).trim(),
+  };
   if (!Object.hasOwn(SUBJECTS, out.subject)) throw new UserError('과목을 골라 주세요');
   if (!out.school || !out.grade) throw new UserError('학교와 학년을 적어 주세요');
   return out;
@@ -243,7 +254,7 @@ function cleanItems(list, subject) {
     if (seen.has(no)) throw new UserError(`${no}번 문항이 두 번 있습니다`);
     seen.add(no);
     return {
-      no, kind: it.kind, points: Number(it.points) || 0, area: it.area, subtype: txt(it.subtype, 40), difficulty: it.difficulty,
+      no, kind: it.kind, points: Number(it.points) || 0, unit: txt(it.unit, 30).trim(), area: it.area, subtype: txt(it.subtype, 40), difficulty: it.difficulty,
       source: SOURCES.includes(it.source) ? it.source : '', // 모르면 빈 칸 — 원장님이 확인 표에서 고른다
       answer: txt(it.answer, 200), reason: txt(it.reason, 200),
     };

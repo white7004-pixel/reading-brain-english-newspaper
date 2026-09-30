@@ -173,15 +173,16 @@ const areasNow = () => SUBJECTS[state.meta.subject];
 function renderMeta() {
   const f = $('#meta-form').elements;
   f.subject.innerHTML = options(Object.keys(SUBJECTS), state.meta.subject);
-  for (const k of ['school', 'grade', 'term', 'exam']) {
-    f[k].value = state.meta[k];
+  for (const k of ['school', 'grade', 'term', 'exam', 'date', 'range']) {
+    f[k].value = state.meta[k] ?? '';
     f[k].classList.toggle('unsure', !state.meta[k] && (k === 'school' || k === 'grade'));
   }
+  f.minutes.value = state.meta.minutes || '';
 }
 
 $('#meta-form').addEventListener('input', (e) => {
   const { name, value } = e.target;
-  state.meta[name] = value.trim();
+  state.meta[name] = name === 'minutes' ? Number(value) || 0 : value.trim();
   e.target.classList.remove('unsure');
   if (name !== 'subject') return;
   // 과목을 바꾸면 그 과목에 없는 영역은 첫 영역으로 두고 다시 확인하게 한다
@@ -199,6 +200,7 @@ function renderItems() {
       ${cell('no', `<input type="number" min="1" step="1" value="${no}" aria-label="${no}번 번호">`)}
       ${cell('kind', `<select aria-label="${no}번 유형">${options(KINDS, it.kind)}</select>`)}
       ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
+      ${cell('unit', `<input value="${esc(it.unit ?? '')}" aria-label="${no}번 단원" placeholder="5과">`)}
       ${cell('area', `<select aria-label="${no}번 영역">${options(areasNow(), it.area)}</select>`)}
       ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${no}번 세부유형">`)}
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
@@ -247,7 +249,7 @@ $('#items').addEventListener('click', (e) => {
 
 $('#add-item').addEventListener('click', () => {
   const no = Math.max(0, ...state.items.map((it) => Number(it.no) || 0)) + 1;
-  state.items.push({ no, kind: '객관식', points: 0, area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
+  state.items.push({ no, kind: '객관식', points: 0, unit: '', area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
   renderItems();
 });
 

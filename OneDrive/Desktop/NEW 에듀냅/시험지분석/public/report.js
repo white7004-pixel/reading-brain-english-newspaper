@@ -39,12 +39,35 @@ export const barCell = (pct, text) => `<td class="bar"><i style="--w:${Number(pc
 const groupRows = (label, rows) => rows.map((r, i) => `<tr>${i ? '' : `<th class="grp" rowspan="${rows.length}" scope="rowgroup">${esc(label)}</th>`}<td>${esc(r.label)}</td>${num(r.count)}${num(r.points)}${barCell(r.pct, `${r.pct}%`)}</tr>`);
 
 // ---------- A4 와 카드가 함께 쓰는 표 조각 (숫자는 examStats 값 그대로) ----------
+// 시험 정보 한 줄: 날짜 · 시간 · 구성 · 범위. 시험지에서 못 읽은 것은 빼고 잇는다.
+const dateText = (d) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? d.replace(/-0?/g, '. ').trim() + '.' : d);
+export function examLine(meta, stats) {
+  const kind = (label) => stats.byKind.find((r) => r.label === label)?.count || 0;
+  const made = [kind('객관식') && `선택형 ${kind('객관식')}문항`, kind('서술형') && `서술형 ${kind('서술형')}문항`].filter(Boolean).join(' + ');
+  const head = [meta.date && dateText(meta.date), meta.minutes && `${meta.minutes}분`, made && `${made} (${stats.total}점)`].filter(Boolean).join(' · ');
+  const range = meta.range || stats.byUnit.map((r) => r.label).join(' · ');
+  return `<p class="r-line">${esc(head)}${range ? `<span class="r-range"><b>범위</b> ${esc(range)}</span>` : ''}</p>`;
+}
+
+// 핵심 수치 넷 — 학원 분석지가 맨 위에 두는 것들
 export const kpi = (stats) => nums([
-  [esc(stats.count), '전체 문항'],
-  [esc(stats.total), '총 배점'],
-  [`${esc(stats.essayPointsPct)}%`, `서술형 배점 (${esc(stats.essayCount)}문항)`],
-  [`${esc(stats.hard.pct)}%`, `중상 이상 (${esc(stats.hard.count)}문항 · ${esc(stats.hard.points)}점)`],
+  [esc(stats.count), `전체 문항 (${esc(stats.total)}점)`],
+  [`${esc(stats.overallLabel)}<small> ${esc(stats.overallScore)}/5</small>`, '체감 난이도'],
+  [esc(stats.killer.count || stats.hard.count), stats.killer.count
+    ? `고난도 문항 (${esc(stats.killer.points)}점)`
+    : `중상 이상 문항 (${esc(stats.hard.points)}점)`],
+  stats.bySource.length
+    ? [`${esc(stats.textbookPct)}%`, '교과서에서 출제']
+    : [`${esc(stats.essayPointsPct)}%`, `서술형 배점 (${esc(stats.essayCount)}문항)`],
 ]);
+
+// 출제 경향 요약 — AI 가 쓴 항목들
+export const trendList = (trends) => `<ul class="r-trend">${trends.map((t) => `<li contenteditable>${esc(t)}</li>`).join('')}</ul>`;
+
+export const unitTable = (stats) => (stats.byUnit.length
+  ? table(['단원', '문항 번호', '#문항', '#배점', '#비율'],
+    stats.byUnit.map((r) => `<tr><td>${esc(r.label)}</td><td class="pt">${esc(nosText(r.nos))}</td>${num(r.count)}${num(r.points)}${barCell(r.pct, `${r.pct}%`)}</tr>`))
+  : '');
 
 export const composeTable = (stats) => table(['구분', '항목', '#문항', '#배점', '#비율'], [
   ...groupRows('유형', stats.byKind),
@@ -57,6 +80,9 @@ export const areaTable = (stats) => table(['영역', '문항 번호', '#문항',
 
 export const pointsTable = (stats) => table(['#배점', '#문항 수', '문항 번호'],
   stats.byPoints.map((r) => `<tr>${num(`${r.points}점`)}${num(r.count)}<td class="pt">${esc(nosText(r.nos))}</td></tr>`));
+
+// 표로 세울 자리가 없을 때 쓰는 한 줄 ("7점 3문항 20~22 · 4.2점 18문항 2~19")
+export const pointsLine = (stats) => `<p class="r-points"><b>배점 구성</b>${stats.byPoints.map((r) => `<span>${esc(r.points)}점 ${esc(r.count)}문항 <i>${esc(nosText(r.nos))}</i></span>`).join('')}</p>`;
 
 // 변별 문항: 왜 어려웠는지까지. 문항표에 없는 번호는 AI 글에서 이미 걸러져 온다.
 export const keyTable = (items, keyItems) => {
@@ -73,10 +99,11 @@ export const strategyTable = (strategy) => table(['영역', '준비 방법'],
 // 전 문항 표. 한 장에 담으려 반으로 갈라 나란히 둔다.
 const ITEM_HEAD = ['#번호', '유형', '영역', '세부 포인트', '#배점', '난이도', '출처'];
 export function itemsTable(items) {
-  const rows = (list) => list.map((it) => `<tr>${num(it.no)}<td class="c">${esc(it.kind[0])}</td><td>${esc(abbr(it.area))}</td><td class="pt">${esc(it.subtype)}</td>${num(it.points)}<td class="c">${badge(it.difficulty)}</td><td class="c">${esc(srcAbbr(it.source))}</td></tr>`);
+  // 킬러(상) 문항은 번호 옆에 ★ — 표를 훑을 때 먼저 보이게
+  const rows = (list) => list.map((it) => `<tr>${num(`${it.difficulty === '상' ? '★' : ''}${it.no}`)}<td class="c">${esc(it.kind[0])}</td><td>${esc(abbr(it.area))}</td><td class="pt">${esc(it.subtype)}</td>${num(it.points)}<td class="c">${badge(it.difficulty)}</td><td class="c">${esc(srcAbbr(it.source))}</td></tr>`);
   const half = Math.ceil(items.length / 2);
   return `<div class="r-row r-row-tight">${table(ITEM_HEAD, rows(items.slice(0, half)))}${table(ITEM_HEAD, rows(items.slice(half)))}</div>
-    <p class="r-legend">유형: 객=객관식, 서=서술형 · 출처: 교과=교과서, 부교=부교재, 기출=기출변형, —=확인 안 됨${esc(abbrLegend(items))}</p>`;
+    <p class="r-legend">★ 고난도 · 유형: 객=객관식, 서=서술형 · 출처: 교과=교과서, 부교=부교재, 기출=기출변형, —=확인 안 됨${esc(abbrLegend(items))}</p>`;
 }
 
 // 문항 칸 격자: 한 줄 10칸
@@ -88,19 +115,34 @@ export const nums = (cards) => `<div class="r-nums">${cards.map(([value, label])
 
 // 학교 시험 분석 A4 한 장. 학원 블로그의 분석 글처럼 표로 읽히도록 짰다.
 // ① 핵심 수치 ② 총평 ③ 시험 구성·영역·배점 표 ④ 변별 문항 표 ⑤ 전 문항 표 ⑥ 대비 표
+// 문항이 이보다 많으면 전 문항 표를 둘째 장으로 뺀다 (한 장에 우겨 넣으면 글자가 너무 작아진다).
+// 30문항이 한 장에 0.76배로 들어가는 것을 재어 보고 정했다.
+const MANY = 30;
+
 export function schoolPage({ academy, meta, items, stats }, school) {
-  return sheet(`${meta.school}-${meta.grade}-${meta.subject}분석`, `
-    ${header(academy, `${examName(meta)} ${meta.subject} 분석`, `${stats.count}문항 · ${stats.total}점 만점 · 전체 난이도 ${stats.overall}`)}
+  const unit = unitTable(stats);
+  const file = `${meta.school}-${meta.grade}-${meta.subject}분석`;
+  const many = items.length > MANY;
+  const front = sheet(file, `
+    ${header(academy, `${examName(meta)} ${meta.subject} 분석`, `내신 시험 분석 리포트${many ? ' · 1 / 2' : ''}`)}
+    ${examLine(meta, stats)}
     ${kpi(stats)}
-    <section class="r-sum"><h3>이번 시험 총평 ${badge(stats.overall, `전체 난이도 ${stats.overall}`)}</h3><p contenteditable>${esc(school.overview)}</p></section>
+    <section class="r-verdict"><b>한 줄 총평</b><p contenteditable>${esc(school.overview)}</p></section>
+    ${school.trends?.length ? `<section><h3>출제 경향 요약</h3>${trendList(school.trends)}</section>` : ''}
     <section class="r-row">
       <div><h3>시험 구성</h3>${composeTable(stats)}</div>
-      <div><h3>영역별 출제</h3>${areaTable(stats)}<h3 class="r-sub-h">배점 구성</h3>${pointsTable(stats)}</div>
+      <div>${unit ? `<h3>단원별 출제</h3>${unit}<h3 class="r-sub-h">영역별 출제</h3>` : '<h3>영역별 출제</h3>'}${areaTable(stats)}</div>
     </section>
+    ${pointsLine(stats)}
     <section><h3>변별 문항 — 점수가 갈린 곳</h3>${keyTable(items, school.keyItems)}</section>
-    <section class="r-items"><h3>전 문항 분석표</h3>${itemsTable(items)}</section>
+    ${many ? '' : `<section class="r-items"><h3>전 문항 분석표</h3>${itemsTable(items)}</section>`}
     <section><h3>다음 시험 이렇게 준비합니다</h3>${strategyTable(school.strategy)}</section>
-    ${footer(academy, '문항 난이도·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
+    ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
+  if (!many) return front;
+  return front + sheet(`${file}-전문항표`, `
+    ${header(academy, `${examName(meta)} ${meta.subject} 전 문항 분석표`, '내신 시험 분석 리포트 · 2 / 2')}
+    <section class="r-items">${itemsTable(items)}</section>
+    ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
 }
 
 // 학생 리포트도 학교 분석지와 같은 표로 (영역별 결과 / 오답 분석)

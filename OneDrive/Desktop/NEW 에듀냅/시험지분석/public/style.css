@@ -62,13 +62,14 @@ button:disabled { opacity: .45; cursor: wait; }
 .hint { color: var(--cream-3); font-size: 13px; }
 code { font: 600 13px/1 var(--sans); background: var(--olive); color: var(--cream); border: 1px solid var(--card-line); border-radius: 3px; padding: 2px 6px; white-space: nowrap; }
 .table-wrap { overflow-x: auto; margin-top: 8px; }
-#items { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; }
+#items { border-collapse: collapse; width: 100%; min-width: 950px; font-size: 14px; }
 #items th { color: var(--cream-3); font-size: 12px; font-weight: 600; letter-spacing: .08em; padding: 8px 6px; white-space: nowrap; }
 #items th, #items td { border-bottom: 1px solid var(--hair); text-align: left; vertical-align: middle; }
 #items td { padding: 5px 6px; }
 #items td input, #items td select { padding: 5px 7px; }
 #items td select { width: auto; }
 #items td[data-field=points] input { width: 70px; }
+#items td[data-field=unit] input { min-width: 120px; }
 #items td.unsure { background: rgba(245,194,76,.18); box-shadow: inset 0 0 0 1px var(--accent); }
 #items td.unsure :is(input, select) { background: rgba(245,194,76,.1); border-color: rgba(245,194,76,.55); }
 .meta { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom: 14px; }
@@ -105,18 +106,28 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 }
 .page { color-scheme: light; width: 210mm; height: 297mm; overflow: hidden; margin: 0; padding: 8mm 10mm 7mm; background: #fff; color: var(--ink);
   font-size: calc(10pt * var(--fit, 1)); line-height: 1.45; word-break: keep-all;
-  box-shadow: 0 10px 34px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: 1.05em; border-top: 2mm solid var(--brand-ink);
+  box-shadow: 0 10px 34px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: .8em; border-top: 2mm solid var(--brand-ink);
   -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .page p { margin: 0; }
 .r-head { display: flex; align-items: baseline; gap: 1em; padding-bottom: .5em; border-bottom: .4mm solid var(--ink); }
 .r-academy { margin: 0; flex: none; max-width: 30%; display: flex; align-items: center; gap: .5em; color: var(--brand-ink); font-weight: 700; font-size: .92em; line-height: 1.25; letter-spacing: -.02em; }
 .r-logo { max-height: 2.6em; max-width: 6em; object-fit: contain; }
 .r-head h2 { flex: 1; min-width: 0; margin: 0; font: 700 1.5em/1.25 var(--serif); letter-spacing: -.045em; color: var(--ink); }
+/* 시험 정보 한 줄 (날짜·시간·구성·범위) */
+.r-line { margin-top: -.62em; display: flex; flex-wrap: wrap; gap: .1em 1.1em; align-items: baseline; font-size: .84em; color: var(--muted); }
+.r-range b { color: var(--brand-ink); font-weight: 700; margin-right: .35em; }
+/* 한 줄 총평 — 종이에서 유일하게 색을 채우는 곳 */
+.r-verdict { display: flex; gap: .9em; align-items: baseline; background: var(--brand-ink); color: #fff; border-radius: 2px; padding: .5em .8em .6em; }
+.r-verdict > b { flex: none; font-size: .78em; font-weight: 600; letter-spacing: .08em; color: rgba(255,255,255,.65); }
+.r-verdict p { font-weight: 600; line-height: 1.5; }
+/* 출제 경향 요약 */
+.r-trend { margin: 0; padding-left: 1.15em; display: grid; gap: .24em; }
+.r-trend li::marker { color: var(--brand-ink); }
 .r-sub { flex: none; max-width: 34%; color: var(--muted); font-size: .88em; text-align: right; line-height: 1.3; }
 .page h3 { font: 700 1.02em/1.3 var(--sans); letter-spacing: -.03em; margin: 0 0 .4em; color: var(--ink); display: flex; gap: .45em; align-items: center; }
 .page h3::before { content: ''; flex: none; width: .5em; height: .5em; border-radius: 50%; background: var(--brand-ink); }
 .page h3 .d { font-family: var(--sans); letter-spacing: 0; font-weight: 600; }
-.r-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; align-items: start; }
+.r-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; align-items: start; }
 .r-top { grid-template-columns: 1.3fr 1fr; }
 /* 핵심 수치 — 상자 대신 세로 칸선 하나로 */
 .r-nums { align-self: stretch; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: .2mm solid var(--line); border-bottom: .2mm solid var(--line); padding: .5em 0; }
@@ -147,6 +158,10 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .r-sum h3 { margin-bottom: .2em; }
 .r-sum h3::before { display: none; }
 .r-sub-h { margin-top: .7em; }
+/* 배점 구성 한 줄 */
+.r-points { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2em 1.1em; font-size: .82em; color: var(--muted); border-top: .2mm solid var(--line); border-bottom: .2mm solid var(--line); padding: .35em 0; }
+.r-points > b { color: var(--ink); font-size: .95em; }
+.r-points i { font-style: normal; }
 .r-row-tight { gap: .9em; }
 .r-items .r-legend { margin-top: .35em; }
 /* 전 문항 표는 반으로 갈라 나란히 두므로 두 쪽의 칸 너비를 고정해 맞춘다 (세부 포인트가 남는 자리를 갖는다) */
@@ -209,6 +224,7 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 /* 표가 남는 자리를 채워 카드가 허전하지 않게 한다 */
 .page.card-news .c-fill { flex: 1; display: flex; flex-direction: column; }
 .page.card-news .c-fill .t { flex: 1; }
+.page.card-news .c-fill .r-trend { flex: 1; align-content: space-evenly; }
 /* 줄이 적은 표는 늘리지 않는다 (늘리면 줄 사이가 텅 빈다). 대신 남는 자리를 묶음 사이에 고르게 나눈다 */
 .page.card-news:has(.c-mid) { justify-content: space-between; }
 .page.card-news:has(.c-mid) section { margin-bottom: 0; }

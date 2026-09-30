@@ -50,12 +50,15 @@
       <label>학년<input name="grade" placeholder="중2"></label>
       <label>학기<input name="term" placeholder="1학기"></label>
       <label>시험<input name="exam" placeholder="중간고사"></label>
+      <label>시험 날짜<input name="date" type="date"></label>
+      <label>시험 시간<input name="minutes" type="number" min="0" max="300" step="5" placeholder="45"></label>
+      <label class="wide">출제 범위<input name="range" placeholder="동아(이병민) 5과 · 6과"></label>
     </form>
     <p id="confirm-notes" class="notes"></p>
     <p id="confirm-total" class="status"></p>
     <div class="table-wrap">
       <table id="items">
-        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th>판단 근거</th><th></th></tr></thead>
+        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th>판단 근거</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>

@@ -33,6 +33,25 @@ function tally(items, key, order) {
     .filter((r) => r.count > 0);
 }
 
+// 체감 난이도: 다섯 칸 중 몇째인지와 학부모가 읽을 말
+const FEEL = ['쉬움', '조금 쉬움', '보통', '조금 어려움', '어려움'];
+
+// 단원은 학교·교과서마다 달라 미리 정할 수 없다. 시험지에 나온 순서대로 묶는다.
+function byValue(items, key) {
+  const order = [];
+  const groups = new Map();
+  for (const it of items) {
+    const label = String(it?.[key] ?? '').trim();
+    if (!label) continue;
+    if (!groups.has(label)) { groups.set(label, []); order.push(label); }
+    groups.get(label).push(it);
+  }
+  return order.map((label) => {
+    const hit = groups.get(label);
+    return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length), nos: hit.map((it) => Number(it.no)) };
+  });
+}
+
 // 배점이 큰 것부터: 배점 / 문항 수 / 번호들 ("5점 문항 5개가 전부 어법")
 function byPoints(items) {
   const groups = new Map();
@@ -49,20 +68,27 @@ export function examStats(items) {
   const total = sumPoints(items);
   const essay = items.filter((it) => it.kind === '서술형');
   const hard = items.filter((it) => it.difficulty === '중상' || it.difficulty === '상');
+  const killer = items.filter((it) => it.difficulty === '상'); // 학원 글이 말하는 킬러 문항
   const weighted = items.reduce((s, it) => s + DIFF5.indexOf(it.difficulty) * (Number(it.points) || 0), 0);
+  const overall = DIFF5[Math.round(total ? weighted / total : 2)];
   return {
     count: items.length,
     total,
     essayCount: essay.length,
     essayPointsPct: pct(sumPoints(essay), total),
     hardPct: pct(hard.length, items.length),
-    overall: DIFF5[Math.round(total ? weighted / total : 2)],
+    overall,
+    overallScore: DIFF5.indexOf(overall) + 1,
+    overallLabel: FEEL[DIFF5.indexOf(overall)],
     byArea: tally(items, 'area', AREAS),
     byDifficulty: tally(items, 'difficulty', DIFF5),
     byKind: tally(items, 'kind', KINDS),
     bySource: tally(items, 'source', SOURCES),
     byPoints: byPoints(items),
+    byUnit: byValue(items, 'unit'),
     hard: { count: hard.length, points: sumPoints(hard), pct: pct(hard.length, items.length) },
+    killer: { count: killer.length, points: sumPoints(killer), pct: pct(killer.length, items.length) },
+    textbookPct: pct(items.filter((it) => it.source === '교과서').length, items.length),
   };
 }
 

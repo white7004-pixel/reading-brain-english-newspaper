@@ -37,11 +37,12 @@ const school = {
   strategy: [{ area: '독해', tip: '지문 요약 쓰기' }],
 };
 
-test('학교 분석 A4 는 표 여섯 개로 이뤄진다', () => {
+test('학교 분석 A4 는 정해진 표와 줄로 이뤄진다', () => {
   const html = schoolPage(ctx, school);
-  // 시험 구성 · 영역별 · 배점 구성 · 변별 문항 · 전 문항 두 쪽 · 대비
-  assert.equal(html.match(/<table/g).length, 7);
+  // 시험 구성 · 영역별 · 변별 문항 · 전 문항 두 쪽 · 대비 (배점 구성은 한 줄, 단원은 이 시험에 없다)
+  assert.equal(html.match(/<table/g).length, 6);
   ['시험 구성', '영역별 출제', '배점 구성', '변별 문항', '전 문항 분석표', '다음 시험 이렇게 준비합니다'].forEach((h) => assert.match(html, new RegExp(h)));
+  assert.doesNotMatch(html, /단원별 출제/); // 단원을 적지 않은 문항표에서는 단원 표를 내지 않는다
   // 구분 칸은 항목 수만큼 묶인다 (객관식·서술형 두 줄)
   assert.match(html, /rowspan="2" scope="rowgroup">유형/);
   // 비율 칸에 막대 너비가 붙는다
@@ -51,6 +52,49 @@ test('학교 분석 A4 는 표 여섯 개로 이뤄진다', () => {
   assert.match(html, /<td class="c">—<\/td>/);
   // 영역별 표에는 문항 번호가 함께
   assert.match(html, /조건이 세 개였습니다/);
+});
+
+test('단원을 적은 문항표에서는 단원별 출제 표가 붙는다', () => {
+  const withUnit = items.map((it, i) => ({ ...it, unit: i ? '6과' : '5과' }));
+  const html = schoolPage({ ...ctx, items: withUnit, stats: examStats(withUnit) }, school);
+  assert.match(html, /단원별 출제/);
+  assert.equal(html.match(/<table/g).length, 7);
+});
+
+test('시험 정보 줄에는 날짜·시간·구성·범위가 들어간다', () => {
+  const meta = { ...ctx.meta, date: '2026-09-30', minutes: 45, range: '동아(이병민) 5과 · 6과' };
+  const html = schoolPage({ ...ctx, meta }, school);
+  assert.match(html, /2026\. 9\. 30\./);
+  assert.match(html, /45분/);
+  assert.match(html, /선택형 2문항 \+ 서술형 1문항 \(100점\)/);
+  assert.match(html, /동아\(이병민\) 5과 · 6과/);
+  // 못 읽은 칸은 줄에서 빠진다
+  assert.doesNotMatch(schoolPage(ctx, school), /분 ·|범위/);
+});
+
+test('한 줄 총평과 출제 경향 요약이 들어간다', () => {
+  const html = schoolPage(ctx, { ...school, trends: ['교과서 안에서만 나왔습니다.'] });
+  assert.match(html, /한 줄 총평/);
+  assert.match(html, /출제 경향 요약/);
+  assert.match(html, /<li contenteditable>교과서 안에서만 나왔습니다\.<\/li>/);
+  assert.doesNotMatch(schoolPage(ctx, school), /출제 경향 요약/); // 글이 없으면 자리도 없다
+});
+
+test('고난도(상) 문항은 전 문항 표에서 ★ 로 표시된다', () => {
+  const html = schoolPage(ctx, school);
+  assert.match(html, /<td class="num">★3<\/td>/);
+  assert.match(html, /★ 고난도/);
+});
+
+test('문항이 많으면 전 문항 표를 둘째 장으로 뺀다', () => {
+  const many = Array.from({ length: 40 }, (_, i) => ({ ...items[i % 3], no: i + 1 }));
+  const html = schoolPage({ ...ctx, items: many, stats: examStats(many) }, school);
+  assert.equal(html.match(/class="page"/g).length, 2);
+  assert.match(html, /1 \/ 2/);
+  assert.match(html, /2 \/ 2/);
+  // 앞장에는 전 문항 표가 없고 뒷장에 있다
+  assert.equal(html.match(/전 문항 분석표/g).length, 1);
+  assert.equal(schoolPage(ctx, school).match(/class="page"/g).length, 1);
 });
 
 test('A4 도 AI 글을 그대로 넣지 않는다', () => {
