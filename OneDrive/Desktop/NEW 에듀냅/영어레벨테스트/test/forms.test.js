@@ -61,3 +61,48 @@ test('nextSet 과 blanks', () => {
   assert.equal(blanks('{} {} x {}'), 3);
   assert.equal(blanks(undefined), 0);
 });
+
+import { stage1Score, areaLevels, startLevel, phonicsNote, writeSummary } from '../public/core/forms.js';
+
+const r = (area, level, correct, o = {}) => ({ area, level, correct, ...o });
+
+test('stage1Score: 80점 경계와 반올림', () => {
+  const log = (n, of) => Array.from({ length: of }, (_, i) => r('reading', '초3', i < n));
+  assert.deepEqual(stage1Score(log(27, 34)), { correct: 27, total: 34, score: 79, passed: false });
+  assert.deepEqual(stage1Score(log(28, 34)), { correct: 28, total: 34, score: 82, passed: true });
+  assert.equal(stage1Score(log(4, 5)).passed, true); // 80점
+  assert.equal(stage1Score(log(39, 50)).passed, false); // 78점
+  assert.deepEqual(stage1Score([]), { correct: 0, total: 0, score: 0, passed: false });
+});
+
+test('areaLevels: 3분의 2 이상 맞히면 다음 학년, 없는 학년은 건너뛴다', () => {
+  const log = [
+    r('reading', '초3', true), r('reading', '초3', true),
+    r('reading', '초4', true), r('reading', '초4', false), r('reading', '초4', true),
+    r('reading', '초5', true), r('reading', '초5', false),
+    r('reading', '초6', true),
+    r('grammar', '초4', true), r('form', '초5', true), r('form', '중1', true),
+    r('sentence', '초5', false),
+    r('phonics', '초3', true), r('phonics', '초4', false),
+  ];
+  assert.deepEqual(areaLevels(log), { reading: '초4', grammar: '중1', writing: '초5 수준 아래', phonics: { correct: 1, total: 2 } });
+});
+
+test('areaLevels: 문항이 없는 영역은 null', () => {
+  assert.deepEqual(areaLevels([]), { reading: null, grammar: null, writing: null, phonics: { correct: 0, total: 0 } });
+});
+
+test('startLevel 은 가장 낮은 수준, phonicsNote 는 하나라도 틀리면', () => {
+  assert.equal(startLevel({ reading: '초6', grammar: '초4', writing: '초5' }), '초4');
+  assert.equal(startLevel({ reading: '초6', grammar: '초4', writing: '초4 수준 아래' }), '초4 수준 아래');
+  assert.equal(startLevel({ reading: '초3 수준 아래', grammar: null, writing: '초4 수준 아래' }), '초3 수준 아래');
+  assert.equal(startLevel({ reading: null, grammar: null, writing: null }), null);
+  assert.equal(phonicsNote({ phonics: { correct: 1, total: 2 } }), '파닉스 복습 권장');
+  assert.equal(phonicsNote({ phonics: { correct: 2, total: 2 } }), '');
+  assert.equal(phonicsNote({ phonics: { correct: 0, total: 0 } }), '');
+});
+
+test('writeSummary: 맞힌 수와 틀린 문법 항목(겹치면 한 번)', () => {
+  const log = [r('form', '중2', true, { point: '수동태' }), r('form', '중3', false, { point: '과거완료' }), r('sentence', '고1', false, { point: '과거완료' }), r('form', '고1', false, { point: '부정어 도치' })];
+  assert.deepEqual(writeSummary(log), { correct: 1, total: 4, missed: ['과거완료', '부정어 도치'] });
+});
