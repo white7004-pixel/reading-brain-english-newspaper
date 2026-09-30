@@ -624,6 +624,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-windy-night-with-wild-horses",
+  "title": "Windy Night with Wild Horses",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #39",
+  "level": {
+   "ar": "3.6",
+   "lexile": "470L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/14591676-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-hurricane-heroes-in-texas",
   "title": "Hurricane Heroes in Texas",
   "author": "Mary Pope Osborne",
@@ -821,5 +835,6 @@ window.BOOK_BY_NO = {
  "S3939": "magic-tree-house-camp-time-in-california",
  "S3940": "magic-tree-house-sunlight-on-the-snow-leopard",
  "S3941": "magic-tree-house-rhinos-at-recess",
- "S3942": "magic-tree-house-time-of-the-turtle-king"
+ "S3942": "magic-tree-house-time-of-the-turtle-king",
+ "S3943": "magic-tree-house-windy-night-with-wild-horses"
 };
