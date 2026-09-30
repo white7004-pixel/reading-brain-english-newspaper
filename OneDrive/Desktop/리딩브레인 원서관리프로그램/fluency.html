@@ -302,7 +302,7 @@ function calc(){
     </div>
     <div class="row rp-hide" style="justify-content:center; margin:14px 0 30px">
       <button class="btn ghost" id="pr">🖨 결과 인쇄</button>
-      <a class="btn" href="library.html?ar=${est.i < 2 ? 0.5 : est.i / 2}">이 수준 원서 고르러 가기 →</a>
+      <a class="btn" href="index.html?ar=${est.i < 2 ? 0.5 : est.i / 2}">이 수준 원서 고르러 가기 →</a>
     </div>`;
   $("#pr").onclick = () => RBReport.print($("#flRep"));
   $("#flRep").scrollIntoView({ behavior: "smooth" });

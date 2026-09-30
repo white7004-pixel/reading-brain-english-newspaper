@@ -101,6 +101,18 @@ main{max-width:1180px; padding:26px 20px 20px}
 .book .go a.on{background:linear-gradient(135deg,#b16fe0,#e06aa8); color:#fff}
 .book .go a:hover{filter:brightness(.96)}
 
+/* 표지가 없는 책은 AR 색 책등으로 그린다 (옛 서재 library.html 과 같은 방식) */
+.lb-sp{display:none; flex-direction:column; justify-content:center; height:100%; padding:10px 12px; box-sizing:border-box; color:#fff}
+.lb-cv.noimg .lb-sp{display:flex}
+.lb-sp b{font-size:14px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden}
+.lb-sp span{font-size:11px; opacity:.85; margin-top:6px}
+
+/* 갈래·주제 */
+.fbar{display:flex; gap:8px; flex-wrap:wrap; margin:0 0 16px}
+.fbar select{border:0; border-radius:16px; padding:9px 13px; font:inherit; font-size:13.5px; background:#fff; color:#6b5a78; max-width:100%; box-shadow:0 1px 4px rgba(120,60,160,.12)}
+
+.lb-more{display:block; margin:22px auto 8px}
+.lb-more[hidden]{display:none}   /* display:block 이 hidden 을 이겨 버려서 더 볼 것이 없어도 단추가 남았다 */
 .empty{padding:40px; text-align:center; color:#a597b0}
 footer{padding:10px 20px 30px; font-size:11.5px; color:#a597b0; text-align:center}
 
@@ -121,7 +133,6 @@ footer{padding:10px 20px 30px; font-size:11.5px; color:#a597b0; text-align:cente
     <img src="assets/logo-mark.png" alt="">
     <div class="bn disp">READING BRAIN<small>Reading Is The Only Way!</small></div>
     <div class="sp"></div>
-    <a class="pill" id="lib" href="library.html">📚 서재</a>
     <a class="pill" id="flu" href="fluency.html">🎤 PRE-TEST</a>
     <a class="pill" id="art" href="artest.html">📊 AR TEST</a>
     <a class="pill" id="rev" href="review.html">첨삭</a>
@@ -132,7 +143,7 @@ footer{padding:10px 20px 30px; font-size:11.5px; color:#a597b0; text-align:cente
     <h1 class="disp">오늘은 어떤 원서를<br>함께 읽어 볼까요?</h1>
     <p>듣고 따라 읽고, 단어 익히고, 퀴즈 풀고, AI와 영어로 이야기해요</p>
     <label class="search">
-      <input id="q" type="search" placeholder="제목 · 작가로 찾기" autocomplete="off">
+      <input id="q" type="search" placeholder="제목 · 작가 · 시리즈로 찾기" autocomplete="off">
       <span id="cnt">찾기</span>
     </label>
   </div>
@@ -156,13 +167,16 @@ footer{padding:10px 20px 30px; font-size:11.5px; color:#a597b0; text-align:cente
 <main>
   <div class="sec"><h2 class="disp">레벨별 원서</h2><span class="cnt" id="total"></span></div>
   <div class="lv" id="lv"></div>
+  <div class="fbar"><select id="g" aria-label="갈래"></select><select id="t" aria-label="주제"></select></div>
   <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" hidden>이 레벨에는 아직 책이 없어요.</div>
+  <div class="empty" id="empty" hidden>찾는 책이 없어요. 다른 말로 찾아보세요.</div>
+  <button class="btn ghost lb-more" id="more" hidden>더 보기</button>
 </main>
 <footer>리딩브레인영어학원 · 새 책은 <code>books/</code> 에 파일을 만들고 <code>books/index.js</code> 에 한 줄 더한 뒤 <code>node scripts/make-cards.mjs</code> 를 돌립니다.</footer>
 
 <script src="config.js"></script>
 <script src="store.js"></script>
+<script src="catalog.js"></script>
 <script src="books/cards.js"></script>
 <script>
 RB.gate();
@@ -171,9 +185,10 @@ const STUDENT = RB.role() === "student";          // 학생에게는 교사용·
 if (STUDENT) { document.getElementById("flu").hidden = true; document.getElementById("art").hidden = true; document.getElementById("rev").hidden = true; document.getElementById("tch").hidden = true; }
 const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 const $ = id => document.getElementById(id);
-let LIST = [], LV = -1;
+let LIST = [], HIT = [], LV = -1, G = "", T = "", SHOWN = 0, LVN = [];
+const PAGE = 60;                       // 4,800여 칸을 한 번에 그리면 폰이 멎는다. 60칸씩 늘린다
 
-// AR 로 나눈 6단계. 책 파일의 level.ar 만 보고 나누므로 따로 적어 둘 게 없다.
+// AR 로 나눈 6단계. 책의 ar 숫자만 보고 나누므로 따로 적어 둘 게 없다.
 const LEVELS = [
   { name: "Lv.0 첫걸음", ar: "~0.7",    max: 0.75 },
   { name: "Lv.1 그림책", ar: "0.8–1.8", max: 1.85 },
@@ -182,53 +197,114 @@ const LEVELS = [
   { name: "Lv.4 챕터북", ar: "4.1–5.4", max: 5.45 },
   { name: "Lv.5 소설",   ar: "5.5+",    max: Infinity },
 ];
-const lvOf = b => LEVELS.findIndex(l => (parseFloat(b.level.ar) || 0) < l.max);
+const lvOf = b => LEVELS.findIndex(l => b.ar < l.max);
 
-const cover = b => b.cover ? `style="background-image:url('${esc(b.cover)}')"` : "";
+// 표지가 없는 책의 책등 색 (옛 서재 library.html 의 것 그대로: AR 단계별 색)
+const BANDS = [[0, 0.9], [1, 1.9], [2, 2.9], [3, 3.9], [4, 4.9], [5, 5.9], [6, 99]];
+const SPINE = ["#7f8fd6", "#5fa8b8", "#6fae7a", "#c9a24a", "#cf8158", "#b96a86", "#8a6bb5"];
+const bandOf = bl => { for (let i = 0; i < BANDS.length; i++) if (bl >= BANDS[i][0] && bl <= BANDS[i][1]) return i; return 0; };
+
+// 두 출처를 한 목록으로: 학습 내용이 있는 책(BOOK_CARDS)은 BOOK_BY_NO 로 장서 줄과 이어 한 권으로 센다.
+// 학습하는 책이 맨 앞, 나머지 장서 줄은 쉬운 책부터.
+function merge(){
+  const cards = window.BOOK_CARDS || [], byNo = window.BOOK_BY_NO || {}, rich = {}, cat = {}, simple = [];
+  cards.forEach(c => { rich[c.slug] = c; });
+  for (let i = 0; i < CATALOG.books.length; i++) {
+    const c = CATALOG.at(i), slug = byNo[c.no];
+    if (slug && rich[slug]) cat[slug] = c; else simple.push(c);
+  }
+  const clean = s => (!s || s === "No series") ? "" : s;
+  const mk = o => { o.hay = [o.title, o.author, o.series, o.no, o.slug, o.award, o.rb].join(" ").toLowerCase(); return o; };
+  const out = cards.map(c => {
+    const k = cat[c.slug] || {};
+    return mk({ slug: c.slug, no: k.no || "", title: c.title, author: c.author, series: clean(c.series || k.series),
+      ar: parseFloat(c.level.ar) || 0, lexile: c.level.lexile || (k.lexile ? k.lexile + "L" : ""), rb: c.level.rb || "",
+      genre: k.genre || "", theme: k.theme || "", award: (c.awards || []).join("#") || k.award || "", cover: c.cover || "" });
+  });
+  simple.sort((a, b) => (a.bl - b.bl) || (a.i - b.i));
+  simple.forEach(k => out.push(mk({ slug: "", no: k.no, title: k.title, author: k.author, series: clean(k.series),
+    ar: k.bl, lexile: k.lexile > 0 ? k.lexile + "L" : "", rb: "", genre: k.genre, theme: k.theme, award: k.award || "", cover: "" })));
+  return out;
+}
+
+function awardBadge(a){
+  if (!a) return "";
+  const first = a.split("#").filter(Boolean)[0] || a;
+  return `<span class="aw">🏅 ${esc((a.match(/Newbery|Caldecott|Geisel|Carnegie/) || [first.split(" ")[0]])[0])}</span>`;
+}
+
 function card(b){
-  const s = encodeURIComponent(b.slug);
+  const s = encodeURIComponent(b.slug), n = encodeURIComponent(b.no);
+  const href = b.slug ? `app.html?book=${s}` : `read.html?no=${n}`;
+  const face = b.cover
+    ? `<a class="cv" href="${href}" style="background-image:url('${esc(b.cover)}')">`
+    : `<a class="cv lb-cv noimg" href="${href}" style="background:${SPINE[bandOf(b.ar)]}">
+        <span class="lb-sp"><b>${esc(b.title)}</b><span>${esc(b.series)}</span></span>`;
   return `
   <div class="book">
-    <a class="cv" href="app.html?book=${s}" ${cover(b)}>
-      <span class="ar">AR ${esc(b.level.ar)}</span>
-      ${(b.awards || []).length ? `<span class="aw">🏅 ${esc((b.awards[0].match(/Newbery|Caldecott|Geisel|Carnegie/) || [b.awards[0].split(" ")[0]])[0])}</span>` : ""}
+    ${face}
+      <span class="ar">AR ${esc(b.ar.toFixed(1))}</span>
+      ${awardBadge(b.award)}
     </a>
     <div class="meta">
       <h3>${esc(b.title)}</h3>
       <div class="au">${esc(b.author)}</div>
       <div class="tags"><span>${esc(LEVELS[lvOf(b)].name)}</span>
-        ${b.level.lexile ? `<span>${esc(b.level.lexile)}</span>` : ""}
-        ${b.level.rb ? `<span>${esc(b.level.rb)}</span>` : ""}</div>
+        ${b.lexile ? `<span>${esc(b.lexile)}</span>` : ""}
+        ${b.rb ? `<span>${esc(b.rb)}</span>` : ""}</div>
     </div>
     <div class="go">
-      <a class="on" href="app.html?book=${s}">학습하기</a>
+      ${b.slug ? `<a class="on" href="app.html?book=${s}">학습하기</a>
       <a href="worksheets.html?book=${s}">워크시트</a>
-      ${STUDENT ? "" : `<a href="teacher-guide.html?book=${s}">교사용</a>`}
+      ${STUDENT ? "" : `<a href="teacher-guide.html?book=${s}">교사용</a>`}`
+      : `<a class="on" href="read.html?no=${n}">읽고 나서</a>`}
     </div>
   </div>`;
 }
 
+// 조건이 바뀌면 처음 60권부터 다시. 더 보기는 이어 붙이기만 한다.
 function draw(){
-  const q = $("q").value.trim().toLowerCase();
-  const hit = LIST.filter(b => (LV < 0 || lvOf(b) === LV) && (!q ||
-    (b.title + " " + b.author + " " + (b.series||"") + " " + b.level.ar + " " +
-     (b.level.lexile||"") + " " + (b.level.rb||"") + " " + (b.awards||[]).join(" ")).toLowerCase().includes(q)));
-  $("grid").innerHTML = hit.map(card).join("");
-  $("empty").hidden = hit.length > 0;
-  $("cnt").textContent = q ? `${hit.length}권` : "찾기";
-  $("lv").innerHTML = [{ name: "전체", ar: `${LIST.length}권` }, ...LEVELS.map((l, i) =>
-      ({ ...l, ar: `AR ${l.ar} · ${LIST.filter(b => lvOf(b) === i).length}권` }))]
-    .map((l, i) => `<button data-i="${i - 1}" class="${i - 1 === LV ? "on" : ""}">${esc(l.name)}<small>${esc(l.ar)}</small></button>`).join("");
-  $("lv").querySelectorAll("button").forEach(x => x.onclick = () => { LV = +x.dataset.i; draw(); });
+  const words = $("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  HIT = LIST.filter(b => (LV < 0 || lvOf(b) === LV) && (!G || b.genre === G) && (!T || b.theme === T) &&
+    words.every(w => b.hay.indexOf(w) >= 0));
+  SHOWN = 0;
+  $("grid").innerHTML = "";
+  more();
+  $("empty").hidden = HIT.length > 0;
+  $("cnt").textContent = (words.length || LV >= 0 || G || T) ? `${HIT.length.toLocaleString()}권` : "찾기";
+  $("lv").querySelectorAll("button").forEach(x => x.classList.toggle("on", +x.dataset.i === LV));
+}
+function more(){
+  $("grid").insertAdjacentHTML("beforeend", HIT.slice(SHOWN, SHOWN + PAGE).map(card).join(""));
+  SHOWN = Math.min(SHOWN + PAGE, HIT.length);
+  $("more").hidden = HIT.length <= SHOWN;
+}
+
+function fill(sel, list, label){
+  sel.innerHTML = `<option value="">${label} 전체</option>` + list.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join("");
 }
 
 (() => {
-  LIST = (window.BOOK_CARDS || []).slice();          // cards.js 가 이미 쉬운 책부터 차례로 담아 둔다
-  $("total").textContent = `모두 ${LIST.length}권 · 쉬운 책부터`;
+  LIST = merge();
+  $("total").textContent = `모두 ${LIST.length.toLocaleString()}권 · 쉬운 책부터`;
   // 첫 화면 책장: 표지가 적으면 되풀이해서 채운다
   const cv = LIST.filter(b => b.cover);
   $("shelf").innerHTML = cv.length ? Array.from({ length: 7 }, (_, i) => cv[i % cv.length])
-    .map(b => `<a href="app.html?book=${encodeURIComponent(b.slug)}" ${cover(b)} title="${esc(b.title)}"></a>`).join("") : "";
+    .map(b => `<a href="app.html?book=${encodeURIComponent(b.slug)}" style="background-image:url('${esc(b.cover)}')" title="${esc(b.title)}"></a>`).join("") : "";
+  // 단계 단추는 한 번만 그리고, 고른 것만 draw() 가 표시한다
+  LVN = LEVELS.map((l, i) => LIST.filter(b => lvOf(b) === i).length);
+  $("lv").innerHTML = [{ name: "전체", ar: `${LIST.length.toLocaleString()}권` }].concat(LEVELS.map((l, i) =>
+      ({ name: l.name, ar: `AR ${l.ar} · ${LVN[i].toLocaleString()}권` })))
+    .map((l, i) => `<button data-i="${i - 1}">${esc(l.name)}<small>${esc(l.ar)}</small></button>`).join("");
+  $("lv").querySelectorAll("button").forEach(x => x.onclick = () => { LV = +x.dataset.i; draw(); });
+  fill($("g"), CATALOG.genre.slice().sort(), "갈래"); fill($("t"), CATALOG.theme.slice().sort(), "주제");
+  $("g").onchange = () => { G = $("g").value; draw(); };
+  $("t").onchange = () => { T = $("t").value; draw(); };
+  $("more").onclick = more;
+  // 주소로 들어온 조건 (PRE-TEST·AR TEST 결과에서 넘어온다): ?ar=1.5  ?q=fly
+  const P = new URLSearchParams(location.search), arv = parseFloat(P.get("ar"));
+  if (!isNaN(arv)) LV = lvOf({ ar: arv });
+  if (P.get("q")) $("q").value = P.get("q");
   draw();
 })();
 
