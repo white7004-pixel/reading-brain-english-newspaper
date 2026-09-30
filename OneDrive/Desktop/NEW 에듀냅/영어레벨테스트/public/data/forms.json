@@ -11,13 +11,13 @@
     "question": "What does Mina paint?",
     "choices": [
      "a dog",
-     "the sea",
      "the wall",
-     "her teacher"
+     "her teacher",
+     "the sea"
     ],
     "explain_ko": "my friend Mina paints the sea → 바다를 그린다.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-A-14",
@@ -28,14 +28,14 @@
     "passage": "Today is Art Day at my school, so we do not have math or English. We paint pictures all morning. I paint my dog, and my friend Mina paints the sea. Our teacher puts __them__ on the wall.",
     "question": "What does __them__ mean?",
     "choices": [
-     "the pictures",
      "the teachers",
      "the friends",
+     "the pictures",
      "the dogs"
     ],
     "explain_ko": "선생님이 벽에 붙이는 것은 우리가 그린 그림(pictures)이다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-A-15",
@@ -47,13 +47,13 @@
     "question": "What is the story about?",
     "choices": [
      "my best friend at school",
+     "my pet hamster",
      "a night at the zoo",
-     "a new wheel for my bike",
-     "my pet hamster"
+     "a new wheel for my bike"
     ],
     "explain_ko": "글 전체가 햄스터 Bobo 이야기이다.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-A-16",
@@ -83,13 +83,13 @@
     "question": "Which word best fits in the blank?",
     "choices": [
      "wet",
-     "torn",
      "dry",
+     "torn",
      "gone"
     ],
     "explain_ko": "다음 날 종이가 말라서(dry) 그 위에 카드를 쓸 수 있었다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-A-18",
@@ -118,14 +118,14 @@
     "passage": "The clock on the old tower in Saebit Town stopped last month. People looked up and saw the wrong time. So Mr. Yoon, a clock repairman, climbed up the tower. He cleaned the inside of the clock and changed a broken part. It took him three days. Now the clock rings every hour again.",
     "question": "What is the best title for the story?",
     "choices": [
-     "A New Tower for the Town",
      "Fixing the Town Clock",
+     "A New Tower for the Town",
      "How to Tell the Time",
      "Mr. Yoon's Clock Shop"
     ],
     "explain_ko": "멈춘 마을 시계탑의 시계를 고친 이야기이다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-A-20",
@@ -137,13 +137,13 @@
     "question": "Which is true about the story?",
     "choices": [
      "The clock stopped last year.",
-     "Mr. Yoon fixed the clock in three days.",
      "Mr. Yoon built a new tower.",
+     "Mr. Yoon fixed the clock in three days.",
      "The clock rings only in the morning."
     ],
     "explain_ko": "It took him three days. 멈춘 때는 지난달, 탑은 그대로, 시계는 매시간 울린다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-A-21",
@@ -172,14 +172,14 @@
     "passage": "Dear students,\nNext Friday is Career Day at Hanbit Elementary School. A firefighter, Ms. Park, will visit our school. She will tell you about her job and show you her fire truck. You can also try on her helmet and ask her questions. Please come to the playground at 10 a.m. Don't forget to bring a pencil and a notebook. Thank you!",
     "question": "What should students bring?",
     "choices": [
-     "a pencil and a notebook",
      "a helmet and a notebook",
      "a pencil and some water",
-     "a hat and a camera"
+     "a hat and a camera",
+     "a pencil and a notebook"
     ],
     "explain_ko": "Don't forget to bring a pencil and a notebook.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-23",
@@ -190,14 +190,14 @@
     "passage": "Minho joined the school table tennis club this spring. At first, he could not hit the ball well. It often went into the net, and some friends laughed. But Minho did not _____. He practiced for an hour every day after school. His coach helped him, too. After two months, he won his first game. Now he is one of the best players in the club.",
     "question": "Which is NOT true about Minho?",
     "choices": [
-     "His coach did not help him.",
      "He joined the club this spring.",
      "He practiced every day after school.",
+     "His coach did not help him.",
      "He won a game after two months."
     ],
     "explain_ko": "His coach helped him, too. → 코치가 도와주었다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-A-24",
@@ -209,13 +209,13 @@
     "question": "Which best fits in the blank?",
     "choices": [
      "practice at all",
-     "join the club",
      "give up",
+     "join the club",
      "like his coach"
     ],
     "explain_ko": "친구들이 웃었지만 포기하지 않고(give up) 매일 연습했다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-A-25",
@@ -226,14 +226,14 @@
     "passage": "Have you ever looked at your shadow at different times of the day? In the morning, the sun is low in the sky, so your shadow is long. At noon, the sun is high above your head. Then your shadow becomes very short. In the late afternoon, the sun goes down again, and your shadow grows _____. Long ago, people used shadows like a clock. They put a stick in the ground and watched its shadow move. So a shadow can tell us the time of day.",
     "question": "이 글의 주제로 가장 알맞은 것은?",
     "choices": [
-     "해가 뜨고 지는 시각",
      "하루 동안 그림자 길이가 바뀌는 까닭과 그 쓰임",
+     "해가 뜨고 지는 시각",
      "시계가 처음 만들어진 나라",
      "그림자놀이를 하는 방법"
     ],
     "explain_ko": "해의 높이에 따라 그림자 길이가 바뀌고, 옛사람들은 이것을 시계처럼 썼다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-A-26",
@@ -280,14 +280,14 @@
     "passage": "Last weekend, my family visited Jungang Market, an old market in our town.\n(A) After lunch, we walked to the other side of the market. There, an old man was making wooden toys by hand. My little brother bought a small wooden horse from __him__.\n(B) First, we went to the food street. There were many small shops selling hot rice cakes, fish cakes, and dumplings. We sat down at a tiny table and ate lunch there.\n(C) Before we went home, Mom bought some fresh fruit. It was a long but happy day.",
     "question": "밑줄 친 __him__ 이 가리키는 사람은?",
     "choices": [
+     "나무 장난감을 손으로 만들던 노인",
      "나의 남동생",
      "음식 거리의 가게 주인",
-     "엄마에게 과일을 판 사람",
-     "나무 장난감을 손으로 만들던 노인"
+     "엄마에게 과일을 판 사람"
     ],
     "explain_ko": "남동생은 나무 장난감을 만들던 노인(an old man)에게서 말을 샀다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-A-29",
@@ -300,12 +300,12 @@
     "choices": [
      "How to Make a Paper Balloon",
      "Why the Air Is Getting Dirty",
-     "Weather Balloons: Helpers in the Sky",
-     "The Tallest House in the World"
+     "The Tallest House in the World",
+     "Weather Balloons: Helpers in the Sky"
     ],
     "explain_ko": "날씨 풍선이 하늘로 올라가며 날씨 정보를 모으는 과정을 설명하는 글이다.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s1-A-30",
@@ -318,12 +318,12 @@
     "choices": [
      "풍선에는 공기보다 가벼운 기체가 들어 있다.",
      "풍선에 달린 상자가 기온과 공기 속 물기를 잰다.",
-     "풍선은 높이 올라갈수록 점점 작아진다.",
-     "상자는 작은 낙하산을 달고 땅으로 떨어진다."
+     "상자는 작은 낙하산을 달고 땅으로 떨어진다.",
+     "풍선은 높이 올라갈수록 점점 작아진다."
     ],
     "explain_ko": "the balloon slowly grows bigger → 올라갈수록 점점 커진다.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s1-A-31",
@@ -331,17 +331,17 @@
     "area": "reading",
     "level": "중1",
     "passageId": "s1-A-p10",
-    "passage": "Dear Mayor Choi,\nMy name is Seojin Lee, and I am a student at Daehan Middle School. Every day, about fifty students ride bikes to our school. Riding a bike is healthy, and it does not make the air dirty. However, the road in front of our school is very dangerous. Cars and buses drive fast there, and there is no special road for bikes. Last month, one of my friends almost had an accident. I am writing to ask you to make a safe bike lane on this road. Then more students will ride bikes, and everyone will be safer. Thank you for reading my letter.\nSincerely,\nSeojin Lee",
+    "passage": "Dear Mayor Choi,\nI am writing to you as a student at Daehan Middle School. My name is Seojin Park. Every day, about fifty students ride bikes to our school. Riding a bike is healthy, and it does not make the air dirty. However, the road in front of our school is very dangerous. Cars and buses drive fast there, and there is no special road for bikes. Last month, one of my friends almost had an accident. I am writing to ask you to make a safe bike lane on this road. Then more students will ride bikes, and everyone will be safer. Thank you for reading my letter.\nSincerely,\nSeojin Lee",
     "question": "이 글을 쓴 목적으로 가장 알맞은 것은?",
     "choices": [
+     "학교 앞 도로에 자전거 전용 길을 만들어 달라고 요청하려고",
      "자전거를 타면 건강해진다는 것을 알리려고",
      "친구가 사고를 당할 뻔한 일을 전하려고",
-     "학교에 자전거 보관대를 늘려 달라고 부탁하려고",
-     "학교 앞 도로에 자전거 전용 길을 만들어 달라고 요청하려고"
+     "학교에 자전거 보관대를 늘려 달라고 부탁하려고"
     ],
     "explain_ko": "I am writing to ask you to make a safe bike lane on this road.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-A-32",
@@ -368,12 +368,12 @@
     "choices": [
      "__c__at",
      "__c__up",
-     "__c__ake",
-     "__c__ity"
+     "__c__ity",
+     "__c__ake"
     ],
     "explain_ko": "city 의 c 는 [ㅅ], 나머지는 [ㅋ].",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-A-34",
@@ -384,12 +384,12 @@
     "choices": [
      "bench",
      "benchs",
-     "a bench",
-     "benches"
+     "benches",
+     "a bench"
     ],
     "explain_ko": "two 뒤에는 복수형, ch 로 끝나면 -es → benches.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-A-35",
@@ -414,14 +414,14 @@
     "level": "초6",
     "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: _____ you go to the museum yesterday?\nB: Yes, I did. I saw many old coins.",
     "choices": [
-     "Did",
      "Do",
      "Were",
-     "Are"
+     "Are",
+     "Did"
     ],
     "explain_ko": "yesterday, 일반동사 go 의 과거 의문문 → Did.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-37",
@@ -431,13 +431,13 @@
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nI went to the library _____ some books about space.",
     "choices": [
      "borrow",
-     "borrowed",
      "to borrow",
+     "borrowed",
      "borrows"
     ],
     "explain_ko": "'~하기 위해'(목적) → to부정사 to borrow.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-A-38",
@@ -685,13 +685,13 @@
     "question": "What is the story about?",
     "choices": [
      "my favorite animal",
+     "our school library",
      "my classroom on the second floor",
-     "a trip to a bookstore",
-     "our school library"
+     "a trip to a bookstore"
     ],
     "explain_ko": "글 전체가 학교 도서관 이야기이다.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-B-15",
@@ -721,13 +721,13 @@
     "question": "Which is true about the story?",
     "choices": [
      "Mom and I planted apple seeds.",
-     "I give the seeds water every morning.",
      "The pot is in the garden.",
-     "I saw a big red flower today."
+     "I saw a big red flower today.",
+     "I give the seeds water every morning."
     ],
     "explain_ko": "I give the seeds water every morning. 심은 것은 콩, 화분은 창가, 본 것은 작은 초록 잎.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-B-17",
@@ -756,14 +756,14 @@
     "passage": "It rained all day on Monday. Sora wanted to play outside, but she had to stay home. So she made paper boats with her little brother. They put the boats in a bowl of water and played with them. In the evening, the rain stopped, and they saw a rainbow over the hill.",
     "question": "What did Sora and her brother see in the evening?",
     "choices": [
-     "a rainbow",
      "a boat on the river",
      "their friends outside",
-     "a hill of snow"
+     "a hill of snow",
+     "a rainbow"
     ],
     "explain_ko": "they saw a rainbow over the hill → 무지개를 보았다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-B-19",
@@ -774,14 +774,14 @@
     "passage": "Mr. Kang has a small bakery near my house. Every morning, he gets up at four to _____ bread and cakes. His bakery opens at seven. People love his cream buns. By noon, there are no cream buns left. So I always go there early on Saturday morning.",
     "question": "Which word best fits in the blank?",
     "choices": [
+     "bake",
      "eat",
      "buy",
-     "bake",
      "wash"
     ],
     "explain_ko": "빵집 주인이 가게 문을 열기 전 새벽에 빵을 굽는다(bake).",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-20",
@@ -792,14 +792,14 @@
     "passage": "Mr. Kang has a small bakery near my house. Every morning, he gets up at four to _____ bread and cakes. His bakery opens at seven. People love his cream buns. By noon, there are no cream buns left. So I always go there early on Saturday morning.",
     "question": "Why do I go to the bakery early?",
     "choices": [
-     "The cream buns are all gone by noon.",
      "The bakery closes at seven.",
+     "The cream buns are all gone by noon.",
      "Mr. Kang gives free bread in the morning.",
      "I have a class on Saturday afternoon."
     ],
     "explain_ko": "By noon, there are no cream buns left. So I always go there early.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-B-21",
@@ -848,12 +848,12 @@
     "choices": [
      "a small snow bear",
      "a ticket to the festival",
-     "a map of Finland",
-     "a letter and a photo"
+     "a letter and a photo",
+     "a map of Finland"
     ],
     "explain_ko": "she sent me a letter and a photo → 편지와 사진을 보냈다.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-B-24",
@@ -864,14 +864,14 @@
     "passage": "My pen pal, Aino, lives in Finland. Last week, she sent me a letter and a photo. Every February, her town has a snow festival. People make big animals out of snow, and children slide down the hills. This year, Aino and her dad made a snow bear. It was taller than her dad! At the end of her letter, she wrote, \"Snow is _____ here in winter, so please visit me!\"",
     "question": "Which best fits in the blank?",
     "choices": [
+     "everywhere",
      "hard to find",
      "very hot",
-     "everywhere",
      "not allowed"
     ],
     "explain_ko": "눈 축제가 열리는 곳이니 겨울에 눈이 어디에나(everywhere) 있다며 놀러 오라고 한다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-25",
@@ -882,14 +882,14 @@
     "passage": "Do you know how children played one hundred years ago? At Dasom Toy Museum, you can find out. The museum has more than two thousand old toys, such as wooden tops, paper dolls, and tin cars. Most of them were made by hand at home. You cannot touch the toys in the glass boxes, but you can play with the toys in the play room. On the second floor, visitors can make their own simple toys, like a paper doll. The museum is open every day except Mondays.",
     "question": "이 글의 제목으로 가장 알맞은 것은?",
     "choices": [
+     "A Museum Full of Old Toys",
      "How to Make a Paper Doll",
      "The First Toy Factory",
-     "Popular Games for Children Today",
-     "A Museum Full of Old Toys"
+     "Popular Games for Children Today"
     ],
     "explain_ko": "옛날 장난감을 모아 둔 박물관을 소개하는 글이다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-B-26",
@@ -901,13 +901,13 @@
     "question": "이 글의 내용과 일치하는 것은?",
     "choices": [
      "박물관의 장난감은 대부분 공장에서 만들었다.",
-     "2층에서 간단한 장난감을 직접 만들 수 있다.",
      "유리 상자 안의 장난감을 만져 볼 수 있다.",
+     "2층에서 간단한 장난감을 직접 만들 수 있다.",
      "박물관은 일요일마다 문을 닫는다."
     ],
     "explain_ko": "On the second floor, visitors can make their own simple toys.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-27",
@@ -936,14 +936,14 @@
     "passage": "Last summer, my family went camping by a lake for the first time.\n(A) After dinner, we sat around the fire and roasted marshmallows. Then we looked up at the sky. There were so many stars!\n(B) The next morning, I woke up early because of the birds. I walked to the lake with my sister and saw fish jumping out of the water.\n(C) When we arrived, Dad and I put up the tent. It was harder than I thought, but we did it together. Mom made a fire for dinner.",
     "question": "글쓴이가 다음 날 아침 일찍 일어난 까닭은?",
     "choices": [
+     "새소리 때문에",
      "물고기를 잡으려고",
      "텐트 안이 추워서",
-     "새소리 때문에",
      "여동생이 깨워서"
     ],
     "explain_ko": "I woke up early because of the birds.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-29",
@@ -954,14 +954,14 @@
     "passage": "Every day, people throw away a lot of plastic bottles. But many of them are never recycled because people throw them out the wrong way. Recycling a bottle is easy if you follow three simple steps. First, empty the bottle and wash it with water. Second, take off the label, because the label is made of a different kind of plastic. Third, press the bottle flat and put the cap back on. Then put it in the plastic bin, not the general trash. When bottles are clean and in the right bin, factories can turn them into new things like clothes, bags, and shoes. So a small effort at home can make a big _____ for our planet.",
     "question": "이 글의 주제로 가장 알맞은 것은?",
     "choices": [
-     "플라스틱 병을 올바르게 분리 배출하는 방법",
      "플라스틱으로 옷을 만드는 공장",
      "플라스틱 병 대신 유리병을 써야 하는 이유",
-     "집에서 쓰레기를 줄이는 여러 가지 습관"
+     "집에서 쓰레기를 줄이는 여러 가지 습관",
+     "플라스틱 병을 올바르게 분리 배출하는 방법"
     ],
     "explain_ko": "플라스틱 병을 재활용되게 내놓는 세 단계를 설명하는 글이다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-B-30",
@@ -974,12 +974,12 @@
     "choices": [
      "problem",
      "mistake",
-     "difference",
-     "noise"
+     "noise",
+     "difference"
     ],
     "explain_ko": "집에서의 작은 노력이 지구에 큰 차이(difference)를 만든다.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s1-B-31",
@@ -990,14 +990,14 @@
     "passage": "Do you love animals? Hanul Animal Shelter is looking for volunteers this winter. We take care of about forty dogs and cats that have no home. Every day, they need food, clean water, and a warm place to sleep. They also need people to play with them and take them for walks. Volunteers will help us feed the animals, clean their rooms, and walk the dogs. You must be at least twelve years old, and students under fifteen should come with a parent. We are open from 10 a.m. to 5 p.m. every Saturday and Sunday. If you are interested, please call us at 031-555-2040. The animals are waiting for you!",
     "question": "이 글을 쓴 목적으로 가장 알맞은 것은?",
     "choices": [
-     "동물 보호소에서 일할 자원봉사자를 모집하려고",
      "집 없는 동물을 입양해 달라고 부탁하려고",
      "동물 보호소의 문 여는 시간이 바뀐 것을 알리려고",
+     "동물 보호소에서 일할 자원봉사자를 모집하려고",
      "보호소에 동물 먹이를 기부해 달라고 요청하려고"
     ],
     "explain_ko": "Hanul Animal Shelter is looking for volunteers → 자원봉사자 모집 광고이다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-B-32",
@@ -1008,12 +1008,12 @@
     "choices": [
      "h__o__t",
      "b__o__x",
-     "d__o__g",
-     "n__o__se"
+     "n__o__se",
+     "d__o__g"
     ],
     "explain_ko": "nose 의 o 는 [오우], 나머지는 짧은 [아].",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-B-33",
@@ -1023,13 +1023,13 @@
     "question": "밑줄 친 부분의 소리가 다른 것은?",
     "choices": [
      "__ch__air",
-     "s__ch__ool",
      "__ch__ick",
+     "s__ch__ool",
      "lun__ch__"
     ],
     "explain_ko": "school 의 ch 는 [ㅋ], 나머지는 [취].",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-34",
@@ -1038,14 +1038,14 @@
     "level": "초4",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nThere _____ a cat on the sofa.",
     "choices": [
-     "are",
      "is",
+     "are",
      "am",
      "be"
     ],
     "explain_ko": "a cat(단수) 앞에는 There is.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-B-35",
@@ -1054,14 +1054,14 @@
     "level": "초5",
     "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: Can your sister ride a bike?\nB: No, she _____. She is only three.",
     "choices": [
-     "can't",
      "doesn't",
      "isn't",
-     "don't"
+     "don't",
+     "can't"
     ],
     "explain_ko": "Can 으로 물으면 can / can't 로 답한다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-B-36",
@@ -1071,13 +1071,13 @@
     "question": "대화의 빈칸에 들어갈 말로 알맞은 것은?\nA: What did you eat for breakfast?\nB: I _____ some toast and milk.",
     "choices": [
      "eat",
-     "eated",
      "ate",
+     "eated",
      "eating"
     ],
     "explain_ko": "did 로 물은 과거 → eat 의 과거형 ate (불규칙).",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-B-37",
@@ -1087,13 +1087,13 @@
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nMy bag is _____ than yours.",
     "choices": [
      "heavy",
+     "heavier",
      "heaviest",
-     "more heavy",
-     "heavier"
+     "more heavy"
     ],
     "explain_ko": "than 앞은 비교급, y 로 끝나면 y 를 i 로 → heavier.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-B-38",
