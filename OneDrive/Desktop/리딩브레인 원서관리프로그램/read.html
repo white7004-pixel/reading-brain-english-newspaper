@@ -3,8 +3,9 @@
 <title>학습하기 · 리딩브레인</title>
 <link rel="stylesheet" href="app.css">
 <style>
-/* 이 화면은 읽은 책을 스스로 정리하는 워크시트다. 우리가 줄거리를 모르는 책이므로
-   내용을 적어 두지 않고, 아이가 채우는 칸으로 만든다. 인쇄하면 그대로 학습지가 된다. */
+/* 장서 4,820권의 학습 화면. 기존 책(app.html)과 같은 아홉 단계지만,
+   우리가 읽지 않은 책이라 내용을 적어 두지 않고 아이가 채우는 워크시트로 둔다.
+   낭독 영상만은 유튜브에서 찾아 그대로 붙인다. 인쇄하면 아홉 장이 학습지가 된다. */
 .ws-tbl{width:100%; border-collapse:collapse; font-size:14px}
 .ws-tbl th,.ws-tbl td{border:1px solid #e3d7ec; padding:6px 8px; vertical-align:top}
 .ws-tbl th{background:#f5ecfa; color:#7b4f99; font-size:12.5px; white-space:nowrap}
@@ -22,7 +23,7 @@
   box-shadow:0 3px 12px rgba(120,60,160,.2); flex:none}
 .abt{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start}
 @media print{
-  .top,.tabs,.btn,.noprint{display:none !important}
+  .top,.tabs,.btn,.noprint,.tube,.chat,.talkin{display:none !important}
   .panel[hidden]{display:block !important}
   .panel{page-break-inside:avoid; margin-bottom:10px}
   body{background:#fff}
@@ -45,18 +46,22 @@
 
 <div class="tabs" id="tabs"></div>
 <main>
-  <section class="panel" id="p-about" hidden></section>
-  <section class="panel" id="p-word"  hidden></section>
-  <section class="panel" id="p-sum"   hidden></section>
-  <section class="panel" id="p-map"   hidden></section>
-  <section class="panel" id="p-think" hidden></section>
-  <section class="panel" id="p-essay" hidden></section>
+  <section class="panel" id="p-about"  hidden></section>
+  <section class="panel" id="p-shadow" hidden></section>
+  <section class="panel" id="p-rec"    hidden></section>
+  <section class="panel" id="p-talk"   hidden></section>
+  <section class="panel" id="p-word"   hidden></section>
+  <section class="panel" id="p-sum"    hidden></section>
+  <section class="panel" id="p-map"    hidden></section>
+  <section class="panel" id="p-think"  hidden></section>
+  <section class="panel" id="p-essay"  hidden></section>
 </main>
 
 <script src="config.js"></script>
 <script src="store.js"></script>
 <script src="catalog.js"></script>
 <script src="catalog-covers.js"></script>
+<script src="talk-local.js"></script>
 <script>
 RB.gate();
 RB.chip(document.getElementById("chip"));
@@ -80,13 +85,13 @@ if (RB.role() === "student") {
   $("who").addEventListener("change", function(){
     WHO = $("who").value.trim();
     localStorage.setItem("rb1:who", WHO);
-    S = load(); show();                           // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
+    S = load(); T = null; show();                 // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
   });
 }
 // RB.save/RB.load 는 (slug, who, part, data) 네 자리다 (store.js). 책(Book No.) 하나가 slug 다.
 // 책마다 따로 저장해야 다른 책·다른 탭이 서로 덮어쓰지 않는다.
 const BLANK = { star: 0, date: "", a: ["", "", ""], note: "", words: "",
-                voc: [], swbst: ["", "", "", "", ""], mm: ["", "", "", ""], essay: "" };
+                voc: [], swbst: ["", "", "", "", ""], mm: ["", "", "", ""], essay: "", talk: 0 };
 function load(){
   const r = (RB.load(NO, WHO, "act") || {}).data || {};
   const s = {};
@@ -95,22 +100,30 @@ function load(){
   }
   return s;
 }
-let S = load(), B = null, A = null, flash = null;
+let S = load(), B = null, A = null, V = [], T = null, flash = null;
+function flashSaved(msg){
+  $("saved").textContent = msg || "저장됨";
+  clearTimeout(flash); flash = setTimeout(function(){ $("saved").textContent = ""; }, 1600);
+}
 function save(){
   if (!WHO) { $("saved").textContent = "이름을 먼저 적어 주세요"; return; }
   RB.save(NO, WHO, "act", S);
-  $("saved").textContent = "저장됨";
-  clearTimeout(flash); flash = setTimeout(function(){ $("saved").textContent = ""; }, 1600);
+  flashSaved();
 }
 
 /* ───────── 탭 ───────── */
+// 기존 책(app.html)의 아홉 단계와 같은 차례다. 단어학습·북퀴즈 자리에는
+// 우리가 답을 아는 척할 수 없으므로 아이가 채우는 낱말 노트·요약 지도가 들어간다.
 const TABS = [
-  { id: "about", name: "책 소개",   draw: drawAbout },
-  { id: "word",  name: "낱말 노트", draw: drawWord  },
-  { id: "sum",   name: "요약 지도", draw: drawSum   },
-  { id: "map",   name: "마인드맵",  draw: drawMap   },
-  { id: "think", name: "생각 질문", draw: drawThink },
-  { id: "essay", name: "독후 논술", draw: drawEssay },
+  { id: "about",  name: "책 소개",   draw: drawAbout  },
+  { id: "shadow", name: "쉐도잉",     draw: drawShadow },
+  { id: "rec",    name: "낭독녹음",   draw: drawRec    },
+  { id: "talk",   name: "AI 북토크",  draw: drawTalk   },
+  { id: "word",   name: "낱말 노트",  draw: drawWord   },
+  { id: "sum",    name: "요약 지도",  draw: drawSum    },
+  { id: "map",    name: "마인드맵",   draw: drawMap    },
+  { id: "think",  name: "생각 질문",  draw: drawThink  },
+  { id: "essay",  name: "독후 논술",  draw: drawEssay  },
 ];
 let TAB = "about";
 function show(){
@@ -127,6 +140,7 @@ function show(){
 const has = v => Array.isArray(v) ? v.some(x => String(x || "").trim()) : String(v || "").trim() !== "";
 function filled(id){
   if (id === "about") return S.star > 0 || has(S.note);
+  if (id === "talk")  return S.talk > 0;
   if (id === "word")  return S.voc.some(has);
   if (id === "sum")   return has(S.swbst);
   if (id === "map")   return has(S.mm);
@@ -189,7 +203,162 @@ function drawAbout(){
   });
 }
 
-/* ───────── ② 낱말 노트 ───────── */
+/* ───────── ② 쉐도잉 ───────── */
+// scripts/find-videos.mjs 가 책 이름으로 유튜브를 찾아 vid/<묶음>.js 에 적어 둔 영상이다.
+// 영상을 내려받지 않는다 — 유튜브가 그대로 재생한다.
+let EP = 0;
+function drawShadow(){
+  const yt = "https://www.youtube.com/results?search_query=" + encodeURIComponent('"' + B.title + '" read aloud');
+  if (!V.length) {
+    $("p-shadow").innerHTML =
+      '<div class="box"><h2>낭독 영상</h2>' +
+      '<p class="sub">이 책은 아직 찾아 둔 낭독 영상이 없습니다. 유튜브에서 직접 찾아 보세요.</p>' +
+      '<a class="btn ghost" href="' + esc(yt) + '" target="_blank" rel="noopener">유튜브에서 찾기</a></div>';
+    return;
+  }
+  if (EP >= V.length) EP = 0;
+  const it = V[EP];
+  $("p-shadow").innerHTML =
+    '<h2 class="h">낭독을 들으며 따라 읽으세요</h2>' +
+    '<p class="sub">Listen and read along. 책을 펴 놓고 소리 내어 따라 읽어 보세요.</p>' +
+    '<div class="box">' +
+      '<div class="tube"><iframe src="https://www.youtube.com/embed/' + esc(it[0]) + '"' +
+      ' title="' + esc(it[1]) + '" allow="accelerometer; encrypted-media; picture-in-picture"' +
+      ' allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>' +
+      (V.length > 1 ? '<div class="eps">' + V.map(function(v, i){
+        return '<button data-i="' + i + '" class="' + (i === EP ? "on" : "") + '">' +
+          esc(v[1] || ("영상 " + (i + 1))) + "</button>";
+      }).join("") + "</div>" : "") +
+      '<p class="sub" style="margin-top:10px">영상이 이 책과 다르면 ' +
+      '<a href="' + esc(yt) + '" target="_blank" rel="noopener">유튜브에서 직접 찾기</a></p>' +
+    "</div>";
+  $("p-shadow").querySelectorAll(".eps button").forEach(function(b){
+    b.onclick = function(){ EP = +b.dataset.i; drawShadow(); };
+  });
+}
+
+/* ───────── ③ 낭독 녹음 ───────── */
+// app.html 의 recorder 와 같은 것. 열쇠만 slug 대신 Book No. 를 쓴다.
+function drawRec(){
+  $("p-rec").innerHTML =
+    '<h2 class="h">소리 내어 읽고 녹음하세요</h2>' +
+    '<p class="sub">마음에 드는 한 쪽을 골라 30초쯤 읽어 보세요. 녹음한 것은 선생님이 들을 수 있습니다.</p>' +
+    '<div class="box"><div id="recbox"></div></div>';
+  recorder($("recbox"), "readaloud");
+}
+function recorder(host, tag){
+  host.innerHTML = '<div class="rec">' +
+      '<button class="btn red" data-go>● 녹음 시작</button>' +
+      '<span data-st class="count"></span>' +
+      "<audio data-au controls hidden></audio>" +
+      '<button class="btn ghost" data-del hidden>지우기</button></div>';
+  const go = host.querySelector("[data-go]"), st = host.querySelector("[data-st]"),
+        au = host.querySelector("[data-au]"), del = host.querySelector("[data-del]");
+  let mr = null, chunks = [], t0 = 0, tick = null;
+
+  const put = function(blob){
+    au.src = URL.createObjectURL(blob); au.hidden = false; del.hidden = false;
+    if (WHO) RB.putAudio(NO, WHO, tag, blob).then(function(){ flashSaved("녹음 저장됨"); });
+  };
+  if (WHO) RB.getAudio(NO, WHO, tag).then(function(b){ if (b) put(b); }).catch(function(){});
+
+  del.onclick = function(){
+    au.hidden = true; del.hidden = true; au.removeAttribute("src");
+    if (WHO) RB.dropAudio(NO, WHO, tag).then(function(){ flashSaved("녹음 지움"); });
+  };
+  go.onclick = async function(){
+    if (mr && mr.state === "recording") { mr.stop(); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      host.insertAdjacentHTML("beforeend",
+        '<div class="warn">이 브라우저에서는 녹음이 안 됩니다. 크롬으로 열어 주세요.</div>');
+      return;
+    }
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (e) {
+      host.insertAdjacentHTML("beforeend",
+        '<div class="warn">마이크를 쓸 수 없습니다. 브라우저 주소창의 마이크 권한을 허용해 주세요.</div>');
+      return;
+    }
+    chunks = []; mr = new MediaRecorder(stream);
+    mr.ondataavailable = function(e){ chunks.push(e.data); };
+    mr.onstop = function(){
+      stream.getTracks().forEach(function(t){ t.stop(); });
+      clearInterval(tick);
+      go.textContent = "● 다시 녹음"; go.classList.add("red");
+      st.innerHTML = "";
+      put(new Blob(chunks, { type: mr.mimeType || "audio/webm" }));
+    };
+    mr.start(); t0 = Date.now();
+    go.textContent = "■ 정지"; go.classList.remove("red");
+    tick = setInterval(function(){
+      const s = Math.floor((Date.now() - t0) / 1000);
+      st.innerHTML = '<span class="dot"></span> ' + String(Math.floor(s / 60)).padStart(2, "0") +
+        ":" + String(s % 60).padStart(2, "0");
+    }, 200);
+  };
+}
+
+/* ───────── ④ AI 북토크 ───────── */
+// talk-local.js 의 연습 모드를 그대로 쓴다. 그 책의 내용 질문(comprehension)은 우리에게 없으므로
+// 일상 영어 대화와 책 느낌 이야기로만 이끈다 — 지어낸 줄거리를 아이에게 묻지 않는다.
+function drawTalk(){
+  const P = $("p-talk");
+  if (!T) {
+    P.innerHTML =
+      '<h2 class="h">AI와 책 이야기하기</h2>' +
+      '<p class="sub">영어로 2~3분 이야기해요. 인사와 오늘 한 일로 말문을 열고 <b>' + esc(B.title) +
+      '</b> 이야기로 넘어갑니다.</p>' +
+      '<div class="box talkintro"><ol>' +
+      "<li>영어로 대답해요. 타자로 써도 되고, 🎤 를 눌러 말해도 됩니다.</li>" +
+      '<li>틀려도 괜찮아요. <b>"I don\'t know."</b> 라고 해도 됩니다.</li>' +
+      "<li>아래 <b>이렇게 말해 보세요</b> 틀에 빈칸만 채우면 쉬워요.</li></ol>" +
+      (S.talk ? '<div class="count" style="margin-bottom:10px">지금까지 ' + S.talk + "번 이야기했어요</div>" : "") +
+      '<button class="btn" id="tstart">대화 시작</button></div>';
+    $("tstart").onclick = function(){ T = { history: [], hint: "", done: false }; say(null); };
+    return;
+  }
+  P.innerHTML =
+    '<div class="chat" id="chat">' + T.history.map(function(h){
+      return '<div class="msg ' + (h.role === "user" ? "me" : "ai") + '">' + esc(h.text) + "</div>";
+    }).join("") + "</div>" +
+    '<div class="hintline">' + (T.hint ? "이렇게 말해 보세요 · " + esc(T.hint) : "") + "</div>" +
+    '<div class="talkin" id="tin"' + (T.done ? " hidden" : "") + '>' +
+      '<button class="btn red" id="tmic">🎤 말하기</button>' +
+      '<input id="ttext" placeholder="영어로 쓰거나 🎤 를 누르세요" autocomplete="off" spellcheck="false">' +
+      '<button class="btn" id="tsend">보내기</button></div>' +
+    '<div class="row" style="margin-top:10px">' +
+      '<button class="btn ghost" id="tend">' + (T.done ? "다시 하기" : "끝내기") + "</button></div>";
+  const chat = $("chat"); chat.scrollTop = chat.scrollHeight;
+  if (!T.done) {
+    $("tsend").onclick = function(){ const v = $("ttext").value.trim(); if (v) { $("ttext").value = ""; say(v); } };
+    $("ttext").onkeydown = function(e){ if (e.key === "Enter") $("tsend").onclick(); };
+    $("tmic").onclick = mic;
+  }
+  $("tend").onclick = function(){
+    if (T.done) { T = null; drawTalk(); return; }
+    say(null, true);
+  };
+}
+function say(text, finish){
+  if (text) T.history.push({ role: "user", text: text });
+  const r = RBTalkLocal.localTalk({ book: { title: B.title }, history: T.history, finish: !!finish });
+  T.history.push({ role: "ai", text: r.reply });
+  T.hint = r.hint; T.done = r.done;
+  if (r.done) { S.talk = (S.talk || 0) + 1; save(); }
+  drawTalk();
+}
+function mic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { $("ttext").placeholder = "이 브라우저는 말하기가 안 됩니다. 타자로 써 주세요."; return; }
+  const r = new SR();
+  r.lang = "en-US"; r.interimResults = false;
+  r.onresult = function(e){ $("ttext").value = e.results[0][0].transcript; $("tsend").onclick(); };
+  r.onerror = function(){ $("ttext").placeholder = "마이크를 쓸 수 없습니다. 타자로 써 주세요."; };
+  try { r.start(); } catch (e) {}
+}
+
+/* ───────── ⑤ 낱말 노트 ───────── */
 // 우리는 이 책에 어떤 낱말이 나오는지 모른다. 아이가 읽으며 만난 낱말을 스스로 옮겨 적는 칸이다.
 function drawWord(){
   const rows = Array.from({ length: 8 }, function(_, i){
@@ -205,7 +374,7 @@ function drawWord(){
     "<th>내 문장 My sentence</th></tr>" + rows + "</table></div>";
 }
 
-/* ───────── ③ 요약 지도 ───────── */
+/* ───────── ⑥ 요약 지도 ───────── */
 function drawSum(){
   const F = ["Somebody 누가", "Wanted 무엇을 바랐나", "But 그런데", "So 그래서", "Then 마침내"];
   const N = ["무엇에 대한 책인가", "새로 안 사실 ①", "새로 안 사실 ②", "새로 안 사실 ③", "더 알고 싶은 것"];
@@ -220,7 +389,7 @@ function drawSum(){
     }).join("") + "</div></div>";
 }
 
-/* ───────── ④ 마인드맵 ───────── */
+/* ───────── ⑦ 마인드맵 ───────── */
 function drawMap(){
   const F = ["인물 Characters", "배경 Setting", "사건 Events", "주제 Theme"];
   const N = ["중심 낱말 Key words", "사실 Facts", "그림·표에서 본 것", "주제 Theme"];
@@ -235,7 +404,7 @@ function drawMap(){
     }).join("") + "</div></div>";
 }
 
-/* ───────── ⑤ 생각 질문 ───────── */
+/* ───────── ⑧ 생각 질문 ───────── */
 function drawThink(){
   if (!A) {
     $("p-think").innerHTML = '<div class="box"><p class="sub">이 책은 아직 질문이 준비되지 않았습니다.</p></div>';
@@ -247,7 +416,7 @@ function drawThink(){
   }).join("");
 }
 
-/* ───────── ⑥ 독후 논술 ───────── */
+/* ───────── ⑨ 독후 논술 ───────── */
 // 줄거리를 모르므로 책의 갈래·주제로만 물음을 세운다. 답은 아이의 생각이다.
 function drawEssay(){
   const th = (B.theme && B.theme !== "No theme") ? B.theme : B.genre;
@@ -263,19 +432,20 @@ function drawEssay(){
 }
 
 /* ───────── 시작 ───────── */
-// 활동 파일은 Book No. 앞 세 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
-function loadAct(done){
+// 질문(act)과 영상(vid)은 Book No. 앞 세 글자로 쪼개 두었다. 그 책이 든 묶음 둘만 받는다.
+function loadPack(dir, done){
   const tag = document.createElement("script");
-  tag.src = "act/" + NO.slice(0, 3) + ".js";
+  tag.src = dir + "/" + NO.slice(0, 3) + ".js";
   tag.onload = tag.onerror = done;
   document.head.appendChild(tag);
 }
 if (idx < 0) {
   MAIN.innerHTML = '<p class="sub">책을 찾지 못했습니다. <a href="index.html">목록으로</a></p>';
 } else {
-  loadAct(function(){
+  loadPack("act", function(){ loadPack("vid", function(){
     B = CATALOG.at(idx);
     A = (window.ACT || {})[NO] || null;
+    V = (window.VID || {})[NO] || [];
     const cv = COVER(NO);
     $("bt").textContent = B.title;
     $("bs").textContent = B.author + (B.series === "No series" ? "" : " · " + B.series);
@@ -284,6 +454,6 @@ if (idx < 0) {
     if (TABS.some(function(t){ return t.id === h; })) TAB = h;
     show();
     if (new URLSearchParams(location.search).get("print")) print();
-  });
+  }); });
 }
 </script></body></html>
