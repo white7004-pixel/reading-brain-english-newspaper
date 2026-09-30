@@ -439,6 +439,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-thanksgiving-on-thursday",
+  "title": "Thanksgiving on Thursday",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #27",
+  "level": {
+   "ar": "3.3",
+   "lexile": "590L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/233645-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "sarah-plain-and-tall",
   "title": "Sarah, Plain and Tall",
   "author": "Patricia MacLachlan",
@@ -466,6 +480,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/424179-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-high-tide-in-hawaii",
+  "title": "High Tide in Hawaii",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #28",
+  "level": {
+   "ar": "3.4",
+   "lexile": "570L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/233646-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -641,5 +669,7 @@ window.BOOK_BY_NO = {
  "S3266": "magic-tree-house-twister-on-tuesday",
  "S3267": "magic-tree-house-earthquake-in-the-early-morning",
  "S3268": "magic-tree-house-stage-fright-on-a-summer-night",
- "S3269": "magic-tree-house-good-morning-gorillas"
+ "S3269": "magic-tree-house-good-morning-gorillas",
+ "S3270": "magic-tree-house-thanksgiving-on-thursday",
+ "M3089": "magic-tree-house-high-tide-in-hawaii"
 };
