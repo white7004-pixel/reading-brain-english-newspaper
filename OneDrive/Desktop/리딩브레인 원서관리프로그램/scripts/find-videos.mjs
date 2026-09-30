@@ -24,6 +24,11 @@ for (const f of (existsSync(DIR) ? await readdir(DIR) : [])) {
   Object.assign(VID, w.VID || {});
 }
 console.error("이미 찾아 둔 책 " + Object.keys(VID).length + "권");
+if (process.argv.indexOf("--retry") >= 0) {
+  let n0 = 0;
+  for (const k of Object.keys(VID)) if (!VID[k].length) { delete VID[k]; n0++; }
+  console.error("다시 찾을 책 " + n0 + "권");
+}
 
 const tag = no => no.slice(0, 3);
 async function saveBundle(t){
@@ -38,6 +43,9 @@ async function saveBundle(t){
 const UA = { "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36",
              "accept-language": "en-US,en;q=0.9" };
 // 장서 목록에 깨져 들어온 제목은 찾지 않는다 (엉뚱한 영상이 걸린다)
+// 장서 목록 제목에는 "#06. Afternoon on the Amazon" 처럼 시리즈 번호가 앞에 붙어 있다.
+// 그대로 찾으면 빗나가므로 번호를 떼고 찾는다.
+const clean = t => String(t || "").replace(/^(?:#\s*\d+\s*[.)\-–]?\s*|\(?\d+\s*[.)\-–]\s*)/, "").trim();
 const junk = t => !t || t.length < 4 || t.indexOf("(?)") >= 0 || !/[A-Za-z]{3}/.test(t);
 
 async function search(q){
@@ -66,9 +74,10 @@ const dirty = new Set();
 for (let i = 0; i < C.books.length; i++) {
   const b = C.at(i);
   if (VID[b.no] !== undefined) { if (VID[b.no].length) found++; continue; }
-  if (junk(b.title)) { VID[b.no] = []; dirty.add(tag(b.no)); continue; }
+  const title = clean(b.title);
+  if (junk(title)) { VID[b.no] = []; dirty.add(tag(b.no)); continue; }
 
-  const got = await search('"' + b.title + '" read aloud');
+  const got = await search('"' + title + '" read aloud');
   if (got === null) {                                          // 유튜브가 막았거나 그물이 끊겼다
     miss++;
     if (miss >= 8) { console.error("유튜브가 응답하지 않습니다. " + (i + 1) + "번째에서 멈춥니다."); break; }

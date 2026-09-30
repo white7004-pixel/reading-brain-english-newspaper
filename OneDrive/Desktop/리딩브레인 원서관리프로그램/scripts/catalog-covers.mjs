@@ -15,6 +15,11 @@ const C = win.CATALOG;
 let got = {};
 if (existsSync(OUT)) { const w = {}; new Function("window", await readFile(OUT, "utf8"))(w); got = w.CATALOG_COVERS || {}; }
 
+if (process.argv.indexOf("--retry") >= 0) {
+  for (const k of Object.keys(got)) if (!got[k]) delete got[k];
+  console.error("다시 찾을 책 " + (4820 - Object.keys(got).length) + "권");
+}
+
 const save = () => writeFile(OUT,
   "// 오픈라이브러리 표지 번호. scripts/catalog-covers.mjs 가 만든다. 그림은 내려받지 않고 주소만 가리킨다.\n" +
   "// 주소: https://covers.openlibrary.org/b/id/<번호>-M.jpg   빈 값은 오픈라이브러리에 표지가 없는 책.\n" +
@@ -26,8 +31,12 @@ async function ask(url){
 }
 // 제목만으로 찾으면 엉뚱한 책의 표지가 걸린다. 지은이가 있거나 제목이 세 낱말 넘을 때만 찾는다.
 // 장서 목록에 깨져 들어온 제목((?) 같은 것)은 아예 찾지 않는다.
+// 장서 목록 제목에는 "#06. Afternoon on the Amazon" 처럼 시리즈 번호가 앞에 붙어 있다.
+// 그대로 찾으면 빗나가므로 번호를 떼고 찾는다.
+const clean = t => String(t || "").replace(/^(?:#\s*\d+\s*[.)\-–]?\s*|\(?\d+\s*[.)\-–]\s*)/, "").trim();
 const junk = t => !t || t.length < 4 || t.indexOf("(?)") >= 0 || !/[A-Za-z]{3}/.test(t);
-async function find(title, author){
+async function find(title0, author){
+  const title = clean(title0);
   if (junk(title)) return "";
   const base = "https://openlibrary.org/search.json?limit=5&fields=cover_i&";
   const wide = title.trim().split(/\s+/).length >= 3;
