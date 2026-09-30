@@ -159,6 +159,38 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
   .card { padding: 18px 16px; }
 }
 
+/* 카드뉴스: 카톡·블로그용 세로 1080×1350. A4 와 같은 조각을 쓰되 크기만 다르다 */
+.page.card-news { width: 1080px; height: 1350px; padding: 64px 56px; font-size: calc(24px * var(--fit, 1)); display: flex; flex-direction: column; }
+.sheet.card-news .tools { width: 1080px; }
+.page.card-news .r-head h2 { font-size: 2.1em; }
+.page.card-news .r-head { margin-bottom: 1.2em; }
+.page.card-news section { margin-bottom: 1.2em; }
+/* 첫 장: 총평 → 문항 격자 → 숫자 */
+.page.card-news .c-lead h3 { font-size: 1.2em; }
+.page.card-news .c-lead p { font-size: 1.25em; line-height: 1.7; margin-top: .5em; }
+.page.card-news .c-grid { flex: 1; }
+.page.card-news .r-grid { grid-template-columns: repeat(6, 1fr); gap: .5em; }
+.page.card-news .r-grid li { padding: .5em; }
+.page.card-news .r-grid b { font-size: 1.1em; }
+.page.card-news .r-nums { margin-top: auto; }
+.page.card-news .r-nums b { font-size: 2.4em; }
+/* 둘째 장: 막대 두 묶음이 남는 자리를 나눠 갖는다 */
+.page.card-news .c-bars { flex: 1; display: flex; flex-direction: column; }
+.page.card-news .c-bars .bars { flex: 1; align-content: space-evenly; row-gap: .6em; }
+.page.card-news .bars i { height: 1.1em; }
+.page.card-news section:last-of-type { margin-bottom: 0; }
+.page.card-news .r-foot { margin-top: auto; }
+/* 셋째 장: 어려웠던 문항과 대비법이 자리를 나눠 갖는다 */
+.page.card-news .c-key { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: space-evenly; flex: 1; }
+.page.card-news .c-key li { margin-bottom: .7em; }
+.page.card-news .c-strategy { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+.page.card-news section:has(.c-key), .page.card-news section:has(.c-strategy) { flex: 1; display: flex; flex-direction: column; }
+.page.card-news .c-key span { color: var(--muted); font-size: .85em; }
+.page.card-news .c-key p { margin-top: .15em; }
+.page.card-news .c-strategy { margin: 0; }
+.page.card-news .c-strategy dt { font-weight: 700; color: var(--brand); }
+.page.card-news .c-strategy dd { margin: 0 0 .5em; }
+
 @media print {
   @page { size: A4; margin: 0; }
   body { background: #fff; }
@@ -166,6 +198,7 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
   .app { max-width: none; padding: 0; }
   .app > :not(#step-result), #step-result > .card, .tools { display: none !important; }
   .sheet { margin: 0; overflow: visible; }
+  .sheet.card-news { display: none !important; } /* 카드는 이미지로 쓰는 것이라 인쇄에서는 뺀다 */
   .page { box-shadow: none; break-after: page; }
   .page [contenteditable]:hover { outline: none; }
 }

@@ -24,11 +24,11 @@ export const badge = (d, shown = d) => `<em class="d d-${esc(to3(d))}">${esc(sho
 
 // 칸이 좁아 긴 영역 이름은 줄여 쓰고, 줄인 것만 범례에 풀어 적는다
 const ABBR = { 대화문: '대화', 서술형: '서술', '화법과 작문': '화작', '수와 연산': '수·연산', '문자와 식': '문자·식', '확률과 통계': '확통', 생명과학: '생명', 지구과학: '지구', 일반사회: '일사' };
-const abbr = (area) => ABBR[area] || area;
+export const abbr = (area) => ABBR[area] || area;
 const abbrLegend = (items) => [...new Set(items.map((it) => it.area))].filter((a) => ABBR[a]).map((a) => ` · ${ABBR[a]}=${a}`).join('');
 
 // 문항 칸 격자: 한 줄 10칸
-const grid = (items, cell) => `<ol class="r-grid">${items.map(cell).join('')}</ol>`;
+export const grid = (items, cell) => `<ol class="r-grid">${items.map(cell).join('')}</ol>`;
 
 export const examName = (meta) => `${meta.school} ${meta.grade} ${meta.term} ${meta.exam}`;
 

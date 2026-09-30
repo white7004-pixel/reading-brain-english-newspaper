@@ -1,5 +1,6 @@
 import { SUBJECTS, DIFF5, KINDS, examStats, studentStats, parseStudents, esc } from './lib.js';
 import { schoolPage, studentPage } from './report.js';
+import { shareCards } from './share.js';
 
 export const $ = (sel) => document.querySelector(sel);
 export const state = { academy: null, meta: null, items: [] };
@@ -299,7 +300,7 @@ $('#make-report').addEventListener('click', async (e) => {
     const written = parts.flatMap((p) => p.students); // 서버가 학생 수·순서를 맞춰 돌려준다
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
     $('#pages').style.setProperty('--brand', state.academy.color);
-    $('#pages').innerHTML = schoolPage(ctx, school)
+    $('#pages').innerHTML = shareCards(ctx, school) + schoolPage(ctx, school)
       + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('');
     setStatus('#report-status', '');
     show('#step-result');
@@ -317,7 +318,8 @@ $('#make-report').addEventListener('click', async (e) => {
 // 인쇄 반올림 여유 2px: 잴 때만 종이를 2px 짧게 두고 맞춘다 (scrollHeight 는 clientHeight 보다 작아지지 않으므로 빼기로는 못 잰다)
 function fitPage(page) {
   const overflows = () => page.scrollHeight > page.clientHeight;
-  page.style.height = 'calc(297mm - 2px)';
+  const paper = getComputedStyle(page).height; // A4 는 297mm, 카드뉴스는 1350px
+  page.style.height = `calc(${paper} - 2px)`;
   let fit = 1;
   page.style.setProperty('--fit', fit);
   while (overflows() && fit > 0.72) {
@@ -348,6 +350,19 @@ $('#pages').addEventListener('click', async (e) => {
   } finally {
     button.disabled = false;
   }
+});
+
+// 카드 3장을 차례로 저장한다. 한꺼번에 여러 파일을 받으면 브라우저가 막을 수 있어 하나씩 기다린다.
+$('#save-cards').addEventListener('click', async (e) => {
+  const buttons = [...document.querySelectorAll('.sheet.card-news [data-png]')];
+  if (!buttons.length) return;
+  const button = e.currentTarget;
+  button.disabled = true;
+  for (const b of buttons) {
+    b.click();
+    await new Promise((r) => setTimeout(r, 600));
+  }
+  button.disabled = false;
 });
 
 $('#print').addEventListener('click', () => window.print());
