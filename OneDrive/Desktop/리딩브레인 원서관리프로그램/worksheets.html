@@ -317,9 +317,19 @@ function render(){
   const ar = parseFloat(B.level.ar);
   const band = B.band || (ar < 2 ? "low" : ar < 4 ? "mid" : "high");
   document.body.classList.add("lv-" + band);
+  // 그 책에 자료가 있는 장만 그린다. 문법이 없는 책에서 grammarSheet() 를 부르면
+  // 오류가 나서 워크시트가 통째로 빈 화면이 된다.
+  const have = (data, make) => data ? make() : "";
   document.getElementById("sheets").innerHTML =
-    wordListSheet() + vocabSheet() + compSheet() + grammarSheet() + examSheet() +
-    summarySheet() + mindSheet() + ibSheet() + essaySheet();
+    have(B.vocabulary && B.vocabulary.length, wordListSheet) +
+    have(B.vocabulary && B.vocabulary.length, vocabSheet) +
+    have(B.comprehension && B.comprehension.length, compSheet) +
+    have(B.grammar, grammarSheet) +
+    have(B.grammar && B.grammar.exam, examSheet) +
+    have(B.summaryMap, summarySheet) +
+    have(B.mindMap, mindSheet) +
+    have(B.ib, ibSheet) +
+    have(B.essay, essaySheet);
   document.getElementById("bookname").textContent = `${B.title} · AR ${B.level.ar}`;
 
   online();

@@ -68,7 +68,7 @@ const TABS = [
   { id: "phonics", name: "파닉스",   when: B => !!B.phonics, draw: () => drawPhonics() },
   { id: "learn",  name: "단어학습",   draw: () => drawLearn()  },
   { id: "shadow", name: "쉐도잉",     draw: () => drawShadow() },
-  { id: "read",   name: "낭독녹음",   draw: () => drawRead()   },
+  { id: "read",   name: "낭독녹음",   when: B => !!B.readAloud, draw: () => drawRead()   },
   { id: "talk",   name: "AI 북토크",  draw: () => drawTalk()   },
   { id: "grammar",name: "문법",       when: B => !!B.grammar, draw: () => drawGrammar() },
   { id: "debate", name: "북디베이트", when: B => !!(B.ib && (B.ib.debatable || []).length), draw: () => drawDebate() },
@@ -119,7 +119,16 @@ function drawShadow(){
   const au = (B.shadowing && B.shadowing.audio) || [];
   // 영상(url)과 쪽별 음원·E북(src·pages)이 둘 다 있으면 한 줄에 같이 둔다. 음원 없이 pages 만 있으면 소리 없이 책장만 넘긴다.
   const vs = au.concat((B.shadowing && B.shadowing.videos) || []);   // E북·음원이 먼저 — 쪽을 짚으며 따라 읽는 게 쉐도잉이다
-  if (!vs.length){ $("#p-shadow").innerHTML = `<div class="empty">이 책은 아직 낭독 영상이 없습니다.</div>`; return; }
+  // 아직 영상을 찾아 두지 못한 책은 유튜브에서 바로 찾아볼 수 있게 한다 (shadowing.query)
+  if (!vs.length){
+    const q = (B.shadowing && B.shadowing.query) || `"${B.title}" read aloud`;
+    const yt = "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+    $("#p-shadow").innerHTML = `
+      <h2 class="h">낭독을 들으며 따라 읽으세요</h2>
+      <p class="sub">이 책은 아직 찾아 둔 낭독 영상이 없습니다. 유튜브에서 직접 찾아 보세요.</p>
+      <div class="box"><a class="btn ghost" href="${esc(yt)}" target="_blank" rel="noopener">유튜브에서 찾기</a></div>`;
+    return;
+  }
   if (EP >= vs.length) EP = 0;
   const it = vs[EP], isAu = !it.url;
   const eps = vs.length > 1 ? `<div class="eps">${vs.map((v,i) =>

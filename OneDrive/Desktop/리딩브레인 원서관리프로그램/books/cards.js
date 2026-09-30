@@ -117,6 +117,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-knight-at-dawn",
+  "title": "The Knight at Dawn",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #2",
+  "level": {
+   "ar": "2.9",
+   "lexile": "500L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/4851256-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "sarah-plain-and-tall",
   "title": "Sarah, Plain and Tall",
   "author": "Patricia MacLachlan",
@@ -266,5 +280,6 @@ window.BOOK_BY_NO = {
  "S5084": "harry-potter-sorcerers-stone",
  "S3788": "berenstain-bears-in-the-dark",
  "S3779": "berenstain-bears-learn-about-strangers",
- "S4441": "berenstain-bears-too-much-junk-food"
+ "S4441": "berenstain-bears-too-much-junk-food",
+ "S3248": "magic-tree-house-knight-at-dawn"
 };

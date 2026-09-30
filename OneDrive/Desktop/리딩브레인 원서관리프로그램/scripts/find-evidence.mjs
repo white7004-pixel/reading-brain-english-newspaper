@@ -48,7 +48,11 @@ async function saveBundle(t){
 // 장서 목록 제목에는 "#06. Afternoon on the Amazon" 처럼 시리즈 번호가 앞에 붙어 있다.
 const clean = t => String(t || "").replace(/^(?:#\s*\d+\s*[.)\-–]?\s*|\(?\d+\s*[.)\-–]\s*)/, "").trim();
 const junk = t => !t || t.length < 4 || t.indexOf("(?)") >= 0 || !/[A-Za-z]{3}/.test(t);
-const ask = async u => { try { const r = await fetch(u); return r.ok ? await r.json() : null; } catch (e) { return null; } };
+// 시간 제한이 없으면 오픈라이브러리 한 곳이 응답을 안 줄 때 통째로 멎는다.
+const ask = async u => {
+  try { const r = await fetch(u, { signal: AbortSignal.timeout(15000) }); return r.ok ? await r.json() : null; }
+  catch (e) { return null; }
+};
 const txt = s => String(s || "").replace(/\s+/g, " ").trim();
 
 // 소개글에 다른 나라말 설명이 붙어 오는 일이 있다 (----- 뒤). 영어 부분만 남긴다.
