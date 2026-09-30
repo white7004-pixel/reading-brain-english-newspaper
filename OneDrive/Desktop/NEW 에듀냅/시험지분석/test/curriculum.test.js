@@ -65,8 +65,8 @@ test('학년으로 영역·단원 후보·세부 포인트를 찾는다', () => 
   assert.deepEqual(GRADES, ['중1', '중2', '중3', '고1', '고2', '고3']);
   assert.ok(areasFor('국어', '중2').includes('문법'));
   assert.ok(areasFor('국어', '고1').includes('매체'));
-  // 교과서 목차가 없으면 단원 후보는 영역이다
-  assert.deepEqual(unitsFor('국어', '중2'), areasFor('국어', '중2'));
+  // 교과서 목차를 받기 전에는 단원 후보가 없다 (영역을 단원인 척 주지 않는다)
+  assert.deepEqual(unitsFor('국어', '중2'), []);
   assert.ok(pointsFor('국어', '중2').some((p) => p.includes('음운 체계')));
 });
 

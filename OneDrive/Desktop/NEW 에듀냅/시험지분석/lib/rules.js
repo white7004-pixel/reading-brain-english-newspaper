@@ -1,5 +1,6 @@
 // AI 판단 기준(설계서 4장)과 요청 검증. 사진·학생 정보는 여기서 걸러서만 AI 로 간다.
 import { SUBJECTS, AREAS, DIFF5, KINDS, SOURCES, examStats, studentStats } from '../public/lib.js';
+import { unitsFor, pointsFor, grammarFor } from '../public/curriculum.js';
 import { UserError } from './http.js';
 
 const UNSURE_FIELDS = ['points', 'area', 'subtype', 'difficulty', 'answer', 'source'];
@@ -277,12 +278,29 @@ function fitArea(item, subject) {
   return { ...item, area: SUBJECTS[subject][0], unsure: [...new Set([...item.unsure, 'area'])] };
 }
 
+// 과목·학년을 알면 그 학년 교육과정을 프롬프트에 붙인다. 모르면 빈 문자열이라 지금 동작 그대로다.
+// 단원은 enum 으로 묶지 않는다 — 교과서 단원은 목록 밖에 있을 수 있고 시험지에 적힌 말이 우선이다.
+// 영어는 GUIDE 에 이미 영역·세부유형 분류가 있어 성취기준을 넣으면 오히려 흐려진다. 대신 문법 항목표를 준다.
+function gradeGuide(subject, grade) {
+  const units = unitsFor(subject, grade);
+  const grammar = subject === '영어' ? grammarFor(grade) : [];
+  const points = subject === '영어' ? [] : pointsFor(subject, grade);
+  if (!units.length && !grammar.length && !points.length) return '';
+  return ['', '', `${grade} ${subject} 교육과정 (2022 개정)`,
+    units.length ? `단원 후보: ${units.join(' / ')}` : '',
+    units.length ? '  시험지에 적힌 단원 이름을 그대로 적되, 뜻이 같은 것이 위 목록에 있으면 목록의 말로 적습니다.' : '',
+    '  단원은 시험지·출제 범위에 적힌 말로 적고, 같은 단원은 한 시험지 안에서 늘 똑같이 적습니다.',
+    points.length ? `세부 포인트 후보: ${points.join(' / ')}` : '',
+    grammar.length ? `문법 항목 (어법 문항의 세부 포인트는 이 이름으로): ${grammar.join(' / ')}` : '',
+  ].filter((line, i) => i < 2 || line).join('\n');
+}
+
 export function extractRequest(body) {
   const pages = imageBlocks(body.pages, 1, 6, '시험지');
   const answers = imageBlocks(body.answers ?? [], 0, 2, '정답지');
   const content = [{ type: 'text', text: '시험지 사진 (쪽 순서대로):' }, ...pages];
   if (answers.length) content.push({ type: 'text', text: '정답지 사진:' }, ...answers);
-  content.push({ type: 'text', text: '머리글에서 시험 정보를 읽고 문항표를 만들어 주세요.' });
+  content.push({ type: 'text', text: `머리글에서 시험 정보를 읽고 문항표를 만들어 주세요.${gradeGuide(body.subject, body.grade)}` });
   return {
     system: EXTRACT_SYSTEM, schema: EXTRACT_SCHEMA, content, maxTokens: 32000,
     finish: (out) => ({

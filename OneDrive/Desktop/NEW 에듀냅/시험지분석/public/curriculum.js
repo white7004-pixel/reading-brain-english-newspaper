@@ -13,11 +13,11 @@ const 모아서 = (list) => [...new Set(list)];
 
 export const areasFor = (과목, 학년) => 모아서(과정들(과목, 학년).flatMap((c) => c.영역.map((d) => d.이름)));
 
-// 단원 후보: 그 학년 교과서 목차가 있으면 그것, 없으면 교육과정 영역
-export const unitsFor = (과목, 학년) => {
-  const 목차 = (자료[과목]?.교과서 ?? []).filter((b) => b.학년 === 학년).flatMap((b) => b.단원);
-  return 목차.length ? 모아서(목차) : areasFor(과목, 학년);
-};
+// 단원 후보는 교과서 목차뿐이다. 목차가 없으면 빈 배열을 준다.
+// 교육과정 영역('이해', '변화와 관계')은 교과서 단원('5과', 'I. 수와 식의 계산')이 아니다.
+// 영역을 단원인 척 돌려주면 AI 가 단원 칸에 '이해'라고 적어 단원별 표가 더 망가진다.
+export const unitsFor = (과목, 학년) =>
+  모아서((자료[과목]?.교과서 ?? []).filter((b) => b.학년 === 학년).flatMap((b) => b.단원));
 
 export const pointsFor = (과목, 학년) =>
   모아서(과정들(과목, 학년).flatMap((c) => c.영역.flatMap((d) => d.성취기준.map((s) => s.요약))));

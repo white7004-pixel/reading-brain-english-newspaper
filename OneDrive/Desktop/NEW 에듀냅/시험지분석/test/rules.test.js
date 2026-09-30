@@ -124,3 +124,33 @@ test('reportRequest school 결과는 문항표에 있는 변별 문항만 남긴
   const out = r.finish({ overview: 'o', strategy: [], keyItems: [{ no: 7, why: 'x' }, { no: 2, why: 'y' }] });
   assert.deepEqual(out.keyItems, [{ no: 2, why: 'y' }]);
 });
+
+test('학년을 알면 그 학년 교육과정을 프롬프트에 넣는다', () => {
+  const 안내 = (b) => extractRequest(b).content.map((x) => x.text ?? '').join('\n');
+
+  // 국어·수학은 성취기준을 세부 포인트 후보로 준다
+  const 중2국어 = 안내({ pages: [img], subject: '국어', grade: '중2' });
+  assert.match(중2국어, /세부 포인트 후보/);
+  assert.match(중2국어, /음운 체계/);       // 중학교 국어 성취기준
+  assert.doesNotMatch(중2국어, /10공국1/);   // 고1 것이 섞이면 안 된다
+  assert.doesNotMatch(중2국어, /문법 항목/); // 영어가 아니면 문법표를 넣지 않는다
+
+  // 교과서 목차를 받기 전에는 단원 후보를 주지 않는다 — 영역을 단원인 척 주면 안 된다
+  assert.doesNotMatch(중2국어, /단원 후보/);
+  assert.doesNotMatch(중2국어, /이해 \/ 표현/);
+
+  // 영어는 성취기준 대신 학원 문법표를 준다 (GUIDE 에 이미 영역·세부유형 분류가 있다)
+  const 중3영어 = 안내({ pages: [img], subject: '영어', grade: '중3' });
+  assert.match(중3영어, /문법 항목/);
+  assert.match(중3영어, /관계대명사/);
+  assert.doesNotMatch(중3영어, /세부 포인트 후보/);
+  assert.doesNotMatch(중3영어, /연음이나 축약/);
+
+  // 어느 과목이든 같은 단원을 늘 같은 말로 적으라고 못 박는다
+  assert.match(중2국어, /늘 똑같이 적습니다/);
+  assert.match(중3영어, /늘 똑같이 적습니다/);
+
+  // 학년을 모르면 지금 그대로다
+  assert.doesNotMatch(안내({ pages: [img] }), /교육과정 \(2022 개정\)/);
+  assert.doesNotMatch(안내({ pages: [img], subject: '국어', grade: '초5' }), /교육과정 \(2022 개정\)/);
+});
