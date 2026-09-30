@@ -229,6 +229,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-lions-at-lunchtime",
+  "title": "Lions at Lunchtime",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #11",
+  "level": {
+   "ar": "3.0",
+   "lexile": "550L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424009-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-dolphins-at-daybreak",
   "title": "Dolphins at Daybreak",
   "author": "Mary Pope Osborne",
@@ -239,6 +253,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/424007-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-polar-bears-past-bedtime",
+  "title": "Polar Bears Past Bedtime",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #12",
+  "level": {
+   "ar": "3.3",
+   "lexile": "570L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424010-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -401,5 +429,7 @@ window.BOOK_BY_NO = {
  "S3253": "magic-tree-house-sunset-of-the-sabertooth",
  "S3254": "magic-tree-house-midnight-on-the-moon",
  "M3038": "magic-tree-house-dolphins-at-daybreak",
- "S3255": "magic-tree-house-ghost-town-at-sundown"
+ "S3255": "magic-tree-house-ghost-town-at-sundown",
+ "S3256": "magic-tree-house-lions-at-lunchtime",
+ "S3257": "magic-tree-house-polar-bears-past-bedtime"
 };

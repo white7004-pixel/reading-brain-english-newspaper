@@ -27,5 +27,7 @@ window.BOOKS = [
   "magic-tree-house-sunset-of-the-sabertooth",
   "magic-tree-house-midnight-on-the-moon",
   "magic-tree-house-dolphins-at-daybreak",
-  "magic-tree-house-ghost-town-at-sundown"
+  "magic-tree-house-ghost-town-at-sundown",
+  "magic-tree-house-lions-at-lunchtime",
+  "magic-tree-house-polar-bears-past-bedtime"
 ];
