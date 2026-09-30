@@ -170,7 +170,9 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 �
 - difficulty: 아래 기준으로 5단계.
 - source: 문항이 어디서 왔는지 (${SOURCES.join(' / ')}). 교과서=교과서 본문·단어·활동 그대로, 부교재=학교가 쓴 자습서·워크북·프린트 느낌, 외부=교과서 밖 지문·자료, 기출변형=기출 문항의 숫자·조건만 바꾼 꼴.
   시험지만 보고 가늠하기 어려우면 빈 문자열로 두고 unsure 에 source 를 넣습니다. 지어내지 않습니다.
-- answer: 정답지 사진이 있으면 그대로 따릅니다. 없으면 직접 풀어서 적습니다. 객관식은 ①~⑤ 기호, 서술형은 모범답안 요지.
+- answer: 정답지는 받지 않습니다. 문항을 직접 풀어서 적습니다. 객관식은 ①~⑤ 기호, 서술형은 모범답안 요지.
+  풀어도 확신이 서지 않으면 그 자리를 비우지 말고 가장 그럴듯한 답을 적은 뒤 unsure 에 answer 를 넣습니다.
+  지문이 잘려 보이거나 그림·표가 있어야 풀 수 있는 문항도 unsure 에 answer 를 넣습니다.
 - reason: 난이도 판단 근거 한 줄(60자 이내). 지문 문장을 옮겨 적지 않습니다.
 - unsure: 확신이 없는 칸 이름. 흐려서 읽기 어려움, 배점이 안 보임, 정답이 둘로 갈림, 유형이 둘에 걸침 등. 확신하면 빈 배열.
 - notes: 읽지 못한 쪽, 잘린 문항, 시험지가 아닌 사진처럼 원장님이 알아야 할 것. 없으면 빈 문자열.
@@ -297,9 +299,7 @@ function gradeGuide(subject, grade) {
 
 export function extractRequest(body) {
   const pages = imageBlocks(body.pages, 1, 6, '시험지');
-  const answers = imageBlocks(body.answers ?? [], 0, 2, '정답지');
   const content = [{ type: 'text', text: '시험지 사진 (쪽 순서대로):' }, ...pages];
-  if (answers.length) content.push({ type: 'text', text: '정답지 사진:' }, ...answers);
   content.push({ type: 'text', text: `머리글에서 시험 정보를 읽고 문항표를 만들어 주세요.${gradeGuide(body.subject, body.grade)}` });
   return {
     system: EXTRACT_SYSTEM, schema: EXTRACT_SCHEMA, content, maxTokens: 32000,

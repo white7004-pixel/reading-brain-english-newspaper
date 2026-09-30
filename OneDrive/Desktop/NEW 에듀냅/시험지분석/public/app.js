@@ -147,10 +147,9 @@ $('#upload-form').addEventListener('submit', async (e) => {
   try {
     setStatus('#upload-status', '사진·PDF 를 준비하는 중…');
     const pages = await toImages([...f.pages.files], 6, '시험지');
-    const answers = await toImages([...f.answers.files], 2, '정답지');
-    const encoded = await encodeAll([...pages, ...answers]);
-    setStatus('#upload-status', 'AI가 문항을 읽고 있습니다. 1~3분 걸립니다…');
-    const result = await api('/api/extract', { pages: encoded.slice(0, pages.length), answers: encoded.slice(pages.length), subject: f.subject.value, grade: f.grade.value });
+    const encoded = await encodeAll(pages);
+    setStatus('#upload-status', 'AI가 문항을 읽고 직접 풀어 정답까지 적고 있습니다. 1~3분 걸립니다…');
+    const result = await api('/api/extract', { pages: encoded, subject: f.subject.value, grade: f.grade.value });
     state.meta = result.meta;
     state.items = result.items;
     $('#confirm-notes').textContent = result.notes;

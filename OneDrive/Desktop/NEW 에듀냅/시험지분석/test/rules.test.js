@@ -21,10 +21,12 @@ test('스키마는 구조화 출력 규칙(모든 칸 필수, 추가 칸 금지)
 const img = Buffer.from('fake image').toString('base64');
 const meta = { subject: '영어', school: '에듀냅중학교', grade: '중2', term: '1학기', exam: '중간고사' };
 
-test('extractRequest 는 사진을 이미지 블록으로 만들고 결과를 번호순으로 정리한다', () => {
-  const r = extractRequest({ pages: [img, img], answers: [img] });
+test('extractRequest 는 시험지 사진만 이미지 블록으로 만들고 결과를 번호순으로 정리한다', () => {
+  const r = extractRequest({ pages: [img, img] });
   assert.equal(r.schema, EXTRACT_SCHEMA);
-  assert.equal(r.content.filter((b) => b.type === 'image').length, 3);
+  assert.equal(r.content.filter((b) => b.type === 'image').length, 2);
+  // 정답지는 받지 않는다. 보내도 사진으로 들어가지 않는다
+  assert.equal(extractRequest({ pages: [img], answers: [img, img] }).content.filter((b) => b.type === 'image').length, 1);
   const out = r.finish({ meta: { ...meta, subject: '수학' }, items: [{ no: 2, area: '함수', unsure: [] }, { no: 1, area: '독해', unsure: ['answer'] }], notes: '' });
   assert.deepEqual(out.items.map((i) => i.no), [1, 2]);
   assert.equal(out.meta.subject, '수학');
@@ -36,7 +38,6 @@ test('extractRequest 는 사진을 이미지 블록으로 만들고 결과를 �
 test('extractRequest 는 잘못된 입력을 막는다', () => {
   assert.throws(() => extractRequest({ pages: [] }), UserError);
   assert.throws(() => extractRequest({ pages: Array(7).fill(img) }), UserError);
-  assert.throws(() => extractRequest({ pages: [img], answers: Array(3).fill(img) }), UserError);
   assert.throws(() => extractRequest({ pages: ['<script>'] }), UserError);
 });
 
