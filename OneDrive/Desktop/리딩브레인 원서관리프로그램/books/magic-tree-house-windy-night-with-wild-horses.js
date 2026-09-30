@@ -46,16 +46,18 @@ window.BOOK = {
   // 낭독 영상 — S3943.json 의 videos 세 개를 제목으로 하나하나 확인해 골랐다 (2026-09-30).
   // 세 개 모두 이 책(Windy Night with Wild Horses · Mary Pope Osborne)이 맞고, 다른 권이 섞여 있지 않았다.
   // 영상을 내려받지 않고 유튜브가 그대로 재생한다.
-  // 이 권은 통본(책 한 권 전체) 낭독 영상을 확인하지 못했다. 첫 영상은 제목 끝이 "1" 인 조각 영상(5:32)이라
-  // 장 차례대로 맨 앞에 놓고, 오디오북이라고 적힌 나머지 둘을 뒤에 두었다. 뒷부분은 아이가 책으로 읽는다.
-  // 따로 받아 둔 후보 목록(vid-S3943.json)에는 같은 채널의 "2"(lO9EdKLp9pw)도 있었으나
-  // S3943.json 의 videos 에 없어 넣지 않았다. 필요하면 호출자가 그 목록에서 이어 붙이면 된다.
+  // 이 권은 통본(책 한 권 전체) 낭독 영상을 확인하지 못했다. 같은 채널(The Halfling Storytime)의
+  // 조각 영상 "1"(5:32)과 "2"(6:00)를 장 차례대로 앞에 놓고, 오디오북이라고 적힌 둘을 뒤에 두었다.
+  // "2" 는 후보 목록(vid-S3943.json)에서 가져왔다 — 제목·채널이 "1" 과 같아 같은 낭독의 이어지는 조각이다.
+  // 조각 둘을 합쳐도 11분 남짓이라 책 전체가 아니다. 뒷부분은 아이가 책으로 읽는다.
   shadowing: {
     query: "\"Windy Night with Wild Horses\" Magic Tree House read aloud",
     searchUrl: "https://youtu.be/840J-WIHVsU",
     videos: [
       { url: "https://youtu.be/840J-WIHVsU", title: "Magic Tree House   Windy Night with Wild Horses   1",
         channel: "The Halfling Storytime", views: "1,827", length: "5:32" },
+      { url: "https://youtu.be/lO9EdKLp9pw", title: "Magic Tree House   Windy Night with Wild Horses   2",
+        channel: "The Halfling Storytime", views: "1,228", length: "6:00" },
       { url: "https://youtu.be/H5DU0NO4f8M", title: "Windy Night with Wild Horses Book 39 by Mary Pope Osborne · Audiobook",
         channel: "", views: "", length: "" },
       { url: "https://youtu.be/e3Li184I4Rk", title: "Windy Night with Wild Horses by Mary Pope Osborne | Full Audiobook",
