@@ -134,7 +134,6 @@ academyForm.addEventListener('submit', (e) => {
   state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src };
   store.set('academy', state.academy);
   showAcademy();
-setTheme(store.get('theme'));
   academyForm.closest('details').open = false;
 });
 
@@ -376,7 +375,7 @@ $('#save-cards').addEventListener('click', async (e) => {
 // 다섯 가지는 style.css 의 #pages[data-theme] 에 있다. 글꼴이 바뀌면 높이도 바뀌므로 다시 한 장에 맞춘다.
 const THEMES = ['classic', 'news', 'modern', 'soft', 'bold'];
 function setTheme(name) {
-  const theme = THEMES.includes(name) ? name : 'classic';
+  const theme = THEMES.includes(name) ? name : 'bold'; // 원장님이 고른 기본값 (2026-10-01)
   $('#pages').dataset.theme = theme;
   $('#theme').value = theme;
   store.set('theme', theme);
@@ -398,3 +397,4 @@ if (saved) {
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
 }
 showAcademy();
+setTheme(store.get('theme')); // 기억해 둔 디자인을 처음부터 입힌다
