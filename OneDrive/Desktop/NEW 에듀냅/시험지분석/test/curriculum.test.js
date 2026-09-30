@@ -54,3 +54,30 @@ test('국어 성취기준을 받은 만큼 다 넣었다', () => {
   assert.equal(수('독서와 작문'), 15);
   assert.equal(수('문학'), 12);
 });
+
+// ---------- 조회 층 ----------
+import { areasFor, unitsFor, pointsFor, GRADES } from '../public/curriculum.js';
+
+test('학년으로 영역·단원 후보·세부 포인트를 찾는다', () => {
+  assert.deepEqual(GRADES, ['중1', '중2', '중3', '고1', '고2', '고3']);
+  assert.ok(areasFor('국어', '중2').includes('문법'));
+  assert.ok(areasFor('국어', '고1').includes('매체'));
+  // 교과서 목차가 없으면 단원 후보는 영역이다
+  assert.deepEqual(unitsFor('국어', '중2'), areasFor('국어', '중2'));
+  assert.ok(pointsFor('국어', '중2').some((p) => p.includes('음운 체계')));
+});
+
+test('한 학년에 과정이 여럿이면 합치되 겹치는 영역은 한 번만 둔다', () => {
+  // 고1 은 공통국어1·2 두 과정이고 영역 이름이 같다
+  assert.deepEqual(areasFor('국어', '고1'), ['듣기⋅말하기', '읽기', '쓰기', '문법', '문학', '매체']);
+  // 고2 는 선택 과목 셋이고 영역이 과목 이름이다
+  assert.deepEqual(areasFor('국어', '고2'), ['화법과 언어', '독서와 작문', '문학']);
+  assert.ok(pointsFor('국어', '고1').length === 29, '공통국어1 14 + 공통국어2 15');
+});
+
+test('모르는 과목·학년은 빈 배열이다', () => {
+  assert.deepEqual(areasFor('과학', '중2'), []);
+  assert.deepEqual(areasFor('국어', '초5'), []);
+  assert.deepEqual(unitsFor('국어', ''), []);
+  assert.deepEqual(pointsFor('', '중2'), []);
+});
