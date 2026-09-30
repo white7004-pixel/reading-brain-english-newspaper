@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, validateForm, usableForm, marked, nextSet, blanks } from '../public/core/forms.js';
+import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -9,7 +9,7 @@ const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question
 test('checkWrite: 대소문자·앞뒤 빈칸·끝 마침표·둥근 따옴표는 따지지 않는다', () => {
   assert.equal(checkWrite(wr(), [' Broke. ']), true);
   const neg = wr({ template: 'I {} it.', answers: [['didn\'t', 'did not']] });
-  assert.equal(checkWrite(neg, ['didn\'t']), true);
+  assert.equal(checkWrite(neg, ['didn’t']), true);
   assert.equal(checkWrite(neg, ['did  not']), true);
   assert.equal(checkWrite(neg, ['dont']), false);
 });
@@ -61,8 +61,6 @@ test('nextSet 과 blanks', () => {
   assert.equal(blanks('{} {} x {}'), 3);
   assert.equal(blanks(undefined), 0);
 });
-
-import { stage1Score, areaLevels, startLevel, phonicsNote, writeSummary } from '../public/core/forms.js';
 
 const r = (area, level, correct, o = {}) => ({ area, level, correct, ...o });
 

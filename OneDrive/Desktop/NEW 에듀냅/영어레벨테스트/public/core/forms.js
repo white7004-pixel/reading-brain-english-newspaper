@@ -11,7 +11,7 @@ export const isWrite = (it) => WRITE_AREAS.includes(it?.area);
 export const blanks = (template) => (String(template ?? '').match(/\{\}/g) || []).length;
 export const nextSet = (last) => (last === 'A' ? 'B' : 'A');
 
-const norm = (s) => String(s ?? '').trim().toLowerCase().replace(/['']/g, "'").replace(/[.,!?]+$/, '').replace(/\s+/g, ' ').trim();
+const norm = (s) => String(s ?? '').trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[.,!?]+$/, '').replace(/\s+/g, ' ').trim();
 
 // 칸마다 인정 답 중 하나와 같아야 하고, 모든 칸이 맞아야 정답
 export function checkWrite(it, entries) {
