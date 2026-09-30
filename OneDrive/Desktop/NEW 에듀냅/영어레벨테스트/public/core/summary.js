@@ -28,7 +28,7 @@ export function bookFor(books, section, step) {
   return (books?.[section] ?? []).find((b) => step >= b.from && step <= b.to)?.name ?? '';
 }
 
-// gap = 지금 학기 가운데에서 몇 학기 앞(+)·뒤(−)인지, 0.5 단위. score = 100점 환산, perWeek = 주 수업 횟수
+// gap = 지금 학기 가운데에서 몇 학기 앞(+)·뒤(−)인지, 0.5 단위. score = 100점 환산
 export function commentFacts(result, proj) {
   const now = gradePos(result.grade, result.date);
   const sections = SECTIONS.filter((k) => result.sections[k]?.est).map((k) => {
@@ -36,7 +36,7 @@ export function commentFacts(result, proj) {
     const pos = position(est);
     return {
       key: k, name: SECTION_KO[k], position: positionText(k, est), level: estLabel(est), next: nextLabel(k, est),
-      gap: Math.round((pos - now) * 2) / 2, score: score(pos), perWeek: proj?.perSection[k]?.perWeek ?? 2,
+      gap: Math.round((pos - now) * 2) / 2, score: score(pos),
     };
   });
   const skipped = SECTIONS.filter((k) => !result.sections[k]?.est).map((k) => SECTION_KO[k]);
@@ -53,7 +53,7 @@ export function templateComment(facts) {
     ? `가장 앞선 영역은 ${tag(top)}이고, 가장 보완이 필요한 영역은 ${tag(low)}입니다.`
     : `${SECTION_TOPIC[top.key]} ${top.level} 수준(${top.score}점)입니다.`];
   if (facts.overall === '고3 과정 완료') parts.push('이미 고3 과정 수준에 도달했습니다.');
-  else if (facts.overall === '고3 졸업 이후') parts.push('지금 수업 횟수로는 고3 졸업 전에 고3 과정을 모두 마치기 어려워, 횟수를 늘리기를 권합니다.');
+  else if (facts.overall === '고3 졸업 이후') parts.push('지금 진도로는 고3 졸업 전에 고3 과정을 모두 마치기 어렵습니다.');
   else if (facts.overall) parts.push(`우리 학원 진도로 공부하면 ${facts.overall}에 고3 과정을 마칠 것으로 예상합니다.`);
   const directions = [...s].reverse().slice(0, 3).map((x) => `${SECTION_TOPIC[x.key]} ${x.next}부터 수업을 시작합니다.`);
   return { summary: parts.join(' '), directions };

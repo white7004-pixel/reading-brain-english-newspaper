@@ -240,7 +240,7 @@ if (!session) {
       return [k, { skipped: st.skipped || '', est: st.est, log: st.log }];
     }));
     const result = {
-      id: session.id, name: session.name, grade: session.grade, date: session.date, start: session.start || session.date, plan: session.plan, academy: { ...session.academy, logo: undefined },
+      id: session.id, name: session.name, grade: session.grade, date: session.date, start: session.start || session.date, academy: { ...session.academy, logo: undefined },
       stage1: s1 && { set: session.set, ...s1, log: session.s1.log },
       write2: s1?.passed ? { set: session.set, log: session.w2.log } : null,
       sections,

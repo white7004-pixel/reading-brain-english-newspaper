@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { position, score, levelOf, gradePos, gapText, daysOf, schoolYear, monthLabel, monthsLeft, ym, roadmap, project, END, DEFAULT_DAYS } from '../public/core/progress.js';
+import { position, score, levelOf, gradePos, gapText, schoolYear, monthLabel, monthsLeft, ym, roadmap, project, END, PACE } from '../public/core/progress.js';
 
 test('위치·점수·수준', () => {
   assert.equal(END, 21);
@@ -20,10 +20,7 @@ test('학년 대비', () => {
   assert.equal(gapText(11.5, now), '1학기 뒤');
 });
 
-test('요일·달 도우미', () => {
-  assert.deepEqual(daysOf(['월']), ['월']);
-  assert.deepEqual(daysOf([]), DEFAULT_DAYS);
-  assert.deepEqual(daysOf(undefined), ['화', '목']);
+test('달 도우미', () => {
   assert.equal(schoolYear('2027-02'), 2026);
   assert.equal(monthLabel('중3', '2026-09-01', '2027-02'), '중3 2월');
   assert.equal(monthLabel('중3', '2026-09-01', '2027-03'), '고1 3월');
@@ -35,22 +32,20 @@ test('요일·달 도우미', () => {
 });
 
 test('로드맵: 시험 달(4·6·9·11월)은 쉬고, 끝나면 완료 점', () => {
-  const r = roadmap({ est: { step: 19, unit: 4 }, days: ['화', '목'], grade: '중3', start: '2026-09-01' });
+  const r = roadmap({ est: { step: 19, unit: 4 }, grade: '중3', start: '2026-09-01' });
   // 10월 20.375 → 11월 쉼 → 12월 20.75 → 1월 21.125 완료
   assert.equal(r.months, 4);
-  assert.equal(r.perWeek, 2);
+  assert.equal(r.perWeek, undefined);
   assert.deepEqual(r.points, [
     { month: '2026-09', when: '중3 9월', level: '고3 2학기', done: false },
     { month: '2027-01', when: '중3 1월', level: '고3 과정 완료', done: true },
   ]);
 });
 
-test('로드맵: 주 4회는 주 2회의 절반, 점은 10개까지', () => {
-  const base = { est: { step: 9, unit: 0 }, grade: '중1', start: '2026-03-02' };
-  const two = roadmap({ ...base, days: ['화', '목'] });
-  const four = roadmap({ ...base, days: ['월', '화', '목', '금'] });
+test('로드맵: 수업 횟수와 관계없이 한 해 3학기, 점은 10개까지', () => {
+  assert.equal(PACE, 3);
+  const two = roadmap({ est: { step: 9, unit: 0 }, grade: '중1', start: '2026-03-02' });
   assert.equal(two.months, 48);
-  assert.equal(four.months, 24);
   assert.equal(two.points.length, 10);
   assert.deepEqual(two.points[0], { month: '2026-03', when: '중1 3월', level: '중1 1학기', done: false });
   assert.deepEqual(two.points.at(-1), { month: '2030-03', when: '고2 3월', level: '고3 과정 완료', done: true });
@@ -58,17 +53,17 @@ test('로드맵: 주 4회는 주 2회의 절반, 점은 10개까지', () => {
 });
 
 test('로드맵: 이미 끝난 학생', () => {
-  const r = roadmap({ est: { step: 20, unit: 4 }, days: ['화'], grade: '고2', start: '2026-09-28' });
+  const r = roadmap({ est: { step: 20, unit: 4 }, grade: '고2', start: '2026-09-28' });
   assert.equal(r.months, 0);
   assert.equal(r.done, true);
   assert.deepEqual(r.points.map((p) => p.level), ['고3 과정 완료']);
 });
 
 test('project: 가장 느린 영역이 전체 완료 시점', () => {
-  const p = project({ grade: '중1', start: '2026-03-02', ests: { vocab: { step: 9, unit: 0 }, grammar: { step: 19, unit: 4 } }, days: { vocab: ['월', '화', '목', '금'] } });
-  assert.equal(p.perSection.vocab.months, 24);
+  const p = project({ grade: '중1', start: '2026-03-02', ests: { vocab: { step: 9, unit: 0 }, grammar: { step: 19, unit: 4 } } });
+  assert.equal(p.perSection.vocab.months, 48);
   assert.equal(p.perSection.grammar.months, 5); // 5월 20.375 · 7월 20.75 · 8월 21.125
-  assert.deepEqual(p.overall, { section: 'vocab', months: 24, label: '중3 3월' });
+  assert.deepEqual(p.overall, { section: 'vocab', months: 48, label: '고2 3월' });
   assert.equal(p.left, 72);
   assert.equal(project({ grade: '중1', start: '2026-03-02', ests: {} }), null);
   assert.equal(project({ grade: '고2', start: '2026-09-28', ests: { grammar: { step: 20, unit: 4 } } }).overall.label, '고3 과정 완료');

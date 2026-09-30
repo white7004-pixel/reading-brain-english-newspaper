@@ -1,7 +1,7 @@
 // 리포트 (Klai형 설계서): 학부모용 = 표지 + 응시한 영역마다 1쪽, 원장용 = 1쪽. 교재명은 원장용에만.
 // 숫자는 전부 core 가 계산한다. AI 는 총평 문장만 쓰고, 실패하면 틀 문장이 남는다. 글은 눌러서 고칠 수 있다.
 import { SECTIONS, SECTION_KO, labelOf } from './core/scale.js';
-import { project, position, score, levelOf, gradePos, gapText, daysOf, ym } from './core/progress.js';
+import { project, position, score, levelOf, gradePos, gapText, ym } from './core/progress.js';
 import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel } from './core/summary.js';
 import { areaLevels, startLevel, phonicsNote, writeSummary, LEVEL_AREAS, AREA_KO, PASS } from './core/forms.js';
 
@@ -28,7 +28,7 @@ if (!result) {
     const start = result.start || result.date;
     const taken = SECTIONS.filter((k) => result.sections[k].est);
     const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
-    const proj = project({ grade: result.grade, start, ests, days: result.plan || {} });
+    const proj = project({ grade: result.grade, start, ests });
     const facts = commentFacts(result, proj);
     const c = templateComment(facts);
     $('#parent').innerHTML = cover(result, proj, c) + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start)).join('');
@@ -118,8 +118,7 @@ function sectionPage(r, proj, k, n, start) {
       </div>
       <hr>
       <h3>▶ 진도 설정</h3>
-      <p class="plan">주 <em>${road.perWeek}회</em> (수업 요일: <em>${esc(daysOf(r.plan?.[k]).join('·'))}</em>)</p>
-      <p class="small">주 2회일 때 한 해 3학기씩 나아갑니다. 시험 기간(4·6·9·11월)은 빼고 셉니다.</p>
+      <p class="small">한 해 3학기씩 나아갑니다. 시험 기간(4·6·9·11월)은 빼고 셉니다.</p>
       <h3>▶ 목표: 고3 과정 완료</h3>
       <div class="card-w">${goal(p, now, road)}</div>
       <h3>▶ 학습 로드맵</h3>

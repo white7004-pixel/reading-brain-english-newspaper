@@ -10,9 +10,9 @@ export const COMMENT_SCHEMA = {
 export const SYSTEM = `당신은 영어학원 원장을 돕는 레벨테스트 리포트 작성자입니다. 받은 JSON 사실만으로 학부모에게 보낼 글을 씁니다.
 
 규칙
-- summary: 학부모용 총평 2~3문장. "~합니다" 체. 강한 영역, 보완할 영역, 고3 과정 완료 예상 시점(overall, 예: "고2 12월")을 담습니다. overall 이 "고3 졸업 이후"면 지금 수업 횟수로는 졸업 전에 마치기 어렵다고, "고3 과정 완료"면 이미 도달했다고 씁니다.
+- summary: 학부모용 총평 2~3문장. "~합니다" 체. 강한 영역, 보완할 영역, 고3 과정 완료 예상 시점(overall, 예: "고2 12월")을 담습니다. overall 이 "고3 졸업 이후"면 지금 진도로는 졸업 전에 마치기 어렵다고, "고3 과정 완료"면 이미 도달했다고 씁니다.
 - directions: 학원 지도 방향 정확히 3개. 각 한 문장. 영역의 next(다음에 시작할 단원)를 넣어 구체적인 수업 활동으로 씁니다.
-- 받은 학기·단원 이름·시점·점수(score, 중1 1학기 시작 0점 ~ 고3 과정 끝 100점)를 그대로 쓰고, 새 숫자나 점수를 만들지 않습니다. gap 은 지금 학년보다 몇 학기 앞(+)·뒤(−)인지이며 숫자로 옮겨 쓰지 않습니다. perWeek 는 그 영역의 주 수업 횟수입니다.
+- 받은 학기·단원 이름·시점·점수(score, 중1 1학기 시작 0점 ~ 고3 과정 끝 100점)를 그대로 쓰고, 새 숫자나 점수를 만들지 않습니다. gap 은 지금 학년보다 몇 학기 앞(+)·뒤(−)인지이며 숫자로 옮겨 쓰지 않습니다.
 - 학생 이름을 쓰지 않고 "학생"이라고 씁니다.
 - 교재 이름, 다른 학원 이름, 과장 표현("최고의", "완벽한", "혁신적인")을 쓰지 않습니다.
 - skipped 에 있는 영역은 "이번에 응시하지 않았습니다" 정도로만 언급합니다.`;
@@ -26,11 +26,11 @@ export function commentRequest(body) {
     && Array.isArray(f.skipped ?? []) && (f.skipped ?? []).every((x) => text(x, 10))
     && Array.isArray(f.sections) && f.sections.length >= 1 && f.sections.length <= 4
     && f.sections.every((s) => text(s.name, 10) && text(s.position) && text(s.level, 40) && text(s.next) && Number.isFinite(s.gap)
-      && count(s.score, 0, 100) && count(s.perWeek, 1, 6));
+      && count(s.score, 0, 100));
   if (!ok) throw new UserError('리포트 내용이 올바르지 않습니다');
   const facts = {
     grade: f.grade, overall: f.overall ?? '', skipped: f.skipped ?? [],
-    sections: f.sections.map(({ name, position, level, next, gap, score, perWeek }) => ({ name, position, level, next, gap, score, perWeek })),
+    sections: f.sections.map(({ name, position, level, next, gap, score }) => ({ name, position, level, next, gap, score })),
   };
   return { system: SYSTEM, content: [{ type: 'text', text: JSON.stringify(facts) }], schema: COMMENT_SCHEMA, maxTokens: 2000 };
 }

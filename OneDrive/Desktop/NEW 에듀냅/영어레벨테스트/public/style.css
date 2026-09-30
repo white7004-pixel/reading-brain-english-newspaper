@@ -133,8 +133,6 @@ details.card[open] > summary { margin-bottom: 14px; }
 .sbar { min-width: 64px; padding: 6px 4px; color: #fff; font-size: 12px; text-align: center; white-space: nowrap; }
 .sbar.grey { background: #8f8f8f; }
 .sbar.dark { background: #1b1b1b; }
-.plan { margin: 4px 0; font-size: 13px; }
-.plan em { font-style: normal; font-weight: 700; color: var(--brand); }
 .card-w { background: #fff; border: 1px solid #d6d6d6; border-radius: 12px; padding: 14px 22px; }
 .goal { position: relative; height: 92px; margin: 0 36px; }
 .goal-line { position: absolute; left: 0; right: 0; top: 44px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, #d0d0d0, #555); }
@@ -191,13 +189,6 @@ details.card[open] > summary { margin-bottom: 14px; }
 .tag.draft { background: rgba(245,194,76,.22); }
 .short-list { max-height: 200px; overflow: auto; font-size: 13px; color: var(--cream-2); columns: 2; margin-top: 8px; }
 
-/* 진도 설정 (요일) */
-.days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-top: 10px; }
-fieldset.days { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 6px 10px 8px; border: 1px solid rgba(252,244,226,.18); border-radius: 3px; }
-fieldset.days legend { padding: 0 4px; font-size: 13px; color: var(--cream-2); }
-fieldset.days label { flex-direction: row; align-items: center; gap: 4px; color: var(--cream); }
-fieldset.days input { width: auto; }
-.days-title { margin: 0; font-size: 13px; color: var(--cream-2); }
 details.sub > summary { cursor: pointer; font-size: 13px; color: var(--cream-2); margin-bottom: 8px; }
 details.sub .short { max-width: 240px; }
 

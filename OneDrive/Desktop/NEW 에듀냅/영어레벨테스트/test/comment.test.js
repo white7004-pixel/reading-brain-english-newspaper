@@ -5,14 +5,14 @@ import { UserError } from '../lib/http.js';
 
 const facts = {
   grade: '중2', overall: '고2 12월', skipped: ['듣기'],
-  sections: [{ key: 'grammar', name: '문법', position: '중2 1학기 3단원(수동태 기본)까지 이해', level: '중2 1학기 3단원', next: '중2 1학기 4단원(접속사)', gap: -1, score: 23, perWeek: 2 }],
+  sections: [{ key: 'grammar', name: '문법', position: '중2 1학기 3단원(수동태 기본)까지 이해', level: '중2 1학기 3단원', next: '중2 1학기 4단원(접속사)', gap: -1, score: 23 }],
 };
 
 test('commentRequest 는 사실만 JSON 으로 넘기고 스키마를 붙인다', () => {
   const req = commentRequest({ facts });
   assert.equal(req.schema, COMMENT_SCHEMA);
   const sent = JSON.parse(req.content[0].text);
-  assert.deepEqual(sent.sections[0], { name: '문법', position: facts.sections[0].position, level: '중2 1학기 3단원', next: '중2 1학기 4단원(접속사)', gap: -1, score: 23, perWeek: 2 });
+  assert.deepEqual(sent.sections[0], { name: '문법', position: facts.sections[0].position, level: '중2 1학기 3단원', next: '중2 1학기 4단원(접속사)', gap: -1, score: 23 });
   assert.deepEqual(sent.skipped, ['듣기']);
   assert.equal(sent.overall, '고2 12월');
   assert.equal(sent.name, undefined); // 학생 이름은 보내지 않는다
@@ -25,7 +25,7 @@ test('commentRequest 는 모양이 틀리면 UserError', () => {
   assert.throws(() => commentRequest({ facts: { ...facts, sections: [] } }), UserError);
   assert.throws(() => commentRequest(bad({ position: 'x'.repeat(300) })), UserError);
   assert.throws(() => commentRequest(bad({ score: 101 })), UserError);
-  assert.throws(() => commentRequest(bad({ perWeek: undefined })), UserError);
+  assert.doesNotThrow(() => commentRequest(bad({ perWeek: undefined })));
 });
 
 test('checkComment 는 다듬고 세 개로 자른다', () => {
