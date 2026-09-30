@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시험 화면 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Hahmlet:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #d9dcd8; font: 15px/1.6 'Pretendard', sans-serif; color: #1c2230; }
+  .doc { max-width: 1340px; margin: 0 auto; padding: 24px 16px 60px; }
+  .doc > h1 { font: 800 24px/1.3 'Hahmlet', serif; margin: 0 0 6px; }
+  .doc > p { margin: 0 0 22px; color: #444; }
+  .opt { margin: 0 0 40px; }
+  .opt > h2 { font: 800 20px/1.3 'Hahmlet', serif; margin: 0 0 4px; }
+  .opt > p { margin: 0 0 12px; color: #444; max-width: 900px; }
+  .frames { display: grid; grid-template-columns: repeat(auto-fit, minmax(620px, 1fr)); gap: 18px; }
+  .cap { font-size: 13px; color: #555; margin: 0 0 6px; }
+  .frame { width: 1280px; height: 720px; zoom: .5; overflow: hidden; position: relative; box-shadow: 0 8px 30px rgba(0,0,0,.18); }
+  .en { font-family: 'Literata', Georgia, serif; }
+  u { text-underline-offset: 3px; }
+
+  /* ─────────── 시안 A: 답안지형 (OMR) ─────────── */
+  .A { --paper: #ffffff; --red: #d23b4e; --pink: #fbe9ec; --ink: #1e2b4a; --pencil: #22252b; --line: #f0c7ce;
+       background: var(--paper); color: var(--ink); display: grid; grid-template-rows: auto 1fr; }
+  .A .card { border-bottom: 2px solid var(--red); padding: 14px 32px 12px; display: grid; grid-template-columns: 170px 1fr 170px; gap: 24px; align-items: center; }
+  .A .who { font-size: 13px; color: var(--red); line-height: 1.5; }
+  .A .who b { display: block; color: var(--ink); font-size: 17px; }
+  .A .grid { display: grid; grid-template-columns: repeat(46, 1fr); gap: 2px; }
+  .A .grid span { height: 26px; border: 1px solid var(--line); border-radius: 2px; font-size: 10px; display: grid; place-items: center; color: var(--red); background: #fff; }
+  .A .grid span.done { background: var(--pencil); color: #fff; border-color: var(--pencil); }
+  .A .grid span.now { outline: 2px solid var(--red); outline-offset: 1px; font-weight: 700; }
+  .A .areas { display: grid; grid-template-columns: 12fr 2fr 19fr 4fr 5fr 4fr; gap: 2px; margin-top: 4px; font-size: 11px; color: var(--red); }
+  .A .areas i { font-style: normal; border-top: 1px solid var(--red); padding-top: 2px; text-align: center; }
+  .A .time { text-align: right; }
+  .A .time b { font: 800 34px/1 'Hahmlet', serif; color: var(--ink); }
+  .A .time small { display: block; font-size: 12px; color: var(--red); }
+  .A .time .bar { height: 4px; background: var(--pink); margin-top: 6px; }
+  .A .time .bar i { display: block; height: 100%; width: 63%; background: var(--red); margin-left: auto; }
+  .A .body { display: grid; grid-template-columns: 1fr 330px; min-height: 0; }
+  .A .sheet { padding: 34px 48px; overflow: hidden; }
+  .A .qno { font: 800 44px/1 'Hahmlet', serif; color: var(--red); float: left; margin: 0 18px 0 0; }
+  .A .q { font-size: 21px; font-weight: 700; margin: 4px 0 22px; }
+  .A .passage { font-size: 21px; line-height: 1.85; border-left: 3px solid var(--line); padding: 4px 0 4px 24px; max-width: 760px; }
+  .A .omr { background: var(--pink); border-left: 2px solid var(--red); padding: 30px 30px; display: flex; flex-direction: column; gap: 12px; }
+  .A .omr h3 { margin: 0 0 6px; font-size: 13px; color: var(--red); font-weight: 700; letter-spacing: .02em; }
+  .A .opt-row { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px; font-size: 17px; }
+  .A .bub { width: 36px; height: 50px; border: 2px solid var(--red); border-radius: 50%; display: grid; place-items: center; color: var(--red); font-weight: 700; }
+  .A .opt-row.pick .bub { background: var(--pencil); border-color: var(--pencil); color: #fff; }
+  .A .opt-row.dk { background: transparent; border-style: dashed; color: #7a6a6e; }
+  .A .opt-row.dk .bub { border-style: dashed; }
+  .A .play { display: flex; align-items: center; gap: 22px; margin: 10px 0 24px; }
+  .A .play button { width: 92px; height: 92px; border-radius: 50%; border: 0; background: var(--ink); color: #fff; font-size: 34px; }
+  .A .play p { margin: 0; font-size: 17px; }
+  .A .play small { display: block; color: var(--red); font-size: 14px; }
+  .A .pips { display: flex; gap: 6px; margin-top: 6px; }
+  .A .pips i { width: 26px; height: 8px; background: var(--ink); border-radius: 2px; }
+  .A .pips i.used { background: var(--line); }
+  .A .write { font-size: 26px; line-height: 2.4; }
+  .A .write input { font: inherit; width: 8ch; border: 0; border-bottom: 2px solid var(--red); background: var(--pink); text-align: center; color: var(--ink); }
+  .A .hint { color: #6a5a5e; font-size: 17px; }
+  .A .next { margin-top: 24px; background: var(--ink); color: #fff; border: 0; padding: 14px 34px; font-size: 18px; font-weight: 700; border-radius: 4px; }
+
+  /* ─────────── 시안 B: 수능형 두 쪽 ─────────── */
+  .B { --olive: #03392a; --gold: #f5c24c; --pane: #eef1ef; --ink: #17211d; --muted: #5d6b65; --rule: #d3dad6;
+       background: #fff; color: var(--ink); display: grid; grid-template-rows: 64px 1fr 58px; }
+  .B .top { background: var(--olive); color: #eef3ef; display: grid; grid-template-columns: 220px 1fr 150px; align-items: center; gap: 28px; padding: 0 28px; }
+  .B .top .nm { font-size: 14px; } .B .top .nm b { font-size: 16px; margin-right: 8px; }
+  .B .rail { display: grid; grid-template-columns: 12fr 2fr 19fr 4fr 5fr 4fr; gap: 4px; }
+  .B .rail div { font-size: 11.5px; color: rgba(238,243,239,.7); }
+  .B .rail div i { display: block; height: 6px; border-radius: 3px; background: rgba(255,255,255,.16); margin-bottom: 5px; overflow: hidden; }
+  .B .rail div i b { display: block; height: 100%; background: var(--gold); }
+  .B .rail div.cur { color: #fff; font-weight: 700; }
+  .B .clock { justify-self: end; display: flex; align-items: center; gap: 10px; font: 700 26px/1 'Pretendard'; font-variant-numeric: tabular-nums; }
+  .B .clock svg { width: 34px; height: 34px; }
+  .B .split { display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
+  .B .left { background: var(--pane); padding: 36px 44px; border-right: 1px solid var(--rule); overflow: hidden; }
+  .B .left .lab { font-size: 13px; color: var(--muted); margin: 0 0 14px; }
+  .B .passage { font-size: 20px; line-height: 1.9; counter-reset: ln; }
+  .B .right { padding: 36px 44px; }
+  .B .qh { display: flex; gap: 14px; align-items: baseline; margin: 0 0 26px; }
+  .B .qh b { font: 800 30px/1 'Hahmlet', serif; color: var(--olive); }
+  .B .qh p { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.5; }
+  .B .ch { display: grid; gap: 10px; }
+  .B .ch div { display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: center; padding: 13px 16px; border: 1px solid var(--rule); border-radius: 6px; font-size: 17px; }
+  .B .ch div i { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--olive); display: grid; place-items: center; font-style: normal; font-weight: 700; color: var(--olive); font-size: 14px; }
+  .B .ch div.pick { border-color: var(--olive); background: #e6f0eb; }
+  .B .ch div.pick i { background: var(--olive); color: #fff; }
+  .B .ch .dk { border-style: dashed; color: var(--muted); margin-top: 8px; }
+  .B .ch .dk i { border-style: dashed; border-color: var(--muted); color: var(--muted); }
+  .B .foot { border-top: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; font-size: 14px; color: var(--muted); }
+  .B .foot b { color: var(--ink); }
+  .B .player { background: #fff; border: 1px solid var(--rule); border-radius: 10px; padding: 26px; display: grid; grid-template-columns: 84px 1fr; gap: 22px; align-items: center; }
+  .B .player button { width: 84px; height: 84px; border-radius: 50%; border: 0; background: var(--olive); color: var(--gold); font-size: 30px; }
+  .B .player p { margin: 0 0 8px; font-size: 17px; font-weight: 700; }
+  .B .wave { display: flex; gap: 3px; align-items: center; height: 34px; }
+  .B .wave i { width: 4px; background: #b9c6c0; border-radius: 2px; }
+  .B .player small { color: var(--muted); font-size: 13.5px; }
+  .B .write { font-size: 24px; line-height: 2.3; font-family: 'Literata', serif; }
+  .B .write input { font: inherit; font-size: 22px; width: 7.5ch; border: 1.5px solid var(--olive); border-radius: 6px; padding: 2px 6px; text-align: center; background: #fff; }
+  .B .kor { background: #fff; border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px; font-size: 18px; }
+  .B .next { background: var(--olive); color: #fff; border: 0; padding: 12px 28px; border-radius: 6px; font-weight: 700; font-size: 16px; }
+
+  /* ─────────── 시안 C: 초등 친화형 ─────────── */
+  .C { --bg: #f4f6fb; --ink: #1d2340; --area: #2f6fe0; --area-lt: #e3ecfd; --muted: #6a7089;
+       background: var(--bg); color: var(--ink); display: grid; grid-template-rows: 76px 1fr; }
+  .C.listen { --area: #7a4fd6; --area-lt: #efe8fc; }
+  .C.writing { --area: #0f9a78; --area-lt: #dff5ee; }
+  .C .top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 36px; background: #fff; border-bottom: 4px solid var(--area); }
+  .C .tag { justify-self: start; background: var(--area); color: #fff; font-weight: 800; font-size: 18px; padding: 6px 16px; border-radius: 999px; }
+  .C .count { font-size: 18px; font-weight: 700; color: var(--muted); }
+  .C .count b { color: var(--ink); font-size: 24px; }
+  .C .ring { justify-self: end; width: 58px; height: 58px; }
+  .C .main { display: grid; grid-template-columns: 1fr; padding: 28px 80px; gap: 20px; align-content: start; }
+  .C .q { font-size: 24px; font-weight: 800; margin: 0; }
+  .C .passage { background: #fff; border-radius: 16px; padding: 22px 28px; font-size: 22px; line-height: 1.8; border: 2px solid var(--area-lt); }
+  .C .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .C .tiles div { background: #fff; border: 2px solid #dfe3ee; border-bottom-width: 6px; border-radius: 14px; padding: 16px 20px; font-size: 20px; font-weight: 600; display: flex; gap: 14px; align-items: center; }
+  .C .tiles div i { font-style: normal; width: 34px; height: 34px; border-radius: 10px; background: var(--area-lt); color: var(--area); display: grid; place-items: center; font-weight: 800; flex: none; }
+  .C .tiles div.pick { border-color: var(--area); background: var(--area-lt); }
+  .C .dk { justify-self: center; background: transparent; border: 2px dashed #c3c8d8; color: var(--muted); border-radius: 999px; padding: 10px 26px; font-size: 17px; font-weight: 700; }
+  .C .big-play { display: grid; grid-template-columns: 120px 1fr; gap: 26px; align-items: center; background: #fff; border-radius: 20px; padding: 26px 30px; }
+  .C .big-play button { width: 120px; height: 120px; border-radius: 50%; border: 0; background: var(--area); color: #fff; font-size: 44px; border-bottom: 8px solid #5a36b0; }
+  .C .big-play p { margin: 0; font-size: 22px; font-weight: 800; }
+  .C .big-play small { font-size: 16px; color: var(--muted); }
+  .C .hearts { display: flex; gap: 8px; margin-top: 10px; font-size: 26px; color: var(--area); }
+  .C .write { background: #fff; border-radius: 16px; padding: 26px 30px; font-size: 28px; line-height: 2.2; font-family: 'Literata', serif; }
+  .C .write input { font: inherit; font-size: 26px; width: 7.5ch; border: 0; border-bottom: 4px solid var(--area); background: var(--area-lt); border-radius: 8px 8px 0 0; text-align: center; }
+  .C .next { justify-self: end; background: var(--area); color: #fff; border: 0; border-bottom: 5px solid #0a6e56; padding: 14px 36px; font-size: 20px; font-weight: 800; border-radius: 14px; }
+</style>
+</head>
+<body>
+<div class="doc">
+  <h1>시험 화면 시안 — 세 방향</h1>
+  <p>학원 PC(1280×720 기준, 여기서는 절반 크기로 보임)에서 보는 모습입니다. 시안마다 <b>독해 · 듣기 · 쓰기</b> 세 화면을 그렸습니다. 문항은 1차 A세트 실제 초안입니다.</p>
+
+  <!-- ═════════ A ═════════ -->
+  <section class="opt">
+    <h2>시안 A · 답안지형</h2>
+    <p>우리 학생들이 가장 익숙한 <b>OMR 답안지</b>를 화면으로 옮겼습니다. 위쪽 띠는 1~46번 답안 칸(푼 문항은 칠해짐), 오른쪽 분홍 칸에서 답을 칠합니다. 흰 종이와 OMR 빨간 선 두 색만 씁니다.</p>
+    <div class="frames">
+      <div><p class="cap">독해 21번</p><div class="frame A">
+        <div class="card">
+          <div class="who">응시자<b>김OO · 중2</b>1차 A</div>
+          <div><div class="grid">
+            <span class="done">1</span><span class="done">2</span><span class="done">3</span><span class="done">4</span><span class="done">5</span><span class="done">6</span><span class="done">7</span><span class="done">8</span><span class="done">9</span><span class="done">10</span><span class="done">11</span><span class="done">12</span><span class="done">13</span><span class="done">14</span><span class="done">15</span><span class="done">16</span><span class="done">17</span><span class="done">18</span><span class="done">19</span><span class="done">20</span><span class="now">21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span><span>32</span><span>33</span><span>34</span><span>35</span><span>36</span><span>37</span><span>38</span><span>39</span><span>40</span><span>41</span><span>42</span><span>43</span><span>44</span><span>45</span><span>46</span>
+          </div><div class="areas"><i>듣기</i><i>소리</i><i>독해</i><i>문법</i><i>어형</i><i>영작</i></div></div>
+          <div class="time"><small>남은 시간</small><b>57</b>초<div class="bar"><i></i></div></div>
+        </div>
+        <div class="body">
+          <div class="sheet">
+            <span class="qno">21</span><p class="q">What is the best title for the story?</p>
+            <div class="passage en">The clock on the old tower in Saebit Town stopped last month. People looked up and saw the wrong time. So Mr. Yoon, a clock repairman, climbed up the tower. He cleaned the inside of the clock and changed a broken part. It took him three days. Now the clock rings every hour again.</div>
+          </div>
+          <div class="omr"><h3>답안 — 하나를 칠하세요</h3>
+            <div class="opt-row"><span class="bub">1</span><span class="en">Fixing the Town Clock</span></div>
+            <div class="opt-row pick"><span class="bub">2</span><span class="en">A New Tower for the Town</span></div>
+            <div class="opt-row"><span class="bub">3</span><span class="en">How to Tell the Time</span></div>
+            <div class="opt-row"><span class="bub">4</span><span class="en">Mr. Yoon's Clock Shop</span></div>
+            <div class="opt-row dk"><span class="bub">?</span><span>모름</span></div>
+          </div>
+        </div>
+      </div></div>
+
+      <div><p class="cap">듣기 3번 (두 번째 듣기 전)</p><div class="frame A">
+        <div class="card">
+          <div class="who">응시자<b>김OO · 중2</b>1차 A</div>
+          <div><div class="grid">
+            <span class="done">1</span><span class="done">2</span><span class="now">3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span><span>32</span><span>33</span><span>34</span><span>35</span><span>36</span><span>37</span><span>38</span><span>39</span><span>40</span><span>41</span><span>42</span><span>43</span><span>44</span><span>45</span><span>46</span>
+          </div><div class="areas"><i>듣기</i><i>소리</i><i>독해</i><i>문법</i><i>어형</i><i>영작</i></div></div>
+          <div class="time"><small>남은 시간</small><b>74</b>초<div class="bar"><i style="width:82%"></i></div></div>
+        </div>
+        <div class="body">
+          <div class="sheet">
+            <span class="qno">3</span><p class="q">대화를 듣고, 남자의 마지막 심정으로 가장 적절한 것을 고르시오.</p>
+            <div class="play"><button>▶</button><div><p>한 번 더 들을 수 있어요</p><small>첫 듣기가 끝나서 시간을 세고 있습니다</small><div class="pips"><i class="used"></i><i></i></div></div></div>
+          </div>
+          <div class="omr"><h3>답안 — 하나를 칠하세요</h3>
+            <div class="opt-row"><span class="bub">1</span><span>실망한</span></div>
+            <div class="opt-row"><span class="bub">2</span><span>걱정하는</span></div>
+            <div class="opt-row"><span class="bub">3</span><span>신이 난</span></div>
+            <div class="opt-row"><span class="bub">4</span><span>미안한</span></div>
+            <div class="opt-row dk"><span class="bub">?</span><span>모름</span></div>
+          </div>
+        </div>
+      </div></div>
+
+      <div><p class="cap">어형 쓰기 38번</p><div class="frame A">
+        <div class="card">
+          <div class="who">응시자<b>김OO · 중2</b>1차 A</div>
+          <div><div class="grid">
+            <span class="done">1</span><span class="done">2</span><span class="done">3</span><span class="done">4</span><span class="done">5</span><span class="done">6</span><span class="done">7</span><span class="done">8</span><span class="done">9</span><span class="done">10</span><span class="done">11</span><span class="done">12</span><span class="done">13</span><span class="done">14</span><span class="done">15</span><span class="done">16</span><span class="done">17</span><span class="done">18</span><span class="done">19</span><span class="done">20</span><span class="done">21</span><span class="done">22</span><span class="done">23</span><span class="done">24</span><span class="done">25</span><span class="done">26</span><span class="done">27</span><span class="done">28</span><span class="done">29</span><span class="done">30</span><span class="done">31</span><span class="done">32</span><span class="done">33</span><span class="done">34</span><span class="done">35</span><span class="done">36</span><span class="done">37</span><span class="now">38</span><span>39</span><span>40</span><span>41</span><span>42</span><span>43</span><span>44</span><span>45</span><span>46</span>
+          </div><div class="areas"><i>듣기</i><i>소리</i><i>독해</i><i>문법</i><i>어형</i><i>영작</i></div></div>
+          <div class="time"><small>남은 시간</small><b>81</b>초<div class="bar"><i style="width:90%"></i></div></div>
+        </div>
+        <div class="body" style="grid-template-columns:1fr">
+          <div class="sheet">
+            <span class="qno">38</span><p class="q">[watch] 알맞은 꼴로 바꾸어 쓰세요.</p>
+            <p class="hint">우리 할아버지는 매일 저녁 뉴스를 보신다.</p>
+            <div class="write en">My grandpa <input value="watches"> the news every evening.</div>
+            <button class="next">다음 문항</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ═════════ B ═════════ -->
+  <section class="opt">
+    <h2>시안 B · 수능형 두 쪽</h2>
+    <p>컴퓨터 시험(CBT)에서 흔한 <b>왼쪽 지문 · 오른쪽 문제</b> 배치입니다. 지문을 읽는 동안 문제와 선택지가 한눈에 보입니다. 위쪽 띠는 에듀냅 올리브색에 영역별 진행 막대(듣기 → 소리 → 독해 → 문법 → 어형 → 영작)와 남은 시간을 둡니다.</p>
+    <div class="frames">
+      <div><p class="cap">독해 21번</p><div class="frame B">
+        <div class="top"><div class="nm"><b>김OO</b>중2 · 1차 A</div>
+          <div class="rail"><div><i><b style="width:100%"></b></i>듣기</div><div><i><b style="width:100%"></b></i>소리</div><div class="cur"><i><b style="width:37%"></b></i>독해 7/19</div><div><i></i>문법</div><div><i></i>어형</div><div><i></i>영작</div></div>
+          <div class="clock"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#f5c24c" stroke-width="4" stroke-dasharray="59 95" transform="rotate(-90 18 18)"/></svg>57초</div></div>
+        <div class="split">
+          <div class="left"><p class="lab">다음 글을 읽고 물음에 답하시오.</p>
+            <div class="passage en">The clock on the old tower in Saebit Town stopped last month. People looked up and saw the wrong time. So Mr. Yoon, a clock repairman, climbed up the tower. He cleaned the inside of the clock and changed a broken part. It took him three days. Now the clock rings every hour again.</div></div>
+          <div class="right"><div class="qh"><b>21</b><p class="en">What is the best title for the story?</p></div>
+            <div class="ch">
+              <div><i>1</i><span class="en">Fixing the Town Clock</span></div>
+              <div class="pick"><i>2</i><span class="en">A New Tower for the Town</span></div>
+              <div><i>3</i><span class="en">How to Tell the Time</span></div>
+              <div><i>4</i><span class="en">Mr. Yoon's Clock Shop</span></div>
+              <div class="dk"><i>?</i><span>모름 — 모르면 짐작하지 말고 이것을 고르세요</span></div>
+            </div></div>
+        </div>
+        <div class="foot"><span>한 번 고르면 다음 문항으로 넘어갑니다</span><span><b>21</b> / 46</span></div>
+      </div></div>
+
+      <div><p class="cap">듣기 3번 (두 번째 듣기 전)</p><div class="frame B">
+        <div class="top"><div class="nm"><b>김OO</b>중2 · 1차 A</div>
+          <div class="rail"><div class="cur"><i><b style="width:17%"></b></i>듣기 3/12</div><div><i></i>소리</div><div><i></i>독해</div><div><i></i>문법</div><div><i></i>어형</div><div><i></i>영작</div></div>
+          <div class="clock"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#f5c24c" stroke-width="4" stroke-dasharray="77 95" transform="rotate(-90 18 18)"/></svg>74초</div></div>
+        <div class="split">
+          <div class="left"><p class="lab">대화를 들으세요. 대본은 나오지 않습니다.</p>
+            <div class="player"><button>▶</button><div><p>한 번 더 들을 수 있습니다</p>
+              <div class="wave"><i style="height:10px"></i><i style="height:22px"></i><i style="height:30px"></i><i style="height:16px"></i><i style="height:26px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:34px"></i><i style="height:14px"></i><i style="height:24px"></i><i style="height:9px"></i><i style="height:30px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:12px"></i><i style="height:22px"></i><i style="height:16px"></i></div>
+              <small>첫 듣기가 끝나 시간을 세고 있습니다 · 남은 듣기 1번</small></div></div></div>
+          <div class="right"><div class="qh"><b>3</b><p>대화를 듣고, 남자의 마지막 심정으로 가장 적절한 것을 고르시오.</p></div>
+            <div class="ch"><div><i>1</i><span>실망한</span></div><div><i>2</i><span>걱정하는</span></div><div><i>3</i><span>신이 난</span></div><div><i>4</i><span>미안한</span></div><div class="dk"><i>?</i><span>모름</span></div></div></div>
+        </div>
+        <div class="foot"><span>이어폰으로 들어 주세요</span><span><b>3</b> / 46</span></div>
+      </div></div>
+
+      <div><p class="cap">영작 44번</p><div class="frame B">
+        <div class="top"><div class="nm"><b>김OO</b>중2 · 1차 A</div>
+          <div class="rail"><div><i><b style="width:100%"></b></i>듣기</div><div><i><b style="width:100%"></b></i>소리</div><div><i><b style="width:100%"></b></i>독해</div><div><i><b style="width:100%"></b></i>문법</div><div><i><b style="width:100%"></b></i>어형</div><div class="cur"><i><b style="width:25%"></b></i>영작 2/4</div></div>
+          <div class="clock"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#f5c24c" stroke-width="4" stroke-dasharray="86 95" transform="rotate(-90 18 18)"/></svg>83초</div></div>
+        <div class="split">
+          <div class="left"><p class="lab">우리말에 맞게, 주어진 낱말을 써서 한 칸에 한 낱말씩 쓰시오.</p>
+            <div class="kor">나는 우주 비행사가 되고 싶다.<br><span style="color:#5d6b65">(want, be, astronaut)</span></div></div>
+          <div class="right"><div class="qh"><b>44</b><p>빈칸에 한 낱말씩 쓰세요. Enter 를 누르면 다음 칸으로 갑니다.</p></div>
+            <div class="write"><input value="I"> <input value="want"> <input value="to"> <input> <input> <input>.</div>
+            <p style="margin-top:28px"><button class="next">다음 문항</button></p></div>
+        </div>
+        <div class="foot"><span>대문자·마침표는 따지지 않습니다</span><span><b>44</b> / 46</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ═════════ C ═════════ -->
+  <section class="opt">
+    <h2>시안 C · 초등 친화형</h2>
+    <p>초3 학생도 겁먹지 않게 <b>큰 글자와 큰 버튼</b>을 씁니다. 선택지는 2×2 버튼, 영역마다 색이 바뀌고(독해 파랑 · 듣기 보라 · 쓰기 초록), 남은 시간은 줄어드는 동그라미로 보여 줍니다.</p>
+    <div class="frames">
+      <div><p class="cap">독해 21번</p><div class="frame C">
+        <div class="top"><span class="tag">독해</span><span class="count"><b>21</b> / 46</span>
+          <svg class="ring" viewBox="0 0 60 60"><circle cx="30" cy="30" r="25" fill="none" stroke="#e3ecfd" stroke-width="7"/><circle cx="30" cy="30" r="25" fill="none" stroke="#2f6fe0" stroke-width="7" stroke-linecap="round" stroke-dasharray="99 157" transform="rotate(-90 30 30)"/><text x="30" y="36" text-anchor="middle" font-size="17" font-weight="800" fill="#1d2340">57</text></svg></div>
+        <div class="main">
+          <div class="passage en">The clock on the old tower in Saebit Town stopped last month. People looked up and saw the wrong time. So Mr. Yoon, a clock repairman, climbed up the tower. He cleaned the inside of the clock and changed a broken part. It took him three days. Now the clock rings every hour again.</div>
+          <p class="q en">What is the best title for the story?</p>
+          <div class="tiles"><div><i>1</i><span class="en">Fixing the Town Clock</span></div><div class="pick"><i>2</i><span class="en">A New Tower for the Town</span></div><div><i>3</i><span class="en">How to Tell the Time</span></div><div><i>4</i><span class="en">Mr. Yoon's Clock Shop</span></div></div>
+          <button class="dk">잘 모르겠어요</button>
+        </div>
+      </div></div>
+
+      <div><p class="cap">듣기 3번 (두 번째 듣기 전)</p><div class="frame C listen">
+        <div class="top"><span class="tag">듣기</span><span class="count"><b>3</b> / 46</span>
+          <svg class="ring" viewBox="0 0 60 60"><circle cx="30" cy="30" r="25" fill="none" stroke="#efe8fc" stroke-width="7"/><circle cx="30" cy="30" r="25" fill="none" stroke="#7a4fd6" stroke-width="7" stroke-linecap="round" stroke-dasharray="129 157" transform="rotate(-90 30 30)"/><text x="30" y="36" text-anchor="middle" font-size="17" font-weight="800" fill="#1d2340">74</text></svg></div>
+        <div class="main">
+          <div class="big-play"><button>▶</button><div><p>한 번 더 들을 수 있어요</p><small>첫 번째 듣기가 끝나서 시간이 가고 있어요</small><div class="hearts">● ○</div></div></div>
+          <p class="q">대화를 듣고, 남자의 마지막 심정으로 가장 적절한 것을 고르시오.</p>
+          <div class="tiles"><div><i>1</i>실망한</div><div><i>2</i>걱정하는</div><div><i>3</i>신이 난</div><div><i>4</i>미안한</div></div>
+          <button class="dk">잘 모르겠어요</button>
+        </div>
+      </div></div>
+
+      <div><p class="cap">어형 쓰기 38번</p><div class="frame C writing">
+        <div class="top"><span class="tag">쓰기</span><span class="count"><b>38</b> / 46</span>
+          <svg class="ring" viewBox="0 0 60 60"><circle cx="30" cy="30" r="25" fill="none" stroke="#dff5ee" stroke-width="7"/><circle cx="30" cy="30" r="25" fill="none" stroke="#0f9a78" stroke-width="7" stroke-linecap="round" stroke-dasharray="141 157" transform="rotate(-90 30 30)"/><text x="30" y="36" text-anchor="middle" font-size="17" font-weight="800" fill="#1d2340">81</text></svg></div>
+        <div class="main">
+          <p class="q">[watch] 알맞은 꼴로 바꾸어 쓰세요.</p>
+          <p style="margin:0;color:#6a7089;font-size:19px">우리 할아버지는 매일 저녁 뉴스를 보신다.</p>
+          <div class="write">My grandpa <input value="watches"> the news every evening.</div>
+          <button class="next">다음</button>
+        </div>
+      </div></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
