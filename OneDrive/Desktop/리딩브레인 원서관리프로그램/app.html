@@ -1497,7 +1497,7 @@ function drawDebate(){
   if (saved && !DB){                                             // 끝낸 토론: 결과부터
     P.innerHTML = debateHTML(saved) + `
       <div class="row rp-hide" style="justify-content:center; margin-top:14px">
-        <button class="btn" id="dbShare">🔗 공유 링크 복사</button>
+        <button class="btn" id="dbShare">${kakaoOn() ? "💬 카카오톡으로 보내기" : "🔗 공유 링크 복사"}</button>
         <button class="btn ghost" id="dbPrint">🖨 인쇄</button>
         <button class="btn ghost" id="dbAgain">다시 토론하기</button>
         <span class="count" id="dbMsg"></span>
@@ -1660,7 +1660,7 @@ async function drawReport(){
   const D = await reportData();
   $("#p-report").innerHTML = reportHTML(D) + `
     <div class="row rp-hide" style="justify-content:center; margin-top:14px">
-      <button class="btn" id="rpShare">🔗 공유 링크 복사</button>
+      <button class="btn" id="rpShare">${kakaoOn() ? "💬 카카오톡으로 보내기" : "🔗 공유 링크 복사"}</button>
       <button class="btn ghost" id="rpPrint">🖨 리포트 인쇄</button>
       <span class="count" id="rpMsg"></span>
     </div>`;
@@ -1752,9 +1752,53 @@ const unb64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g,
 const pageLink = (kind, D) => location.origin + location.pathname + "?book=" + encodeURIComponent(B.slug) + "#" + kind + "=" + b64(JSON.stringify(D));
 const reportLink = D => pageLink("r", D);
 
+/* 카카오톡으로 보내기.
+   config.js 의 kakaoKey 가 있을 때만 쓴다 — 그 키는 도메인으로 잠긴 공개용 키다.
+   키가 없으면 지금까지처럼 공유 창·링크 복사로 움직인다 (아무것도 망가지지 않는다). */
+const kakaoOn = () => !!(window.RB_CONFIG && window.RB_CONFIG.kakaoKey);
+let kakaoReady = null;
+function kakaoInit(){
+  if (kakaoReady) return kakaoReady;
+  if (!kakaoOn()) { kakaoReady = Promise.resolve(false); return kakaoReady; }
+  kakaoReady = new Promise(done => {
+    const s = document.createElement("script");
+    s.src = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
+    s.onload = () => {
+      try {
+        if (!window.Kakao.isInitialized()) window.Kakao.init(window.RB_CONFIG.kakaoKey);
+        done(true);
+      } catch (e) { done(false); }
+    };
+    s.onerror = () => done(false);
+    document.head.appendChild(s);
+  });
+  return kakaoReady;
+}
+
 async function shareLink(url, title, msg){
   const text = "[리딩브레인] " + title;
-  // 휴대폰이면 공유 창(카톡 바로 선택), 컴퓨터면 링크 복사 → 카톡 채널에 붙여넣기
+
+  // ① 카카오톡 카드 — 표지 그림 + 제목 + [리포트 보기] 단추가 어머님 카톡에 꽂힌다
+  if (await kakaoInit()){
+    try {
+      const img = B.cover ? new URL(B.cover, location.href).href : "";
+      const to = { mobileWebUrl: url, webUrl: url };
+      window.Kakao.Share.sendDefault({
+        objectType: "feed",
+        content: {
+          title: title,
+          description: "리딩브레인 영어학원이 보내 드리는 학습 리포트입니다. 눌러서 바로 보실 수 있어요.",
+          imageUrl: img,
+          link: to
+        },
+        buttons: [{ title: "리포트 보기", link: to }]
+      });
+      msg.textContent = "카카오톡을 열었어요. 어머님 대화방을 고르세요.";
+      return;
+    } catch (e) { /* 카톡이 안 열리면 아래 길로 간다 */ }
+  }
+
+  // ② 휴대폰이면 공유 창(카톡 바로 선택), 컴퓨터면 링크 복사 → 카톡에 붙여넣기
   if (navigator.share && matchMedia("(pointer:coarse)").matches){
     try { await navigator.share({ title: text, text, url }); return; } catch (e) { if (e.name === "AbortError") return; }
   }

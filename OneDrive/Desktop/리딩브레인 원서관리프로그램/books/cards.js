@@ -215,6 +215,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-ghost-town-at-sundown",
+  "title": "Ghost Town at Sundown",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #10",
+  "level": {
+   "ar": "3.0",
+   "lexile": "510L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424008-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-dolphins-at-daybreak",
+  "title": "Dolphins at Daybreak",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #9",
+  "level": {
+   "ar": "3.1",
+   "lexile": "540L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424007-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "sarah-plain-and-tall",
   "title": "Sarah, Plain and Tall",
   "author": "Patricia MacLachlan",
@@ -371,5 +399,7 @@ window.BOOK_BY_NO = {
  "S3251": "magic-tree-house-night-of-the-ninjas",
  "S3252": "magic-tree-house-afternoon-on-the-amazon",
  "S3253": "magic-tree-house-sunset-of-the-sabertooth",
- "S3254": "magic-tree-house-midnight-on-the-moon"
+ "S3254": "magic-tree-house-midnight-on-the-moon",
+ "M3038": "magic-tree-house-dolphins-at-daybreak",
+ "S3255": "magic-tree-house-ghost-town-at-sundown"
 };
