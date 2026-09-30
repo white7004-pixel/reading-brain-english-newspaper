@@ -1,0 +1,27 @@
+{
+  "stage1": {
+    "A": [
+      { "id": "sampleA-13", "no": 13, "area": "reading", "level": "초3", "passageId": "sampleA-p1", "passage": "Tom has a small dog. The dog is brown. It likes to run in the park.", "question": "[샘플] What color is the dog?", "choices": ["brown", "black", "white", "gray"], "answer": 0, "explain_ko": "The dog is brown.", "status": "ok", "sample": true },
+      { "id": "sampleA-14", "no": 14, "area": "reading", "level": "초3", "passageId": "sampleA-p1", "passage": "Tom has a small dog. The dog is brown. It likes to run in the park.", "question": "[샘플] Where does the dog like to __run__?", "choices": ["at school", "in the park", "in the kitchen", "on the bus"], "answer": 1, "explain_ko": "run in the park", "status": "ok", "sample": true },
+      { "id": "sampleA-32", "no": 32, "area": "phonics", "level": "초3", "question": "[샘플] 밑줄 친 부분의 소리가 다른 것은?", "choices": ["c__a__t", "h__a__t", "m__a__p", "c__a__ke"], "answer": 3, "explain_ko": "cake 의 a 는 [에이]", "status": "ok", "sample": true },
+      { "id": "sampleA-34", "no": 34, "area": "grammar", "level": "초4", "question": "[샘플] 빈칸에 알맞은 것은?\nThere ___ three apples on the table.", "choices": ["is", "are", "am", "be"], "answer": 1, "explain_ko": "복수 → are", "status": "ok", "sample": true },
+      { "id": "sampleA-38", "no": 38, "area": "form", "level": "초5", "question": "[샘플] [live] 알맞은 꼴로 바꾸어 쓰세요.", "template": "She {} in Seoul.", "answers": [["lives"]], "explain_ko": "3인칭 단수 현재", "status": "ok", "sample": true },
+      { "id": "sampleA-39", "no": 39, "area": "form", "level": "초6", "question": "[샘플] [have] 과거 부정문으로 쓰세요.", "template": "I {} {} lunch yesterday.", "hint_ko": "[나는 어제 점심을 먹지 않았다.]", "answers": [["didn't", "did not"], ["have"]], "explain_ko": "did not + 동사원형", "status": "ok", "sample": true },
+      { "id": "sampleA-43", "no": 43, "area": "sentence", "level": "초5", "question": "[샘플] 그는 음악가이다. (musician)", "template": "{} {} {} {}.", "answers": [["he"], ["is"], ["a"], ["musician"]], "explain_ko": "He is a musician.", "status": "ok", "sample": true }
+    ],
+    "B": [
+      { "id": "sampleB-13", "no": 13, "area": "reading", "level": "초3", "passageId": "sampleB-p1", "passage": "Mia has a red bike. She rides it to school every day.", "question": "[샘플 B] What does Mia have?", "choices": ["a red bike", "a blue car", "a small cat", "a big bag"], "answer": 0, "explain_ko": "Mia has a red bike.", "status": "ok", "sample": true },
+      { "id": "sampleB-32", "no": 32, "area": "phonics", "level": "초3", "question": "[샘플 B] 밑줄 친 부분의 소리가 다른 것은?", "choices": ["s__i__t", "p__i__g", "k__i__te", "b__i__g"], "answer": 2, "explain_ko": "kite 의 i 는 [아이]", "status": "ok", "sample": true },
+      { "id": "sampleB-38", "no": 38, "area": "form", "level": "초5", "question": "[샘플 B] [play] 알맞은 꼴로 바꾸어 쓰세요.", "template": "He {} soccer every Sunday.", "answers": [["plays"]], "explain_ko": "3인칭 단수 현재", "status": "ok", "sample": true }
+    ]
+  },
+  "write2": {
+    "A": [
+      { "id": "sampleA-w1", "no": 1, "area": "form", "level": "중2", "point": "수동태", "question": "[샘플] [paint] 수동태(과거)로 쓰세요.", "template": "The fence {} {} by my father.", "hint_ko": "[그 울타리는 아빠가 칠했다.]", "answers": [["was"], ["painted"]], "explain_ko": "was + p.p.", "status": "ok", "sample": true },
+      { "id": "sampleA-w9", "no": 9, "area": "sentence", "level": "중3", "point": "분사 수식", "question": "[샘플] 창문 옆에 서 있는 소녀는 내 여동생이다. (stand, window)", "template": "The girl {} {} the {} is my sister.", "answers": [["standing"], ["by", "near"], ["window"]], "explain_ko": "현재분사가 뒤에서 꾸밈", "status": "ok", "sample": true }
+    ],
+    "B": [
+      { "id": "sampleB-w1", "no": 1, "area": "form", "level": "중2", "point": "과거진행", "question": "[샘플 B] [read] 과거진행형으로 쓰세요.", "template": "She {} {} a book then.", "answers": [["was"], ["reading"]], "explain_ko": "was + -ing", "status": "ok", "sample": true }
+    ]
+  }
+}

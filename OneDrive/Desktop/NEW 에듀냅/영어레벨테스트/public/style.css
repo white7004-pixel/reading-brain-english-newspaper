@@ -200,3 +200,12 @@ fieldset.days input { width: auto; }
 .days-title { margin: 0; font-size: 13px; color: var(--cream-2); }
 details.sub > summary { cursor: pointer; font-size: 13px; color: var(--cream-2); margin-bottom: 8px; }
 details.sub .short { max-width: 240px; }
+
+/* 문제지: 시계·쓰기 칸·모름·밑줄 */
+.timer { text-align: center; font: 700 22px/1.3 var(--sans); color: var(--accent); margin: 0 0 12px; }
+.timer.low { color: var(--coral); }
+.hint { color: var(--cream-2); margin: 0 0 14px; }
+.write-line { font: 17px/2.4 Georgia, 'Times New Roman', serif; margin: 0 0 16px; }
+.write-line input { font: inherit; width: auto; margin: 0 6px; padding: 4px 8px; border: 1px solid rgba(252,244,226,.4); border-radius: 3px; background: transparent; color: var(--cream); }
+.choices button.dont-know { color: var(--cream-2); }
+.passage u, .question u, .choices u { text-underline-offset: 3px; }

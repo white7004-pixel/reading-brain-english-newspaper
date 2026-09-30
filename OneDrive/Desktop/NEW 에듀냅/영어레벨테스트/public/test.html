@@ -21,10 +21,18 @@
     <button id="intro-go" type="button">시작</button>
   </section>
   <section id="item" class="card" hidden>
+    <p id="timer" class="timer" hidden></p>
     <div id="listen" class="listen" hidden><button id="play" class="btn-ghost" type="button">▶ 듣기</button><span id="plays"></span></div>
     <div id="passage" class="passage" hidden></div>
     <p id="question" class="question"></p>
+    <p id="hint" class="hint" hidden></p>
     <div id="choices" class="choices"></div>
+    <form id="write" class="write" hidden autocomplete="off"><p id="write-line" class="write-line"></p><button type="submit">다음</button></form>
+  </section>
+  <section id="gate" class="card" hidden>
+    <h2 id="gate-title"></h2>
+    <p id="gate-text"></p>
+    <button id="gate-go" type="button"></button>
   </section>
   <p id="test-status" class="status" role="status"></p>
 </main>
