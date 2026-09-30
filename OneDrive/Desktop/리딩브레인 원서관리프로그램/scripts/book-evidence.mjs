@@ -38,23 +38,33 @@ const realDesc = one => one && one.length >= 40 &&
 
 const title = clean(b.title);
 const base = "https://openlibrary.org/search.json?limit=3&fields=key,title,author_name,first_sentence,subject,person,place,number_of_pages_median,first_publish_year&";
-let d = await ask(base + "title=" + encodeURIComponent(title) + "&author=" + encodeURIComponent(b.author || ""));
-let hits = (d && d.docs) || [];
-if (!hits.length) { d = await ask(base + "title=" + encodeURIComponent(title)); hits = (d && d.docs) || []; }
+// 찾는 길을 여럿 두고, 소개글이 나올 때까지 차례로 넓힌다.
+// 시리즈 책은 오픈라이브러리 제목이 "Magic Tree House #4" 처럼 시리즈명+번호라
+// 낱권 제목으로는 안 걸리는 일이 잦다.
+const queries = ["title=" + encodeURIComponent(title) + "&author=" + encodeURIComponent(b.author || ""),
+                 "title=" + encodeURIComponent(title)];
+if (b.series && b.series !== "No series") {
+  queries.push("q=" + encodeURIComponent(title + " " + b.series));
+  queries.push("q=" + encodeURIComponent(b.series + " " + title + " " + (b.author || "")));
+}
 
-const ol = [];
-for (const h of hits.slice(0, 2)) {
-  const row = { key: h.key || "", title: h.title || "", author: (h.author_name || []).join(", "),
-                first: txt((h.first_sentence || [])[0]), subjects: (h.subject || []).slice(0, 12),
-                people: (h.person || []).slice(0, 8), places: (h.place || []).slice(0, 6),
-                pages: h.number_of_pages_median || 0, year: h.first_publish_year || 0, desc: "" };
-  if (h.key) {
+const ol = [], seenKey = {};
+for (const q of queries) {
+  if (ol.some(x => x.desc)) break;                    // 소개글을 하나 얻었으면 그만 찾는다
+  const d = await ask(base + q);
+  for (const h of ((d && d.docs) || []).slice(0, 2)) {
+    if (!h.key || seenKey[h.key] || ol.length >= 4) continue;
+    seenKey[h.key] = 1;
+    const row = { key: h.key, title: h.title || "", author: (h.author_name || []).join(", "),
+                  first: txt((h.first_sentence || [])[0]), subjects: (h.subject || []).slice(0, 12),
+                  people: (h.person || []).slice(0, 8), places: (h.place || []).slice(0, 6),
+                  pages: h.number_of_pages_median || 0, year: h.first_publish_year || 0, desc: "" };
     const w = await ask("https://openlibrary.org" + h.key + ".json");
     const D = w && w.description;
     const one = txt(typeof D === "string" ? D : (D && D.value) || "").split(/-{5,}|###/)[0];
     if (realDesc(one)) row.desc = one.slice(0, 1200);
+    ol.push(row);
   }
-  ol.push(row);
 }
 
 const out = {

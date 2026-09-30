@@ -19,5 +19,8 @@ window.BOOKS = [
   "berenstain-bears-in-the-dark",
   "berenstain-bears-learn-about-strangers",
   "berenstain-bears-too-much-junk-food",
-  "magic-tree-house-knight-at-dawn"
+  "magic-tree-house-knight-at-dawn",
+  "magic-tree-house-mummies-in-the-morning",
+  "magic-tree-house-pirates-past-noon",
+  "magic-tree-house-night-of-the-ninjas"
 ];

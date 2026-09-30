@@ -101,6 +101,48 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-mummies-in-the-morning",
+  "title": "Mummies in the Morning",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #3",
+  "level": {
+   "ar": "2.7",
+   "lexile": "500L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/7283349-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-night-of-the-ninjas",
+  "title": "Night of the Ninjas",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #5",
+  "level": {
+   "ar": "2.7",
+   "lexile": "490L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/423891-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-pirates-past-noon",
+  "title": "Pirates Past Noon",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #4",
+  "level": {
+   "ar": "2.8",
+   "lexile": "490L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/12616282-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "frog-and-toad-are-friends",
   "title": "Frog and Toad Are Friends",
   "author": "Arnold Lobel",
@@ -281,5 +323,8 @@ window.BOOK_BY_NO = {
  "S3788": "berenstain-bears-in-the-dark",
  "S3779": "berenstain-bears-learn-about-strangers",
  "S4441": "berenstain-bears-too-much-junk-food",
- "S3248": "magic-tree-house-knight-at-dawn"
+ "S3248": "magic-tree-house-knight-at-dawn",
+ "S3249": "magic-tree-house-mummies-in-the-morning",
+ "S3250": "magic-tree-house-pirates-past-noon",
+ "S3251": "magic-tree-house-night-of-the-ninjas"
 };
