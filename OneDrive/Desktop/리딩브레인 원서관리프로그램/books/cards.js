@@ -512,6 +512,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-a-big-day-for-baseball",
+  "title": "A Big Day for Baseball",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #29",
+  "level": {
+   "ar": "3.5",
+   "lexile": "400L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/8447833-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "berenstain-bears-learn-about-strangers",
   "title": "The Berenstain Bears Learn about Strangers",
   "author": "Stan and Jan Berenstain",
@@ -522,6 +536,20 @@ window.BOOK_CARDS = [
    "rb": "다독 3단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/4196958-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-hurricane-heroes-in-texas",
+  "title": "Hurricane Heroes in Texas",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #30",
+  "level": {
+   "ar": "3.7",
+   "lexile": "470L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/10953015-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -671,5 +699,7 @@ window.BOOK_BY_NO = {
  "S3268": "magic-tree-house-stage-fright-on-a-summer-night",
  "S3269": "magic-tree-house-good-morning-gorillas",
  "S3270": "magic-tree-house-thanksgiving-on-thursday",
- "M3089": "magic-tree-house-high-tide-in-hawaii"
+ "M3089": "magic-tree-house-high-tide-in-hawaii",
+ "S3933": "magic-tree-house-a-big-day-for-baseball",
+ "S3934": "magic-tree-house-hurricane-heroes-in-texas"
 };
