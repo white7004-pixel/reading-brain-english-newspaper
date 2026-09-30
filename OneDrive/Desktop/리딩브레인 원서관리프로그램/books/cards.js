@@ -299,6 +299,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-twister-on-tuesday",
+  "title": "Twister on Tuesday",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #23",
+  "level": {
+   "ar": "3.2",
+   "lexile": "570L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424181-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-polar-bears-past-bedtime",
   "title": "Polar Bears Past Bedtime",
   "author": "Mary Pope Osborne",
@@ -379,6 +393,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/424176-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-earthquake-in-the-early-morning",
+  "title": "Earthquake in the Early Morning",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #24",
+  "level": {
+   "ar": "3.3",
+   "lexile": "590L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424182-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -581,5 +609,7 @@ window.BOOK_BY_NO = {
  "S3263": "magic-tree-house-tigers-at-twilight",
  "S3264": "magic-tree-house-dingoes-at-dinnertime",
  "S3265": "magic-tree-house-civil-war-on-sunday",
- "M3142": "magic-tree-house-revolutionary-war-on-wednesday"
+ "M3142": "magic-tree-house-revolutionary-war-on-wednesday",
+ "S3266": "magic-tree-house-twister-on-tuesday",
+ "S3267": "magic-tree-house-earthquake-in-the-early-morning"
 };

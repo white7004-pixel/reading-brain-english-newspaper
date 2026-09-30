@@ -39,5 +39,7 @@ window.BOOKS = [
   "magic-tree-house-tigers-at-twilight",
   "magic-tree-house-dingoes-at-dinnertime",
   "magic-tree-house-civil-war-on-sunday",
-  "magic-tree-house-revolutionary-war-on-wednesday"
+  "magic-tree-house-revolutionary-war-on-wednesday",
+  "magic-tree-house-twister-on-tuesday",
+  "magic-tree-house-earthquake-in-the-early-morning"
 ];
