@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { estLabel, nextLabel, shaky, bookFor, commentFacts, templateComment } from '../public/core/summary.js';
+import { estLabel, nextLabel, nextUnits, shaky, bookFor, commentFacts, templateComment } from '../public/core/summary.js';
 
 const r = (step, correct, phase = 1) => ({ step, unit: 1, correct, phase });
 
@@ -62,4 +62,13 @@ test('templateComment 는 AI 없이도 총평과 지도 방향을 쓴다', () =>
   assert.equal(c.directions.length, 3);
   assert.match(c.directions[0], /^단어는 중2 1학기 3단원\(어휘대 3\)부터 수업을 시작합니다\.$/);
   assert.deepEqual(templateComment({ sections: [], overall: '' }).directions, []);
+});
+
+test('nextUnits: 다음 단원 n개, 고3 끝을 넘으면 있는 만큼만', () => {
+  assert.deepEqual(nextUnits('reading', { step: 11, unit: 3 }, 4).map((u) => u.label),
+    ['중2 1학기 4단원', '중2 2학기 1단원', '중2 2학기 2단원', '중2 2학기 3단원']);
+  assert.equal(nextUnits('reading', { step: 11, unit: 3 }, 4)[0].name, '무관한 문장');
+  assert.equal(nextUnits('grammar', { step: 11, unit: null }, 1)[0].label, '중2 1학기 1단원');
+  assert.deepEqual(nextUnits('grammar', { step: 20, unit: 2 }, 4).map((u) => u.label), ['고3 2학기 3단원', '고3 2학기 4단원']);
+  assert.deepEqual(nextUnits('grammar', { step: 20, unit: 4 }, 4), []);
 });

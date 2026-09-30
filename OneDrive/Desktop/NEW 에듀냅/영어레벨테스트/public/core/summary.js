@@ -13,6 +13,15 @@ export function nextLabel(section, est) {
   return n ? `${labelOf(n.step)} ${n.unit}단원(${unitName(section, n.step, n.unit)})` : '고3 과정 복습';
 }
 
+// 다음 단원 n개 (고3 과정 끝을 넘으면 있는 만큼만)
+export function nextUnits(section, est, n) {
+  const out = [];
+  for (let u = nextUnit(est); u && out.length < n; u = nextUnit(u)) {
+    out.push({ ...u, label: `${labelOf(u.step)} ${u.unit}단원`, name: unitName(section, u.step, u.unit) });
+  }
+  return out;
+}
+
 // 1마당에서 틀린 가장 낮은 학기 ~ 맞힌 가장 높은 학기. 겹치지 않으면 null.
 export function shaky(log) {
   const p1 = log.filter((r) => r.phase === 1);

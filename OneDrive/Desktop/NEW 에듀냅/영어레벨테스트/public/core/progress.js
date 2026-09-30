@@ -1,5 +1,5 @@
 // 예상 진도 (Klai형 설계서 3장). 숫자는 전부 여기서 계산하고 AI 에는 결과만 넘긴다.
-import { SECTIONS, GRADES, MIN_STEP, MAX_STEP, gradeIndex, labelOf, currentStep } from './scale.js';
+import { SECTIONS, GRADES, MIN_STEP, MAX_STEP, gradeIndex, labelOf, currentStep, stepOf } from './scale.js';
 
 export const END = MAX_STEP + 1; // 고3 2학기 4단원까지 마친 자리
 export const EXAM_MONTHS = [4, 6, 9, 11]; // 시험 기간 — 진도가 나가지 않는 달
@@ -82,6 +82,37 @@ export function roadmap({ est, grade, start }) {
     if (Math.floor(pos) > before) points.push(point(i));
   }
   return { months: MAX_MONTHS, done: false, points: thin(points) };
+}
+
+// 고3 2월(남은 기간 left)과 견준 완료 시점. 두 막대(남은 기간·걸리는 기간)를 뺀 값과 같게 left − months.
+export function earlyText(road, left) {
+  if (road.months === 0) return '이미 도달';
+  return road.done && road.months < left ? `${ym(left - road.months)} 먼저` : '졸업 뒤';
+}
+
+// 계단 그래프: 수업 시작 달부터 고3 2월까지 달마다 학원 위치(ours)와 학교 위치(school).
+// 학원 = roadmap 과 같은 규칙. 학교 = 3월에 그 학년 1학기를 시작해 한 달에 1/6학기 (달 끝 기준 — 고3 2월 끝에 END).
+// ahead = 뒤처져 있다가 처음으로 학교를 따라잡는 달의 번호, done = 고3 과정을 마치는 달의 번호 (없으면 null).
+export function track({ est, grade, start }) {
+  const perMonth = PACE / (12 - EXAM_MONTHS.length);
+  const first = monthIndex(start);
+  const base = stepOf(grade, 1) + (first - monthIndex(`${schoolYear(start)}-03`) + 1) / 6;
+  let pos = position(est);
+  let ahead = null;
+  let done = pos >= END ? 0 : null;
+  const points = [];
+  for (let i = 0; i < monthsLeft(grade, start); i++) {
+    const month = monthOf(first + i);
+    const exam = EXAM_MONTHS.includes(Number(month.slice(5)));
+    if (i > 0 && !exam && done == null) {
+      pos += perMonth;
+      if (pos >= END) done = i;
+    }
+    const p = { month, when: monthLabel(grade, start, month), ours: Math.min(END, pos), school: base + i / 6, exam };
+    if (i > 0 && ahead == null && points[0].ours < points[0].school && p.ours >= p.school) ahead = i;
+    points.push(p);
+  }
+  return { points, ahead, done };
 }
 
 export function project({ grade, start, ests }) {

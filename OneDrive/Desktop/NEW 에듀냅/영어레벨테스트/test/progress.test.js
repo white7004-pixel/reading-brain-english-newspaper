@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { position, score, levelOf, gradePos, gapText, schoolYear, monthLabel, monthsLeft, ym, roadmap, project, END, PACE } from '../public/core/progress.js';
+import { position, score, levelOf, gradePos, gapText, schoolYear, monthLabel, monthsLeft, ym, roadmap, project, track, earlyText, END, PACE } from '../public/core/progress.js';
 
 test('위치·점수·수준', () => {
   assert.equal(END, 21);
@@ -67,4 +67,48 @@ test('project: 가장 느린 영역이 전체 완료 시점', () => {
   assert.equal(p.left, 72);
   assert.equal(project({ grade: '중1', start: '2026-03-02', ests: {} }), null);
   assert.equal(project({ grade: '고2', start: '2026-09-28', ests: { grammar: { step: 20, unit: 4 } } }).overall.label, '고3 과정 완료');
+});
+
+const near = (a, b) => Math.abs(a - b) < 1e-9;
+
+test('track: 달마다 학원·학교 위치 (학교는 3월 시작, 한 달에 1/6학기, 달 끝 기준)', () => {
+  const t = track({ est: { step: 11, unit: 3 }, grade: '중2', start: '2026-10-05' });
+  assert.equal(t.points.length, monthsLeft('중2', '2026-10-05')); // 2026-10 ~ 2031-02
+  const [p0, p1, p2] = t.points;
+  assert.deepEqual([p0.month, p0.when, p0.ours, p0.exam], ['2026-10', '중2 10월', 11.75, false]);
+  assert.ok(near(p0.school, 11 + 8 / 6)); // 3월 ~ 10월 끝 = 8달
+  assert.deepEqual([p1.month, p1.exam, p1.ours], ['2026-11', true, 11.75]); // 시험 달은 쉼
+  assert.equal(p2.ours, 12.125);
+  const last = t.points.at(-1);
+  assert.deepEqual([last.month, last.when], ['2031-02', '고3 2월']);
+  assert.ok(near(last.school, 21)); // 고3 2월 끝에 학교도 고3 과정 끝
+  // 2027-02: 학원 12.875 < 학교 13 → 2027-03: 13.25 ≥ 13.17 — 처음 앞서는 달
+  assert.equal(t.ahead, 5);
+  assert.equal(t.points[5].when, '중3 3월');
+  // 완료 달은 roadmap 과 같다
+  assert.equal(t.done, roadmap({ est: { step: 11, unit: 3 }, grade: '중2', start: '2026-10-05' }).months);
+  assert.equal(t.points[t.done].ours, 21);
+  assert.ok(t.points[t.done - 1].ours < 21);
+  assert.ok(t.points.every((p) => p.ours <= 21));
+});
+
+test('track: 처음부터 앞선 학생·졸업 뒤에 끝나는 학생·이미 끝난 학생', () => {
+  const ahead = track({ est: { step: 15, unit: 1 }, grade: '중2', start: '2026-10-05' });
+  assert.equal(ahead.ahead, null);
+  const late = track({ est: { step: 9, unit: 0 }, grade: '고2', start: '2026-03-02' });
+  assert.equal(late.done, null);
+  assert.equal(late.points.length, 24);
+  const fin = track({ est: { step: 20, unit: 4 }, grade: '고2', start: '2026-09-28' });
+  assert.equal(fin.done, 0);
+  assert.equal(fin.ahead, null);
+  assert.ok(fin.points.every((p) => p.ours === 21));
+  assert.deepEqual(track({ est: { step: 11, unit: 1 }, grade: '고3', start: '2027-02-10' }).points.map((p) => p.when), ['고3 2월']);
+});
+
+test('earlyText: 고3 졸업(남은 기간)과 견준 완료 시점', () => {
+  assert.equal(earlyText({ months: 0, done: true }, 53), '이미 도달');
+  assert.equal(earlyText({ months: 38, done: true }, 53), '1년 3개월 먼저');
+  assert.equal(earlyText({ months: 52, done: true }, 53), '1개월 먼저');
+  assert.equal(earlyText({ months: 53, done: true }, 53), '졸업 뒤');
+  assert.equal(earlyText({ months: 120, done: false }, 200), '졸업 뒤');
 });
