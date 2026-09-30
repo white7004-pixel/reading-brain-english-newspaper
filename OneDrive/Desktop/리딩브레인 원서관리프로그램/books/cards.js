@@ -526,6 +526,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-to-the-future-ben-franklin",
+  "title": "To the Future, Ben Franklin!",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #32",
+  "level": {
+   "ar": "3.5",
+   "lexile": "420L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/8784862-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "berenstain-bears-learn-about-strangers",
   "title": "The Berenstain Bears Learn about Strangers",
   "author": "Stan and Jan Berenstain",
@@ -550,6 +564,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/10953015-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-warriors-in-winter",
+  "title": "Warriors in Winter",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #31",
+  "level": {
+   "ar": "3.7",
+   "lexile": "410L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/8748964-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -701,5 +729,7 @@ window.BOOK_BY_NO = {
  "S3270": "magic-tree-house-thanksgiving-on-thursday",
  "M3089": "magic-tree-house-high-tide-in-hawaii",
  "S3933": "magic-tree-house-a-big-day-for-baseball",
- "S3934": "magic-tree-house-hurricane-heroes-in-texas"
+ "S3934": "magic-tree-house-hurricane-heroes-in-texas",
+ "S3935": "magic-tree-house-warriors-in-winter",
+ "S3936": "magic-tree-house-to-the-future-ben-franklin"
 };

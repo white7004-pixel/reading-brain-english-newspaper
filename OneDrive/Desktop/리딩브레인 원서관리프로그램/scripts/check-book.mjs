@@ -20,7 +20,10 @@ for (const slug of slugs) {
   if (B.evidence) {
     const e = B.evidence;
     assert.ok(Array.isArray(e.characters) && e.characters.length >= 1, `${slug}: evidence.characters 가 비었다`);
-    assert.ok(Array.isArray(e.beats) && e.beats.length === 3, `${slug}: evidence.beats 는 사건 세 마디여야 한다`);
+    // 근거가 한 줄 요약뿐인 책(31권처럼 소개글이 없는 책)은 두 마디밖에 못 뽑는다.
+    // 세 마디를 억지로 채우면 그 한 마디가 지어낸 것이 된다. 그래서 두세 마디를 받는다.
+    assert.ok(Array.isArray(e.beats) && e.beats.length >= 2 && e.beats.length <= 3,
+      `${slug}: evidence.beats 는 사건 두세 마디여야 한다 (${(e.beats || []).length})`);
     assert.ok(e.ending && e.ending.trim(), `${slug}: evidence.ending 이 비었다`);
     assert.ok(e.checked && e.checked.trim(), `${slug}: 확인한 쪽의 기록(evidence.checked)이 없다`);
     assert.ok((B.quiz || []).length >= 10, `${slug}: A갈래는 퀴즈가 10문제 이상이어야 한다 (${(B.quiz || []).length})`);

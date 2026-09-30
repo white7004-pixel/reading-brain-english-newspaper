@@ -47,5 +47,7 @@ window.BOOKS = [
   "magic-tree-house-thanksgiving-on-thursday",
   "magic-tree-house-high-tide-in-hawaii",
   "magic-tree-house-a-big-day-for-baseball",
-  "magic-tree-house-hurricane-heroes-in-texas"
+  "magic-tree-house-hurricane-heroes-in-texas",
+  "magic-tree-house-warriors-in-winter",
+  "magic-tree-house-to-the-future-ben-franklin"
 ];

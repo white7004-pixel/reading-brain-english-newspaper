@@ -37,6 +37,23 @@ const realDesc = one => one && one.length >= 40 &&
   !/^\d+\s*(unnumbered\s*)?(p|pages|v\.|volumes)\b/i.test(one) && !/\b\d+\s*x\s*\d+\s*cm\b/i.test(one);
 
 const title = clean(b.title);
+
+// 검색을 넓히면 **전혀 다른 책**이 딸려 온다. 32권에서 H. G. 웰스의 "The Time Machine" 이
+// 들어왔고 판정까지 "충분" 으로 뒤집혔다. 제목이 닮지 않은 기록은 받지 않는다.
+const key = s => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)
+  .filter(w => w.length > 2 && ["the", "and", "for", "with", "of", "on", "in"].indexOf(w) < 0);
+const mine = key(title);
+const sameBook = t => {
+  const his = key(t);
+  // 시리즈 책은 오픈라이브러리 제목이 "Magic Tree House #4" 인 일이 있다 — 그건 맞는 책이다.
+  if (b.series && b.series !== "No series") {
+    const ser = key(b.series);
+    if (ser.length && ser.every(w => his.indexOf(w) >= 0)) return true;
+  }
+  if (!mine.length) return true;
+  return mine.filter(w => his.indexOf(w) >= 0).length / mine.length >= 0.5;
+};
+
 const base = "https://openlibrary.org/search.json?limit=3&fields=key,title,author_name,first_sentence,subject,person,place,number_of_pages_median,first_publish_year&";
 // 찾는 길을 여럿 두고, 소개글이 나올 때까지 차례로 넓힌다.
 // 시리즈 책은 오픈라이브러리 제목이 "Magic Tree House #4" 처럼 시리즈명+번호라
@@ -55,6 +72,10 @@ for (const q of queries) {
   for (const h of ((d && d.docs) || []).slice(0, 2)) {
     if (!h.key || seenKey[h.key] || ol.length >= 4) continue;
     seenKey[h.key] = 1;
+    if (!sameBook(h.title)) {                         // 제목이 딴판이면 다른 책이다
+      console.error("  건너뜀 — 제목이 다르다: " + h.title + " (" + (h.author_name || []).join(", ") + ")");
+      continue;
+    }
     const row = { key: h.key, title: h.title || "", author: (h.author_name || []).join(", "),
                   first: txt((h.first_sentence || [])[0]), subjects: (h.subject || []).slice(0, 12),
                   people: (h.person || []).slice(0, 8), places: (h.place || []).slice(0, 6),
