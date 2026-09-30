@@ -121,3 +121,17 @@ test('writeSummary: 맞힌 수와 틀린 문법 항목(겹치면 한 번)', () =
   const log = [r('form', '중2', true, { point: '수동태' }), r('form', '중3', false, { point: '과거완료' }), r('sentence', '고1', false, { point: '과거완료' }), r('form', '고1', false, { point: '부정어 도치' })];
   assert.deepEqual(writeSummary(log), { correct: 1, total: 4, missed: ['과거완료', '부정어 도치'] });
 });
+
+test('1차 문제지 순서: 듣기 → 파닉스 → 독해 → 문법 → 어형 쓰기 → 영작, 영역 안에서는 쉬운 것부터', () => {
+  const ORDER = ['listening', 'phonics', 'reading', 'grammar', 'form', 'sentence'];
+  const LV = ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'];
+  for (const file of ['forms.json', 'forms.sample.json']) {
+    const forms = JSON.parse(readFileSync(new URL(`../public/data/${file}`, import.meta.url), 'utf8'));
+    for (const [set, list] of Object.entries(forms.stage1)) {
+      const s = [...list].sort((a, b) => a.no - b.no);
+      const key = (x) => ORDER.indexOf(x.area) * 100 + LV.indexOf(x.level);
+      s.slice(1).forEach((x, i) => assert.ok(key(s[i]) <= key(x), `${file} ${set}: ${s[i].no}번(${s[i].area} ${s[i].level}) 뒤에 ${x.no}번(${x.area} ${x.level})`));
+      if (file === 'forms.json') assert.deepEqual(s.map((x) => x.no), Array.from({ length: 46 }, (_, i) => i + 1));
+    }
+  }
+});

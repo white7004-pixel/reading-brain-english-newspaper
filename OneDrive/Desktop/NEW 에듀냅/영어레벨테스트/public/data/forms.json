@@ -218,8 +218,40 @@
     "status": "draft"
    },
    {
-    "id": "s1-A-13",
+    "id": "s1-A-32",
     "no": 13,
+    "area": "phonics",
+    "level": "초3",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "k__i__te",
+     "b__i__ke",
+     "t__i__me",
+     "s__i__t"
+    ],
+    "explain_ko": "sit 의 i 는 짧은 [이], 나머지는 [아이].",
+    "status": "draft",
+    "answer": 3
+   },
+   {
+    "id": "s1-A-33",
+    "no": 14,
+    "area": "phonics",
+    "level": "초4",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "__c__at",
+     "__c__up",
+     "__c__ity",
+     "__c__ake"
+    ],
+    "explain_ko": "city 의 c 는 [ㅅ], 나머지는 [ㅋ].",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-A-13",
+    "no": 15,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-A-p1",
@@ -237,7 +269,7 @@
    },
    {
     "id": "s1-A-14",
-    "no": 14,
+    "no": 16,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-A-p1",
@@ -255,7 +287,7 @@
    },
    {
     "id": "s1-A-15",
-    "no": 15,
+    "no": 17,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-A-p2",
@@ -273,7 +305,7 @@
    },
    {
     "id": "s1-A-16",
-    "no": 16,
+    "no": 18,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-A-p2",
@@ -291,7 +323,7 @@
    },
    {
     "id": "s1-A-17",
-    "no": 17,
+    "no": 19,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-A-p3",
@@ -309,7 +341,7 @@
    },
    {
     "id": "s1-A-18",
-    "no": 18,
+    "no": 20,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-A-p3",
@@ -327,7 +359,7 @@
    },
    {
     "id": "s1-A-19",
-    "no": 19,
+    "no": 21,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-A-p4",
@@ -345,7 +377,7 @@
    },
    {
     "id": "s1-A-20",
-    "no": 20,
+    "no": 22,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-A-p4",
@@ -363,7 +395,7 @@
    },
    {
     "id": "s1-A-21",
-    "no": 21,
+    "no": 23,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-A-p5",
@@ -381,7 +413,7 @@
    },
    {
     "id": "s1-A-22",
-    "no": 22,
+    "no": 24,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-A-p5",
@@ -399,7 +431,7 @@
    },
    {
     "id": "s1-A-23",
-    "no": 23,
+    "no": 25,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-A-p6",
@@ -417,7 +449,7 @@
    },
    {
     "id": "s1-A-24",
-    "no": 24,
+    "no": 26,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-A-p6",
@@ -435,7 +467,7 @@
    },
    {
     "id": "s1-A-25",
-    "no": 25,
+    "no": 27,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-A-p7",
@@ -453,7 +485,7 @@
    },
    {
     "id": "s1-A-26",
-    "no": 26,
+    "no": 28,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-A-p7",
@@ -471,7 +503,7 @@
    },
    {
     "id": "s1-A-27",
-    "no": 27,
+    "no": 29,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-A-p8",
@@ -489,7 +521,7 @@
    },
    {
     "id": "s1-A-28",
-    "no": 28,
+    "no": 30,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-A-p8",
@@ -507,7 +539,7 @@
    },
    {
     "id": "s1-A-29",
-    "no": 29,
+    "no": 31,
     "area": "reading",
     "level": "중1",
     "passageId": "s1-A-p9",
@@ -525,7 +557,7 @@
    },
    {
     "id": "s1-A-30",
-    "no": 30,
+    "no": 32,
     "area": "reading",
     "level": "중1",
     "passageId": "s1-A-p9",
@@ -543,7 +575,7 @@
    },
    {
     "id": "s1-A-31",
-    "no": 31,
+    "no": 33,
     "area": "reading",
     "level": "중1",
     "passageId": "s1-A-p10",
@@ -558,38 +590,6 @@
     "explain_ko": "I am writing to ask you to make a safe bike lane on this road.",
     "status": "draft",
     "answer": 0
-   },
-   {
-    "id": "s1-A-32",
-    "no": 32,
-    "area": "phonics",
-    "level": "초3",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "k__i__te",
-     "b__i__ke",
-     "t__i__me",
-     "s__i__t"
-    ],
-    "explain_ko": "sit 의 i 는 짧은 [이], 나머지는 [아이].",
-    "status": "draft",
-    "answer": 3
-   },
-   {
-    "id": "s1-A-33",
-    "no": 33,
-    "area": "phonics",
-    "level": "초4",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "__c__at",
-     "__c__up",
-     "__c__ity",
-     "__c__ake"
-    ],
-    "explain_ko": "city 의 c 는 [ㅅ], 나머지는 [ㅋ].",
-    "status": "draft",
-    "answer": 2
    },
    {
     "id": "s1-A-34",
@@ -1090,8 +1090,40 @@
     "status": "draft"
    },
    {
-    "id": "s1-B-13",
+    "id": "s1-B-32",
     "no": 13,
+    "area": "phonics",
+    "level": "초3",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "h__o__t",
+     "b__o__x",
+     "n__o__se",
+     "d__o__g"
+    ],
+    "explain_ko": "nose 의 o 는 [오우], 나머지는 짧은 [아].",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-33",
+    "no": 14,
+    "area": "phonics",
+    "level": "초4",
+    "question": "밑줄 친 부분의 소리가 다른 것은?",
+    "choices": [
+     "__ch__air",
+     "__ch__ick",
+     "s__ch__ool",
+     "lun__ch__"
+    ],
+    "explain_ko": "school 의 ch 는 [ㅋ], 나머지는 [취].",
+    "status": "draft",
+    "answer": 2
+   },
+   {
+    "id": "s1-B-13",
+    "no": 15,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-B-p1",
@@ -1109,7 +1141,7 @@
    },
    {
     "id": "s1-B-14",
-    "no": 14,
+    "no": 16,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-B-p1",
@@ -1127,7 +1159,7 @@
    },
    {
     "id": "s1-B-15",
-    "no": 15,
+    "no": 17,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-B-p2",
@@ -1145,7 +1177,7 @@
    },
    {
     "id": "s1-B-16",
-    "no": 16,
+    "no": 18,
     "area": "reading",
     "level": "초3",
     "passageId": "s1-B-p2",
@@ -1163,7 +1195,7 @@
    },
    {
     "id": "s1-B-17",
-    "no": 17,
+    "no": 19,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-B-p3",
@@ -1181,7 +1213,7 @@
    },
    {
     "id": "s1-B-18",
-    "no": 18,
+    "no": 20,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-B-p3",
@@ -1199,7 +1231,7 @@
    },
    {
     "id": "s1-B-19",
-    "no": 19,
+    "no": 21,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-B-p4",
@@ -1217,7 +1249,7 @@
    },
    {
     "id": "s1-B-20",
-    "no": 20,
+    "no": 22,
     "area": "reading",
     "level": "초4",
     "passageId": "s1-B-p4",
@@ -1235,7 +1267,7 @@
    },
    {
     "id": "s1-B-21",
-    "no": 21,
+    "no": 23,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-B-p5",
@@ -1253,7 +1285,7 @@
    },
    {
     "id": "s1-B-22",
-    "no": 22,
+    "no": 24,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-B-p5",
@@ -1271,7 +1303,7 @@
    },
    {
     "id": "s1-B-23",
-    "no": 23,
+    "no": 25,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-B-p6",
@@ -1289,7 +1321,7 @@
    },
    {
     "id": "s1-B-24",
-    "no": 24,
+    "no": 26,
     "area": "reading",
     "level": "초5",
     "passageId": "s1-B-p6",
@@ -1307,7 +1339,7 @@
    },
    {
     "id": "s1-B-25",
-    "no": 25,
+    "no": 27,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-B-p7",
@@ -1325,7 +1357,7 @@
    },
    {
     "id": "s1-B-26",
-    "no": 26,
+    "no": 28,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-B-p7",
@@ -1343,7 +1375,7 @@
    },
    {
     "id": "s1-B-27",
-    "no": 27,
+    "no": 29,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-B-p8",
@@ -1361,7 +1393,7 @@
    },
    {
     "id": "s1-B-28",
-    "no": 28,
+    "no": 30,
     "area": "reading",
     "level": "초6",
     "passageId": "s1-B-p8",
@@ -1379,7 +1411,7 @@
    },
    {
     "id": "s1-B-29",
-    "no": 29,
+    "no": 31,
     "area": "reading",
     "level": "중1",
     "passageId": "s1-B-p9",
@@ -1397,7 +1429,7 @@
    },
    {
     "id": "s1-B-30",
-    "no": 30,
+    "no": 32,
     "area": "reading",
     "level": "중1",
     "passageId": "s1-B-p9",
@@ -1415,7 +1447,7 @@
    },
    {
     "id": "s1-B-31",
-    "no": 31,
+    "no": 33,
     "area": "reading",
     "level": "중1",
     "passageId": "s1-B-p10",
@@ -1428,38 +1460,6 @@
      "보호소에 동물 먹이를 기부해 달라고 요청하려고"
     ],
     "explain_ko": "Hanul Animal Shelter is looking for volunteers → 자원봉사자 모집 광고이다.",
-    "status": "draft",
-    "answer": 2
-   },
-   {
-    "id": "s1-B-32",
-    "no": 32,
-    "area": "phonics",
-    "level": "초3",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "h__o__t",
-     "b__o__x",
-     "n__o__se",
-     "d__o__g"
-    ],
-    "explain_ko": "nose 의 o 는 [오우], 나머지는 짧은 [아].",
-    "status": "draft",
-    "answer": 2
-   },
-   {
-    "id": "s1-B-33",
-    "no": 33,
-    "area": "phonics",
-    "level": "초4",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "__ch__air",
-     "__ch__ick",
-     "s__ch__ool",
-     "lun__ch__"
-    ],
-    "explain_ko": "school 의 ch 는 [ㅋ], 나머지는 [취].",
     "status": "draft",
     "answer": 2
    },
