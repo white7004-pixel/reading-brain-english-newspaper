@@ -271,6 +271,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-tigers-at-twilight",
+  "title": "Tigers at Twilight",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #19",
+  "level": {
+   "ar": "3.1",
+   "lexile": "510L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424177-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-dingoes-at-dinnertime",
+  "title": "Dingoes at Dinnertime",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #20",
+  "level": {
+   "ar": "3.2",
+   "lexile": "570L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/7092577-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-polar-bears-past-bedtime",
   "title": "Polar Bears Past Bedtime",
   "author": "Mary Pope Osborne",
@@ -521,5 +549,7 @@ window.BOOK_BY_NO = {
  "S3260": "magic-tree-house-viking-ships-at-sunrise",
  "M3070": "magic-tree-house-hour-of-the-olympics",
  "S3261": "magic-tree-house-tonight-on-the-titanic",
- "S3262": "magic-tree-house-buffalo-before-breakfast"
+ "S3262": "magic-tree-house-buffalo-before-breakfast",
+ "S3263": "magic-tree-house-tigers-at-twilight",
+ "S3264": "magic-tree-house-dingoes-at-dinnertime"
 };
