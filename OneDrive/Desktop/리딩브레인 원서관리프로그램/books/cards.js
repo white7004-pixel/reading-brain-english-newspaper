@@ -400,6 +400,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-civil-war-on-sunday",
+  "title": "Civil War on Sunday",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #21",
+  "level": {
+   "ar": "3.4",
+   "lexile": "580L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424179-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-revolutionary-war-on-wednesday",
+  "title": "Revolutionary War on Wednesday",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #22",
+  "level": {
+   "ar": "3.5",
+   "lexile": "450L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424180-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "berenstain-bears-learn-about-strangers",
   "title": "The Berenstain Bears Learn about Strangers",
   "author": "Stan and Jan Berenstain",
@@ -551,5 +579,7 @@ window.BOOK_BY_NO = {
  "S3261": "magic-tree-house-tonight-on-the-titanic",
  "S3262": "magic-tree-house-buffalo-before-breakfast",
  "S3263": "magic-tree-house-tigers-at-twilight",
- "S3264": "magic-tree-house-dingoes-at-dinnertime"
+ "S3264": "magic-tree-house-dingoes-at-dinnertime",
+ "S3265": "magic-tree-house-civil-war-on-sunday",
+ "M3142": "magic-tree-house-revolutionary-war-on-wednesday"
 };
