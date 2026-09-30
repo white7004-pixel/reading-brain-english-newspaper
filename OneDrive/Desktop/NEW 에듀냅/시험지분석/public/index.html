@@ -25,8 +25,12 @@
     <form id="upload-form" class="grid">
       <label class="wide">시험지 사진 또는 PDF (1~6쪽, 쪽 순서대로 선택)<input name="pages" type="file" accept="image/*,application/pdf,.pdf" multiple required></label>
       <label class="wide">정답지 사진 또는 PDF (있으면, 2쪽까지)<input name="answers" type="file" accept="image/*,application/pdf,.pdf" multiple></label>
+      <label>과목 (알면 골라 주세요)<select name="subject"><option value="">— AI가 읽습니다</option></select></label>
+      <label>학년 (알면 골라 주세요)<select name="grade"><option value="">— AI가 읽습니다</option></select></label>
+      <p class="hint wide">골라 두시면 그 학년 교육과정을 함께 보내 AI가 영역·세부 포인트를 더 정확히 적습니다.</p>
       <button class="wide">AI로 문항표 만들기</button>
     </form>
+    <datalist id="unit-list"></datalist>
     <p id="upload-status" class="status" role="status"></p>
     <!-- 에듀냅 안에서는 로그인한 학원 정보를 쓰므로 이 칸이 없다. 시험판에서만 이 브라우저에 기억한다. -->
     <details class="academy">

@@ -1,4 +1,5 @@
 import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents, esc } from './lib.js';
+import { unitsFor, GRADES } from './curriculum.js';
 import { schoolPage, studentPage } from './report.js';
 import { shareCards } from './share.js';
 
@@ -149,7 +150,7 @@ $('#upload-form').addEventListener('submit', async (e) => {
     const answers = await toImages([...f.answers.files], 2, '정답지');
     const encoded = await encodeAll([...pages, ...answers]);
     setStatus('#upload-status', 'AI가 문항을 읽고 있습니다. 1~3분 걸립니다…');
-    const result = await api('/api/extract', { pages: encoded.slice(0, pages.length), answers: encoded.slice(pages.length) });
+    const result = await api('/api/extract', { pages: encoded.slice(0, pages.length), answers: encoded.slice(pages.length), subject: f.subject.value, grade: f.grade.value });
     state.meta = result.meta;
     state.items = result.items;
     $('#confirm-notes').textContent = result.notes;
@@ -184,6 +185,7 @@ $('#meta-form').addEventListener('input', (e) => {
   const { name, value } = e.target;
   state.meta[name] = name === 'minutes' ? Number(value) || 0 : value.trim();
   e.target.classList.remove('unsure');
+  if (name === 'grade') drawUnitList();
   if (name !== 'subject') return;
   // 과목을 바꾸면 그 과목에 없는 영역은 첫 영역으로 두고 다시 확인하게 한다
   state.items.forEach((it) => {
@@ -191,6 +193,14 @@ $('#meta-form').addEventListener('input', (e) => {
   });
   renderItems();
 });
+
+// 단원 칸에서 고를 수 있는 목록. 교과서 목차(있으면)와 이 시험지에 이미 적은 단원을 모은다.
+// 같은 단원을 '5과'·'Lesson 5'·'5단원'으로 갈라 적지 않게 하는 것이 목적이다. 자유 입력은 그대로 된다.
+function drawUnitList() {
+  const 이미쓴것 = state.items.map((it) => (it.unit ?? '').trim()).filter(Boolean);
+  const 목록 = [...new Set([...unitsFor(state.meta.subject, state.meta.grade), ...이미쓴것])];
+  $('#unit-list').innerHTML = 목록.map((u) => `<option value="${esc(u)}"></option>`).join('');
+}
 
 function renderItems() {
   $('#items tbody').innerHTML = state.items.map((it, i) => {
@@ -200,7 +210,7 @@ function renderItems() {
       ${cell('no', `<input type="number" min="1" step="1" value="${no}" aria-label="${no}번 번호">`)}
       ${cell('kind', `<select aria-label="${no}번 유형">${options(KINDS, it.kind)}</select>`)}
       ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
-      ${cell('unit', `<input value="${esc(it.unit ?? '')}" aria-label="${no}번 단원" placeholder="5과">`)}
+      ${cell('unit', `<input list="unit-list" value="${esc(it.unit ?? '')}" aria-label="${no}번 단원" placeholder="5과">`)}
       ${cell('area', `<select aria-label="${no}번 영역">${options(areasNow(), it.area)}</select>`)}
       ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${no}번 세부유형">`)}
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
@@ -210,6 +220,7 @@ function renderItems() {
       <td><button type="button" class="ghost" data-del aria-label="${no}번 삭제">삭제</button></td>
     </tr>`;
   }).join('');
+  drawUnitList();
   updateTotal();
 }
 
@@ -237,6 +248,7 @@ $('#items').addEventListener('input', (e) => {
   it[field] = field === 'points' || field === 'no' ? Number(e.target.value) : e.target.value;
   it.unsure = it.unsure.filter((name) => name !== field);
   td.classList.remove('unsure');
+  if (field === 'unit') drawUnitList();
   if (field === 'points' || field === 'no') updateTotal();
 });
 
@@ -398,3 +410,8 @@ if (saved) {
 }
 showAcademy();
 setTheme(store.get('theme')); // 기억해 둔 디자인을 처음부터 입힌다
+
+// 올리기 화면의 과목·학년은 고르면 더 정확해지는 것일 뿐, 비워 두면 AI 가 머리글에서 읽는다.
+const uploadPick = $('#upload-form').elements;
+uploadPick.subject.insertAdjacentHTML('beforeend', options(Object.keys(SUBJECTS), ''));
+uploadPick.grade.insertAdjacentHTML('beforeend', options(GRADES, ''));
