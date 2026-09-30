@@ -1,9 +1,9 @@
 // 시험 화면 (설계서 2026-09-30): 1차 문제지 → 80점 이상이면 2차 적응형 4영역 → 2차 쓰기 블록 → 결과.
 // 진행은 localStorage(elt:session)에 두어 새로고침해도 이어진다. 문항마다 90초, 객관식에는 모름.
 import { SECTIONS, SECTION_KO, startStep, stepData } from './core/scale.js';
-import { start, nextQuery, answer, skip, stop, LIMITS } from './core/engine.js';
+import { start, nextQuery, answer, skip, stop, LIMITS, adaptiveRail } from './core/engine.js';
 import { usable, pick, readiness } from './core/bank.js';
-import { usableForm, checkWrite, isWrite, stage1Score, levelStep, MIN_STAGE1, PASS } from './core/forms.js';
+import { usableForm, checkWrite, isWrite, stage1Score, levelStep, railFor, MIN_STAGE1, PASS } from './core/forms.js';
 import { showMC, showWrite, startTimer, stopTimer } from './form-ui.js';
 
 const $ = (s) => document.querySelector(s);
@@ -26,7 +26,7 @@ if (!session) {
   location.replace('index.html');
 } else {
   session.stage ??= 2; // 두 단계 이전에 시작한 시험은 2차로 이어간다
-  $('#who').textContent = `${session.name} · ${session.grade}`;
+  $('#who').textContent = session.name;
   const { items: bank, sample: bankSample } = await loadBank();
   const forms = await loadForms(session.set || 'A');
   const voices = await englishVoices();
@@ -45,6 +45,7 @@ if (!session) {
 
   function show(id) {
     for (const s of ['#intro', '#item', '#gate']) $(s).hidden = s !== id;
+    $('#foot').hidden = id !== '#item';
     status('');
     window.scrollTo(0, 0);
   }
@@ -61,8 +62,7 @@ if (!session) {
     if (!forms.stage1.length) { show(''); return status('1차 문제지가 없습니다. 문제지 검수에서 문항을 통과시켜 주세요.', 'error'); }
     const it = forms.stage1[session.s1.i];
     if (!it) { session.stage = 'gate'; keep(); return route(); }
-    $('#section-name').textContent = `1차 · ${session.s1.i + 1} / ${forms.stage1.length}`;
-    dots(0, 0);
+    top(`1차 ${session.set || 'A'}`, railFor(forms.stage1, session.s1.i), session.s1.i + 1, forms.stage1.length);
     if (!session.s1.started) {
       const listen = forms.stage1.some((i) => i.area === 'listening') ? `듣기, 영어 글 읽기, 소리, 문법, 쓰기 문제입니다. ${INTRO.listening}` : '영어 글 읽기, 소리, 문법, 쓰기 문제입니다.';
       return intro(`1차 (${forms.stage1.length}문항)`, `${listen} 문항마다 90초 안에 답합니다. 모르면 "모름"을 고르세요.`, () => { session.s1.started = true; keep(); route(); });
@@ -73,7 +73,7 @@ if (!session) {
   function gate() {
     const r = stage1Score(session.s1.log);
     show('#gate');
-    $('#section-name').textContent = '1차 결과';
+    top('1차 결과', railFor(forms.stage1, forms.stage1.length));
     $('#gate-title').textContent = `1차 점수 ${r.score}점`;
     $('#gate-text').textContent = r.passed ? `${PASS}점 이상이라 2차로 넘어갑니다. 2차는 단어·문법·독해·듣기와 쓰기입니다.` : '1차 시험이 끝났습니다. 결과지를 보여 드립니다.';
     $('#gate-go').textContent = r.passed ? '2차 시작' : '결과 보기';
@@ -84,8 +84,7 @@ if (!session) {
   function write2() {
     const it = session.w2 && forms.write2[session.w2.i];
     if (!it) { session.stage = 'end'; keep(); return route(); }
-    $('#section-name').textContent = `쓰기 · ${session.w2.i + 1} / ${forms.write2.length}`;
-    dots(0, 0);
+    top(`2차 쓰기 ${session.set || 'A'}`, [{ key: 'write', label: '쓰기', done: session.w2.i, total: forms.write2.length, current: true }], session.w2.i + 1, forms.write2.length);
     if (!session.w2.started) {
       return intro(`쓰기 (${forms.write2.length}문항)`, '주어진 낱말을 알맞은 꼴로 바꾸거나, 한 칸에 한 낱말씩 영어 문장을 씁니다. 문항마다 90초입니다.', () => { session.w2.started = true; keep(); route(); });
     }
@@ -127,7 +126,6 @@ if (!session) {
   function next() {
     const section = SECTIONS[session.sectionIdx];
     if (!section) { session.stage = 'write'; keep(); return route(); }
-    $('#section-name').textContent = `2차 · ${session.sectionIdx + 1} / 4 · ${SECTION_KO[section]}`;
     const st = session.states[section];
     if (!st) {
       if (section === 'listening' && !voices) return endSection(section, '이 기기에서는 영어 음성을 낼 수 없어 듣기를 건너뛰었습니다');
@@ -161,7 +159,7 @@ if (!session) {
   }
 
   function showIntro(section) {
-    dots(0, LIMITS[section]);
+    top('2차', adaptiveRail(session.states, session.sectionIdx));
     intro(`${SECTION_KO[section]} (최대 ${LIMITS[section]}문항)`, INTRO[section], () => {
       session.states[section] = start(section, startStep(session.grade));
       keep();
@@ -171,7 +169,7 @@ if (!session) {
 
   function showItem(section, item) {
     show('#item');
-    dots(session.states[section].log.length, LIMITS[section]);
+    top('2차', adaptiveRail(session.states, session.sectionIdx), session.states[section].log.length + 1, `최대 ${LIMITS[section]}`);
     const listening = section === 'listening';
     $('#listen').hidden = !listening;
     let fired = false;
@@ -200,16 +198,37 @@ if (!session) {
     route();
   }
 
-  function dots(done, total) {
-    $('#dots').replaceChildren(...Array.from({ length: total }, (_, i) => {
-      const s = document.createElement('span');
-      if (i < done) s.className = 'on';
-      return s;
+  // 위 띠: 학년·단계와 영역 진행 막대(칸 너비는 문항 수 비례). n 이 있으면 큰 문항 번호와 아래 띠 "n / of"
+  function top(label, rail, n, of) {
+    $('#section-name').textContent = `${session.grade} · ${label}`;
+    const now = (c) => `${c.label} ${Math.min(c.done + 1, c.total)}/${c.total}`;
+    const cur = rail.find((c) => c.current);
+    $('#dots').setAttribute('aria-label', cur ? `영역 진행: ${now(cur)}` : '영역 진행');
+    $('#dots').replaceChildren(...rail.map((c) => {
+      const d = document.createElement('div');
+      d.className = c.current ? 'cur' : c.skipped ? 'off' : '';
+      d.style.flexGrow = c.total || 1;
+      const bar = document.createElement('i');
+      const fill = document.createElement('b');
+      fill.style.width = `${c.total ? (100 * c.done) / c.total : 0}%`;
+      bar.append(fill);
+      d.append(bar, c.current ? now(c) : c.label);
+      return d;
     }));
+    $('#qno').textContent = n ?? '';
+    const b = document.createElement('b');
+    b.textContent = n ?? '';
+    $('#count').replaceChildren(b, ` / ${of ?? ''}`);
   }
 
-  function playsText() {
-    return `남은 듣기 ${MAX_PLAYS - session.plays}번`;
+  // 듣기 재생기: 큰 줄(#plays 에 넣을 글을 돌려준다)과 작은 줄(#listen-note). 듣는 중이면 파형이 움직인다
+  function playsText(playing = false) {
+    const left = MAX_PLAYS - session.plays;
+    $('#listen').classList.toggle('playing', playing);
+    $('#listen-note').textContent = session.shownAt ? `첫 듣기가 끝나 시간을 세고 있습니다 · 남은 듣기 ${left}번` : `남은 듣기 ${left}번 · 첫 듣기가 끝나면 90초를 셉니다`;
+    if (playing) return '듣는 중…';
+    if (!session.plays) return '▶ 을 눌러 들으세요';
+    return left ? '한 번 더 들을 수 있습니다' : '듣기를 모두 썼습니다';
   }
 
   // 첫 재생이 끝나면 90초를 센다
@@ -218,7 +237,7 @@ if (!session) {
     session.plays += 1;
     keep();
     $('#play').disabled = true;
-    $('#plays').textContent = '듣는 중…';
+    $('#plays').textContent = playsText(true);
     const rate = Math.min(1.3, Math.max(0.6, stepData(item.step ?? levelStep(item.level)).gen.wpm / WPM_AT_RATE_1));
     await say(item.script ?? item.passage, rate, item.id);
     if (session.current !== item.id) return; // 듣는 사이에 답했다

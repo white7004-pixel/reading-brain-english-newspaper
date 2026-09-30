@@ -1,6 +1,6 @@
 // 적응 규칙 (설계서 4장). 순수 함수 — 상태를 받아 새 상태를 돌려준다.
 // ponytail: 계단식 규칙이다. 응시 기록이 쌓이면 문항 반응 이론(IRT)으로 바꿀 자리는 nextQuery·answer 둘뿐이다.
-import { MIN_STEP, MAX_STEP } from './scale.js';
+import { MIN_STEP, MAX_STEP, SECTIONS, SECTION_KO } from './scale.js';
 
 export const LIMITS = { vocab: 15, grammar: 15, reading: 12, listening: 12 };
 const clamp = (n) => Math.min(MAX_STEP, Math.max(MIN_STEP, n));
@@ -68,4 +68,14 @@ export function stop(s) {
 
 function finish(s, est) {
   return { ...s, done: true, est };
+}
+
+// 2차 적응형 네 영역의 진행 막대 칸. idx = 지금 영역 자리. 지나간 영역은 가득(일찍 멈췄어도), 건너뛴 영역은 skipped
+export function adaptiveRail(states, idx) {
+  return SECTIONS.map((k, n) => {
+    const st = states[k];
+    const skipped = !!st?.skipped;
+    const done = skipped ? 0 : n < idx ? LIMITS[k] : (st?.log.length ?? 0);
+    return { key: k, label: SECTION_KO[k], done, total: LIMITS[k], current: n === idx, skipped };
+  });
 }

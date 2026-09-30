@@ -6,35 +6,54 @@
 <title>영어 레벨테스트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Hahmlet:wght@600;800&display=swap" rel="stylesheet" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script type="module" src="test.js"></script>
 </head>
-<body>
-<header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag" id="who"></span></header>
-<main class="app">
-  <p id="sample" class="sample-banner" hidden>문항 은행이 아직 없어 <b>샘플 문항</b>으로 치르는 화면 확인용 시험입니다. 결과는 실제 실력이 아닙니다.</p>
-  <div class="test-top"><span id="section-name"></span><span class="progress-dots" id="dots"></span></div>
-  <section id="intro" class="card" hidden>
+<body class="exam">
+<header class="exam-top">
+  <p class="who"><b id="who"></b><span id="section-name"></span></p>
+  <div class="rail" id="dots" role="img" aria-label="영역 진행"></div>
+  <div id="timer" class="clock" hidden>
+    <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15"/><circle id="timer-ring" class="left" cx="18" cy="18" r="15" pathLength="90" transform="rotate(-90 18 18)"/></svg>
+    <span id="timer-sec"></span>
+  </div>
+</header>
+<p id="sample" class="sample-banner" hidden>문항 은행이 아직 없어 <b>샘플 문항</b>으로 치르는 화면 확인용 시험입니다. 결과는 실제 실력이 아닙니다.</p>
+<main class="exam-main">
+  <section id="intro" class="exam-card" hidden>
     <h2 id="intro-title"></h2>
     <p id="intro-text"></p>
     <button id="intro-go" type="button">시작</button>
   </section>
-  <section id="item" class="card" hidden>
-    <p id="timer" class="timer" hidden></p>
-    <div id="listen" class="listen" hidden><button id="play" class="btn-ghost" type="button">▶ 듣기</button><span id="plays"></span></div>
-    <div id="passage" class="passage" hidden></div>
-    <p id="question" class="question"></p>
-    <p id="hint" class="hint" hidden></p>
-    <div id="choices" class="choices"></div>
-    <form id="write" class="write" hidden autocomplete="off"><p id="write-line" class="write-line"></p><button type="submit">다음</button></form>
+  <section id="item" class="split" hidden>
+    <div class="pane" id="pane">
+      <p id="pane-label" class="lab"></p>
+      <div id="listen" class="player" hidden>
+        <button id="play" type="button" aria-label="듣기">▶</button>
+        <div>
+          <p id="plays"></p>
+          <div class="wave" aria-hidden="true"><i style="--h:10px"></i><i style="--h:22px"></i><i style="--h:30px"></i><i style="--h:16px"></i><i style="--h:26px"></i><i style="--h:12px"></i><i style="--h:28px"></i><i style="--h:20px"></i><i style="--h:34px"></i><i style="--h:14px"></i><i style="--h:24px"></i><i style="--h:9px"></i><i style="--h:30px"></i><i style="--h:18px"></i><i style="--h:26px"></i><i style="--h:12px"></i><i style="--h:22px"></i><i style="--h:16px"></i></div>
+          <small id="listen-note"></small>
+        </div>
+      </div>
+      <div id="passage" class="passage" hidden></div>
+      <p id="hint" class="kor" hidden></p>
+    </div>
+    <div class="qside">
+      <div class="qh"><b id="qno"></b><p id="question" class="question"></p></div>
+      <div id="choices" class="choices"></div>
+      <form id="write" class="write" hidden autocomplete="off"><p id="write-line" class="write-line"></p><button type="submit">다음 문항</button></form>
+    </div>
   </section>
-  <section id="gate" class="card" hidden>
+  <section id="gate" class="exam-card" hidden>
     <h2 id="gate-title"></h2>
     <p id="gate-text"></p>
     <button id="gate-go" type="button"></button>
   </section>
   <p id="test-status" class="status" role="status"></p>
 </main>
+<footer class="exam-foot" id="foot" hidden><span id="foot-note"></span><span id="count"></span></footer>
 </body>
 </html>

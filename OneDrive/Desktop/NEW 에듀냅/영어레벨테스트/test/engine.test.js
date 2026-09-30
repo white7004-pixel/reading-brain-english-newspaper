@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { start, nextQuery, answer, skip, stop, LIMITS } from '../public/core/engine.js';
+import { start, nextQuery, answer, skip, stop, LIMITS, adaptiveRail } from '../public/core/engine.js';
 
 // 엔진이 묻는 단계(단원)의 문항을 냈다고 치고 답한다
 const run = (s, answers) => answers.reduce((st, correct) => {
@@ -77,4 +77,19 @@ test('skip 은 이제 stop 과 같다: 2마당에서 그 단원 문항이 없으
   assert.deepEqual(stop(run(p2, [true, true])).est, { step: 13, unit: 2 });
   assert.equal(stop(start('grammar', 11)).est, null);
   assert.deepEqual(stop(run(start('grammar', 11), [true, true])).est, { step: 12, unit: null }); // 11,13 → 12
+});
+
+test('adaptiveRail: 네 영역 칸 — 푼 수/최대 수, 끝난 영역은 가득, 건너뛴 영역은 표시', () => {
+  const states = {
+    vocab: { log: [1, 2, 3], done: true },
+    grammar: { skipped: '검수된 문항이 모자라 건너뛰었습니다', done: true, log: [] },
+    reading: { log: [1, 2], done: false },
+  };
+  assert.deepEqual(adaptiveRail(states, 2), [
+    { key: 'vocab', label: '단어', done: LIMITS.vocab, total: LIMITS.vocab, current: false, skipped: false },
+    { key: 'grammar', label: '문법', done: 0, total: LIMITS.grammar, current: false, skipped: true },
+    { key: 'reading', label: '독해', done: 2, total: LIMITS.reading, current: true, skipped: false },
+    { key: 'listening', label: '듣기', done: 0, total: LIMITS.listening, current: false, skipped: false },
+  ]);
+  assert.equal(adaptiveRail({}, 0)[0].current, true, '영역 안내 화면에서도 첫 칸이 지금 칸');
 });

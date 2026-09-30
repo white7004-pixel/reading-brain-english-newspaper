@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep } from '../public/core/forms.js';
+import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -134,4 +134,25 @@ test('1차 문제지 순서: 듣기 → 파닉스 → 독해 → 문법 → 어�
       if (file === 'forms.json') assert.deepEqual(s.map((x) => x.no), Array.from({ length: 46 }, (_, i) => i + 1));
     }
   }
+});
+
+test('railFor: 문제지 순서의 영역 묶음마다 한 칸, 지금 칸과 끝난 칸', () => {
+  const areas = ['listening', 'listening', 'phonics', 'reading', 'reading', 'reading', 'grammar', 'form', 'sentence'];
+  const list = areas.map((area, n) => ({ area, no: n + 1 }));
+  assert.deepEqual(railFor(list, 4), [
+    { key: 'listening', label: '듣기', done: 2, total: 2, current: false },
+    { key: 'phonics', label: '소리', done: 1, total: 1, current: false },
+    { key: 'reading', label: '독해', done: 1, total: 3, current: true },
+    { key: 'grammar', label: '문법', done: 0, total: 1, current: false },
+    { key: 'form', label: '어형', done: 0, total: 1, current: false },
+    { key: 'sentence', label: '영작', done: 0, total: 1, current: false },
+  ]);
+  assert.deepEqual(railFor(list, 0).map((c) => [c.key, c.done, c.current]).slice(0, 2), [['listening', 0, true], ['phonics', 0, false]]);
+  assert.ok(railFor(list, list.length).every((c) => c.done === c.total && !c.current), '다 끝나면 모두 가득');
+});
+
+test('railFor: 세트에 없는 영역은 칸이 없다', () => {
+  const list = [{ area: 'phonics' }, { area: 'reading' }, { area: 'form' }];
+  assert.deepEqual(railFor(list, 1).map((c) => c.label), ['소리', '독해', '어형']);
+  assert.deepEqual(railFor([], 0), []);
 });

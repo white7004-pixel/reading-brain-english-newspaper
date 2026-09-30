@@ -96,3 +96,18 @@ export function writeSummary(log) {
   const wrong = log.filter((x) => !x.correct);
   return { correct: log.length - wrong.length, total: log.length, missed: [...new Set(wrong.map((x) => x.point).filter(Boolean))] };
 }
+
+// ── 시험 화면 위 띠의 영역 진행 막대 ──
+const RAIL_KO = { listening: '듣기', phonics: '소리', reading: '독해', grammar: '문법', form: '어형', sentence: '영작' };
+// 문제지(번호 순) 에서 이어지는 같은 영역을 한 칸으로. i = 지금 문항 자리(다 끝났으면 list.length)
+export function railFor(list, i) {
+  const cells = [];
+  list.forEach((it, n) => {
+    let c = cells.at(-1);
+    if (c?.key !== it.area) cells.push(c = { key: it.area, label: RAIL_KO[it.area] ?? it.area, done: 0, total: 0, current: false });
+    c.total += 1;
+    if (n < i) c.done += 1;
+    if (n === i) c.current = true;
+  });
+  return cells;
+}
