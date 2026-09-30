@@ -2,24 +2,25 @@
 // 글자·간격은 .page 의 --fit 배율(em)을 따라 함께 줄어든다 (app.js fitPage).
 import { esc, to3 } from './lib.js';
 
-const sheet = (fileName, html) => `
-<div class="sheet">
+// cls 는 종류(예: card-news). 공유 카드가 같은 틀을 쓰되 크기만 다르게 한다.
+export const sheet = (fileName, html, cls = '') => `
+<div class="sheet${cls ? ` ${cls}` : ''}">
   <div class="tools"><span class="fit-warn" hidden>내용이 많아 한 장을 넘습니다 — 글을 조금 줄여 주세요</span><button type="button" data-png="${esc(fileName)}">PNG 받기</button></div>
-  <article class="page">${html}</article>
+  <article class="page${cls ? ` ${cls}` : ''}">${html}</article>
 </div>`;
 
-const header = (academy, title, sub) => `
+export const header = (academy, title, sub) => `
 <header class="r-head">
   <p class="r-academy">${academy.logo ? `<img class="r-logo" src="${esc(academy.logo)}" alt="${esc(academy.name)} 로고">` : ''}<span>${esc(academy.name)}</span></p>
   <h2 contenteditable>${esc(title)}</h2>
   <p class="r-sub">${esc(sub)}</p>
 </header>`;
 
-const footer = (academy, note = '') => `<footer class="r-foot">${note ? `<span>${esc(note)}</span>` : ''}<span class="r-contact"><b>${esc(academy.name)}</b>${academy.phone ? ` · ${esc(academy.phone)}` : ''}</span></footer>`;
+export const footer = (academy, note = '') => `<footer class="r-foot">${note ? `<span>${esc(note)}</span>` : ''}<span class="r-contact"><b>${esc(academy.name)}</b>${academy.phone ? ` · ${esc(academy.phone)}` : ''}</span></footer>`;
 
-const bars = (rows, caption) => `<ul class="bars">${rows.map((r) => `<li><span>${esc(r.label)}</span><i style="--w:${Number(r.pct) || 0}%"></i><b>${esc(caption(r))}</b></li>`).join('')}</ul>`;
+export const bars = (rows, caption) => `<ul class="bars">${rows.map((r) => `<li><span>${esc(r.label)}</span><i style="--w:${Number(r.pct) || 0}%"></i><b>${esc(caption(r))}</b></li>`).join('')}</ul>`;
 
-const badge = (d, shown = d) => `<em class="d d-${esc(to3(d))}">${esc(shown)}</em>`;
+export const badge = (d, shown = d) => `<em class="d d-${esc(to3(d))}">${esc(shown)}</em>`;
 
 // 칸이 좁아 긴 영역 이름은 줄여 쓰고, 줄인 것만 범례에 풀어 적는다
 const ABBR = { 대화문: '대화', 서술형: '서술', '화법과 작문': '화작', '수와 연산': '수·연산', '문자와 식': '문자·식', '확률과 통계': '확통', 생명과학: '생명', 지구과학: '지구', 일반사회: '일사' };
@@ -29,9 +30,9 @@ const abbrLegend = (items) => [...new Set(items.map((it) => it.area))].filter((a
 // 문항 칸 격자: 한 줄 10칸
 const grid = (items, cell) => `<ol class="r-grid">${items.map(cell).join('')}</ol>`;
 
-const examName = (meta) => `${meta.school} ${meta.grade} ${meta.term} ${meta.exam}`;
+export const examName = (meta) => `${meta.school} ${meta.grade} ${meta.term} ${meta.exam}`;
 
-const nums = (cards) => `<div class="r-nums">${cards.map(([value, label]) => `<div><b>${value}</b><span>${esc(label)}</span></div>`).join('')}</div>`;
+export const nums = (cards) => `<div class="r-nums">${cards.map(([value, label]) => `<div><b>${value}</b><span>${esc(label)}</span></div>`).join('')}</div>`;
 
 export function schoolPage({ academy, meta, items, stats }, school) {
   const byNo = new Map(items.map((it) => [it.no, it]));
