@@ -638,6 +638,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "berenstain-bears-too-much-car-trip",
+  "title": "The Berenstain Bears and Too Much Car Trip",
+  "author": "Stan and Jan Berenstain",
+  "series": "The Berenstain Bears",
+  "level": {
+   "ar": "3.6",
+   "lexile": "570L",
+   "rb": "다독 3단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/30279-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-hurricane-heroes-in-texas",
   "title": "Hurricane Heroes in Texas",
   "author": "Mary Pope Osborne",
@@ -676,6 +690,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/14421246-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "berenstain-bears-trouble-with-chores",
+  "title": "The Berenstain Bears and the Trouble with Chores",
+  "author": "Stan and Jan Berenstain",
+  "series": "The Berenstain Bears",
+  "level": {
+   "ar": "3.7",
+   "lexile": "600L",
+   "rb": "다독 3단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/10468502-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -836,5 +864,7 @@ window.BOOK_BY_NO = {
  "S3940": "magic-tree-house-sunlight-on-the-snow-leopard",
  "S3941": "magic-tree-house-rhinos-at-recess",
  "S3942": "magic-tree-house-time-of-the-turtle-king",
- "S3943": "magic-tree-house-windy-night-with-wild-horses"
+ "S3943": "magic-tree-house-windy-night-with-wild-horses",
+ "M3109": "berenstain-bears-too-much-car-trip",
+ "M3119": "berenstain-bears-trouble-with-chores"
 };
