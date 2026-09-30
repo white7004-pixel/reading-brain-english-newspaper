@@ -358,11 +358,14 @@ $('#save-cards').addEventListener('click', async (e) => {
   if (!buttons.length) return;
   const button = e.currentTarget;
   button.disabled = true;
-  for (const b of buttons) {
-    b.click();
-    await new Promise((r) => setTimeout(r, 600));
+  try {
+    for (const b of buttons) {
+      b.click();
+      await new Promise((r) => setTimeout(r, 600));
+    }
+  } finally {
+    button.disabled = false; // 중간에 실패해도 다시 누를 수 있게 되돌린다
   }
-  button.disabled = false;
 });
 
 $('#print').addEventListener('click', () => window.print());
