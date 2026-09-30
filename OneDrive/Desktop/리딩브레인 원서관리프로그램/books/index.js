@@ -53,5 +53,7 @@ window.BOOKS = [
   "magic-tree-house-narwhal-on-a-sunny-night",
   "magic-tree-house-late-lunch-with-llamas",
   "magic-tree-house-camp-time-in-california",
-  "magic-tree-house-sunlight-on-the-snow-leopard"
+  "magic-tree-house-sunlight-on-the-snow-leopard",
+  "magic-tree-house-rhinos-at-recess",
+  "magic-tree-house-time-of-the-turtle-king"
 ];

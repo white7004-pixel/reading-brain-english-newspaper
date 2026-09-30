@@ -540,6 +540,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-rhinos-at-recess",
+  "title": "Rhinos at Recess",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #37",
+  "level": {
+   "ar": "3.4",
+   "lexile": "390L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/13536946-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-revolutionary-war-on-wednesday",
   "title": "Revolutionary War on Wednesday",
   "author": "Mary Pope Osborne",
@@ -634,6 +648,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/8748964-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-time-of-the-turtle-king",
+  "title": "Time of the Turtle King",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #38",
+  "level": {
+   "ar": "3.7",
+   "lexile": "460L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/14421246-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -791,5 +819,7 @@ window.BOOK_BY_NO = {
  "S3937": "magic-tree-house-narwhal-on-a-sunny-night",
  "S3938": "magic-tree-house-late-lunch-with-llamas",
  "S3939": "magic-tree-house-camp-time-in-california",
- "S3940": "magic-tree-house-sunlight-on-the-snow-leopard"
+ "S3940": "magic-tree-house-sunlight-on-the-snow-leopard",
+ "S3941": "magic-tree-house-rhinos-at-recess",
+ "S3942": "magic-tree-house-time-of-the-turtle-king"
 };
