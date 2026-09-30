@@ -101,6 +101,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-afternoon-on-the-amazon",
+  "title": "Afternoon on the Amazon",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #6",
+  "level": {
+   "ar": "2.6",
+   "lexile": "510L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/7283554-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-mummies-in-the-morning",
   "title": "Mummies in the Morning",
   "author": "Mary Pope Osborne",
@@ -143,6 +157,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-midnight-on-the-moon",
+  "title": "Midnight on the Moon",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #8",
+  "level": {
+   "ar": "2.8",
+   "lexile": "490L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/423894-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "frog-and-toad-are-friends",
   "title": "Frog and Toad Are Friends",
   "author": "Arnold Lobel",
@@ -169,6 +197,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/4851256-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-sunset-of-the-sabertooth",
+  "title": "Sunset of the Sabertooth",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #7",
+  "level": {
+   "ar": "3.0",
+   "lexile": "520L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/423893-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -326,5 +368,8 @@ window.BOOK_BY_NO = {
  "S3248": "magic-tree-house-knight-at-dawn",
  "S3249": "magic-tree-house-mummies-in-the-morning",
  "S3250": "magic-tree-house-pirates-past-noon",
- "S3251": "magic-tree-house-night-of-the-ninjas"
+ "S3251": "magic-tree-house-night-of-the-ninjas",
+ "S3252": "magic-tree-house-afternoon-on-the-amazon",
+ "S3253": "magic-tree-house-sunset-of-the-sabertooth",
+ "S3254": "magic-tree-house-midnight-on-the-moon"
 };
