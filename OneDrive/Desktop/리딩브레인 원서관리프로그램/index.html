@@ -265,7 +265,8 @@ function card(b){
       <a href="worksheets.html?book=${s}">워크시트</a>
       ${STUDENT ? "" : `<a href="teacher-guide.html?book=${s}">교사용</a>`}`
       : `<a class="on" href="read.html?no=${n}">학습하기</a>
-      <a href="read.html?no=${n}&print=1">워크시트</a>`}
+      <a href="worksheets.html?no=${n}">워크시트</a>
+      ${STUDENT ? "" : `<a href="teacher-guide.html?no=${n}">교사용</a>`}`}
     </div>
   </div>`;
 }

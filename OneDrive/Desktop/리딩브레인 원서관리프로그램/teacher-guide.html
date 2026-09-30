@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>리딩브레인 교사용 가이드</title>
+<link rel="stylesheet" href="sheet.css">
+<style>
+/* 장서 책(?no=) 가이드만 쓰는 몇 줄 */
+table.tg td.c{text-align:center; color:#7b8794}
+.pname{margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a class="home" href="index.html" title="책 목록">← 목록</a>
+  <b>리딩브레인 교사용 가이드</b>
+  <button onclick="print()">인쇄 / PDF 저장</button>
+  <span class="spacer"></span>
+  <small id="bookname"></small>
+</div>
+
+<div id="sheets"></div>
+
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script>
+RB.gate("teacher");        // 정답과 수업 대본이 들어 있다. 서버를 쓰면 선생님만 연다.
+let B, T;
+const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+let PAGE = 0;
+function head(name){
+  return `
+  <div class="brandbar">
+    <img class="mark" src="assets/logo-mark.png" alt="Reading Brain">
+    <div class="bname"><strong>READING BRAIN</strong><span>Reading Is The Only Way!</span></div>
+    <div class="tab">${name}</div>
+  </div>
+  <div class="info">
+    <div class="cover" ${B.cover?`style="background-image:url('${B.cover}')"`:""}>${B.cover?"":"표지"}</div>
+    <div class="f bk"><b>Book</b><i>${esc(B.title)}</i><u>${esc(B.series||"")}</u></div>
+    <div class="f"><b>Author</b><i>${esc(B.author)}</i></div>
+    <div class="f"><b>Level</b><i>AR ${esc(B.level.ar)}${B.level.lexile ? " · " + esc(B.level.lexile) : ""}</i><u>${esc(B.level.rb||"")}</u></div>
+    <div class="f"><b>Award</b><i>${(B.awards||[]).length ? esc(B.awards[0]) : "&ndash;"}</i>${
+      (B.awards||[]).length > 1 ? `<u>${esc(B.awards.slice(1).join(" · "))}</u>` : ""}</div>
+    <div class="f fill"><b>담당 Teacher</b><i></i></div>
+  </div>`;
+}
+const foot = (name, stu) => `<div class="foot"><span>리딩브레인영어학원 · ${stu ? "학생용 Student’s copy" : "교사용 Teacher’s copy"}</span><span class="r">${esc(B.title)} · ${name}<b class="pg">${++PAGE}</b></span></div>`;
+const sheet = (name, inner, stu) => `<div class="sheet">${head(name)}<div class="pad">${inner}</div>${foot(name, stu)}</div>`;
+
+/* P — IB PYP 탐구 수업 설계 (유닛 플래너 → 가이드 리딩 → 활동 → 평가)
+   책 파일의 pyp 칸을 읽는다. 칸이 비어 있으면 같은 책의 ib·독해·문법·쓰기에서 끌어다 채운다. */
+const bare = s => String(s).replace(/\[\[|\]\]|\{\{|\}\}/g, "");
+const ul = arr => `<ul class="pl">${(arr || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+const box = (t, ko, inner, cls) => `<div class="pbox ${cls || ""}"><h4>${t}<span>${ko}</span></h4>${inner}</div>`;
+function pypOf(){
+  const P = B.pyp || {}, ib = B.ib || {}, G = B.grammar || { points: [] };
+  return Object.assign({
+    theme: (ib.globalContext || "").split(" — ")[0], themeKo: "", band: "AR " + B.level.ar,
+    centralIdeas: [ib.statement],
+    profile: (ib.learnerProfile || []).map(a => ({ attr: a, how: "" })),
+    inquiry: [].concat(ib.factual || [], ib.conceptual || [], ib.debatable || []),
+    outcomes: [T.goal.en],
+    hook: [T.script[0].say],
+    guided: (B.comprehension || []).map(c => ({ pages: c.ref, ask: [c.q] })),
+    sentenceWork: G.points.map(p => `${p.name}: "${bare(p.sent)}"`),
+    speaking: ib.debatable || [],
+    writing: [B.essay.prompt],
+    connections: [],
+    organizers: ["Summary Map (Somebody–Wanted–But–So–Then)", "Mind Map"]
+  }, P);
+}
+const SEQ = [
+  ["Tune in", "끌어들이기", "Hook the class. Collect what they know and what they wonder."],
+  ["Set questions", "탐구 질문", "Choose the inquiry questions together and post them on the wall."],
+  ["Word work", "낱말", "Teach the new words with pictures, actions, and sounds."],
+  ["Read and find out", "읽고 알아내기", "Guided reading with stops. Reread the same pages more than once."],
+  ["Sort it out", "정리하기", "Put the ideas into a graphic organizer."],
+  ["Go further", "넓히기", "Speaking, writing, and links to other subjects."],
+  ["Reflect and act", "돌아보기", "Return to the questions. What did we learn? What will we do now?"]
+];
+function pypSheets(){
+  const P = pypOf();
+  const planner = sheet("Unit Planner", `
+    <div class="instruction">IB PYP 탐구 수업 설계 — 이 책으로 무엇을 탐구하는가
+      <span class="en">What this book lets us inquire into</span></div>
+    <div class="ptheme"><small>Transdisciplinary Theme</small><b>${esc(P.theme)}</b><i>${esc(P.themeKo)}</i><u>${esc(P.band)}</u></div>
+    ${box("Central Idea", "중심 생각", ul(P.centralIdeas), "wide")}
+    <div class="pgrid">
+      <div>
+        ${box("Learner Profile", "학습자상과 이 책에서의 탐구", `<table class="plp">${P.profile.map(x =>
+          `<tr><td><b>${esc(x.attr)}</b></td><td>${esc(x.how)}</td></tr>`).join("")}</table>`)}
+        ${box("Inquiry Questions", "탐구 질문", ul(P.inquiry))}
+      </div>
+      <div>
+        ${box("New Vocabulary", "새 낱말", `<p class="pwords">${B.vocabulary.map(v => esc(v.word)).join(" · ")}</p>`)}
+        ${P.keyWords ? box("Key Words · Phonics", "자주 나오는 낱말 · 파닉스",
+          `<p class="pwords">${P.keyWords.map(esc).join(" · ")}</p><p class="pwords ph">${(P.phonics || []).map(esc).join(" · ")}</p>`) : ""}
+        ${box("Learning Outcomes", "수업이 끝나면 할 수 있는 것", ul(P.outcomes))}
+      </div>
+    </div>`);
+  const reading = sheet("Guided Reading", `
+    <div class="instruction">읽기 전에 끌어들이고, 멈춰 가며 묻는다
+      <span class="en">Hook first. Then read in short parts and stop to ask.</span></div>
+    ${box("Capturing Ideas · Hook", "책을 펴기 전 — 궁금하게 만든다", ul(P.hook), "wide")}
+    <div class="tcap">Modelled · Shared · Guided Reading <span class="tcapko">한 번에 다 읽지 않는다. 같은 쪽을 여러 번 읽는다</span></div>
+    <table class="tg">
+      <tr><th style="width:104px">어디서 멈추나</th><th>이렇게 묻는다 · Prompts</th></tr>
+      ${P.guided.map(g => `<tr><td class="what">${esc(g.pages)}</td><td>${g.ask.map(esc).join("<br>")}</td></tr>`).join("")}
+    </table>
+    ${box("Sentence Work", "문장 공부 — 책에서 찾은 문장으로", ul(P.sentenceWork), "wide")}`);
+  const acts = sheet("Activities", `
+    <div class="instruction">말하고, 쓰고, 다른 과목으로 넓힌다
+      <span class="en">Speak, write, and connect across subjects</span></div>
+    <div class="pgrid">
+      <div>${box("Speaking & Listening", "말하기 · 듣기", ul(P.speaking))}</div>
+      <div>${box("Writing Opportunities", "쓰기", ul(P.writing))}</div>
+    </div>
+    ${P.connections.length ? box("Connections", "다른 과목 · 우리 삶과 잇기",
+      `<table class="plp">${P.connections.map(c => `<tr><td><b>${esc(c.subject)}</b></td><td>${esc(c.idea)}</td></tr>`).join("")}</table>`, "wide") : ""}
+    ${box("Graphic Organizers", "생각 정리 도구", `<p class="pwords">${P.organizers.map(esc).join(" · ")}</p>`, "wide")}
+    <div class="tcap">Learning Sequence <span class="tcapko">탐구 수업의 일곱 걸음 — 반 사정에 맞춰 여러 차시로 나눈다</span></div>
+    <table class="tg">
+      ${SEQ.map((s, i) => `<tr><td class="pt">${i + 1}</td><td class="what" style="width:150px">${s[0]} <span class="tcapko">${s[1]}</span></td><td>${s[2]}</td></tr>`).join("")}
+    </table>`);
+  return planner + reading + acts + (P.test ? testSheets(P.test) : "");
+}
+
+/* IB PYP Assessment — 학생용 2장(객관식·Yes/No / 쓰기·말하기) + 교사용 정답 1장 */
+function testSheets(X){
+  const mc = B.quiz.slice(0, 5), lines = n => `<div class="wl"></div>`.repeat(n);
+  const task = (t, i, n) => `
+    <div class="ptask"><b>${i}. [${esc(t.tag)}]</b> ${esc(t.task)}
+      <ol>${t.hints.map(h => `<li>${esc(h)}</li>`).join("")}</ol>${lines(n)}</div>`;
+  const nameRow = `<div class="pname">Name <i></i> Date <i></i> Score <i></i></div>`;
+  const s1 = sheet("IB Test (1/2)", `${nameRow}
+    <div class="tcap">Part A. Multiple Choice <span class="tcapko">알맞은 답에 ✔ 하세요</span></div>
+    ${mc.map((q, i) => `<div class="pq"><b>${i + 1}.</b> ${esc(q.q)}<div>${q.a.map(a => `<span>☐ ${esc(a)}</span>`).join("")}</div></div>`).join("")}
+    <div class="tcap">Part B. Yes or No <span class="tcapko">맞으면 Yes, 틀리면 No 에 동그라미</span></div>
+    ${X.yesno.map((q, i) => `<div class="pq yn"><b>${i + 6}.</b> ${esc(q.q)}<em>Yes / No</em></div>`).join("")}`, true);
+  const s2 = sheet("IB Test (2/2)", `
+    <div class="tcap">Part C. Writing Task <span class="tcapko">5–6문장으로 쓰세요</span></div>
+    ${X.writing.map((t, i) => task(t, 11 + i, 6)).join("")}
+    <div class="tcap">Part D. Speaking Task <span class="tcapko">5–6문장으로 말하세요 (선생님과 1:1)</span></div>
+    ${X.speaking.map((t, i) => task(t, 13 + i, 0)).join("")}`, true);
+  const key = sheet("IB Test Key", `
+    <div class="instruction">정답과 예시 답 · Answer key and sample answers</div>
+    <table class="tg">
+      <tr><th style="width:34px">번호</th><th>문항</th><th style="width:34%">정답</th></tr>
+      ${mc.map((q, i) => `<tr><td class="pt">${i + 1}</td><td>${esc(q.q)}</td><td class="miss">${esc(q.a[q.c])}</td></tr>`).join("")}
+      ${X.yesno.map((q, i) => `<tr><td class="pt">${i + 6}</td><td>${esc(q.q)}</td><td class="miss">${q.a ? "Yes" : "No"}</td></tr>`).join("")}
+    </table>
+    <div class="tcap">Part C · D <span class="tcapko">예시 답과 평가 초점 — 문장 수보다 생각과 까닭을 본다</span></div>
+    <table class="tg">
+      ${X.writing.concat(X.speaking).map((t, i) => `<tr><td class="pt">${11 + i}</td>
+        <td><div class="say">${esc(t.sample)}</div><div class="ko">[${esc(t.tag)}] 평가 초점: ${esc(t.focus)}</div></td></tr>`).join("")}
+    </table>`);
+  return s1 + s2 + key;
+}
+
+/* T1 — 목표와 시트별 지도 포인트 (수업 흐름표는 쓰지 않는다 — 반마다 시간이 다르다) */
+function planSheet(){
+  const notes = T.notes.map(n => `
+    <tr><td class="what">${esc(n.sheet)}</td>
+        <td>${esc(n.point)}</td>
+        <td class="miss">${esc(n.miss)}</td></tr>`).join("");
+  return sheet("Teaching Points", `
+    <div class="instruction">오늘의 목표, 시트마다 짚을 것, 학생이 꼭 틀리는 곳
+      <span class="en">The goal, what to press on, and where students always slip</span></div>
+    <div class="goalbox">
+      <b>Goal</b> ${esc(T.goal.en)}
+      <div class="ko">${esc(T.goal.ko)}</div>
+    </div>
+    <table class="tg">
+      <tr><th style="width:112px">시트</th><th>이렇게 지도한다</th><th style="width:38%">학생이 꼭 틀리는 곳</th></tr>
+      ${notes}
+    </table>`);
+}
+
+/* T2 — 수업 대사 (이것만 읽고도 수업이 되도록) */
+// say = 그대로 읽는 말 / do = 이때 하는 행동과 이유 / exp = 아이에게서 나올 답 / stuck = 안 나오면
+function scriptSheets(){
+  const rows = T.script.map((x, i) => `
+    <tr>
+      <td class="what">${esc(x.stage)}${x.min ? `<span class="mn">${esc(x.min)}</span>` : ""}</td>
+      <td>
+        <div class="say"><i>${i+1}</i>“${esc(x.say)}”</div>
+        ${x.do ? `<div class="ko">${esc(x.do)}</div>` : ""}
+        ${x.exp ? `<div class="exp"><b>아이 답</b>${esc(x.exp)}</div>` : ""}
+        ${x.stuck ? `<div class="stuck"><b>안 나오면</b>${esc(x.stuck)}</div>` : ""}
+      </td>
+    </tr>`);
+  const per = 5, out = [], n = Math.ceil(rows.length / per);
+  for (let i = 0; i < rows.length; i += per){
+    out.push(sheet("Script" + (n > 1 ? ` (${i/per+1}/${n})` : ""), `
+      <div class="instruction">따옴표 안은 그대로 읽으세요. 그 아래는 선생님만 봅니다.
+        <span class="en">Read the quoted lines aloud. The rest is for you only.</span></div>
+      <table class="tg script">
+        <tr><th style="width:104px">언제</th><th>선생님이 하는 말 · 행동 · 아이 답 · 막혔을 때</th></tr>
+        ${rows.slice(i, i+per).join("")}
+      </table>`));
+  }
+  return out.join("");
+}
+
+/* T3 — 북토킹 + 토론 진행 + 채점 */
+function talkSheet(){
+  const bt = (title, ko, arr) => `
+    <div class="tcap">${title} <span class="tcapko">${ko}</span></div>
+    <table class="tg">
+      ${arr.map(q => `<tr><td><div class="say">${esc(q.en)}</div><div class="ko">${esc(q.ko)}</div></td></tr>`).join("")}
+    </table>`;
+  return sheet("Book Talk", `
+    <div class="instruction">읽기 전 · 읽는 중 · 읽은 후 · Before, during, after reading</div>
+    ${bt("Before Reading", "읽기 전 — 책을 열기 전에 묻는다", T.booktalk.before)}
+    ${bt("During Reading", "읽는 중 — 멈춰 세우고 묻는다", T.booktalk.during)}
+    ${bt("After Reading", "읽은 후 — 책을 덮고 묻는다", T.booktalk.after)}`);
+}
+
+/* T4 — 논술 채점표 */
+function scoreSheet(){
+  const sc = T.scoring.map(x => `
+    <tr><td class="what">${esc(x.c)}</td>
+        <td class="pt">${x.pt}</td>
+        <td>${esc(x.yes)}</td>
+        <td class="miss">${esc(x.no)}</td>
+        <td class="give"></td></tr>`).join("");
+  const total = T.scoring.reduce((a,b) => a + b.pt, 0);
+  return sheet("Scoring", `
+    <div class="instruction">논술 채점표 · Writing rubric (${total}점 만점)</div>
+    <table class="tg">
+      <tr><th style="width:120px">준거</th><th style="width:34px">배점</th>
+          <th>이러면 만점 · Full marks</th><th style="width:30%">이러면 감점 · Loses marks</th>
+          <th style="width:42px">점수</th></tr>
+      ${sc}
+      <tr><td class="what">합계 Total</td><td class="pt">${total}</td><td colspan="2"></td><td class="give"></td></tr>
+    </table>
+    <div class="tcap">토론 진행법 · Running the debate (Debatable 질문으로)</div>
+    <div class="goalbox">
+      <b>1</b> 질문을 읽고 <b>편을 정하게 한다</b>. 중립은 오늘 없다.<br>
+      <b>2</b> 찬성 1명 → 반대 1명 → 찬성 1명 순으로 한 문장씩. 길게 말하면 끊는다.<br>
+      <b>3</b> 마지막에 <b>“상대편에서 가장 괜찮았던 말”</b>을 한 사람씩 말하게 한다.<br>
+      <b>4</b> 그 말을 6번 시트 <b>Counter</b> 칸에 적게 한다. 토론이 그대로 논술이 된다.
+      <div class="ko">Pick a side → one sentence each, alternating → name the best point from the other side → write it in the Counter box.</div>
+    </div>
+    <div class="tcap">기억할 한 가지 · The one thing</div>
+    <div class="goalbox">
+      근거는 <b>장면 + 챕터</b>다. “Charlotte was kind.”는 근거가 아니다.
+      “In ch. 11, Charlotte wrote SOME PIG.”가 근거다.
+      <div class="ko">Evidence = a scene and a chapter number. Feelings are not evidence.</div>
+    </div>`);
+}
+
+function render(){
+  B = window.BOOK;
+  T = B.teaching;
+  document.getElementById("sheets").innerHTML =
+    pypSheets() + planSheet() + scriptSheets() + talkSheet() + scoreSheet();
+  document.getElementById("bookname").textContent = `${B.title} · AR ${B.level.ar}`;
+
+  // 인쇄 넘침 자가점검 — 내용을 늘리면 A4 를 넘어간다.
+  requestAnimationFrame(() => {
+    const probe = document.createElement("div");
+    probe.style.height = "297mm";
+    document.body.appendChild(probe);
+    const limit = probe.getBoundingClientRect().height;
+    probe.remove();
+    // 0.1px 만 넘어도 인쇄하면 한 장이 더 나온다. 정수로 재면 그걸 놓친다.
+    const over = [...document.querySelectorAll(".sheet")]
+      .filter(s => s.getBoundingClientRect().height > limit + 0.05)
+      .map(s => s.querySelector(".tab").textContent);
+    if (over.length){
+      console.warn("A4 한 장을 넘었습니다:", over);
+      document.getElementById("bookname").textContent += ` · ⚠ A4 넘침: ${over.join(", ")}`;
+    }
+  });
+}
+
+/* ══════════ 장서 책(?no=<Book No.>) — 우리가 읽지 않은 책 ══════════
+   책의 줄거리·인물·사건·정답을 적지 않는다. 쓰는 사실은 서지·갈래·주제·논픽션 여부·수상·장서 요약·생각 질문·영상뿐.
+   짝이 되는 워크시트(worksheets.html?no=)는 아이가 채우는 칸이라 정답이 없다. */
+const guide = (ko, en) =>
+  `<div class="instruction"><span class="ko">${ko}</span><span class="en">${en}</span></div>`;
+const yes3 = '<td class="c">☐</td><td class="c">☐</td><td class="c">☐</td>';
+
+/* 1 Book Card — 서지 + 우리가 가진 것 / 갖지 않은 것 */
+function tcAbout(){
+  const th = (B.theme && B.theme !== "No theme") ? B.theme : "";
+  const Q = B.questions || [], H = (B.hints || []).filter(Boolean), V = B.videos || [];
+  const kv = (k, v) => `<td class="what">${k}</td><td>${v}</td>`;
+  return sheet("Book Card", `
+    ${guide("이 책은 우리가 내용을 확인한 책이 아닙니다 — 무엇을 알고 무엇을 모르는지 먼저 보세요.",
+            "We have not read this book. See what we know and what we do not.")}
+    <table class="tg">
+      <tr>${kv("Book No.", esc(B.bookNo))}${kv("종류", B.nf ? "논픽션" : "픽션")}</tr>
+      <tr>${kv("저자", esc(B.author))}${kv("시리즈", B.series ? esc(B.series) : "&ndash;")}</tr>
+      <tr>${kv("갈래", esc(B.genre))}${kv("주제", th ? esc(th) : "&ndash;")}</tr>
+      <tr>${kv("Level", "AR " + esc(B.level.ar) + (B.level.lexile ? " · Lexile " + esc(B.level.lexile) : ""))}${kv("수상", (B.awards || []).length ? esc(B.awards.join(" · ")) : "&ndash;")}</tr>
+    </table>
+    <div class="tcap">장서 한 줄 요약 <span class="tcapko">장서 목록에 적힌 원문 그대로</span></div>
+    <div class="prompt">${B.summary ? esc(B.summary) : "장서 목록에 적힌 요약이 없습니다."}</div>
+    <div class="pgrid">
+      ${box("이 책에 대해 우리가 가진 것", "Have", ul([
+        "장서 한 줄 요약 — " + (B.summary ? "있음 (위 원문)" : "없음"),
+        "생각 질문 " + Q.length + "개" + (H.length ? " · 한국어 도움말 " + H.length + "개" : ""),
+        "낭독 영상 " + V.length + "개" + (V.length ? " (넷째 장에 제목과 주소)" : " — 워크시트에 찾는 법을 적어 두었음"),
+        "서지: 저자 · 시리즈 · 갈래 · 주제 · AR · Lexile" ]), "")}
+      ${box("우리가 갖지 않은 것", "Do not have", ul([
+        "내용 확인 문제(퀴즈)와 정답",
+        "단어장과 낱말 뜻",
+        "줄거리 · 인물 · 사건 · 결말",
+        "요약 지도 · 마인드맵의 예시 답" ]), "")}
+    </div>
+    ${box("그래서 워크시트는 이렇게 쓰입니다", "How to use", ul([
+      "아홉 장 모두 아이가 채우는 빈 칸이거나 아이 자신의 생각을 묻는 물음입니다. 맞고 틀린 답이 없습니다.",
+      "채점하지 않습니다. 아이가 책을 읽고 스스로 채웠는지를 봅니다 (4장 확인표).",
+      "아이의 답이 책과 맞는지 알고 싶다면, 수업 전에 선생님이 책을 훑어보세요. 읽지 못했다면 \"책의 어디에서 그렇게 생각했니?\" 하고 아이에게 묻습니다.",
+      "장서 요약이 짧은 한 줄이므로, 그것만으로 줄거리를 아는 것처럼 말하지 않습니다." ]), "wide")}`);
+}
+
+/* 2 Lesson Flow — 40분 한 차시 */
+function tcFlow(){
+  const nf = !!B.nf;
+  const R = [
+    ["1", "Book Card", "책 소개", 3,
+     "표지와 제목을 보여 주고 \"무엇에 대한 책일 것 같니?\" 하고 묻는다. 장서 요약을 함께 소리 내어 읽는다.",
+     "짐작한 것을 말한다. 별점 · 읽은 날 · 한 줄 감상을 쓴다 (별점은 읽은 뒤에 써도 된다)."],
+    ["2", "Shadowing", "쉐도잉", 5,
+     "영상(없으면 유튜브 검색)을 틀어 주고, 아이가 책을 펴서 같은 곳을 따라가는지 본다.",
+     "낭독을 들으며 소리 내어 따라 읽는다. 세 번 읽고 ☐ 에 표시한다."],
+    ["3", "Read Aloud", "낭독녹음", 5,
+     "마음에 드는 한 쪽을 고르게 하고 녹음을 돕는다. 확인표는 아이가 스스로 답하게 둔다.",
+     "읽을 쪽을 적고 세 번 읽는다. 녹음한 뒤 또박또박 · 끊어읽기 · 소리 크기를 스스로 확인한다."],
+    ["4", "Book Talk", "AI 북토크", 5,
+     "틀 다섯 개를 먼저 시범으로 말해 본다. 틀린 영어는 고쳐 주기보다 다시 한 번 바르게 들려 준다.",
+     "빈칸을 채워 영어로 말하고, AI 북토크에서 같은 틀을 써서 이야기한다."],
+    ["5", "Word List", "낱말 노트", 4,
+     "낱말은 아이가 고르게 한다 (우리는 이 책의 낱말을 모른다). 뜻은 사전에서 찾게 한다.",
+     "새로 만난 낱말을 골라 뜻과 내 문장을 적는다. 여덟 개를 못 채워도 괜찮다."],
+    ["6", "Summary Map", "요약 지도", 4,
+     nf ? "다섯 칸을 차례로 안내하고, 다 쓰면 책을 덮고 칸만 보고 말하게 한다."
+        : "Somebody-Wanted-But-So-Then 을 차례로 안내하고, 다 쓰면 책을 덮고 칸만 보고 이야기하게 한다.",
+     "다섯 칸을 채우고 책을 덮고 말한다."],
+    ["7", "Mind Map", "마인드맵", 4,
+     "가운데 제목에서 갈래가 뻗는 모양을 그려 보여 준다. 칸이 비면 책의 어느 쪽을 찾아볼지 알려 준다.",
+     "네 갈래에 책에서 찾은 것을 적는다."],
+    ["8", "Thinking", "생각 질문", 5,
+     "질문을 읽어 주고 한국어 도움말이 있으면 함께 읽는다. 답을 먼저 말로 하게 한 뒤 쓰게 한다. 정답을 말하지 않는다.",
+     "질문마다 내 생각과 까닭을 쓴다."],
+    ["9", "Writing", "독후 논술", 5,
+     "물음과 조건 세 가지를 읽어 준다. 쓰기 전에 어떤 장면을 들지 말로 정하게 한다.",
+     "다섯 문장으로 쓰고, 다 쓴 뒤 확인표에 스스로 답한다."]
+  ];
+  const total = R.reduce((a, r) => a + r[3], 0);
+  return sheet("Lesson Flow", `
+    ${guide("40분 한 차시 기준 수업 흐름입니다 (합계 " + total + "분). 시간이 모자라면 9번 논술은 숙제로 돌리세요.",
+            "A 40-minute lesson. If time runs short, send the Writing sheet home.")}
+    <table class="tg">
+      <tr><th style="width:118px">단계</th><th style="width:44px">시간</th><th>선생님이 하는 것</th><th style="width:34%">아이가 하는 것</th></tr>
+      ${R.map(r => `<tr><td class="what">${r[0]}. ${r[1]}<span class="tcapko" style="display:block;margin-left:0">${r[2]}</span></td>
+        <td class="min">${r[3]}<span>분</span></td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join("")}
+      <tr><td class="what">합계</td><td class="min">${total}<span>분</span></td><td colspan="2"></td></tr>
+    </table>
+    <div class="ko">읽기는 수업 앞에서 끝내고 오는 것으로 가정했습니다. 수업 안에서 읽어야 하면 2~3번을 한 차시에 하고 나머지는 다음 차시로 나누세요.</div>`);
+}
+
+/* 3 Questions — 열린 질문. 정답을 쓰지 않는다 */
+function tcQuestions(){
+  const STUCK = [
+    ["한국어로 먼저 말해 볼래?", "한 낱말이라도 좋아, 뭐가 떠오르니?", "친구에게 말하듯이 해 보자."],
+    ["책을 다시 넘겨 볼까? 마음에 걸리는 쪽이 있니?", "그렇게 생각한 곳이 책 어디였니? 같이 볼까?", "그 쪽에서 무엇이 보였니?"],
+    ["정답은 없어. 네가 생각한 대로 말해 줘.", "예를 하나만 들어 볼래?", "왜 그렇게 생각했는지 한 문장만 더 해 볼까?"]
+  ];
+  const Q = B.questions || [], H = B.hints || [];
+  const per = i => {
+    const hint = H[i] ? `<div class="ko">한국어 도움말 (워크시트에 실려 있음) — ${esc(H[i])}</div>` : "";
+    return `
+      <div class="pbox wide"><h4>Q${i + 1}. ${esc(Q[i])}<span>열린 질문 · 정답 없음</span></h4>
+        ${hint}
+        <table class="tg">
+          <tr><td class="what" style="width:96px">무엇을 보려는 질문인가</td>
+              <td>정해진 답이 없습니다. 아이가 책을 읽고 <b>자기 생각을 세웠는지</b>를 봅니다. 질문을 읽고 어떤 종류인지 골라 표시하세요:
+                  ☐ 경험과 잇기 &nbsp; ☐ 까닭 말하기 &nbsp; ☐ 상상하기 &nbsp; ☐ 의견 세우기</td></tr>
+          <tr><td class="what">아이 답에서 살필 점</td>
+              <td>① 자기 말로 답했는가 &nbsp; ② 까닭(왜 그렇게 생각하는지)을 붙였는가 &nbsp; ③ 책을 펴서 확인할 수 있는 말인가 (책의 어느 쪽에서 그렇게 생각했는지 말할 수 있는가)</td></tr>
+          <tr><td class="what">막힐 때 건네는 말</td>
+              <td>${STUCK[i % 3].map(t => "\"" + t + "\"").join(" &nbsp; ")}</td></tr>
+        </table></div>`;
+  };
+  const body = Q.length
+    ? Q.map((q, i) => per(i)).join("")
+    : box("이 책에는 준비된 생각 질문이 없습니다", "No questions",
+        ul(["워크시트 8장은 아이가 궁금한 점을 스스로 질문으로 만드는 칸으로 나옵니다.",
+            "아이가 만든 질문을 읽어 주고, 아래 살필 점을 그대로 적용하세요."]), "wide") +
+      box("살필 점", "What to look for", ul(["자기 말로 답했는가", "까닭을 붙였는가", "책의 어느 쪽에서 그렇게 생각했는지 말할 수 있는가"]), "wide");
+  return sheet("Questions", `
+    ${guide(Q.length ? "세 질문 모두 열린 질문입니다. 정답을 적어 두지 않았고, 정답이 있는 것처럼 말하지 않습니다."
+                     : "이 책은 준비된 질문이 없습니다. 아이가 만든 질문도 열린 질문으로 대합니다.",
+            "All questions are open. There are no answers to give.")}
+    ${body}`);
+}
+
+/* 4 Check — 확인표 + 영상 목록 */
+function tcCheck(){
+  const V = B.videos || [];
+  const I = [
+    ["1. Book Card", "표지 · 제목 · 저자를 말하고, 별점 · 읽은 날 · 한 줄 감상을 썼다."],
+    ["2. Shadowing", "낭독을 들으며 세 번 따라 읽었다."],
+    ["3. Read Aloud", "읽을 쪽을 정해 세 번 읽고 녹음했다. 확인표에 스스로 답했다."],
+    ["4. Book Talk", "틀의 빈칸을 채워 영어 문장으로 말했다."],
+    ["5. Word List", "낱말을 고르고 뜻과 내 문장을 적었다."],
+    ["6. Summary Map", B.nf ? "다섯 칸을 채우고 책을 덮고 말했다." : "SWBST 다섯 칸을 채우고 책을 덮고 이야기했다."],
+    ["7. Mind Map", "네 갈래에 책에서 찾은 것을 적었다."],
+    ["8. Thinking", "질문마다 내 생각과 까닭을 썼다."],
+    ["9. Writing", "다섯 문장으로 썼고 책에서 본 장면 하나를 들었다."]
+  ];
+  const vids = V.length
+    ? `<table class="tg"><tr><th style="width:26px">No</th><th>제목</th><th style="width:44%">주소</th></tr>${V.map((v, i) =>
+        `<tr><td class="pt">${i + 1}</td><td>${esc(v[1])}</td><td style="word-break:break-all">https://www.youtube.com/watch?v=${esc(v[0])}</td></tr>`).join("")}</table>
+       <div class="ko">유튜브에서 책 이름으로 찾은 영상이라 이 책과 다를 수 있습니다. 틀기 전에 앞부분을 확인하세요.</div>`
+    : `<div class="goalbox">찾아 둔 낭독 영상이 없습니다. 유튜브에서 『${esc(B.title)}』 read aloud 로 찾으세요.<br>
+       https://www.youtube.com/results?search_query=${encodeURIComponent('"' + B.title + '" read aloud')}</div>`;
+  return sheet("Check", `
+    <div class="pname">Name <i></i> Date <i></i> Teacher <i></i></div>
+    ${guide("단계마다 아이가 해냈는지 세 칸 중 하나에 표시합니다. 점수를 매기지 않습니다.", "Tick one box per step. No scores.")}
+    <table class="tg">
+      <tr><th style="width:118px">워크시트</th><th>확인 항목</th><th style="width:48px">잘함</th><th style="width:48px">보통</th><th style="width:58px">더 필요</th></tr>
+      ${I.map(r => `<tr><td class="what">${r[0]}</td><td>${r[1]}</td>${yes3}</tr>`).join("")}
+    </table>
+    <div class="tcap">낭독 영상 <span class="tcapko">Shadowing 에서 쓰는 영상 ${V.length}개</span></div>
+    ${vids}`);
+}
+
+function renderCatalog(){
+  B = window.BOOK;
+  document.getElementById("sheets").innerHTML = tcAbout() + tcFlow() + tcQuestions() + tcCheck();
+  document.getElementById("bookname").textContent = `${B.title} · AR ${B.level.ar}`;
+
+  // 인쇄 넘침 자가점검 (render 와 같은 방식)
+  requestAnimationFrame(() => {
+    const probe = document.createElement("div");
+    probe.style.height = "297mm";
+    document.body.appendChild(probe);
+    const limit = probe.getBoundingClientRect().height;
+    probe.remove();
+    const over = [...document.querySelectorAll(".sheet")]
+      .filter(s => s.getBoundingClientRect().height > limit + 0.05)
+      .map(s => s.querySelector(".tab").textContent);
+    if (over.length) {
+      console.warn("A4 한 장을 넘었습니다:", over);
+      document.getElementById("bookname").textContent += ` · ⚠ A4 넘침: ${over.join(", ")}`;
+    }
+  });
+}
+function startCatalog(no){
+  const miss = () => { document.getElementById("sheets").innerHTML =
+    '<div class="sheet"><div class="pad"><p style="padding:20mm">장서에서 책을 찾지 못했습니다: ' + esc(no) + '</p></div></div>'; };
+  const s = document.createElement("script");
+  s.src = "catalog-book.js";
+  s.onload = () => RBCat.load(no, b => { b ? renderCatalog() : miss(); });
+  s.onerror = miss;
+  document.head.appendChild(s);
+}
+
+// 책은 주소로 고른다:  worksheets.html?book=hi-fly-guy
+// 안 적으면 charlottes-web 을 연다.
+// 장서 책은 ?no=<Book No.> 로 연다 (catalog-book.js).  teacher-guide.html?no=M0037
+const NO = new URLSearchParams(location.search).get("no");
+if (NO) startCatalog(NO);
+else {
+const slug = new URLSearchParams(location.search).get("book") || "charlottes-web";
+const tag = document.createElement("script");
+tag.src = "books/" + slug + ".js";
+tag.onload = render;
+tag.onerror = () => document.getElementById("sheets").innerHTML =
+  '<div class="sheet"><div class="pad"><p style="padding:20mm">책 파일이 없습니다: books/' + slug + '.js</p></div></div>';
+document.head.appendChild(tag);
+}
+</script>
+</body>
+</html>

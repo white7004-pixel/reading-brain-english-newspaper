@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <title>리딩브레인 원서 워크시트</title>
 <link rel="stylesheet" href="sheet.css">
+<style>
+/* 장서 책(?no=) 워크시트만 쓰는 몇 줄 */
+.cbk{display:flex; gap:5mm; margin:0 0 7px}
+.bigcv{width:30mm; height:40mm; flex:none; border:1px solid var(--line); border-radius:2px; background:#fff center/cover no-repeat;
+  display:flex; align-items:center; justify-content:center; font-size:9pt; color:#a0a8b0}
+.cbm{flex:1; min-width:0}
+.cbm .ct{font-size:15pt; font-weight:800; color:var(--navy); line-height:1.25}
+.cbm .cs{color:#5c6873; margin:1px 0 7px; font-size:10pt}
+.cbm .setting{margin-bottom:5px; font-size:9.5pt}
+.stars{font-size:10.5pt; margin:4px 0} .stars span{font-size:17pt; letter-spacing:3px; color:var(--navy); vertical-align:-2px}
+.dt{margin:6px 0 8px; font-size:10.5pt}
+body .wl.cell{border-bottom:0; height:auto; min-height:26px; outline:none}
+table.cw td.c{text-align:center; color:#7b8794; width:22mm}
+table.cw.big td{height:14.5mm}
+table.cs5 td.k span{font-weight:400; font-size:8.5pt; color:#6b7885}
+table.cs5 td.k{width:96px}
+table.cw + .q, table.rubric + .q{margin-top:12px}
+table.rubric.big td{padding:6px 8px; font-size:10pt}
+table.rubric.big td.k{width:26mm; white-space:nowrap}
+</style>
 </head>
 <body>
 
@@ -60,7 +80,7 @@ function head(name){
     <div class="cover" ${B.cover?`style="background-image:url('${B.cover}')"`:""}>${B.cover?"":"표지"}</div>
     <div class="f bk"><b>Book</b><i>${esc(B.title)}</i><u>${esc(B.series||"")}</u></div>
     <div class="f"><b>Author</b><i>${esc(B.author)}</i></div>
-    <div class="f"><b>Level</b><i>AR ${esc(B.level.ar)} · ${esc(B.level.lexile)}</i><u>${esc(B.level.rb||"")}</u></div>
+    <div class="f"><b>Level</b><i>AR ${esc(B.level.ar)}${B.level.lexile ? " · " + esc(B.level.lexile) : ""}</i><u>${esc(B.level.rb||"")}</u></div>
     <div class="f"><b>Award</b><i>${(B.awards||[]).length ? esc(B.awards[0]) : "&ndash;"}</i>${
       (B.awards||[]).length > 1 ? `<u>${esc(B.awards.slice(1).join(" · "))}</u>` : ""}</div>
     <div class="f fill"><b>이름 Name</b><i></i></div>
@@ -430,8 +450,246 @@ function gradeAll(){
   if (firstUnmarked) firstUnmarked.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
+/* ══════════ 장서 책(?no=<Book No.>) — 우리가 읽지 않은 책 ══════════
+   책의 줄거리·인물·사건을 아는 척하지 않는다. 쓰는 사실은 제목·저자·시리즈·갈래·주제·논픽션 여부·수상·장서 요약뿐.
+   나머지는 모두 아이가 채우는 칸이거나 아이 자신의 생각을 묻는 물음이다. 정답이 있는 칸이 없다.
+   아홉 장의 차례와 이름은 read.html(학습하기)과 같다. */
+const bl = w => blank("", w);                                   // 아이가 채우는 밑줄 칸 (정답 없음)
+const wls = n => '<div class="wl"></div>'.repeat(n);
+const cell = () => '<div class="wl cell"></div>';
+const ask = t => `<div class="q"><div class="ask">${t}</div>`;   // 열린 .q — 부른 쪽이 </div> 로 닫는다
+const themeOf = () => (B.theme && B.theme !== "No theme") ? B.theme : B.genre;
+
+/* 1 Book Card */
+function csAbout(){
+  const lv = "AR " + B.level.ar + (B.level.lexile ? " · Lexile " + B.level.lexile : "");
+  return sheet("Book Card", `
+    ${guide("책 소개 카드를 채워 보세요.", "Fill in your book card.")}
+    <div class="cbk">
+      <div class="bigcv"${B.cover ? ` style="background-image:url('${B.cover}')"` : ""}>${B.cover ? "" : "표지"}</div>
+      <div class="cbm">
+        <div class="ct">${esc(B.title)}</div>
+        <div class="cs">${esc(B.author)}${B.series ? " · " + esc(B.series) : ""}</div>
+        <div class="setting">
+          <div><b>종류</b>${B.nf ? "논픽션" : "픽션"}</div>
+          <div><b>갈래</b>${esc(B.genre)}</div>
+          <div><b>주제</b>${esc(B.theme)}</div>
+        </div>
+        <div class="setting">
+          <div><b>Level</b>${esc(lv)}</div>
+          <div><b>수상</b>${(B.awards || []).length ? esc(B.awards[0]) : "&ndash;"}</div>
+        </div>
+      </div>
+    </div>
+    <div class="prompt"><b>이 책은 · About this book</b><br>${
+      B.summary ? esc(B.summary) : "장서 목록에 적힌 요약이 없습니다."}</div>
+    <div class="gcap">별점과 읽은 날<i>Rating and date</i></div>
+    <div class="stars">별점 Rating &nbsp; <span>☆ ☆ ☆ ☆ ☆</span></div>
+    <div class="dt">읽은 날 Date &nbsp; ${bl(5)} 년 ${bl(3)} 월 ${bl(3)} 일</div>
+    ${ask("한 줄 감상 — 이 책을 한 문장으로 말하면?")}${wls(3)}</div>`);
+}
+
+/* 2 Shadowing */
+function csShadow(){
+  const V = B.videos || [];
+  const yt = "https://www.youtube.com/results?search_query=" + encodeURIComponent('"' + B.title + '" read aloud');
+  const vids = V.length
+    ? V.map((v, i) => `<div class="shadow"><b>영상 ${i + 1}</b><span class="t"><a href="https://www.youtube.com/watch?v=${esc(v[0])}" target="_blank" rel="noopener" style="color:inherit">${esc(v[1] || "영상 " + (i + 1))}</a></span></div>`).join("")
+    : `<div class="prompt">유튜브에서 『${esc(B.title)}』 read aloud 로 찾으세요.
+        <a href="${esc(yt)}" target="_blank" rel="noopener" style="color:inherit">(유튜브에서 찾기)</a></div>`;
+  const rows = [1, 2, 3].map(n => `
+    <tr><td class="no">${n}</td><td>${bl(4)}</td><td class="c">☐</td><td>${cell()}</td></tr>`).join("");
+  return sheet("Shadowing", `
+    ${guide("낭독을 들으며 따라 읽으세요. 책을 펴 놓고 소리 내어 따라 읽어 보세요.", "Listen and read along. Open the book and read aloud after the voice.")}
+    <div class="gcap">낭독 영상<i>${V.length ? "Read-aloud videos" : "영상을 직접 찾으세요"}</i></div>
+    ${vids}
+    ${V.length ? `<div class="src">영상이 이 책과 다르면 유튜브에서 『${esc(B.title)}』 read aloud 로 직접 찾으세요.</div>` : ""}
+    <div class="gcap">따라 읽기 3번<i>Read along three times — 읽을 때마다 ☐ 에 표시하세요</i></div>
+    <table class="vocab cw">
+      <tr><th>No</th><th style="width:26mm">읽은 날 Date</th><th style="width:22mm">따라 읽었다</th><th>어려웠던 낱말 · 문장</th></tr>
+      ${rows}
+    </table>
+    ${ask("따라 읽으며 가장 마음에 든 문장을 책에서 찾아 옮겨 써 보세요.")}${wls(3)}</div>`);
+}
+
+/* 3 Read Aloud */
+function csRead(){
+  const chk = [["또박또박", "낱말을 또박또박 읽었나요?"], ["끊어읽기", "문장 끝과 쉼표에서 알맞게 쉬며 읽었나요?"],
+               ["소리 크기", "듣기 좋은 크기의 목소리로 읽었나요?"]];
+  return sheet("Read Aloud", `
+    ${guide("소리 내어 읽고 녹음하세요. 마음에 드는 한 쪽을 골라 30초쯤 읽어 보세요.", "Read aloud and record. Pick a page you like and read it for about thirty seconds.")}
+    <div class="setting">
+      <div><b>읽을 쪽 Pages</b> p. ${bl(3)} ~ p. ${bl(3)}</div>
+      <div><b>3번 읽기</b> 1번 ☐ &nbsp; 2번 ☐ &nbsp; 3번 ☐</div>
+    </div>
+    <div class="setting"><div><b>녹음 Recording</b> ☐ 녹음했어요 &nbsp; (학습하기 화면의 「낭독녹음」에서 녹음합니다)</div></div>
+    <div class="rubcap">스스로 확인하기 · Check yourself</div>
+    <table class="rubric big">
+      ${chk.map(r => `<tr><td class="k">${r[0]}</td><td>${r[1]}</td><td class="chk">☐ Yes &nbsp; ☐ No</td></tr>`).join("")}
+    </table>
+    ${ask("읽다가 막힌 낱말이나 문장을 적어 보세요.")}${wls(3)}</div>
+    ${ask("다음에 더 잘 읽으려면 무엇을 바꿀까요?")}${wls(2)}</div>`);
+}
+
+/* 4 Book Talk — 책 내용을 모르고도 쓸 수 있는 틀만 */
+function csTalk(){
+  const F = [
+    [`I read ${bl(20)}.`, "나는 ___ 을 읽었어요."],
+    [`I liked ${bl(11)} because ${bl(13)}.`, "나는 ___ 이 좋았어요. 왜냐하면 ___ 때문이에요."],
+    [`My favorite character is ${bl(9)} because ${bl(11)}.`, "내가 가장 좋아하는 인물은 ___ 예요. 왜냐하면 ___ 때문이에요."],
+    [`This book is about ${bl(17)}.`, "이 책은 ___ 에 대한 책이에요."],
+    [`I want to ${bl(18)}.`, "나는 ___ 하고 싶어요."]
+  ];
+  return sheet("Book Talk", `
+    ${guide("빈칸만 채우면 영어로 말할 수 있어요. 채운 뒤 소리 내어 말하고, AI 북토크에서 써 보세요.",
+            "Fill in the blanks, say each sentence aloud, then use them in the AI Book Talk.")}
+    ${F.map((f, i) => `
+      <div class="q"><div class="ask">${i + 1}. <span class="kw">${f[1]}</span></div>
+        <div class="frame">${f[0]}</div></div>`).join("")}
+    <div class="eg"><b>Tip</b> 인물이 나오지 않는 책이면 character 대신 part(부분)를 써도 좋아요 — My favorite part is ... because ...</div>
+    ${ask("틀 밖에서 내가 더 하고 싶은 말 · My own sentences")}${wls(3)}</div>
+    <div class="dt">AI 북토크를 한 날 &nbsp; ☐ &nbsp; ☐ &nbsp; ☐</div>`);
+}
+
+/* 5 Word List */
+function csWord(){
+  const rows = Array.from({ length: 8 }, (_, i) =>
+    `<tr><td class="no">${i + 1}</td><td>${cell()}</td><td>${cell()}</td><td>${cell()}</td></tr>`).join("");
+  return sheet("Word List", `
+    ${guide("책을 읽으며 새로 만난 낱말을 여덟 개 골라 적으세요. 뜻은 사전에서 찾아 적고, 내 문장을 만들어 보세요.",
+            "Pick eight new words from your reading. Look up each meaning and write your own sentence.")}
+    <table class="vocab cw big">
+      <tr><th>No</th><th style="width:30mm">Word</th><th style="width:34mm">뜻</th><th>내 문장 My sentence</th></tr>
+      ${rows}
+    </table>
+    ${ask("가장 마음에 드는 낱말 하나를 골라, 그림이나 짧은 설명으로 남겨 보세요.")}${wls(2)}</div>`);
+}
+
+/* 6 Summary Map — 픽션은 SWBST, 논픽션은 다섯 칸 */
+function csSum(){
+  const F = [["Somebody", "누가"], ["Wanted", "무엇을 바랐나"], ["But", "그런데"], ["So", "그래서"], ["Then", "마침내"]];
+  const N = [["무엇에 대한 책인가", ""], ["새로 안 사실 ①", ""], ["새로 안 사실 ②", ""], ["새로 안 사실 ③", ""], ["더 알고 싶은 것", ""]];
+  const L = B.nf ? N : F;
+  return sheet("Summary Map", `
+    ${B.nf ? guide("읽은 내용을 다섯 칸에 정리해 보세요. 다 쓰면 책을 덮고 이 칸만 보고 말해 보세요.", "Sort what you read into five boxes. Then close the book and tell it back.")
+           : guide("이야기를 다섯 마디로 줄여 보세요. 다 쓰면 책을 덮고 이 칸만 보고 이야기해 보세요.", "Squeeze the story into five parts. Then close the book and retell it.")}
+    <table class="swbst cs5">
+      ${L.map(r => `<tr><td class="k">${r[0]}${r[1] ? "<br><span>" + r[1] + "</span>" : ""}</td><td>${wls(3)}</td></tr>`).join("")}
+    </table>
+    <div class="dt">책을 덮고 ${B.nf ? "말해 봤어요" : "이야기해 봤어요"} &nbsp; ☐</div>
+    ${ask(B.nf ? "한 문장으로 줄이면? · In one sentence" : "한 문장으로 줄이면? · The story in one sentence")}${wls(2)}</div>`);
+}
+
+/* 7 Mind Map — 가운데는 책 제목, 갈래는 픽션/논픽션에 따라 */
+function csMind(){
+  const F = [["인물 Characters", "이 이야기에 나오는 인물을 적어 보세요."],
+             ["배경 Setting", "이야기가 일어나는 때와 곳을 적어 보세요."],
+             ["사건 Events", "기억에 남는 사건을 순서대로 적어 보세요."],
+             ["주제 Theme", "이 이야기가 말하려는 생각은 무엇일까요?"]];
+  const N = [["중심 낱말 Key words", "책에 자주 나오는 중요한 낱말을 적어 보세요."],
+             ["사실 Facts", "책을 읽고 알게 된 사실을 적어 보세요."],
+             ["그림·표에서 본 것", "그림, 사진, 표, 지도가 있다면 거기서 알게 된 것을 적어 보세요."],
+             ["주제 Theme", "이 책이 다루는 큰 이야기는 무엇인가요?"]];
+  const L = B.nf ? N : F;
+  return sheet("Mind Map", `
+    ${guide("가운데에 이 책을 놓고, 네 갈래로 뻗어 보세요. 책에서 찾은 것을 갈래마다 적습니다.", "Put the book in the middle and branch out in four directions.")}
+    <div class="mm-center">${esc(B.title)}</div>
+    <div class="mm-stem"></div>
+    <div class="mm-bar"></div>
+    <div class="mm-drops"><i></i><i></i></div>
+    <div class="mm-grid two">${L.map(b => `
+      <div class="mm-box"><div class="lab">${b[0]}</div><div class="ask">${b[1]}</div>
+        <div class="lines"><div></div><div></div><div></div><div></div></div></div>`).join("")}</div>`);
+}
+
+/* 8 Thinking — 장서에 붙은 생각 질문 세 개. 없으면 아이가 스스로 질문을 만든다 */
+function csThink(){
+  const Q = B.questions || [], H = B.hints || [];
+  const body = Q.length
+    ? Q.map((q, i) => `
+      <div class="q"><div class="ask">Q${i + 1}. ${esc(q)}</div>
+        ${H[i] ? `<div class="eg"><b>도움말</b> ${esc(H[i])}</div>` : ""}${wls(4)}</div>`).join("")
+    : [1, 2, 3].map(n => `
+      <div class="q"><div class="ask">Q${n}. 이 책을 읽고 궁금한 점을 질문으로 만들어 보세요.</div>
+        <div class="frame">${bl(30)}</div>${wls(3)}</div>`).join("");
+  return sheet("Thinking", `
+    ${guide(Q.length ? "질문을 읽고 내 생각을 써 보세요. 정답은 없습니다 — 왜 그렇게 생각하는지도 함께 쓰세요."
+                     : "이 책은 준비된 질문이 없습니다. 궁금한 점을 질문으로 만들고, 내 생각으로 답해 보세요.",
+            "Read each question and write what you think. There is no right answer — say why.")}
+    ${body}`);
+}
+
+/* 9 Writing — read.html 의 drawEssay 와 같은 문구. AR 4.0 이상이면 영어 물음을 앞세운다 */
+function csWrite(){
+  const th = themeOf();
+  const ko = "이 책의 주제는 '" + th + "' 입니다. 책을 읽고 나서 '" + th +
+    "' 에 대해 어떻게 생각하게 되었는지, 책에서 본 장면 하나를 들어 다섯 문장으로 써 보세요.";
+  const en = "This book is about " + th + ". Write one paragraph: what do you now think about " +
+    th + ", and which part of the book made you think so?";
+  const engFirst = parseFloat(B.level.ar) >= 4;
+  return sheet("Writing", `
+    ${guide("① 물음과 조건을 읽고 ② 쓸 말을 고른 다음 ③ 아래에 내 글을 쓰세요.", "1) Read the question and the conditions  2) Pick your words  3) Write below.")}
+    <div class="prompt">${esc(engFirst ? en : ko)}<div class="eg" style="margin:5px 0 0">${esc(engFirst ? ko : en)}</div></div>
+    <div class="toprow">
+      <div class="cond"><b>조건 Conditions</b> — 아래를 모두 지켜서 쓰세요.
+        <ol><li>다섯 문장으로 쓴다. Write five sentences.</li>
+            <li>책에서 본 장면 하나를 든다. Use one scene from the book.</li>
+            <li>'${esc(th)}' 에 대한 내 생각을 분명히 쓴다.</li></ol></div>
+      <div class="exbox"><b>Useful expressions</b><br>
+        <span>I think ...</span><span>In my opinion, ...</span><span>For example, ...</span>
+        <span>Because ...</span><span>Now I know that ...</span></div>
+    </div>
+    ${wls(11)}
+    <div class="rubcap">다 쓰고 나서 스스로 확인하기 · Check yourself after writing</div>
+    <table class="rubric big">
+      <tr><td class="k">문장 수</td><td>다섯 문장으로 썼나요?</td><td class="chk">☐ Yes &nbsp; ☐ No</td></tr>
+      <tr><td class="k">장면</td><td>책에서 본 장면 하나를 들었나요?</td><td class="chk">☐ Yes &nbsp; ☐ No</td></tr>
+      <tr><td class="k">내 생각</td><td>내 생각이 분명하게 드러나나요?</td><td class="chk">☐ Yes &nbsp; ☐ No</td></tr>
+    </table>`);
+}
+
+function renderCatalog(){
+  B = window.BOOK;
+  const ar = parseFloat(B.level.ar);
+  document.body.classList.add("lv-" + (ar < 2 ? "low" : ar < 4 ? "mid" : "high"));
+  ["#gradeBtn", "#ansBtn", "#resetBtn"].forEach(s => { $(s).hidden = true; });   // 정답이 있는 칸이 없다
+  document.getElementById("sheets").innerHTML =
+    csAbout() + csShadow() + csRead() + csTalk() + csWord() + csSum() + csMind() + csThink() + csWrite();
+  document.getElementById("bookname").textContent = `${B.title} · AR ${B.level.ar}`;
+  online();
+
+  // 인쇄 넘침 자가점검 (render 와 같은 방식)
+  requestAnimationFrame(() => {
+    const probe = document.createElement("div");
+    probe.style.height = "297mm";
+    document.body.appendChild(probe);
+    const limit = probe.getBoundingClientRect().height;
+    probe.remove();
+    const over = [...document.querySelectorAll(".sheet")]
+      .filter(s => s.getBoundingClientRect().height > limit + 0.05)
+      .map(s => s.querySelector(".tab").textContent);
+    if (over.length) {
+      console.warn("A4 한 장을 넘었습니다:", over);
+      document.getElementById("bookname").textContent += ` · ⚠ A4 넘침: ${over.join(", ")}`;
+    }
+  });
+}
+function startCatalog(no){
+  const miss = () => { document.getElementById("sheets").innerHTML =
+    '<div class="sheet"><div class="pad"><p style="padding:20mm">장서에서 책을 찾지 못했습니다: ' + esc(no) + '</p></div></div>'; };
+  const s = document.createElement("script");
+  s.src = "catalog-book.js";
+  s.onload = () => RBCat.load(no, b => { b ? renderCatalog() : miss(); });
+  s.onerror = miss;
+  document.head.appendChild(s);
+}
+
 // 책은 주소로 고른다:  worksheets.html?book=hi-fly-guy
 // 안 적으면 charlottes-web 을 연다.
+// 장서 책은 ?no=<Book No.> 로 연다 (catalog-book.js).  worksheets.html?no=M0037
+const NO = new URLSearchParams(location.search).get("no");
+if (NO) startCatalog(NO);
+else {
 const slug = new URLSearchParams(location.search).get("book") || "charlottes-web";
 const tag = document.createElement("script");
 tag.src = "books/" + slug + ".js";
@@ -439,6 +697,7 @@ tag.onload = render;
 tag.onerror = () => document.getElementById("sheets").innerHTML =
   '<div class="sheet"><div class="pad"><p style="padding:20mm">책 파일이 없습니다: books/' + slug + '.js</p></div></div>';
 document.head.appendChild(tag);
+}
 </script>
 </body>
 </html>
