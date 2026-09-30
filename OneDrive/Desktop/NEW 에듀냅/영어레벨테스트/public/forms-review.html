@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문제지 검수</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="forms-review.js"></script>
+</head>
+<body>
+<header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag"><a href="review.html">문항 검수</a></span></header>
+<main class="app">
+  <div class="hero">
+    <p class="eyebrow">REVIEW<span> · 문제지 검수</span></p>
+    <h1>문제지 검수</h1>
+    <p class="lede">1차 문제지(A·B)와 2차 쓰기(A·B)입니다. 통과한 문항만 시험에 나옵니다. 1차는 한 세트에 통과 문항이 20개 이상이어야 열립니다. 다 보면 forms.json 을 내려받아 public/data 폴더의 같은 이름 파일과 바꿔 주세요.</p>
+  </div>
+  <section class="card">
+    <div class="grid">
+      <label>문제지<select id="f-book"></select></label>
+      <label>상태<select id="f-status"><option value="">전체</option><option value="draft">검수 전</option><option value="ok">통과</option><option value="rejected">버림</option></select></label>
+      <button id="download" type="button" class="wide">forms.json 내려받기</button>
+    </div>
+    <p id="review-status" class="status" role="status"></p>
+  </section>
+  <div id="list"></div>
+</main>
+</body>
+</html>
