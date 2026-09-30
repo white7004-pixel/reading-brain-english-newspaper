@@ -84,10 +84,11 @@ export function roadmap({ est, grade, start }) {
   return { months: MAX_MONTHS, done: false, points: thin(points) };
 }
 
-// 고3 2월(남은 기간 left)과 견준 완료 시점. 두 막대(남은 기간·걸리는 기간)를 뺀 값과 같게 left − months.
+// 끝나는 달(road.months 번)과 고3 2월(left 는 두 끝을 모두 센 달 수라 left − 1 번)의 차이.
 export function earlyText(road, left) {
   if (road.months === 0) return '이미 도달';
-  return road.done && road.months < left ? `${ym(left - road.months)} 먼저` : '졸업 뒤';
+  const gap = left - 1 - road.months;
+  return !road.done || gap < 0 ? '졸업 뒤' : gap === 0 ? '졸업 무렵' : `${ym(gap)} 먼저`;
 }
 
 // 계단 그래프: 수업 시작 달부터 고3 2월까지 달마다 학원 위치(ours)와 학교 위치(school).

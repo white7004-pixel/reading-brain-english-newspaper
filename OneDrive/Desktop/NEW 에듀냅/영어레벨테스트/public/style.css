@@ -132,6 +132,11 @@ details.card[open] > summary { margin-bottom: 14px; }
 
 /* 01 총평 */
 .sheet .quote { margin: 0; font: 400 15px/1.85 var(--serif); letter-spacing: -.01em; }
+/* 표지가 넘치면 report.js fitCover 가 붙인다: 1단계 총평 글자, 2단계 칸 사이 */
+.sheet.tight .quote { font-size: 13.5px; line-height: 1.7; }
+.sheet.tighter .sec + .sec { margin-top: 14px; }
+.sheet.tighter .pos-r { height: 38px; }
+.sheet.tighter .dirs b { font-size: 20px; margin-bottom: 4px; }
 
 /* 02 영역별 수준 */
 .sheet .pos-h, .sheet .pos-r { display: grid; grid-template-columns: 52px 1fr 64px 62px; gap: 14px; align-items: center; }

@@ -105,10 +105,15 @@ test('track: 처음부터 앞선 학생·졸업 뒤에 끝나는 학생·이미 
   assert.deepEqual(track({ est: { step: 11, unit: 1 }, grade: '고3', start: '2027-02-10' }).points.map((p) => p.when), ['고3 2월']);
 });
 
-test('earlyText: 고3 졸업(남은 기간)과 견준 완료 시점', () => {
+test('earlyText: 끝나는 달과 고3 2월(달 번호 left − 1)의 차이', () => {
   assert.equal(earlyText({ months: 0, done: true }, 53), '이미 도달');
-  assert.equal(earlyText({ months: 38, done: true }, 53), '1년 3개월 먼저');
-  assert.equal(earlyText({ months: 52, done: true }, 53), '1개월 먼저');
+  assert.equal(earlyText({ months: 38, done: true }, 53), '1년 2개월 먼저'); // 고3 2월 = 52번 달
+  assert.equal(earlyText({ months: 51, done: true }, 53), '1개월 먼저');
+  assert.equal(earlyText({ months: 52, done: true }, 53), '졸업 무렵');
   assert.equal(earlyText({ months: 53, done: true }, 53), '졸업 뒤');
   assert.equal(earlyText({ months: 120, done: false }, 200), '졸업 뒤');
+  // 중3 2026-03 시작, 독해 중1 1학기 2단원: 고3 2월에 끝남 → "1개월 먼저"가 아니다
+  const p = project({ grade: '중3', start: '2026-03-02', ests: { reading: { step: 9, unit: 2 } } });
+  assert.equal(p.overall.label, '고3 2월');
+  assert.equal(earlyText(p.perSection.reading, p.left), '졸업 무렵');
 });
