@@ -3,6 +3,7 @@
 import { SECTIONS, SECTION_KO, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, daysOf, ym } from './core/progress.js';
 import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel } from './core/summary.js';
+import { areaLevels, startLevel, phonicsNote, writeSummary, LEVEL_AREAS, AREA_KO, PASS } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -15,19 +16,24 @@ try { result = JSON.parse(localStorage.getItem(`elt:result:${id}`)); } catch { /
 if (!result) {
   status('결과를 찾지 못했습니다. 시험을 본 기기와 브라우저에서 열어 주세요.', 'error');
 } else {
-  const start = result.start || result.date;
-  const taken = SECTIONS.filter((k) => result.sections[k].est);
-  const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
-  const proj = project({ grade: result.grade, start, ests, days: result.plan || {} });
-  const facts = commentFacts(result, proj);
-  const c = templateComment(facts);
   if (/^#[0-9a-f]{6}$/i.test(result.academy?.color ?? '')) document.documentElement.style.setProperty('--brand', result.academy.color);
-  $('#parent').innerHTML = cover(result, proj, c) + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start)).join('');
-  $('#director').innerHTML = director(result, c);
   $('#print-parent').onclick = () => printOnly('print-parent');
   $('#print-director').onclick = () => printOnly('print-director');
   $('#png').onclick = png;
-  fillComment(facts);
+  if (result.stage1 && !result.stage1.passed) {
+    $('#parent').innerHTML = stage1Page(result);
+    $('#director').innerHTML = `${band(result, '레벨테스트 상세 (원장용)')}<p class="meta">${esc(result.name)} · ${esc(result.grade)} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${result.stage1.set}세트)`, result.stage1.log)}</div>${footer(result)}`;
+  } else {
+    const start = result.start || result.date;
+    const taken = SECTIONS.filter((k) => result.sections[k].est);
+    const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
+    const proj = project({ grade: result.grade, start, ests, days: result.plan || {} });
+    const facts = commentFacts(result, proj);
+    const c = templateComment(facts);
+    $('#parent').innerHTML = cover(result, proj, c) + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start)).join('');
+    $('#director').innerHTML = director(result, c);
+    fillComment(facts);
+  }
 }
 
 function logoMark(r) {
@@ -48,8 +54,20 @@ function footer(r) {
   return `<footer><span>${esc(a.name)}</span><span>${esc(a.phone)}</span></footer>`;
 }
 
-function cover(r, proj, c) {
+function info(r) {
   const a = r.academy || {};
+  return `<div class="info"><div><b>시험</b><span>영어 레벨테스트</span></div><div><b>이름</b><span>${esc(r.name)}</span></div><div><b>학원(학년)</b><span>${esc(a.name)} (${esc(r.grade)})</span></div><div><b>응시일</b><span>${esc(r.date)}</span></div></div>`;
+}
+
+// 2차까지 본 학생 표지: 1차 점수와 쓰기 결과
+function stageBox(r) {
+  if (!r.stage1) return '';
+  const w = r.write2?.log.length ? writeSummary(r.write2.log) : null;
+  const wrow = w ? `<tr><td>쓰기</td><td><b>${w.correct}</b> / ${w.total}</td><td colspan="2">${w.missed.length ? `다시 볼 문법: ${esc(w.missed.join(', '))}` : '모두 맞힘'}</td></tr>` : '';
+  return `<h2>1차 · 쓰기</h2><table class="scores"><tbody><tr><td>1차</td><td><b>${r.stage1.score}</b>점</td><td colspan="2">통과 (${PASS}점 이상)</td></tr>${wrow}</tbody></table>`;
+}
+
+function cover(r, proj, c) {
   const now = gradePos(r.grade, r.date);
   const taken = SECTIONS.filter((k) => r.sections[k].est);
   const pos = Object.fromEntries(taken.map((k) => [k, position(r.sections[k].est)]));
@@ -65,13 +83,14 @@ function cover(r, proj, c) {
   const bars = avg == null ? '' : `<div class="legend"><span class="me">본인</span><span class="grade">지금 학년</span></div>
     <div class="pairs">${pair('전체', avg, 'total')}${taken.map((k) => pair(SECTION_KO[k], pos[k])).join('')}</div>`;
   return `<article class="sheet cover">${band(r, '영어 레벨테스트 결과')}
-    <div class="info"><div><b>시험</b><span>영어 레벨테스트</span></div><div><b>이름</b><span>${esc(r.name)}</span></div><div><b>학원(학년)</b><span>${esc(a.name)} (${esc(r.grade)})</span></div><div><b>응시일</b><span>${esc(r.date)}</span></div></div>
+    ${info(r)}
     <h2>테스트 결과</h2>
     <div class="boxes3"><div><b>전체 수준</b><strong>${avg == null ? '-' : levelOf(avg)}</strong></div><div><b>학년 대비</b><strong>${avg == null ? '-' : gapText(avg, now)}</strong></div><div><b>고3 과정 완료 예상</b><strong>${esc(proj?.overall.label ?? '-')}</strong></div></div>
     <p id="summary" class="summary" contenteditable>${esc(c.summary)}</p>
     <h2>영역별 점수</h2>
     <table class="scores"><thead><tr><th>영역</th><th>현재 수준</th><th>학년 대비</th><th>점수</th></tr></thead><tbody>${rows}${total}</tbody></table>
     ${bars}
+    ${stageBox(r)}
     <p class="small">점수는 중1 1학기 시작을 0점, 고3 과정 끝을 100점으로 둔 위치입니다. 맞힌 개수가 아닙니다.</p>
     ${footer(r)}</article>`;
 }
@@ -123,6 +142,35 @@ function timeline(points) {
   return `<div class="road">${rows.map((row, i) => `<div class="road-row${i % 2 ? ' rev' : ''}">${row.map((pt) => `<div class="road-pt${pt.done ? ' done' : ''}"><b>${esc(pt.level)}</b><i></i><span>${esc(pt.when)}</span></div>`).join('')}</div>`).join('')}</div>`;
 }
 
+// function 선언: 위쪽 최상위 코드가 먼저 실행되므로 const 면 초기화 전에 불려 오류가 난다
+function mark(x) { return x.correct ? '○' : x.timeout ? '시간' : x.dontKnow ? '모름' : '×'; }
+
+// 1차에서 끝난 학생: A4 한 쪽 (설계서 8장)
+function stage1Page(r) {
+  const s = r.stage1;
+  const lv = areaLevels(s.log);
+  const rows = Object.entries(LEVEL_AREAS).map(([k, ko]) => `<tr><td>${ko}</td><td>${esc(lv[k] ?? '응시하지 않음')}</td></tr>`).join('')
+    + (lv.phonics.total ? `<tr><td>파닉스</td><td>${lv.phonics.total}문항 중 ${lv.phonics.correct}개</td></tr>` : '');
+  const note = phonicsNote(lv);
+  const wrong = s.log.filter((x) => !x.correct).map((x) => x.no);
+  return `<article class="sheet cover">${band(r, '영어 레벨테스트 결과 (1차)')}
+    ${info(r)}
+    <h2>1차 결과</h2>
+    <div class="boxes3"><div><b>1차 점수</b><strong>${s.score}점</strong></div><div><b>맞힌 문항</b><strong>${s.correct} / ${s.total}</strong></div><div><b>추천 시작 수준</b><strong>${esc(startLevel(lv) ?? '-')}</strong></div></div>
+    ${note ? `<p class="summary">${note}</p>` : ''}
+    <h2>영역별 수준</h2>
+    <table class="scores"><thead><tr><th>영역</th><th>수준</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="small">수준은 초3부터 한 학년씩 올라가며 그 학년 문항을 3분의 2 이상 맞힌 데까지입니다. 중·고등 과정을 보는 2차는 1차 ${PASS}점 이상일 때 봅니다.</p>
+    <p class="small">틀린 문항 번호: ${wrong.length ? wrong.join(', ') : '없음'}</p>
+    ${footer(r)}</article>`;
+}
+
+function formLog(title, log) {
+  return `<div><h2>${esc(title)}</h2><table><thead><tr><th>번호</th><th>영역</th><th>수준</th><th>정오</th><th>쓴 답</th><th>초</th></tr></thead><tbody>
+    ${log.map((x) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${x.no}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+
 function director(r, c) {
   const logs = SECTIONS.map((k) => {
     const s = r.sections[k];
@@ -131,11 +179,11 @@ function director(r, c) {
     const book = s.est ? bookFor(r.academy?.books, k, s.est.step) : '';
     return `<div><h2>${SECTION_KO[k]}</h2>
       <table><thead><tr><th>#</th><th>학기</th><th>단원</th><th>유형</th><th>정오</th><th>초</th></tr></thead><tbody>
-      ${s.log.map((x, i) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${i + 1}</td><td>${labelOf(x.step)}</td><td>${x.unit}</td><td>${esc(x.kind)}</td><td>${x.correct ? '○' : '×'}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
+      ${s.log.map((x, i) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${i + 1}</td><td>${labelOf(x.step)}</td><td>${x.unit}</td><td>${esc(x.kind)}</td><td>${mark(x)}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
       </tbody></table>
-      <p class="small">${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
+      <p class="small">모름 ${s.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
   }).join('');
-  return `${band(r, '레벨테스트 상세 (원장용)')}<p class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>
+  return `${band(r, '레벨테스트 상세 (원장용)')}<p class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
     <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>
     ${footer(r)}`;
 }
