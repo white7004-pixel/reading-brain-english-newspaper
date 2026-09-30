@@ -29,13 +29,13 @@ CATALOG.pick = function (q, ar, g, t) {
   return out;
 };
 if (typeof window !== "undefined") window.CATALOG = CATALOG;
-// 확인: node catalog.js
+// 확인: node catalog.js  (이 안은 let 으로 둔다 — var 는 안 돌더라도 브라우저 전역에 B·b·i 를 새어 내보낸다)
 if (typeof module !== "undefined" && require.main === module) {
-  var assert = require("assert"), B = CATALOG.books;
+  let assert = require("assert"), B = CATALOG.books;
   assert.ok(B.length > 4000, "책이 너무 적다: " + B.length);
-  var seen = {};
-  for (var i = 0; i < B.length; i++) {
-    var b = B[i];
+  let seen = {};
+  for (let i = 0; i < B.length; i++) {
+    let b = B[i];
     assert.ok(b[0] && !seen[b[0]], "Book No. 가 비었거나 겹친다: " + b[0]);
     seen[b[0]] = 1;
     assert.ok(b[1], "제목이 없다: " + b[0]);
@@ -44,12 +44,12 @@ if (typeof module !== "undefined" && require.main === module) {
     assert.ok(CATALOG.genre[b[7]] !== undefined, "장르 번호가 범위 밖: " + b[0]);
     assert.ok(CATALOG.theme[b[8]] !== undefined, "주제 번호가 범위 밖: " + b[0]);
   }
-  var one = CATALOG.at(0);
+  let one = CATALOG.at(0);
   assert.strictEqual(one.no, B[0][0]); assert.strictEqual(one.title, B[0][1]);
   assert.ok(CATALOG.pick("", [1, 1.99], -1, -1).length > 100, "AR 1점대가 100권은 넘어야 한다");
   assert.ok(CATALOG.pick("fly guy", null, -1, -1).length > 0, "'fly guy' 가 찾아져야 한다");
   assert.strictEqual(CATALOG.pick("존재하지않는제목xyz", null, -1, -1).length, 0, "없는 말은 0권");
-  var t0 = CATALOG.pick("", null, -1, 0).length;
+  let t0 = CATALOG.pick("", null, -1, 0).length;
   assert.ok(t0 > 0 && t0 < B.length, "주제로 거르면 일부만 남아야 한다");
   console.log("catalog.js ok — " + B.length + "권");
 }

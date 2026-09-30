@@ -1,19 +1,62 @@
 <!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>읽고 나서 · 리딩브레인</title>
+<title>학습하기 · 리딩브레인</title>
 <link rel="stylesheet" href="app.css">
+<style>
+/* 이 화면은 읽은 책을 스스로 정리하는 워크시트다. 우리가 줄거리를 모르는 책이므로
+   내용을 적어 두지 않고, 아이가 채우는 칸으로 만든다. 인쇄하면 그대로 학습지가 된다. */
+.ws-tbl{width:100%; border-collapse:collapse; font-size:14px}
+.ws-tbl th,.ws-tbl td{border:1px solid #e3d7ec; padding:6px 8px; vertical-align:top}
+.ws-tbl th{background:#f5ecfa; color:#7b4f99; font-size:12.5px; white-space:nowrap}
+.ws-tbl input{width:100%; border:0; font:inherit; outline:none; background:transparent}
+.ws-tbl td.no{width:2.2em; text-align:center; color:#a597b0}
+.swbst{display:grid; gap:8px}
+.swbst label{display:grid; grid-template-columns:8.5em 1fr; gap:8px; align-items:center}
+.swbst b{color:#7b4f99; font-size:13px}
+.swbst input{border:0; border-bottom:1.5px solid #d9c6e6; font:inherit; padding:5px 2px; outline:none; background:transparent}
+.mmap{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.mmap div{border:1.5px dashed #c9a8dd; border-radius:12px; padding:8px 10px}
+.mmap b{display:block; color:#7b4f99; font-size:12.5px; margin-bottom:4px}
+.mmap textarea{width:100%; border:0; outline:none; background:transparent; font:inherit; resize:vertical}
+.bigcv{width:132px; aspect-ratio:3/4; border-radius:10px; background:#f1e8f6 center/cover no-repeat;
+  box-shadow:0 3px 12px rgba(120,60,160,.2); flex:none}
+.abt{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start}
+@media print{
+  .top,.tabs,.btn,.noprint{display:none !important}
+  .panel[hidden]{display:block !important}
+  .panel{page-break-inside:avoid; margin-bottom:10px}
+  body{background:#fff}
+}
+@media (max-width:560px){ .mmap{grid-template-columns:1fr} .swbst label{grid-template-columns:1fr} }
+</style>
 </head><body>
+
 <div class="top">
-  <a class="home" href="library.html">← 서재</a>
+  <a class="home" href="index.html">← 목록</a>
+  <div class="cv" id="cv"></div>
+  <div class="bk"><b id="bt">…</b><span id="bs"></span></div>
+  <a class="ws" href="javascript:print()">인쇄</a>
   <div class="sp"></div>
   <label for="who">이름</label>
   <input class="who" id="who" placeholder="김리브로" autocomplete="off">
+  <span class="saved" id="saved"></span>
   <span id="chip"></span>
 </div>
-<main id="main"><p class="sub">불러오는 중…</p></main>
+
+<div class="tabs" id="tabs"></div>
+<main>
+  <section class="panel" id="p-about" hidden></section>
+  <section class="panel" id="p-word"  hidden></section>
+  <section class="panel" id="p-sum"   hidden></section>
+  <section class="panel" id="p-map"   hidden></section>
+  <section class="panel" id="p-think" hidden></section>
+  <section class="panel" id="p-essay" hidden></section>
+</main>
+
 <script src="config.js"></script>
 <script src="store.js"></script>
 <script src="catalog.js"></script>
+<script src="catalog-covers.js"></script>
 <script>
 RB.gate();
 RB.chip(document.getElementById("chip"));
@@ -21,6 +64,10 @@ const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"
 const $ = id => document.getElementById(id);
 const NO = new URLSearchParams(location.search).get("no") || "";
 const idx = CATALOG.books.findIndex(b => b[0] === NO);
+const COVER = no => {
+  const c = (window.CATALOG_COVERS || {})[no];
+  return c ? "https://covers.openlibrary.org/b/id/" + c + "-M.jpg" : "";
+};
 
 // 이름을 정하는 법은 app.html 과 똑같이 한다. 로그인한 학생은 고정, 아니면 이 브라우저에 기억한다.
 let WHO = "";
@@ -30,18 +77,192 @@ if (RB.role() === "student") {
 } else {
   WHO = localStorage.getItem("rb1:who") || "";
   $("who").value = WHO;
-  $("who").addEventListener("change", () => {
+  $("who").addEventListener("change", function(){
     WHO = $("who").value.trim();
     localStorage.setItem("rb1:who", WHO);
-    draw();                                     // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
+    S = load(); show();                           // 이름이 바뀌면 그 아이가 적은 것을 다시 그린다
   });
 }
-// RB.save/RB.load 는 (slug, who, part, data) 네 자리다 (store.js). app.html 과 똑같이
-// 책(Book No.) 하나가 slug 다 — 책마다 따로 저장해야 저장할 때마다 이 학생의 읽은 책 전부를
-// 다시 쓰지 않고, 다른 책·다른 탭이 서로 덮어쓰지 않는다.
-const get = () => (RB.load(NO, WHO, "act") || {}).data || null;
-const put = data => RB.save(NO, WHO, "act", data);
+// RB.save/RB.load 는 (slug, who, part, data) 네 자리다 (store.js). 책(Book No.) 하나가 slug 다.
+// 책마다 따로 저장해야 다른 책·다른 탭이 서로 덮어쓰지 않는다.
+const BLANK = { star: 0, date: "", a: ["", "", ""], note: "", words: "",
+                voc: [], swbst: ["", "", "", "", ""], mm: ["", "", "", ""], essay: "" };
+function load(){
+  const r = (RB.load(NO, WHO, "act") || {}).data || {};
+  const s = {};
+  for (const k in BLANK) {
+    s[k] = r[k] !== undefined ? r[k] : (Array.isArray(BLANK[k]) ? BLANK[k].slice() : BLANK[k]);
+  }
+  return s;
+}
+let S = load(), B = null, A = null, flash = null;
+function save(){
+  if (!WHO) { $("saved").textContent = "이름을 먼저 적어 주세요"; return; }
+  RB.save(NO, WHO, "act", S);
+  $("saved").textContent = "저장됨";
+  clearTimeout(flash); flash = setTimeout(function(){ $("saved").textContent = ""; }, 1600);
+}
 
+/* ───────── 탭 ───────── */
+const TABS = [
+  { id: "about", name: "책 소개",   draw: drawAbout },
+  { id: "word",  name: "낱말 노트", draw: drawWord  },
+  { id: "sum",   name: "요약 지도", draw: drawSum   },
+  { id: "map",   name: "마인드맵",  draw: drawMap   },
+  { id: "think", name: "생각 질문", draw: drawThink },
+  { id: "essay", name: "독후 논술", draw: drawEssay },
+];
+let TAB = "about";
+function show(){
+  TABS.forEach(function(t){ $("p-" + t.id).hidden = t.id !== TAB; });
+  TABS.find(function(t){ return t.id === TAB; }).draw();
+  $("tabs").innerHTML = TABS.map(function(t){
+    return '<button data-t="' + t.id + '" class="' + (t.id === TAB ? "on" : "") + " " +
+      (filled(t.id) ? "done" : "") + '">' + t.name + "</button>";
+  }).join("");
+  $("tabs").querySelectorAll("button").forEach(function(b){
+    b.onclick = function(){ TAB = b.dataset.t; location.hash = TAB; show(); };
+  });
+}
+const has = v => Array.isArray(v) ? v.some(x => String(x || "").trim()) : String(v || "").trim() !== "";
+function filled(id){
+  if (id === "about") return S.star > 0 || has(S.note);
+  if (id === "word")  return S.voc.some(has);
+  if (id === "sum")   return has(S.swbst);
+  if (id === "map")   return has(S.mm);
+  if (id === "think") return has(S.a);
+  if (id === "essay") return has(S.essay);
+  return false;
+}
+
+/* 칸 하나가 바뀔 때마다 그 자리에 담아 두고, 칸을 떠날 때 저장한다 (main 하나에만 귀를 단다) */
+const MAIN = document.querySelector("main");
+MAIN.addEventListener("input", function(e){
+  const el = e.target, k = el.dataset.k;
+  if (!k) return;
+  const i = el.dataset.i;
+  if (i === undefined) S[k] = el.value;
+  else if (k === "voc") { S.voc[i] = S.voc[i] || ["", "", ""]; S.voc[i][el.dataset.j] = el.value; }
+  else S[k][i] = el.value;
+});
+MAIN.addEventListener("change", function(e){ if (e.target.dataset.k) save(); });
+
+function tx(k, i, rows, ph){
+  return '<textarea data-k="' + k + '"' + (i === undefined ? "" : ' data-i="' + i + '"') +
+    ' rows="' + (rows || 3) + '" placeholder="' + esc(ph || "") + '">' +
+    esc(i === undefined ? S[k] : S[k][i]) + "</textarea>";
+}
+
+/* ───────── ① 책 소개 ───────── */
+function drawAbout(){
+  const cv = COVER(NO);
+  $("p-about").innerHTML =
+    '<div class="box"><div class="abt">' +
+      '<div class="bigcv"' + (cv ? ' style="background-image:url(\'' + esc(cv) + '\')"' : "") + '></div>' +
+      '<div style="flex:1; min-width:220px">' +
+        '<h2 style="margin:0 0 4px">' + esc(B.title) + "</h2>" +
+        '<p class="sub" style="margin:0 0 8px">' + esc(B.author) +
+          (B.series === "No series" ? "" : " · " + esc(B.series)) + "</p>" +
+        '<div class="row" style="gap:6px; flex-wrap:wrap; margin-bottom:10px">' +
+          '<span class="count">AR ' + B.bl.toFixed(1) + "</span>" +
+          (B.lexile ? '<span class="count">Lexile ' + esc(B.lexile) + "</span>" : "") +
+          '<span class="count">' + (B.nf ? "논픽션" : "픽션") + "</span>" +
+          '<span class="count">' + esc(B.genre) + "</span>" +
+          '<span class="count">' + esc(B.theme) + "</span>" +
+          (B.award ? '<span class="count">🏅 ' + esc(B.award) + "</span>" : "") +
+        "</div>" +
+        (A && A.s ? '<div class="rpcom">' + esc(A.s) + "</div>" : "") +
+      "</div></div></div>" +
+    '<div class="box"><h2>별점과 읽은 날</h2>' +
+      '<div class="row" id="stars">' + [1,2,3,4,5].map(function(n){
+        return '<button class="btn ghost" data-n="' + n + '">' + (n <= S.star ? "★" : "☆") + "</button>";
+      }).join("") + "</div>" +
+      '<label>읽은 날 <input type="date" data-k="date" value="' + esc(S.date) + '"></label></div>' +
+    '<div class="box"><h2>한 줄 감상</h2>' + tx("note", undefined, 2, "이 책을 한 문장으로 말하면?") + "</div>";
+  $("stars").querySelectorAll("button").forEach(function(x){
+    x.onclick = function(){
+      S.star = +x.dataset.n; save();
+      $("stars").querySelectorAll("button").forEach(function(y){
+        y.textContent = +y.dataset.n <= S.star ? "★" : "☆";
+      });
+    };
+  });
+}
+
+/* ───────── ② 낱말 노트 ───────── */
+// 우리는 이 책에 어떤 낱말이 나오는지 모른다. 아이가 읽으며 만난 낱말을 스스로 옮겨 적는 칸이다.
+function drawWord(){
+  const rows = Array.from({ length: 8 }, function(_, i){
+    const r = S.voc[i] || ["", "", ""];
+    return '<tr><td class="no">' + (i + 1) + "</td>" + [0,1,2].map(function(j){
+      return '<td><input data-k="voc" data-i="' + i + '" data-j="' + j + '" value="' + esc(r[j]) + '"></td>';
+    }).join("") + "</tr>";
+  }).join("");
+  $("p-word").innerHTML =
+    '<div class="box"><h2>낱말 노트</h2>' +
+    '<p class="sub">책을 읽으며 새로 만난 낱말을 여덟 개 골라 적어 보세요. 뜻은 사전에서 찾아 적습니다.</p>' +
+    '<table class="ws-tbl"><tr><th>No</th><th style="width:26%">Word</th><th style="width:26%">뜻</th>' +
+    "<th>내 문장 My sentence</th></tr>" + rows + "</table></div>";
+}
+
+/* ───────── ③ 요약 지도 ───────── */
+function drawSum(){
+  const F = ["Somebody 누가", "Wanted 무엇을 바랐나", "But 그런데", "So 그래서", "Then 마침내"];
+  const N = ["무엇에 대한 책인가", "새로 안 사실 ①", "새로 안 사실 ②", "새로 안 사실 ③", "더 알고 싶은 것"];
+  const L = B.nf ? N : F;
+  $("p-sum").innerHTML =
+    '<div class="box"><h2>요약 지도</h2><p class="sub">' +
+    (B.nf ? "읽은 내용을 다섯 칸에 정리해 보세요."
+          : "이야기를 다섯 마디로 줄여 보세요. 이 다섯 칸이 곧 줄거리입니다.") + "</p>" +
+    '<div class="swbst">' + L.map(function(t, i){
+      return "<label><b>" + esc(t) + '</b><input data-k="swbst" data-i="' + i + '" value="' +
+        esc(S.swbst[i]) + '"></label>';
+    }).join("") + "</div></div>";
+}
+
+/* ───────── ④ 마인드맵 ───────── */
+function drawMap(){
+  const F = ["인물 Characters", "배경 Setting", "사건 Events", "주제 Theme"];
+  const N = ["중심 낱말 Key words", "사실 Facts", "그림·표에서 본 것", "주제 Theme"];
+  const L = B.nf ? N : F;
+  $("p-map").innerHTML =
+    '<div class="box"><h2>마인드맵</h2>' +
+    '<p class="sub">가운데에 이 책을 놓고, 네 갈래로 뻗어 보세요.</p>' +
+    '<p style="text-align:center; font-weight:700; color:#7b4f99; margin:4px 0 10px">' + esc(B.title) + "</p>" +
+    '<div class="mmap">' + L.map(function(t, i){
+      return "<div><b>" + esc(t) + '</b><textarea data-k="mm" data-i="' + i + '" rows="4">' +
+        esc(S.mm[i]) + "</textarea></div>";
+    }).join("") + "</div></div>";
+}
+
+/* ───────── ⑤ 생각 질문 ───────── */
+function drawThink(){
+  if (!A) {
+    $("p-think").innerHTML = '<div class="box"><p class="sub">이 책은 아직 질문이 준비되지 않았습니다.</p></div>';
+    return;
+  }
+  $("p-think").innerHTML = A.q.map(function(q, i){
+    return '<div class="box"><h2>' + (i + 1) + ". " + esc(q) + "</h2>" +
+      (A.h[i] ? '<p class="sub">' + esc(A.h[i]) + "</p>" : "") + tx("a", i, 3) + "</div>";
+  }).join("");
+}
+
+/* ───────── ⑥ 독후 논술 ───────── */
+// 줄거리를 모르므로 책의 갈래·주제로만 물음을 세운다. 답은 아이의 생각이다.
+function drawEssay(){
+  const th = (B.theme && B.theme !== "No theme") ? B.theme : B.genre;
+  const ko = "이 책의 주제는 '" + th + "' 입니다. 책을 읽고 나서 '" + th +
+    "' 에 대해 어떻게 생각하게 되었는지, 책에서 본 장면 하나를 들어 다섯 문장으로 써 보세요.";
+  const en = "This book is about " + th + ". Write one paragraph: what do you now think about " +
+    th + ", and which part of the book made you think so?";
+  $("p-essay").innerHTML =
+    '<div class="box"><h2>독후 논술</h2>' +
+    '<p class="sub">' + esc(B.bl >= 4 ? en : ko) + "</p>" +
+    (B.bl >= 4 ? "" : '<p class="sub noprint" style="opacity:.7">' + esc(en) + "</p>") +
+    tx("essay", undefined, 10) + "</div>";
+}
+
+/* ───────── 시작 ───────── */
 // 활동 파일은 Book No. 앞 세 글자로 쪼개 둔다. 그 책이 든 묶음 하나만 받는다.
 function loadAct(done){
   const tag = document.createElement("script");
@@ -49,49 +270,20 @@ function loadAct(done){
   tag.onload = tag.onerror = done;
   document.head.appendChild(tag);
 }
-
-function draw(){
-  const b = CATALOG.at(idx);
-  const a = (window.ACT || {})[NO];
-  const mine = get() || { star: 0, date: "", a: ["", "", ""], note: "", words: "" };
-  if (!a){
-    $("main").innerHTML = `<h2 class="h">${esc(b.title)}</h2>
-      <p class="sub">이 책은 아직 활동이 준비되지 않았습니다.</p>`;
-    return;
-  }
-  $("main").innerHTML = `
-    <h2 class="h">${esc(b.title)}</h2>
-    <p class="sub">${esc(b.author)}${b.series === "No series" ? "" : " · " + esc(b.series)}</p>
-    <div class="row" style="gap:6px; flex-wrap:wrap; margin:6px 0 10px">
-      <span class="count">AR ${b.bl.toFixed(1)}</span><span class="count">Lexile ${esc(b.lexile)}</span>
-      <span class="count">${b.nf ? "논픽션" : "픽션"}</span><span class="count">${esc(b.genre)}</span>
-      <span class="count">${esc(b.theme)}</span>${b.award ? `<span class="count">🏅 ${esc(b.award)}</span>` : ""}
-    </div>
-    <div class="rpcom">${esc(a.s)}</div>
-    <div class="box"><h2>별점</h2>
-      <div class="row" id="stars">${[1,2,3,4,5].map(n =>
-        `<button class="btn ghost" data-n="${n}">${n <= mine.star ? "★" : "☆"}</button>`).join("")}</div>
-      <label>읽은 날 <input type="date" id="date" value="${esc(mine.date)}"></label>
-    </div>
-    ${a.q.map((q, i) => `<div class="box"><h2>${i + 1}. ${esc(q)}</h2>
-      ${a.h[i] ? `<p class="sub">${esc(a.h[i])}</p>` : ""}
-      <textarea id="a${i}" rows="3">${esc(mine.a[i] || "")}</textarea></div>`).join("")}
-    <div class="box"><h2>한 줄 감상</h2><textarea id="note" rows="2">${esc(mine.note)}</textarea></div>
-    <div class="box"><h2>새로 안 낱말</h2><textarea id="words" rows="2">${esc(mine.words)}</textarea></div>
-    <div class="row"><button class="btn on" id="save">저장</button><span id="msg" class="sub"></span></div>`;
-
-  let star = mine.star;
-  $("stars").querySelectorAll("button").forEach(x => x.onclick = () => {
-    star = +x.dataset.n;
-    $("stars").querySelectorAll("button").forEach(y => y.textContent = +y.dataset.n <= star ? "★" : "☆");
+if (idx < 0) {
+  MAIN.innerHTML = '<p class="sub">책을 찾지 못했습니다. <a href="index.html">목록으로</a></p>';
+} else {
+  loadAct(function(){
+    B = CATALOG.at(idx);
+    A = (window.ACT || {})[NO] || null;
+    const cv = COVER(NO);
+    $("bt").textContent = B.title;
+    $("bs").textContent = B.author + (B.series === "No series" ? "" : " · " + B.series);
+    if (cv) $("cv").style.backgroundImage = "url('" + cv + "')";
+    const h = (location.hash || "").slice(1);
+    if (TABS.some(function(t){ return t.id === h; })) TAB = h;
+    show();
+    if (new URLSearchParams(location.search).get("print")) print();
   });
-  $("save").onclick = () => {
-    put({ star: star, date: $("date").value, a: a.q.map((_, i) => $("a" + i).value),
-          note: $("note").value, words: $("words").value });
-    $("msg").textContent = "저장했습니다.";
-  };
 }
-
-if (idx < 0) $("main").innerHTML = `<p class="sub">책을 찾지 못했습니다. <a href="library.html">서재로</a></p>`;
-else loadAct(draw);
 </script></body></html>

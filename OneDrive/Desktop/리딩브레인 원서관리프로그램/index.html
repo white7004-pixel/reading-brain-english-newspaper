@@ -177,6 +177,7 @@ footer{padding:10px 20px 30px; font-size:11.5px; color:#a597b0; text-align:cente
 <script src="config.js"></script>
 <script src="store.js"></script>
 <script src="catalog.js"></script>
+<script src="catalog-covers.js"></script>
 <script src="books/cards.js"></script>
 <script>
 RB.gate();
@@ -204,6 +205,12 @@ const BANDS = [[0, 0.9], [1, 1.9], [2, 2.9], [3, 3.9], [4, 4.9], [5, 5.9], [6, 9
 const SPINE = ["#7f8fd6", "#5fa8b8", "#6fae7a", "#c9a24a", "#cf8158", "#b96a86", "#8a6bb5"];
 const bandOf = bl => { for (let i = 0; i < BANDS.length; i++) if (bl >= BANDS[i][0] && bl <= BANDS[i][1]) return i; return 0; };
 
+// 장서 책의 표지. 오픈라이브러리 주소만 가리킨다 (그림을 내려받지 않는다 — 저작권).
+const COVER = no => {
+  const c = (window.CATALOG_COVERS || {})[no];
+  return c ? "https://covers.openlibrary.org/b/id/" + c + "-M.jpg" : "";
+};
+
 // 두 출처를 한 목록으로: 학습 내용이 있는 책(BOOK_CARDS)은 BOOK_BY_NO 로 장서 줄과 이어 한 권으로 센다.
 // 학습하는 책이 맨 앞, 나머지 장서 줄은 쉬운 책부터.
 function merge(){
@@ -219,11 +226,11 @@ function merge(){
     const k = cat[c.slug] || {};
     return mk({ slug: c.slug, no: k.no || "", title: c.title, author: c.author, series: clean(c.series || k.series),
       ar: parseFloat(c.level.ar) || 0, lexile: c.level.lexile || (k.lexile ? k.lexile + "L" : ""), rb: c.level.rb || "",
-      genre: k.genre || "", theme: k.theme || "", award: (c.awards || []).join("#") || k.award || "", cover: c.cover || "" });
+      genre: k.genre || "", theme: k.theme || "", award: (c.awards || []).join("#") || k.award || "", cover: c.cover || COVER(k.no) });
   });
   simple.sort((a, b) => (a.bl - b.bl) || (a.i - b.i));
   simple.forEach(k => out.push(mk({ slug: "", no: k.no, title: k.title, author: k.author, series: clean(k.series),
-    ar: k.bl, lexile: k.lexile > 0 ? k.lexile + "L" : "", rb: "", genre: k.genre, theme: k.theme, award: k.award || "", cover: "" })));
+    ar: k.bl, lexile: k.lexile > 0 ? k.lexile + "L" : "", rb: "", genre: k.genre, theme: k.theme, award: k.award || "", cover: COVER(k.no) })));
   return out;
 }
 
@@ -257,7 +264,8 @@ function card(b){
       ${b.slug ? `<a class="on" href="app.html?book=${s}">학습하기</a>
       <a href="worksheets.html?book=${s}">워크시트</a>
       ${STUDENT ? "" : `<a href="teacher-guide.html?book=${s}">교사용</a>`}`
-      : `<a class="on" href="read.html?no=${n}">읽고 나서</a>`}
+      : `<a class="on" href="read.html?no=${n}">학습하기</a>
+      <a href="read.html?no=${n}&print=1">워크시트</a>`}
     </div>
   </div>`;
 }
@@ -290,7 +298,7 @@ function fill(sel, list, label){
   // 첫 화면 책장: 표지가 적으면 되풀이해서 채운다
   const cv = LIST.filter(b => b.cover);
   $("shelf").innerHTML = cv.length ? Array.from({ length: 7 }, (_, i) => cv[i % cv.length])
-    .map(b => `<a href="app.html?book=${encodeURIComponent(b.slug)}" style="background-image:url('${esc(b.cover)}')" title="${esc(b.title)}"></a>`).join("") : "";
+    .map(b => `<a href="${b.slug ? "app.html?book=" + encodeURIComponent(b.slug) : "read.html?no=" + encodeURIComponent(b.no)}" style="background-image:url('${esc(b.cover)}')" title="${esc(b.title)}"></a>`).join("") : "";
   // 단계 단추는 한 번만 그리고, 고른 것만 draw() 가 표시한다
   LVN = LEVELS.map((l, i) => LIST.filter(b => lvOf(b) === i).length);
   $("lv").innerHTML = [{ name: "전체", ar: `${LIST.length.toLocaleString()}권` }].concat(LEVELS.map((l, i) =>
