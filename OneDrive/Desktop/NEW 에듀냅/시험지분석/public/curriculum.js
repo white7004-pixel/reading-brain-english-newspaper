@@ -2,9 +2,10 @@
 // 모르는 과목·학년이면 빈 배열을 준다 — 부르는 쪽이 지금 동작으로 물러설 수 있게.
 import 국어 from './curriculum/국어.js';
 import 영어 from './curriculum/영어.js';
+import 수학 from './curriculum/수학.js';
 import 영어문법 from './curriculum/영어문법.js';
 
-const 자료 = { 국어, 영어 };
+const 자료 = { 국어, 영어, 수학 };
 export const GRADES = ['중1', '중2', '중3', '고1', '고2', '고3'];
 
 const 과정들 = (과목, 학년) => (자료[과목]?.과정 ?? []).filter((c) => c.학년.includes(학년));

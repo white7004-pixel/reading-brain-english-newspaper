@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import 국어 from '../public/curriculum/국어.js';
 import 영어 from '../public/curriculum/영어.js';
+import 수학 from '../public/curriculum/수학.js';
 
-const 과목자료 = [국어, 영어];
+const 과목자료 = [국어, 영어, 수학];
 
 test('자료는 정해진 모양을 지킨다', () => {
   for (const 자료 of 과목자료) {
@@ -114,4 +115,26 @@ test('학년으로 문법 항목을 찾는다', () => {
   assert.ok(!grammarFor('중1').includes('가정법 과거'), '중1 에 가정법이 나오면 안 된다');
   assert.ok(grammarFor('고2').includes('부정어 도치'));
   assert.deepEqual(grammarFor('초5'), []);
+});
+
+test('수학도 여섯 학년이 다 걸리고 받은 만큼 다 들어 있다', () => {
+  for (const 학년 of GRADES) assert.ok(areasFor('수학', 학년).length, 학년);
+  assert.deepEqual(areasFor('수학', '중2'), ['수와 연산', '변화와 관계', '도형과 측정', '자료와 가능성']);
+  assert.ok(areasFor('수학', '고2').includes('미분'));
+  // '경우의 수' 는 고1 공통수학1 에도 고2 확률과 통계에도 있다. 학년이 다르면 따로 센다.
+  assert.ok(areasFor('수학', '고1').includes('경우의 수'));
+  assert.ok(areasFor('수학', '고3').includes('경우의 수'));
+  const 수 = (이름) => 수학.과정.find((c) => c.이름 === 이름).영역.reduce((n, d) => n + d.성취기준.length, 0);
+  assert.equal(수('중학교 수학'), 60);
+  assert.equal(수('공통수학1'), 19);
+  assert.equal(수('공통수학2'), 20);
+  assert.equal(수('대수'), 18);
+  assert.equal(수('미적분Ⅰ'), 20);
+  assert.equal(수('확률과 통계'), 16);
+});
+
+test('세 과목을 합쳐 받은 성취기준 수가 맞는다', () => {
+  const 전체 = 과목자료.reduce((n, 자료) =>
+    n + 자료.과정.reduce((m, c) => m + c.영역.reduce((k, d) => k + d.성취기준.length, 0), 0), 0);
+  assert.equal(전체, 122 + 104 + 153);
 });
