@@ -278,8 +278,8 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
   .card { padding: 18px 16px; }
 }
 
-/* 카드뉴스: 카톡·블로그용 세로 1080×1350. A4 와 같은 조각을 쓰되 크기만 다르다 */
-.page.card-news { width: 1080px; height: 1350px; --pad-x: 56px; --pad-t: 64px; --pad-b: 56px; font-size: calc(24px * var(--fit, 1)); display: flex; flex-direction: column; }
+/* 카드뉴스: 카톡·블로그용 정사각형 1080×1080. A4 와 같은 조각을 쓰되 크기만 다르다 */
+.page.card-news { width: 1080px; height: 1080px; --pad-x: 52px; --pad-t: 52px; --pad-b: 46px; font-size: calc(23px * var(--fit, 1)); display: flex; flex-direction: column; }
 .sheet.card-news .tools { width: 1080px; }
 .page.card-news .r-head h2 { font-size: 2.1em; }
 .page.card-news .r-head { margin-bottom: .9em; }

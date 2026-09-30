@@ -322,7 +322,7 @@ $('#make-report').addEventListener('click', async (e) => {
 // 인쇄 반올림 여유 2px: 잴 때만 종이를 2px 짧게 두고 맞춘다 (scrollHeight 는 clientHeight 보다 작아지지 않으므로 빼기로는 못 잰다)
 function fitPage(page) {
   const overflows = () => page.scrollHeight > page.clientHeight;
-  const paper = getComputedStyle(page).height; // A4 는 297mm, 카드뉴스는 1350px
+  const paper = getComputedStyle(page).height; // A4 는 297mm, 카드뉴스는 1080px
   page.style.height = `calc(${paper} - 2px)`;
   let fit = 1;
   page.style.setProperty('--fit', fit);
