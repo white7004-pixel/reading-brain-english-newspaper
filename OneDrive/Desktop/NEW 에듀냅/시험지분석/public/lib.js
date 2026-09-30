@@ -10,6 +10,8 @@ export const SUBJECTS = {
 export const AREAS = [...new Set(Object.values(SUBJECTS).flat())];
 export const DIFF5 = ['하', '중하', '중', '중상', '상'];
 export const KINDS = ['객관식', '서술형'];
+// 학원 분석 글이 늘 따지는 출처. 시험지만 보고 알기 어려우면 AI 가 확인 칸(unsure)으로 표시한다.
+export const SOURCES = ['교과서', '부교재', '외부', '기출변형'];
 
 const TO3 = { 하: '하', 중하: '하', 중: '중', 중상: '상', 상: '상' };
 export const to3 = (d) => TO3[d] || d;
@@ -25,9 +27,22 @@ function tally(items, key, order) {
   return order
     .map((label) => {
       const hit = items.filter((it) => it[key] === label);
-      return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length) };
+      // nos: 학원 분석표가 늘 함께 적는 문항 번호 ("독해 3,7,11~14")
+      return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length), nos: hit.map((it) => Number(it.no)) };
     })
     .filter((r) => r.count > 0);
+}
+
+// 배점이 큰 것부터: 배점 / 문항 수 / 번호들 ("5점 문항 5개가 전부 어법")
+function byPoints(items) {
+  const groups = new Map();
+  for (const it of items) {
+    const points = Number(it.points) || 0;
+    if (!groups.has(points)) groups.set(points, []);
+    groups.get(points).push(Number(it.no));
+  }
+  return [...groups.entries()].sort((a, b) => b[0] - a[0])
+    .map(([points, nos]) => ({ points, count: nos.length, nos: nos.sort((a, b) => a - b) }));
 }
 
 export function examStats(items) {
@@ -44,15 +59,34 @@ export function examStats(items) {
     overall: DIFF5[Math.round(total ? weighted / total : 2)],
     byArea: tally(items, 'area', AREAS),
     byDifficulty: tally(items, 'difficulty', DIFF5),
+    byKind: tally(items, 'kind', KINDS),
+    bySource: tally(items, 'source', SOURCES),
+    byPoints: byPoints(items),
+    hard: { count: hard.length, points: sumPoints(hard), pct: pct(hard.length, items.length) },
   };
+}
+
+// 번호 목록을 분석표에 쓰는 모양으로 줄인다: [1,2,3,7,9,10] → "1~3, 7, 9, 10"
+export function nosText(nos) {
+  const s = [...nos].sort((a, b) => a - b);
+  const out = [];
+  for (let i = 0; i < s.length;) {
+    let j = i;
+    while (j + 1 < s.length && s[j + 1] === s[j] + 1) j++;
+    out.push(j - i >= 2 ? `${s[i]}~${s[j]}` : s.slice(i, j + 1).join(', '));
+    i = j + 1;
+  }
+  return out.join(', ');
 }
 
 export function studentStats(items, wrong) {
   const wrongNos = new Set(wrong.map((w) => w.no));
   const byArea = AREAS.map((label) => {
     const inArea = items.filter((it) => it.area === label);
-    const correct = inArea.filter((it) => !wrongNos.has(it.no)).length;
-    return { label, count: inArea.length, correct, pct: pct(correct, inArea.length) };
+    const missed = inArea.filter((it) => wrongNos.has(it.no));
+    const correct = inArea.length - missed.length;
+    // nos: 그 영역에서 틀린 문항 번호 (리포트 표에 그대로 적는다)
+    return { label, count: inArea.length, correct, pct: pct(correct, inArea.length), nos: missed.map((it) => Number(it.no)) };
   }).filter((r) => r.count > 0);
   const total = sumPoints(items);
   return {

@@ -1,8 +1,8 @@
 // AI 판단 기준(설계서 4장)과 요청 검증. 사진·학생 정보는 여기서 걸러서만 AI 로 간다.
-import { SUBJECTS, AREAS, DIFF5, KINDS, examStats, studentStats } from '../public/lib.js';
+import { SUBJECTS, AREAS, DIFF5, KINDS, SOURCES, examStats, studentStats } from '../public/lib.js';
 import { UserError } from './http.js';
 
-const UNSURE_FIELDS = ['points', 'area', 'subtype', 'difficulty', 'answer'];
+const UNSURE_FIELDS = ['points', 'area', 'subtype', 'difficulty', 'answer', 'source'];
 
 const obj = (properties) => ({ type: 'object', additionalProperties: false, required: Object.keys(properties), properties });
 const arr = (items) => ({ type: 'array', items });
@@ -122,7 +122,7 @@ export const EXTRACT_SCHEMA = obj({
   meta: obj({ subject: oneOf(SUBJECT_NAMES), school: str, grade: str, term: str, exam: str }),
   items: arr(obj({
     no: int, kind: oneOf(KINDS), points: { type: 'number' }, area: oneOf(AREAS), subtype: str,
-    difficulty: oneOf(DIFF5), answer: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
+    difficulty: oneOf(DIFF5), source: oneOf([...SOURCES, '']), answer: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
   })),
   notes: str,
 });
@@ -162,6 +162,8 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 �
 - points: 시험지에 적힌 배점. 안 보이면 남은 점수를 나눈 추정값을 쓰고 unsure 에 points 를 넣습니다.
 - area, subtype: 그 과목의 분류표에서만 고릅니다.
 - difficulty: 아래 기준으로 5단계.
+- source: 문항이 어디서 왔는지 (${SOURCES.join(' / ')}). 교과서=교과서 본문·단어·활동 그대로, 부교재=학교가 쓴 자습서·워크북·프린트 느낌, 외부=교과서 밖 지문·자료, 기출변형=기출 문항의 숫자·조건만 바꾼 꼴.
+  시험지만 보고 가늠하기 어려우면 빈 문자열로 두고 unsure 에 source 를 넣습니다. 지어내지 않습니다.
 - answer: 정답지 사진이 있으면 그대로 따릅니다. 없으면 직접 풀어서 적습니다. 객관식은 ①~⑤ 기호, 서술형은 모범답안 요지.
 - reason: 난이도 판단 근거 한 줄(60자 이내). 지문 문장을 옮겨 적지 않습니다.
 - unsure: 확신이 없는 칸 이름. 흐려서 읽기 어려움, 배점이 안 보임, 정답이 둘로 갈림, 유형이 둘에 걸침 등. 확신하면 빈 배열.
@@ -240,7 +242,11 @@ function cleanItems(list, subject) {
     }
     if (seen.has(no)) throw new UserError(`${no}번 문항이 두 번 있습니다`);
     seen.add(no);
-    return { no, kind: it.kind, points: Number(it.points) || 0, area: it.area, subtype: txt(it.subtype, 40), difficulty: it.difficulty, answer: txt(it.answer, 200), reason: txt(it.reason, 200) };
+    return {
+      no, kind: it.kind, points: Number(it.points) || 0, area: it.area, subtype: txt(it.subtype, 40), difficulty: it.difficulty,
+      source: SOURCES.includes(it.source) ? it.source : '', // 모르면 빈 칸 — 원장님이 확인 표에서 고른다
+      answer: txt(it.answer, 200), reason: txt(it.reason, 200),
+    };
   });
 }
 

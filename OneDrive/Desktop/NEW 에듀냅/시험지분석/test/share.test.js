@@ -25,8 +25,8 @@ test('카드는 3장이고 A4 와 같은 숫자를 쓴다', () => {
   assert.match(html, /에듀냅중학교 중3 1학기 중간고사/);
   assert.match(html, new RegExp(`${ctx.stats.count}`));
   assert.match(html, new RegExp(`${ctx.stats.essayPointsPct}%`));
-  assert.match(html, /2번/); // 변별 문항
-  assert.match(html, /삼각비/); // 영역·세부유형
+  assert.match(html, /기하 · 삼각비/); // 변별 문항 줄의 영역·세부유형
+  assert.match(html, /<td class="num">2<\/td>/); // 그 문항 번호
 });
 
 test('카드에는 학생 정보가 들어가지 않는다', () => {

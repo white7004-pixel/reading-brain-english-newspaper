@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { examStats, studentStats, parseStudents, to3, esc } from '../public/lib.js';
+import { examStats, studentStats, parseStudents, nosText, to3, esc } from '../public/lib.js';
 
 const items = [
-  { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하' },
-  { no: 2, kind: '객관식', points: 30, area: '독해', difficulty: '중상' },
-  { no: 3, kind: '서술형', points: 40, area: '서술형', difficulty: '상' },
+  { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하', source: '교과서' },
+  { no: 2, kind: '객관식', points: 30, area: '독해', difficulty: '중상', source: '외부' },
+  { no: 3, kind: '서술형', points: 40, area: '서술형', difficulty: '상', source: '교과서' },
 ];
 
 test('examStats 는 문항표로 분포와 비율을 계산한다', () => {
@@ -20,6 +20,36 @@ test('examStats 는 문항표로 분포와 비율을 계산한다', () => {
   assert.deepEqual(s.byDifficulty.map((r) => r.label), ['하', '중상', '상']);
 });
 
+test('examStats 는 학원 글이 쓰는 표(유형·배점·출처·고난도 배점)도 낸다', () => {
+  const s = examStats(items);
+  // 유형별: 객관식 2문항 60점 / 서술형 1문항 40점
+  assert.deepEqual(s.byKind.map((r) => [r.label, r.count, r.points, r.pct]), [['객관식', 2, 60, 67], ['서술형', 1, 40, 33]]);
+  // 배점별: 큰 배점부터, 번호까지 (학원 글의 "5점 문항 5개가 전부 어법")
+  assert.deepEqual(s.byPoints, [{ points: 40, count: 1, nos: [3] }, { points: 30, count: 2, nos: [1, 2] }]);
+  // 출처별: 교과서 2문항 70점 / 외부 1문항 30점
+  assert.deepEqual(s.bySource.map((r) => [r.label, r.count, r.points]), [['교과서', 2, 70], ['외부', 1, 30]]);
+  // 중상 이상 문항 수·배점·비율 ("중상 이상 55%, 그 배점 61.4점")
+  assert.deepEqual(s.hard, { count: 2, points: 70, pct: 67 });
+});
+
+test('영역별 표에는 그 영역의 문항 번호가 함께 있다', () => {
+  const s = examStats(items);
+  assert.deepEqual(s.byArea.map((r) => r.nos), [[1], [2], [3]]);
+  assert.deepEqual(s.byKind.find((r) => r.label === '객관식').nos, [1, 2]);
+});
+
+test('nosText 는 이어진 번호를 물결로 줄인다', () => {
+  assert.equal(nosText([3, 1, 2, 7, 9, 10]), '1~3, 7, 9, 10');
+  assert.equal(nosText([5]), '5');
+  assert.equal(nosText([]), '');
+});
+
+test('examStats 는 출처가 없는 옛 문항표에서도 깨지지 않는다', () => {
+  const s = examStats(items.map(({ source, ...it }) => it));
+  assert.deepEqual(s.bySource, []);
+  assert.equal(s.hard.points, 70);
+});
+
 test('studentStats 는 점수와 약점 영역을 계산한다', () => {
   const s = studentStats(items, [{ no: 2, chosen: '' }, { no: 3, chosen: '' }]);
   assert.equal(s.score, 30);
@@ -27,6 +57,7 @@ test('studentStats 는 점수와 약점 영역을 계산한다', () => {
   assert.equal(s.wrongCount, 2);
   assert.deepEqual(s.byArea.map((r) => [r.label, r.correct, r.count, r.pct]), [['어휘', 1, 1, 100], ['독해', 0, 1, 0], ['서술형', 0, 1, 0]]);
   assert.deepEqual(s.weakAreas, ['독해', '서술형']);
+  assert.deepEqual(s.byArea.map((r) => r.nos), [[], [2], [3]]); // 영역마다 틀린 번호
 });
 
 test('parseStudents 는 한 줄에 한 명씩 읽고 문제를 알려 준다', () => {

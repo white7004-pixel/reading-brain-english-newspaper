@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EXTRACT_SCHEMA, SCHOOL_SCHEMA, studentsSchema, GUIDE, extractRequest, reportRequest } from '../lib/rules.js';
-import { SUBJECTS } from '../public/lib.js';
+import { SUBJECTS, SOURCES } from '../public/lib.js';
 import { UserError } from '../lib/http.js';
 
 function strict(schema, path = '$') {
@@ -66,6 +66,18 @@ test('reportRequest students 는 학생 수를 확인하고 표기를 되돌린�
   assert.throws(() => reportRequest({ mode: 'school', meta: { ...meta, subject: '체육' }, items }), UserError);
   assert.throws(() => reportRequest({ mode: 'school', meta: { ...meta, subject: 'constructor' }, items }), UserError);
   assert.throws(() => reportRequest({ mode: 'school', meta: { ...meta, school: '' }, items }), UserError);
+});
+
+test('문항마다 출처를 받아 통계까지 넘긴다', () => {
+  const field = EXTRACT_SCHEMA.properties.items.items.properties.source;
+  assert.deepEqual(field.enum, [...SOURCES, '']); // 시험지만 보고 모를 때가 있어 빈 칸도 고를 수 있다
+  assert.ok(EXTRACT_SCHEMA.properties.items.items.properties.unsure.items.enum.includes('source'));
+  const r = reportRequest({ mode: 'school', meta, items: items.map((it) => ({ ...it, source: '교과서' })) });
+  assert.match(r.content[0].text, /"source":"교과서"/);
+  assert.match(r.content[0].text, /"bySource":\[\{"label":"교과서","count":2/);
+  // 목록에 없는 출처나 빈 출처는 빈 칸으로 둔다 (원장님이 확인 표에서 고른다)
+  assert.match(reportRequest({ mode: 'school', meta, items }).content[0].text, /"source":""/);
+  assert.match(reportRequest({ mode: 'school', meta, items: items.map((it) => ({ ...it, source: '인터넷' })) }).content[0].text, /"source":""/);
 });
 
 test('reportRequest 는 같은 번호가 두 번 있으면 막는다', () => {

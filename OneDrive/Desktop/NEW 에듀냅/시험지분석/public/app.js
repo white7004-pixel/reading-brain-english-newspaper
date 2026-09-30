@@ -1,4 +1,4 @@
-import { SUBJECTS, DIFF5, KINDS, examStats, studentStats, parseStudents, esc } from './lib.js';
+import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents, esc } from './lib.js';
 import { schoolPage, studentPage } from './report.js';
 import { shareCards } from './share.js';
 
@@ -202,6 +202,7 @@ function renderItems() {
       ${cell('area', `<select aria-label="${no}번 영역">${options(areasNow(), it.area)}</select>`)}
       ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${no}번 세부유형">`)}
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
+      ${cell('source', `<select aria-label="${no}번 출처"><option value=""${it.source ? '' : ' selected'}>— 모름</option>${options(SOURCES, it.source)}</select>`)}
       ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${no}번 정답">`)}
       <td class="reason">${esc(it.reason)}</td>
       <td><button type="button" class="ghost" data-del aria-label="${no}번 삭제">삭제</button></td>
@@ -246,7 +247,7 @@ $('#items').addEventListener('click', (e) => {
 
 $('#add-item').addEventListener('click', () => {
   const no = Math.max(0, ...state.items.map((it) => Number(it.no) || 0)) + 1;
-  state.items.push({ no, kind: '객관식', points: 0, area: areasNow()[0], subtype: '', difficulty: '중', answer: '', reason: '원장님 추가', unsure: [] });
+  state.items.push({ no, kind: '객관식', points: 0, area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
   renderItems();
 });
 
