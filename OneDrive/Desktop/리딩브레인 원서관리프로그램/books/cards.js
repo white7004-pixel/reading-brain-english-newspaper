@@ -257,6 +257,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-tonight-on-the-titanic",
+  "title": "Tonight on the Titanic",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #17",
+  "level": {
+   "ar": "3.1",
+   "lexile": "550L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424175-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-polar-bears-past-bedtime",
   "title": "Polar Bears Past Bedtime",
   "author": "Mary Pope Osborne",
@@ -323,6 +337,20 @@ window.BOOK_CARDS = [
    "rb": "정독 1단계"
   },
   "cover": "https://covers.openlibrary.org/b/id/424174-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-buffalo-before-breakfast",
+  "title": "Buffalo Before Breakfast",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #18",
+  "level": {
+   "ar": "3.3",
+   "lexile": "560L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424176-M.jpg",
   "awards": [],
   "tier": "A"
  },
@@ -491,5 +519,7 @@ window.BOOK_BY_NO = {
  "S3258": "magic-tree-house-vacation-under-the-volcano",
  "S3259": "magic-tree-house-day-of-the-dragon-king",
  "S3260": "magic-tree-house-viking-ships-at-sunrise",
- "M3070": "magic-tree-house-hour-of-the-olympics"
+ "M3070": "magic-tree-house-hour-of-the-olympics",
+ "S3261": "magic-tree-house-tonight-on-the-titanic",
+ "S3262": "magic-tree-house-buffalo-before-breakfast"
 };
