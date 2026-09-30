@@ -27,13 +27,14 @@ if (!session) {
 } else {
   session.stage ??= 2; // 두 단계 이전에 시작한 시험은 2차로 이어간다
   $('#who').textContent = `${session.name} · ${session.grade}`;
-  const bank = await loadBank();
+  const { items: bank, sample: bankSample } = await loadBank();
   const forms = await loadForms(session.set || 'A');
   const voices = await englishVoices();
   route();
 
   function route() {
     stopTimer();
+    $('#sample').hidden = !(session.stage === 1 || session.stage === 'write' ? forms.sample : session.stage === 2 && bankSample);
     if (session.stage === 1) return stage1();
     if (session.stage === 'gate') return gate();
     if (session.stage === 2) return next();
@@ -112,16 +113,13 @@ if (!session) {
 
   // ── 2차 적응형 4영역 ──
   function next() {
-    if (!Object.keys(session.states).length) {
-      const notReady = SECTIONS.filter((k) => k !== 'listening' || voices).filter((k) => !readiness(bank, k).ready);
-      if (notReady.length) { show(''); return status(`문항 검수가 더 필요합니다: ${notReady.map((k) => SECTION_KO[k]).join(', ')} (영역마다 통과 문항 20개 이상)`, 'error'); }
-    }
     const section = SECTIONS[session.sectionIdx];
     if (!section) { session.stage = 'write'; keep(); return route(); }
     $('#section-name').textContent = `2차 · ${session.sectionIdx + 1} / 4 · ${SECTION_KO[section]}`;
     const st = session.states[section];
     if (!st) {
       if (section === 'listening' && !voices) return endSection(section, '이 기기에서는 영어 음성을 낼 수 없어 듣기를 건너뛰었습니다');
+      if (!readiness(bank, section).ready) return endSection(section, '검수된 문항이 모자라 건너뛰었습니다');
       return showIntro(section);
     }
     if (st.done) return endSection(section);
@@ -210,7 +208,7 @@ if (!session) {
     $('#play').disabled = true;
     $('#plays').textContent = '듣는 중…';
     const rate = Math.min(1.3, Math.max(0.6, stepData(item.step).gen.wpm / WPM_AT_RATE_1));
-    await say(item.passage, rate);
+    await say(item.passage, rate, item.id);
     if (session.current !== item.id) return; // 듣는 사이에 답했다
     if (!session.shownAt) { session.shownAt = Date.now(); keep(); startTimer(session.shownAt, () => done({ timeout: true })); }
     $('#plays').textContent = playsText();
@@ -218,11 +216,12 @@ if (!session) {
   }
 
   // 대본 줄마다 "W: " 는 여자 목소리, "M: " 은 남자 목소리 (없으면 있는 목소리로)
-  function say(script, rate) {
+  function say(script, rate, id) {
     const female = voices.find((v) => /female|samantha|zira|jenny|aria|susan|karen|moira/i.test(v.name)) || voices[0];
     const male = voices.find((v) => v !== female && /male|david|guy|daniel|mark|alex|fred/i.test(v.name)) || voices.find((v) => v !== female) || female;
     const lines = script.split('\n').map((l) => l.trim()).filter(Boolean);
     return lines.reduce((p, line) => p.then(() => new Promise((resolve) => {
+      if (session.current !== id) return resolve(); // 답해서 다음 문항으로 넘어갔으면 남은 줄은 읽지 않는다
       const m = /^([WM]):\s*(.*)$/.exec(line);
       const u = new SpeechSynthesisUtterance(m ? m[2] : line);
       u.lang = 'en-US';
@@ -259,10 +258,10 @@ async function loadBank() {
       const r = await fetch(file, { cache: 'no-store' });
       if (!r.ok) continue;
       const items = usable(await r.json());
-      if (items.length) { $('#sample').hidden = !sample; return items; }
+      if (items.length) return { items, sample };
     } catch { /* 다음 파일 */ }
   }
-  return [];
+  return { items: [], sample: false };
 }
 
 // 문제지: 고른 세트의 1차 통과 문항이 MIN_STAGE1 개 이상이면 forms.json, 아니면 샘플
@@ -274,7 +273,6 @@ async function loadForms(set) {
       const d = await r.json();
       const stage1 = usableForm(d?.stage1?.[set]);
       if (stage1.length < (sample ? 1 : MIN_STAGE1)) continue;
-      if (sample) $('#sample').hidden = false;
       return { stage1, write2: usableForm(d?.write2?.[set]), sample };
     } catch { /* 다음 파일 */ }
   }

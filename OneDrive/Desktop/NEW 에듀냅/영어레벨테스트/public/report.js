@@ -20,9 +20,10 @@ if (!result) {
   $('#print-parent').onclick = () => printOnly('print-parent');
   $('#print-director').onclick = () => printOnly('print-director');
   $('#png').onclick = png;
-  if (result.stage1 && !result.stage1.passed) {
+  if (result.stage1 && (!result.stage1.passed || !SECTIONS.some((k) => result.sections[k].est))) {
+    const s1 = result.stage1;
     $('#parent').innerHTML = stage1Page(result);
-    $('#director').innerHTML = `${band(result, '레벨테스트 상세 (원장용)')}<p class="meta">${esc(result.name)} · ${esc(result.grade)} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${result.stage1.set}세트)`, result.stage1.log)}</div>${footer(result)}`;
+    $('#director').innerHTML = `${band(result, '레벨테스트 상세 (원장용)')}<p class="meta">${esc(result.name)} · ${esc(result.grade)} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${s1.set}세트)`, s1.log)}<p class="small">모름 ${s1.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s1.log.filter((x) => x.timeout).length}</p>${result.write2?.log.length ? formLog('2차 쓰기', result.write2.log) : ''}</div>${footer(result)}`;
   } else {
     const start = result.start || result.date;
     const taken = SECTIONS.filter((k) => result.sections[k].est);
@@ -160,14 +161,14 @@ function stage1Page(r) {
     ${note ? `<p class="summary">${note}</p>` : ''}
     <h2>영역별 수준</h2>
     <table class="scores"><thead><tr><th>영역</th><th>수준</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="small">수준은 초3부터 한 학년씩 올라가며 그 학년 문항을 3분의 2 이상 맞힌 데까지입니다. 중·고등 과정을 보는 2차는 1차 ${PASS}점 이상일 때 봅니다.</p>
+    <p class="small">수준은 초3부터 한 학년씩 올라가며 그 학년 문항을 3분의 2 이상 맞힌 데까지입니다. ${s.passed ? '1차는 통과했지만 2차 문항이 아직 준비되지 않아 2차 결과는 없습니다.' : `중·고등 과정을 보는 2차는 1차 ${PASS}점 이상일 때 봅니다.`}</p>
     <p class="small">틀린 문항 번호: ${wrong.length ? wrong.join(', ') : '없음'}</p>
     ${footer(r)}</article>`;
 }
 
 function formLog(title, log) {
   return `<div><h2>${esc(title)}</h2><table><thead><tr><th>번호</th><th>영역</th><th>수준</th><th>정오</th><th>쓴 답</th><th>초</th></tr></thead><tbody>
-    ${log.map((x) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${x.no}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
+    ${log.map((x) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${x.no}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : typeof x.given === 'number' ? '①②③④'[x.given] : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
     </tbody></table></div>`;
 }
 

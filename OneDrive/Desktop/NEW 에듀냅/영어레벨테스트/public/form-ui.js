@@ -25,7 +25,8 @@ export function showMC(it, done) {
   $('#hint').hidden = true;
   $('#choices').hidden = false;
   text(it);
-  const pickOne = (res) => { for (const b of $('#choices').children) b.disabled = true; done(res); };
+  const shownAt = performance.now();
+  const pickOne = (res) => { if (performance.now() - shownAt < 300) return; for (const b of $('#choices').children) b.disabled = true; done(res); };
   $('#choices').replaceChildren(
     ...it.choices.map((c, i) => button(`${'①②③④'[i]} ${marked(c)}`, () => pickOne({ choice: i }))),
     button('⑤ 모름', () => pickOne({ dontKnow: true }), 'dont-know'),
@@ -42,13 +43,15 @@ export function showWrite(it, done) {
   const parts = String(it.template).split('{}');
   const line = $('#write-line');
   const inputs = [];
+  const width = Math.max(6, Math.max(...it.answers.flat().map((a) => a.length)) + 2); // 칸마다 길이가 달라 답을 알려 주지 않게 모두 같은 너비
   line.replaceChildren();
   parts.forEach((part, i) => {
     if (part) line.append(document.createTextNode(part));
     if (i === parts.length - 1) return;
     const inp = document.createElement('input');
-    inp.style.width = `${Math.max(4, ...it.answers[i].map((a) => a.length + 2))}ch`;
+    inp.style.width = `${width}ch`;
     inp.spellcheck = false;
+    inp.setAttribute('autocorrect', 'off');
     inp.setAttribute('autocapitalize', 'off');
     inp.setAttribute('aria-label', `${i + 1}번째 칸`);
     inp.onkeydown = (e) => { if (e.key === 'Enter' && i < parts.length - 2) { e.preventDefault(); inputs[i + 1].focus(); } };
