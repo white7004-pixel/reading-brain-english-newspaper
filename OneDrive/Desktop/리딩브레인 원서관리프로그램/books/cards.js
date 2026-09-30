@@ -271,6 +271,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-vacation-under-the-volcano",
+  "title": "Vacation Under the Volcano",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #13",
+  "level": {
+   "ar": "3.3",
+   "lexile": "410L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/424167-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-day-of-the-dragon-king",
+  "title": "Day of the Dragon King",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #14",
+  "level": {
+   "ar": "3.3",
+   "lexile": "380L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/6978834-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "sarah-plain-and-tall",
   "title": "Sarah, Plain and Tall",
   "author": "Patricia MacLachlan",
@@ -431,5 +459,7 @@ window.BOOK_BY_NO = {
  "M3038": "magic-tree-house-dolphins-at-daybreak",
  "S3255": "magic-tree-house-ghost-town-at-sundown",
  "S3256": "magic-tree-house-lions-at-lunchtime",
- "S3257": "magic-tree-house-polar-bears-past-bedtime"
+ "S3257": "magic-tree-house-polar-bears-past-bedtime",
+ "S3258": "magic-tree-house-vacation-under-the-volcano",
+ "S3259": "magic-tree-house-day-of-the-dragon-king"
 };
