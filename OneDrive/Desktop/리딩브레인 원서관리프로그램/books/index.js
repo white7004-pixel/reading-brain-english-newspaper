@@ -49,5 +49,7 @@ window.BOOKS = [
   "magic-tree-house-a-big-day-for-baseball",
   "magic-tree-house-hurricane-heroes-in-texas",
   "magic-tree-house-warriors-in-winter",
-  "magic-tree-house-to-the-future-ben-franklin"
+  "magic-tree-house-to-the-future-ben-franklin",
+  "magic-tree-house-narwhal-on-a-sunny-night",
+  "magic-tree-house-late-lunch-with-llamas"
 ];

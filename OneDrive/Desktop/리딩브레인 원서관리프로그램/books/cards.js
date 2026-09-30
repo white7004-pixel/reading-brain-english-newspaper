@@ -498,6 +498,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-narwhal-on-a-sunny-night",
+  "title": "Narwhal on a Sunny Night",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #33",
+  "level": {
+   "ar": "3.4",
+   "lexile": "440L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/10306630-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-late-lunch-with-llamas",
+  "title": "Late Lunch with Llamas",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #34",
+  "level": {
+   "ar": "3.4",
+   "lexile": "410L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/10299748-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-revolutionary-war-on-wednesday",
   "title": "Revolutionary War on Wednesday",
   "author": "Mary Pope Osborne",
@@ -731,5 +759,7 @@ window.BOOK_BY_NO = {
  "S3933": "magic-tree-house-a-big-day-for-baseball",
  "S3934": "magic-tree-house-hurricane-heroes-in-texas",
  "S3935": "magic-tree-house-warriors-in-winter",
- "S3936": "magic-tree-house-to-the-future-ben-franklin"
+ "S3936": "magic-tree-house-to-the-future-ben-franklin",
+ "S3937": "magic-tree-house-narwhal-on-a-sunny-night",
+ "S3938": "magic-tree-house-late-lunch-with-llamas"
 };
