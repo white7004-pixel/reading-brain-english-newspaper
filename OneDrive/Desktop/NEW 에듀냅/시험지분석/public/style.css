@@ -89,6 +89,8 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 /* A4 리포트 — 흰 종이 한 장(297mm 고정), 에듀냅 제목 글꼴·올리브·금색 선 */
 /* 가운데 정렬은 .sheet 가 맡는다: .page 에 auto 여백이 있으면 html-to-image 가 계산된 왼쪽 여백까지 복사해 PNG 가 밀린다 */
 /* 글자·간격은 모두 em: .page 의 --fit(app.js)이 줄면 함께 줄어든다. 종이 여백·선 두께만 mm */
+/* 결과는 카드(1080px)가 잘리지 않게 앱 폭(1000px)보다 넓게 펴서 가운데에 둔다 */
+#step-result { width: min(1160px, 96vw); margin-left: calc(50% - min(1160px, 96vw) / 2); }
 .sheet { width: fit-content; margin: 0 auto 28px; max-width: 100%; overflow-x: auto; }
 .tools { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin: 0 auto 8px; width: 210mm; max-width: 100%; }
 .tools button { padding: 7px 14px; font-size: 14px; flex: none; }
