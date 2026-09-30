@@ -313,6 +313,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-sunlight-on-the-snow-leopard",
+  "title": "Sunlight on the Snow Leopard",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #36",
+  "level": {
+   "ar": "3.2",
+   "lexile": "540L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/13145614-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "magic-tree-house-polar-bears-past-bedtime",
   "title": "Polar Bears Past Bedtime",
   "author": "Mary Pope Osborne",
@@ -568,6 +582,20 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-camp-time-in-california",
+  "title": "Camp Time in California",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #35",
+  "level": {
+   "ar": "3.5",
+   "lexile": "430L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/10670099-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "berenstain-bears-learn-about-strangers",
   "title": "The Berenstain Bears Learn about Strangers",
   "author": "Stan and Jan Berenstain",
@@ -761,5 +789,7 @@ window.BOOK_BY_NO = {
  "S3935": "magic-tree-house-warriors-in-winter",
  "S3936": "magic-tree-house-to-the-future-ben-franklin",
  "S3937": "magic-tree-house-narwhal-on-a-sunny-night",
- "S3938": "magic-tree-house-late-lunch-with-llamas"
+ "S3938": "magic-tree-house-late-lunch-with-llamas",
+ "S3939": "magic-tree-house-camp-time-in-california",
+ "S3940": "magic-tree-house-sunlight-on-the-snow-leopard"
 };
