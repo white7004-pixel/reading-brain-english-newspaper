@@ -57,7 +57,8 @@ test('국어 성취기준을 받은 만큼 다 넣었다', () => {
 });
 
 // ---------- 조회 층 ----------
-import { areasFor, unitsFor, pointsFor, GRADES } from '../public/curriculum.js';
+import { areasFor, unitsFor, pointsFor, grammarFor, GRADES } from '../public/curriculum.js';
+import 영어문법 from '../public/curriculum/영어문법.js';
 
 test('학년으로 영역·단원 후보·세부 포인트를 찾는다', () => {
   assert.deepEqual(GRADES, ['중1', '중2', '중3', '고1', '고2', '고3']);
@@ -95,4 +96,22 @@ test('영어도 여섯 학년이 다 걸리고 받은 만큼 다 들어 있다',
   assert.equal(수('영어 I'), 16);
   assert.equal(수('영어 Ⅱ'), 17);
   assert.equal(수('영어 독해와 작문'), 17);
+});
+
+test('영어 문법표는 출처가 학원분류이고 항목이 겹치지 않는다', () => {
+  assert.match(영어문법.출처, /\[학원분류\]/);
+  const 항목 = 영어문법.묶음.flatMap((g) => g.항목);
+  assert.equal(new Set(항목).size, 항목.length, '같은 문법 항목이 두 번 있다');
+  for (const 묶음 of 영어문법.묶음) {
+    assert.ok(묶음.이름.trim() && 묶음.항목.length, 묶음.이름);
+    assert.ok(묶음.학년대.every((g) => GRADES.includes(g)), 묶음.이름);
+  }
+});
+
+test('학년으로 문법 항목을 찾는다', () => {
+  for (const 학년 of GRADES) assert.ok(grammarFor(학년).length, 학년);
+  assert.ok(grammarFor('중3').includes('관계대명사 who·which·that'));
+  assert.ok(!grammarFor('중1').includes('가정법 과거'), '중1 에 가정법이 나오면 안 된다');
+  assert.ok(grammarFor('고2').includes('부정어 도치'));
+  assert.deepEqual(grammarFor('초5'), []);
 });
