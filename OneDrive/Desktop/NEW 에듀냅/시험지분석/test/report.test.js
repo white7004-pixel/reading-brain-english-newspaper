@@ -10,7 +10,7 @@ test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
 
 test('리포트 조각은 글자를 esc 로 넣는다', () => {
   assert.doesNotMatch(header({ name: '<b>학원', logo: '' }, '<script>', ''), /<script>|<b>학원/);
-  assert.doesNotMatch(barCell(10, '<u>10%'), /<u>/);
+  assert.doesNotMatch(barCell(10, '<u>10%'), /<u>10/);
   assert.equal(examName({ school: 'ㄱ중', grade: '중2', term: '1학기', exam: '중간고사' }), 'ㄱ중 중2 1학기 중간고사');
 });
 
@@ -45,7 +45,7 @@ test('학교 분석 A4 는 표 여섯 개로 이뤄진다', () => {
   // 구분 칸은 항목 수만큼 묶인다 (객관식·서술형 두 줄)
   assert.match(html, /rowspan="2" scope="rowgroup">유형/);
   // 비율 칸에 막대 너비가 붙는다
-  assert.match(html, /class="num bar" style="--w:67%"/);
+  assert.match(html, /<i style="--w:67%"><\/i>/);
   // 출처가 빈 문항은 — 로, 있는 문항은 줄여서
   assert.match(html, /<td class="c">교과<\/td>/);
   assert.match(html, /<td class="c">—<\/td>/);

@@ -33,8 +33,8 @@ export const table = (head, rows, cls = '') => `<table class="t${cls ? ` ${cls}`
   <thead><tr>${head.map((h) => `<th${h.startsWith('#') ? ' class="num"' : ''}>${esc(h.replace(/^#/, ''))}</th>`).join('')}</tr></thead>
   <tbody>${rows.join('')}</tbody></table>`;
 export const num = (v) => `<td class="num">${esc(v)}</td>`;
-// 비율 칸은 글자 뒤에 막대를 깔아 표만 보고도 비중이 보이게 한다
-export const barCell = (pct, text) => `<td class="num bar" style="--w:${Number(pct) || 0}%">${esc(text)}</td>`;
+// 비율 칸은 숫자 옆에 작은 막대를 둬 표만 보고도 비중이 보이게 한다
+export const barCell = (pct, text) => `<td class="bar"><i style="--w:${Number(pct) || 0}%"></i><span>${esc(text)}</span></td>`;
 // 구분(유형·난이도·출처)을 한 칸으로 묶은 줄들
 const groupRows = (label, rows) => rows.map((r, i) => `<tr>${i ? '' : `<th class="grp" rowspan="${rows.length}" scope="rowgroup">${esc(label)}</th>`}<td>${esc(r.label)}</td>${num(r.count)}${num(r.points)}${barCell(r.pct, `${r.pct}%`)}</tr>`);
 
