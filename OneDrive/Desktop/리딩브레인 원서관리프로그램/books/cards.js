@@ -411,6 +411,34 @@ window.BOOK_CARDS = [
   "tier": "A"
  },
  {
+  "slug": "magic-tree-house-stage-fright-on-a-summer-night",
+  "title": "Stage Fright on a Summer Night",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #25",
+  "level": {
+   "ar": "3.3",
+   "lexile": "560L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/233641-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
+  "slug": "magic-tree-house-good-morning-gorillas",
+  "title": "Good Morning, Gorillas",
+  "author": "Mary Pope Osborne",
+  "series": "Magic Tree House #26",
+  "level": {
+   "ar": "3.3",
+   "lexile": "510L",
+   "rb": "정독 1단계"
+  },
+  "cover": "https://covers.openlibrary.org/b/id/233644-M.jpg",
+  "awards": [],
+  "tier": "A"
+ },
+ {
   "slug": "sarah-plain-and-tall",
   "title": "Sarah, Plain and Tall",
   "author": "Patricia MacLachlan",
@@ -611,5 +639,7 @@ window.BOOK_BY_NO = {
  "S3265": "magic-tree-house-civil-war-on-sunday",
  "M3142": "magic-tree-house-revolutionary-war-on-wednesday",
  "S3266": "magic-tree-house-twister-on-tuesday",
- "S3267": "magic-tree-house-earthquake-in-the-early-morning"
+ "S3267": "magic-tree-house-earthquake-in-the-early-morning",
+ "S3268": "magic-tree-house-stage-fright-on-a-summer-night",
+ "S3269": "magic-tree-house-good-morning-gorillas"
 };
