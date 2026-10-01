@@ -7,7 +7,7 @@ const items = s => s.sections.flatMap(x => x.items);
 const P = SURVEYS.parent, S = SURVEYS.student;
 
 // 문항 수: 설계서 표와 같아야 한다
-assert.strictEqual(items(P).length, 14);
+assert.strictEqual(items(P).length, 15);
 assert.strictEqual(items(S).length, 21);
 assert.deepStrictEqual(P.sections.map(x => x.title), ['학생 레벨', '교수팀 & 수업 관련 만족도', '운영팀 관련 만족도', '자유의견']);
 assert.ok(items(P).find(i => i.label === '담당 선생님의 수업 전달력에 만족하시나요?'));
@@ -19,7 +19,7 @@ assert.strictEqual(new Set(ids).size, ids.length, 'id 중복');
 assert.ok(!JSON.stringify(SURVEYS).includes('원더스'), '다른 학원 이름 금지');
 
 // 필수 누락
-const full = { grade: '초등 3학년', curricula: ['원서정독'], t_deliver: 5, t_curr: 4, rel: '그렇다', diff: '적절하다', load: '적절하다', hw: '많다', growth: '그렇다', o_notice: 5, o_reply: 3, o_admin: 4, good: '좋아요' };
+const full = { grade: '초등 3학년', curricula: ['원서정독'], t_deliver: 5, t_curr: 4, rel: '그렇다', diff: '적절하다', load: '적절하다', hw: '많다', hw_diligence: '숙제를 가끔 못해갈 때가 있다', growth: '그렇다', o_notice: 5, o_reply: 3, o_admin: 4, good: '좋아요' };
 assert.deepStrictEqual(RB.missing(P, full), []);
 assert.deepStrictEqual(RB.missing(P, Object.assign({}, full, { curricula: [], good: '  ' })), ['curricula', 'good']);
 
@@ -34,6 +34,7 @@ assert.strictEqual(sum.items.t_deliver.avg, 4);
 assert.strictEqual(sum.items.curricula.counts['원서정독'], 2);
 assert.strictEqual(sum.items.curricula.counts['미국교과'], 1);
 assert.strictEqual(sum.items.hw.counts['많다'], 2);
+assert.strictEqual(sum.items.hw_diligence.counts['숙제를 가끔 못해갈 때가 있다'], 2);
 assert.strictEqual(sum.sections[2].avg, 4); // 운영팀: (5+3+4 + 4+4+4)/6
 assert.strictEqual(sum.sections[0].avg, null); // 척도 없는 섹션
 

@@ -41,6 +41,8 @@
             { id: 'diff', type: 'single', required: true, options: ['쉽다', '적절하다', '어렵다'], label: '현재 수업 난이도는 자녀에게 적절하다고 느끼시나요?' },
             { id: 'load', type: 'single', required: true, options: ['부담된다', '적절하다', '부족하다'], label: '수업 학습량(수업 중 처리 분량)은 자녀에게 부담되지 않나요?' },
             { id: 'hw', type: 'single', required: true, options: ['많다', '적절하다', '적다'], label: '주어지는 숙제량은 자녀에게 적절하다고 느끼시나요?' },
+            { id: 'hw_diligence', type: 'single', required: true, label: '자녀가 숙제를 얼마나 성실하게 하고 있나요?',
+              options: ['숙제를 매우 잘해가고 성실한 편이다', '숙제를 그런대로 성실하게 해가고 지적을 받지 않는다', '숙제를 가끔 못해갈 때가 있다', '거의 숙제를 하지 못한다'] },
             { id: 'growth', type: 'single', required: true, options: YNM, label: '수업을 통해 자녀의 영어 실력 또는 표현력 향상을 체감하고 계신가요?' }] },
         { title: '운영팀 관련 만족도',
           desc: '학부모님들의 소중한 의견으로 더 나은 리딩브레인이 되겠습니다 ^^',
