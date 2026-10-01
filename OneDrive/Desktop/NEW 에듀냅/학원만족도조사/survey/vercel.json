@@ -3,7 +3,8 @@
   "rewrites": [
     { "source": "/parent", "destination": "/index" },
     { "source": "/student", "destination": "/index" },
-    { "source": "/teacher", "destination": "/index" }
+    { "source": "/teacher", "destination": "/index" },
+    { "source": "/dashboard", "destination": "/results" }
   ],
   "headers": [
     { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] }
