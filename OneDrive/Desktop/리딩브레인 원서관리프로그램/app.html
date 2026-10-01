@@ -379,9 +379,9 @@ function say(text, btn){
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch {}
 }
-/* 설명·대화 읽어 주기 — 원어민 목소리(타입캐스트)가 먼저다.
-   ① 미리 만들어 둔 파일(assets/tts/, scripts/tts-typecast.mjs)
-   ② 없으면 화면 서버에 즉석으로 만들어 달라고 한다 (/tts — 키는 서버에만, 만든 소리는 저장돼 다음엔 ①)
+/* 설명·대화 읽어 주기 — 원어민 목소리가 먼저다.
+   ① 미리 만들어 둔 파일(assets/tts/, scripts/make-tts.mjs — 마이크로소프트 엣지의 무료 신경망 목소리)
+   ② 없으면 화면 서버에 즉석으로 만들어 달라고 한다 (/tts — 만든 소리는 저장돼 다음엔 ①)
    ③ 그것도 안 되면 브라우저의 같은 언어 목소리. 한국어 목소리로 영어를 읽지는 않는다(콩글리시). */
 let TTS = null, TTS_LIVE = true;
 fetch("assets/tts/index.json").then(r => r.ok ? r.json() : {}).then(j => TTS = j).catch(() => TTS = {});
@@ -420,8 +420,8 @@ function speakLine(s){
 function voiceTip(){
   const host = document.querySelector("main section:not([hidden])");
   if (!host || document.getElementById("voicetip")) return;
-  host.insertAdjacentHTML("afterbegin", `<div class="warn" id="voicetip" style="margin:0 0 12px">원어민 목소리(타입캐스트)를 불러오지 못해 영어를 읽지 못했어요.
-    타입캐스트 <b>크레딧</b>이 남아 있는지 확인해 주세요. (크롬으로 열면 구글 영어 목소리로 대신 읽어요.)</div>`);
+  host.insertAdjacentHTML("afterbegin", `<div class="warn" id="voicetip" style="margin:0 0 12px">이 문장은 아직 <b>미리 만들어 둔 소리</b>가 없고,
+    이 컴퓨터에는 <b>영어 목소리</b>도 깔려 있지 않아 읽지 못했어요. <b>크롬</b>으로 열면 구글 영어 목소리로 읽어 줍니다.</div>`);
 }
 async function sayMix(text, onEnd){
   stopSay();
@@ -1182,7 +1182,7 @@ async function ask(finish){
   talk.log.push({ role: "assistant", text: r.reply });
   talk.hint = r.hint;
   talk.busy = false;
-  if (talk.voice) sayMix(r.reply);                 // 타입캐스트 파일이 있으면 그것, 없으면 브라우저 목소리
+  if (talk.voice) sayMix(r.reply);                 // 미리 만들어 둔 소리가 있으면 그것, 없으면 브라우저 목소리
   if (r.done || finish) endTalk(r);
   else paintChat();
 }
