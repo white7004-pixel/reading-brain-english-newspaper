@@ -6,7 +6,7 @@
 <title>리딩브레인 시험지 분석</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Hahmlet:wght@500;700&family=Nanum+Myeongjo:wght@700;800&family=Gothic+A1:wght@700;800&family=Gowun+Dodum&display=swap" rel="stylesheet" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Montserrat:wght@600;700&family=Hahmlet:wght@500;700&family=Nanum+Myeongjo:wght@700;800&family=Gothic+A1:wght@700;800&family=Gowun+Dodum&display=swap" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js" integrity="sha384-UbfRVKN3/elS1r7JcK2FhmPP+KlJ4CvYwbyYD7tH+uTkbT9bNJr9eJeQ0FoFbAgz" crossorigin="anonymous"></script>
 <script type="module" src="app.js"></script>
@@ -42,9 +42,11 @@
       <form id="academy-form" class="grid">
         <label>학원 이름<input name="academyName" required placeholder="리딩브레인영어학원"></label>
         <label>연락처<input name="phone" placeholder="031-000-0000"></label>
-        <label>대표 색<input name="color" type="color" value="#0B2C46"></label>
-        <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
+        <label>로고 이미지 <small>올리면 로고에서 대표 색을 뽑아 둡니다</small>
+          <input name="logo" type="file" accept="image/*"></label>
         <img id="logo-preview" alt="로고 미리보기" hidden>
+        <label class="wide">대표 색 <small>리포트·슬라이드의 바탕과 포인트가 모두 이 색에서 나옵니다</small>
+          <span class="pickrow"><input name="color" type="color" value="#0B2C46"><span id="swatches"></span></span></label>
         <label class="wide">우리 학원은 이렇게 대비했습니다 <small>한 줄에 하나씩. 한 번 적어 두면 시험마다 리포트에 그대로 들어갑니다. 비워 두면 그 칸이 안 나옵니다</small>
           <textarea name="prep" rows="3" placeholder="시험 4주 전부터 자체 내신 대비 교재로 단원별 핵심 유형을 반복 연습했습니다.&#10;실제 시험과 같은 형태의 모의고사를 세 차례 치르고 틀린 유형을 다시 풀렸습니다."></textarea></label>
         <label class="wide">뒷표지 한 줄 문구 <small>표지를 켤 때 뒷표지에 들어갑니다. 비워 두면 그 줄이 안 나옵니다</small>

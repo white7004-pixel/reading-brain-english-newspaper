@@ -4,7 +4,8 @@
   --navy: #0b2c46; --navy-2: #173c5c; --ink: #15202c; --muted: #646c78; --faint: #9aa0a8;
   --wine: #7d1d1e; --wine-soft: #f6ecea; --champagne: #e7d6bc;
   --paper: #f7f5f0; --card: #fff; --line: #e4dfd5; --line-2: #cfc8bb; --pane: #f2efe8; --tint: #eaeff4;
-  --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  /* 제목은 명조(고운바탕) — 웹설문·학원만족도조사와 같은 글씨체 (원장님 요청 2026-10-01) */
+  --serif: 'Gowun Batang', 'Nanum Myeongjo', serif;
   --wordmark: 'Montserrat', 'Pretendard', sans-serif;
   --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   /* A4 종이 (흰 바탕) — 학원 정보의 색이 덮어쓴다 */
@@ -97,6 +98,14 @@ button.ghost:hover:not(:disabled) { background: var(--tint); }
 #items button.ghost { padding: 4px 10px; font-size: 13px; white-space: nowrap; }
 #add-item { margin-top: 10px; padding: 7px 14px; font-size: 14px; }
 #make-report { margin-top: 8px; }
+
+/* 대표 색 고르기 — 색판 + 직접 고르기 */
+.pickrow { display: flex; align-items: center; gap: 10px; }
+.pickrow input[type=color] { width: 64px; flex: none; }
+#swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+#swatches button { width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--line-2);
+  box-shadow: inset 0 0 0 2px #fff; }
+#swatches button[aria-pressed=true] { border-color: var(--ink); box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px var(--ink); }
 
 /* A4 리포트 — 흰 종이 한 장(297mm 고정). 제목 글꼴·학원 대표색(--brand)·포인트선(--gold) */
 /* 가운데 정렬은 .sheet 가 맡는다: .page 에 auto 여백이 있으면 html-to-image 가 계산된 왼쪽 여백까지 복사해 PNG 가 밀린다 */
@@ -425,6 +434,9 @@ label.check small { flex-basis: 100%; }
     --key: oklch(from var(--brand) .78 .14 h); }
 }
 .sheet.slide .tools { width: 1280px; }
+/* 슬라이드는 A4 리포트 디자인(#pages[data-theme])을 따라가지 않는다 — 제 글꼴을 쓴다.
+   테마 규칙이 #pages 로 시작해 세므로 여기도 #pages 를 붙여 이긴다. */
+#pages .page.slide { --head-font: var(--serif); --sub-font: var(--sans); }
 .page.slide .s-wrap { flex: 1; display: flex; flex-direction: column; gap: 1em; padding: 1.6em 2em 1.2em; min-height: 0; }
 
 .page.slide .s-head { display: flex; align-items: baseline; justify-content: space-between;

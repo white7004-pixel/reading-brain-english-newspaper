@@ -3,8 +3,10 @@ import { unitsFor, GRADES } from './curriculum.js';
 import { schoolPage, studentPage, explainPages } from './report.js';
 import { shareCards } from './share.js';
 import { slideDeck } from './slides.js';
+import { pickBrandColor, PALETTE } from './color.js';
 
 export const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => [...document.querySelectorAll(sel)];
 export const state = { academy: null, meta: null, items: [] };
 
 const store = {
@@ -232,13 +234,51 @@ $('#academy-form').elements.logo.addEventListener('change', async (e) => {
   const url = await shrink(file, 400, 'image/png');
   $('#logo-preview').src = url;
   $('#logo-preview').hidden = false;
+  const 색 = await logoColor(url);
+  if (색) { academyForm.elements.color.value = 색; markSwatch(색); }
 });
+
+// 로고 그림에서 대표 색을 뽑는다. 색을 고르는 규칙은 color.js 에 있고 여기서는 픽셀만 읽어 넘긴다.
+async function logoColor(url) {
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = url;
+    });
+    const w = Math.max(1, Math.min(120, img.width));
+    const h = Math.max(1, Math.round((img.height / img.width) * w));
+    const canvas = Object.assign(document.createElement('canvas'), { width: w, height: h });
+    const g = canvas.getContext('2d', { willReadFrequently: true });
+    g.drawImage(img, 0, 0, w, h);
+    return pickBrandColor(g.getImageData(0, 0, w, h).data);
+  } catch {
+    return ''; // 색을 못 뽑아도 로고는 그대로 쓴다
+  }
+}
+
+// 색판 — 누르면 대표 색이 바뀐다
+const markSwatch = (hex) => $$('#swatches button').forEach((b) => {
+  b.setAttribute('aria-pressed', String(b.dataset.hex.toUpperCase() === String(hex).toUpperCase()));
+});
+$('#swatches').innerHTML = PALETTE.map(([name, hex]) => `
+  <button type="button" data-hex="${hex}" style="background:${hex}" title="${name}" aria-label="${name}" aria-pressed="false"></button>`).join('');
+$('#swatches').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  academyForm.elements.color.value = b.dataset.hex;
+  markSwatch(b.dataset.hex);
+});
+academyForm.elements.color.addEventListener('input', (e) => markSwatch(e.target.value));
 
 academyForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const f = academyForm.elements;
   state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src, prep: f.prep.value.trim(), slogan: f.slogan.value.trim(), cover: f.cover.checked, a4: f.a4.checked, cards: f.cards.checked };
   store.set('academy', state.academy);
+  // 이미 만들어 둔 결과에도 바로 비친다 — 색을 보려고 다시 돌리지 않으셔도 된다
+  $('#pages').style.setProperty('--brand', state.academy.color);
   showAcademy();
   academyForm.closest('details').open = false;
 });
@@ -562,6 +602,7 @@ if (saved) {
   f.a4.checked = !!saved.a4;
   f.cards.checked = !!saved.cards;
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
+  markSwatch(f.color.value);
 }
 showAcademy();
 setTheme(store.get('theme')); // 기억해 둔 디자인을 처음부터 입힌다
