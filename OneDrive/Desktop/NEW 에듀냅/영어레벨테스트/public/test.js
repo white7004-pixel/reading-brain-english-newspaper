@@ -128,7 +128,7 @@ if (!session) {
     $('#section-name').textContent = `${session.grade} · ${label}`;
     const now = (c) => `${c.label} ${Math.min(c.done + 1, c.total)}/${c.total}`;
     const cur = rail.find((c) => c.current);
-    $('#dots').setAttribute('aria-label', cur ? `영역 진행: ${now(cur)}` : '영역 진행');
+    $('#dots').setAttribute('aria-label', cur ? `단계 진행: ${now(cur)}` : '단계 진행');
     $('#dots').replaceChildren(...rail.map((c) => {
       const d = document.createElement('div');
       d.className = c.current ? 'cur' : c.skipped ? 'off' : '';
