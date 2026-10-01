@@ -3,3 +3,6 @@ public/vendor
 .env.local
 .vercel
 .playwright-mcp
+
+.vercel
+.env*

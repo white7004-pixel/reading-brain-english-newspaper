@@ -22,29 +22,37 @@ export function setStatus(sel, text, isError = false) {
   $(sel).classList.toggle('error', isError);
 }
 
-// 에듀냅이 이 화면을 열 때 주소에 학원 토큰을 붙여 보낸다 (?t=...).
-// 한 번 받아 두고 요청마다 함께 보낸다. 주소창에는 남기지 않는다.
-const TOKEN = (() => {
-  const url = new URL(location.href);
-  const t = url.searchParams.get('t');
-  if (t) {
-    try { sessionStorage.setItem('edunap-token', t); } catch { /* 시크릿 창이면 그냥 이번만 쓴다 */ }
-    url.searchParams.delete('t');
-    history.replaceState(null, '', url);
-    return t;
-  }
-  try { return sessionStorage.getItem('edunap-token') || ''; } catch { return ''; }
-})();
+// 리딩브레인 선생님들만 쓰는 화면이다. 원장님이 정한 암호 하나로 연다.
+// 한 번 넣으면 이 기기에 적어 두고, 틀리면 다시 묻는다.
+const PW_KEY = 'rb-exam-pw';
+let PW = (() => { try { return localStorage.getItem(PW_KEY) || ''; } catch { return ''; } })();
+
+function askPassword() {
+  const p = prompt('리딩브레인 시험지분석 — 암호를 넣어 주세요');
+  if (!p) return false;
+  PW = p;
+  try { localStorage.setItem(PW_KEY, p); } catch { /* 시크릿 창이면 이번만 쓴다 */ }
+  return true;
+}
 
 export async function api(path, body) {
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', ...(TOKEN ? { authorization: `Edunap ${TOKEN}` } : {}) },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || '잠시 후 다시 시도해 주세요');
-  return data;
+  for (let 번째 = 0; 번째 < 2; 번째 += 1) {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...(PW ? { authorization: `Bearer ${PW}` } : {}) },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) return data;
+    // 암호가 틀렸으면 한 번만 다시 묻고 그대로 보낸다 (사진을 다시 고르게 하지 않는다)
+    if (res.status === 401 && 번째 === 0) {
+      PW = '';
+      try { localStorage.removeItem(PW_KEY); } catch { /* 시크릿 창 */ }
+      if (askPassword()) continue;
+    }
+    throw new Error(data.error || '잠시 후 다시 시도해 주세요');
+  }
+  throw new Error('암호가 맞지 않습니다');
 }
 
 // ---------- 사진 줄이기 ----------
