@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor } from '../public/core/forms.js';
+import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -155,4 +155,54 @@ test('railFor: 세트에 없는 영역은 칸이 없다', () => {
   const list = [{ area: 'phonics' }, { area: 'reading' }, { area: 'form' }];
   assert.deepEqual(railFor(list, 1).map((c) => c.label), ['소리', '독해', '어형']);
   assert.deepEqual(railFor([], 0), []);
+});
+
+const s2 = (o = {}) => ({ id: 's2-A-1', no: 1, area: 'reading', level: '중2', kind: '주제', question: '주제는?', passage: 'p', choices: ['a', 'b', 'c', 'd', 'e'], answer: 4, status: 'ok', ...o });
+
+test('choiceCount·secondsFor: 1차 4지 90초, 2차 어휘 3지 20초, 문법 60초, 그 밖 5지 90초', () => {
+  assert.equal(choiceCount(mc()), 4);
+  assert.equal(choiceCount(s2({ area: 'vocab' }), 2), 3);
+  assert.equal(choiceCount(s2(), 2), 5);
+  assert.deepEqual(['vocab', 'grammar', 'reading', 'listening', 'sentence'].map((area) => secondsFor({ area }, 2)), [20, 60, 90, 90, 90]);
+  assert.equal(secondsFor(mc()), 90);
+});
+
+test('validateForm 2차: 영역·단계·선택지 수를 2차 기준으로', () => {
+  assert.deepEqual(validateForm(s2(), 2), []);
+  assert.deepEqual(validateForm(s2({ area: 'vocab', passage: '', choices: ['a', 'b', 'c'], answer: 2 }), 2), []);
+  assert.deepEqual(validateForm(s2({ choices: ['a', 'b', 'c', 'd'], answer: 0 }), 2), ['선택지 5개']);
+  assert.deepEqual(validateForm(s2({ level: '고3' }), 2), ['수준']);
+  assert.deepEqual(validateForm(s2({ area: 'phonics' }), 2), ['영역']);
+  assert.deepEqual(validateForm(s2({ area: 'listening', passage: '', script: '' }), 2), ['대본']);
+  assert.deepEqual(validateForm(wr({ area: 'sentence', level: '고2' }), 2), []);
+  assert.deepEqual(validateForm(s2(), 1), ['선택지 4개']); // 1차 기준이면 5지선다는 안 된다
+  assert.deepEqual(usableForm([s2({ id: 'b', no: 2 }), s2({ id: 'a', no: 1 }), s2({ id: 'c', status: 'draft' })], 2).map((i) => i.id), ['a', 'b']);
+});
+
+test('stage2Levels: 단계마다 3분의 2, 처음 못 넘은 단계에서 멈추고 정답률은 모두 낸다', () => {
+  const R = (area, level, correct, kind = 'k') => ({ area, level, correct, kind });
+  const log = [
+    R('reading', '중1', true), R('reading', '중1', true), R('reading', '중1', false),
+    R('reading', '중2', true), R('reading', '중2', false), R('reading', '중2', false),
+    R('reading', '중3', true), R('reading', '중3', true), R('reading', '중3', true),
+    R('grammar', '중1', false), R('grammar', '중1', true),
+    R('listening', '중1', true), R('listening', '중2', true), R('listening', '중3', true), R('listening', '고1', true), R('listening', '고2', true),
+    R('sentence', '중1', true),
+  ];
+  const lv = stage2Levels(log);
+  assert.equal(lv.reading.level, '중1');
+  assert.deepEqual(lv.reading.steps, [{ level: '중1', correct: 2, total: 3 }, { level: '중2', correct: 1, total: 3 }, { level: '중3', correct: 3, total: 3 }]);
+  assert.equal(lv.grammar.level, '중1 수준 아래');
+  assert.equal(lv.listening.level, '고2');
+  assert.equal(lv.writing.level, '중1');
+  assert.deepEqual(lv.vocab, { level: null, steps: [] });
+});
+
+test('kindTally 와 stage2Est', () => {
+  const log = [{ area: 'reading', kind: '주제', correct: true }, { area: 'reading', kind: '빈칸', correct: false }, { area: 'reading', kind: '주제', correct: false }, { area: 'grammar', kind: '짝', correct: true }];
+  assert.deepEqual(kindTally(log, 'reading'), [{ kind: '주제', correct: 1, total: 2 }, { kind: '빈칸', correct: 0, total: 1 }]);
+  assert.equal(stage2Est(null), null);
+  assert.deepEqual(stage2Est('중1 수준 아래'), { step: 9, unit: 0 });
+  assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
+  assert.deepEqual(stage2Est('고2'), { step: 19, unit: 0 });
 });
