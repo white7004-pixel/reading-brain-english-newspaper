@@ -21,10 +21,24 @@ export function setStatus(sel, text, isError = false) {
   $(sel).classList.toggle('error', isError);
 }
 
+// 에듀냅이 이 화면을 열 때 주소에 학원 토큰을 붙여 보낸다 (?t=...).
+// 한 번 받아 두고 요청마다 함께 보낸다. 주소창에는 남기지 않는다.
+const TOKEN = (() => {
+  const url = new URL(location.href);
+  const t = url.searchParams.get('t');
+  if (t) {
+    try { sessionStorage.setItem('edunap-token', t); } catch { /* 시크릿 창이면 그냥 이번만 쓴다 */ }
+    url.searchParams.delete('t');
+    history.replaceState(null, '', url);
+    return t;
+  }
+  try { return sessionStorage.getItem('edunap-token') || ''; } catch { return ''; }
+})();
+
 export async function api(path, body) {
   const res = await fetch(path, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...(TOKEN ? { authorization: `Edunap ${TOKEN}` } : {}) },
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));

@@ -2,41 +2,27 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { makeHandler, UserError } from '../lib/http.js';
 
-process.env.TRIAL_CODE = 'c';
+// 들어오는 사람을 가리는 일(에듀냅 학원 토큰)은 test/edunap.test.js 가 맡는다.
+// 여기서는 비밀이 없는 자리(이 PC, npm run local)에서 처리기 자체가 하는 일만 본다.
+delete process.env.EDUNAP_SHARED_SECRET;
 
-async function call(run, { method = 'POST', code = 'c', body = { a: 1 }, req } = {}) {
+async function call(run, { method = 'POST', body = { a: 1 }, req } = {}) {
   const res = { statusCode: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(s) { this.body = JSON.parse(s); } };
-  await makeHandler(run)(req || { method, headers: { 'x-trial-code': code }, body }, res);
+  await makeHandler(run)(req || { method, headers: {}, body }, res);
   return res;
 }
 
 test('요청 본문을 읽다 실패하면 400 으로 알린다', async () => {
-  const req = { method: 'POST', headers: { 'x-trial-code': 'c' }, get body() { throw new SyntaxError('Unexpected token 김'); } };
+  const req = { method: 'POST', headers: {}, get body() { throw new SyntaxError('Unexpected token 김'); } };
   const res = await call(async () => ({}), { req });
   assert.deepEqual([res.statusCode, res.body.error], [400, '요청을 읽지 못했습니다']);
 });
 
-test('접속 코드와 방식이 맞으면 결과를 돌려준다', async () => {
+test('POST 면 결과를 돌려주고, 다른 방식은 막는다', async () => {
   const res = await call(async (body) => ({ got: body.a }));
   assert.equal(res.statusCode, 200);
   assert.deepEqual(res.body, { got: 1 });
-});
-
-test('코드가 틀리거나 POST 가 아니면 막는다', async () => {
-  assert.equal((await call(async () => ({}), { code: 'x' })).statusCode, 401);
   assert.equal((await call(async () => ({}), { method: 'GET' })).statusCode, 405);
-});
-
-test('코드가 설정되지 않은 이 PC 에서는 코드 없이 쓰고, Vercel 에서는 막는다', async () => {
-  delete process.env.TRIAL_CODE;
-  try {
-    assert.equal((await call(async () => ({}), { code: undefined })).statusCode, 200);
-    process.env.VERCEL = '1';
-    assert.equal((await call(async () => ({}), { code: undefined })).statusCode, 500);
-  } finally {
-    delete process.env.VERCEL;
-    process.env.TRIAL_CODE = 'c';
-  }
 });
 
 test('UserError 는 400 과 메시지, 나머지는 502 와 일반 문구', async () => {
