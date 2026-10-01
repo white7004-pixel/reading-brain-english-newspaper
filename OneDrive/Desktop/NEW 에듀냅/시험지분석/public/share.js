@@ -37,7 +37,7 @@ export function shareCards({ academy, meta, items, stats }, school) {
     return `<div class="r-row r-row-tight">${typeTable(몫.slice(0, 반))}${typeTable(몫.slice(반))}</div>`;
   };
   const 문항표 = Array.from({ length: 장수 }, (_, i) => sheet(`${file(`문항표${i + 1}`)}`, `
-    ${header(academy, '문항별 유형과 난이도', `${name}${장수 > 1 ? ` · ${i + 1} / ${장수}` : ''}`)}
+    ${header(academy, '문항별 유형과 난이도', name)}
     <section class="c-fill">${두단(items.slice(i * 장당, (i + 1) * 장당))}</section>
     ${footer(academy)}`, CARD)).join('');
 

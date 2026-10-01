@@ -89,32 +89,45 @@ const cover = (ctx, school) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬�
     <ul>${school.keywords.slice(0, 4).map((k) => `<li>${esc(k)}</li>`).join('')}</ul></div>` : ''}
   ${examLine(ctx.meta, ctx.stats)}`, ctx);
 
-const glance = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-한눈에`, 's-glance', `
-  ${title(n, '시험', '한눈에')}
+// ── 1부. 이번 시험은 이랬습니다 ─────────────────────────────
+// 121건 내신분석의 1-1 그대로: 시험 범위 + 단원별 문항 수 + 객관식/서술형 수.
+// 저쪽 자료에서 가장 많이 쓰이는 첫 문단이고, 학부모가 가장 먼저 묻는 것이다.
+const kindLine = (stats) => {
+  const 수 = stats.byKind.filter((r) => r.count);
+  if (!수.length) return '';
+  return `<p class="s-kind">${수.map((r) => `<span><b>${esc(r.label)} ${esc(r.count)}문항</b> ${esc(r.points)}점</span>`).join('')}</p>`;
+};
+
+const rangeSlide = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-범위구성`, 's-range', `
+  ${title(n, '출제 범위와', '문항 구성', ctx.meta.range ? '' : '시험지에 적힌 범위를 그대로 옮겼습니다.')}
+  ${ctx.meta.range ? `<p class="s-range"><b>범위</b> ${esc(ctx.meta.range)}</p>` : ''}
+  ${kindLine(ctx.stats)}
   <div class="s-row">
-    ${panel('01', '전체 난이도', donut(ctx.stats))}
-    ${panel('02', '시험 구성', `<ul class="s-kpi">
+    ${panel('01', ctx.stats.byUnit.length ? '단원별 문항 수' : '영역별 문항 수',
+    ctx.stats.byUnit.length ? unitTable(ctx.stats) : areaTable(ctx.stats))}
+    ${panel('02', '한눈에 보는 수치', `<ul class="s-kpi">
       <li><b>${esc(ctx.stats.count)}</b><span>전체 문항 (${esc(ctx.stats.total)}점)</span></li>
+      <li><b>${esc(ctx.stats.overallLabel)}</b><span>체감 난이도 (${esc(ctx.stats.overallScore)}/5)</span></li>
       <li><b>${esc(ctx.stats.hard.count)}</b><span>중상 이상 (${esc(ctx.stats.hard.points)}점)</span></li>
-      <li><b>${esc(ctx.stats.essayPointsPct)}%</b><span>서술형 배점 (${esc(ctx.stats.essayCount)}문항)</span></li>
-      <li><b>${esc(ctx.stats.textbookPct)}%</b><span>교과서에서 출제</span></li></ul>`)}
+      <li><b>${esc(ctx.stats.textbookPct)}%</b><span>교과서에서 출제</span></li></ul>
+      ${donut(ctx.stats)}`)}
   </div>`, ctx);
 
 const flowSlide = (ctx, school, n) => {
   const flow = difficultyFlow(ctx.items);
   const 뒤 = flow.hardFrom == null ? null : ctx.items[flow.hardFrom];
   return slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-난도흐름`, 's-flowpage', `
-    ${title(n, '난도', '흐름', 뒤
+    ${title(n, '문항은', '이렇게 나왔습니다', 뒤
       ? `${뒤.no}번 뒤로 중상 이상이 이어집니다. 뒤쪽에서 시간과 점수가 함께 갈렸습니다.`
       : '난도가 한쪽으로 몰리지 않고 고르게 퍼진 시험이었습니다.')}
     <div class="s-row s-flowrow">
-      ${panel('02', '문항 번호별 난이도', flowChart(flow))}
-      ${school.flow?.length ? panel('03', '문항은 이렇게 나왔습니다', steps(school.flow.map((l) => [l, '']))) : ''}
+      ${panel('02', '번호 차례로 본 난이도', flowChart(flow))}
+      ${school.flow?.length ? panel('03', '구간마다 이렇게 물었습니다', steps(school.flow.map((l) => [l, '']))) : ''}
     </div>`, ctx);
 };
 
 const compose = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-구성`, 's-compose', `
-  ${title(n, '시험', '구성', '무엇을 얼마나 물었는지 한 장에 모았습니다.')}
+  ${title(n, '유형·배점·', '출처', '무엇을 얼마나 물었는지 한 장에 모았습니다.')}
   <div class="s-row">
     ${panel('01', '유형 · 난이도 · 배점 눈금', composeTable(ctx.stats))}
     ${panel('02', ctx.stats.byUnit.length ? '단원별 · 영역별 출제' : '영역별 출제',
@@ -127,7 +140,7 @@ const cross = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이
 
 const whyHard = (ctx, school, n) => (school.whyHard?.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-이유`, 's-why', `
-  ${title(n, '이번 시험이', '어려웠던 이유', '무엇을 요구한 시험이었는지 셋으로 나눠 봤습니다.')}
+  ${title(n, '왜', '갈렸나', '무엇을 요구한 시험이었는지 셋으로 나눠 봤습니다.')}
   <div class="s-row s-three">${school.whyHard.slice(0, 3).map((w, i) => panel(
     String(i + 1).padStart(2, '0'), w.title, `<p contenteditable>${esc(w.detail)}</p>`, 's-tall')).join('')}</div>`, ctx) : '');
 
@@ -141,7 +154,7 @@ const keySlide = (ctx, school, n) => {
   const list = school.keyItems.filter((k) => byNo.has(k.no));
   if (!list.length) return '';
   return slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-대표문항`, 's-key', `
-    ${title(n, '대표', '문항', '점수가 갈린 자리입니다.')}
+    ${title(n, '점수가', '갈린 문항', '번호와 배점을 함께 적습니다.')}
     <div class="s-row s-three">${list.slice(0, 3).map((k, i) => {
     const it = byNo.get(k.no);
     return panel(String(i + 1).padStart(2, '0'), noLabel(k.no),
@@ -155,7 +168,7 @@ const deepSlides = (ctx, school) => {
   return school.keyItems.filter((k) => byNo.has(k.no)).slice(0, 3).map((k, i) => {
     const it = byNo.get(k.no);
     return slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-심층${i + 1}`, 's-deep', `
-      ${title(`심층 분석 ${i + 1}`, noLabel(k.no), '', '')}
+      ${title('자세히', `${noLabel(k.no)} 들여다보기`, '', '')}
       ${panel('01', '무엇을 묻는 문항인가', `<p class="s-deep-why" contenteditable>${esc(k.why)}</p>
         ${chips([['배점', `${it.points}점`], ['난이도', it.difficulty], ['영역', [it.area, it.subtype].filter(Boolean).join(' · ')], ['단원', it.unit]])}`)}
       <p class="s-note">문항 지문은 싣지 않습니다 — 시험지는 학교 저작물입니다.</p>`, ctx);
@@ -164,7 +177,7 @@ const deepSlides = (ctx, school) => {
 
 const strategySlide = (ctx, school, n) => (school.strategy?.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-학습방향`, 's-strategy', `
-  ${title(n, '다음 시험', '학습 방향', '이번 시험이 가리킨 곳부터 메웁니다.')}
+  ${title(n, '다음 시험', '대비 전략', '이번 시험이 가리킨 곳부터 메웁니다.')}
   ${panel('01', '영역별 준비 방법', steps(school.strategy.map((s) => [s.area, s.tip])))}`, ctx) : '');
 
 // 총평 — 한 장에 블록을 깔아 두는 대시보드. 참고 자료의 마지막 장이 이 모양이다.
@@ -212,14 +225,14 @@ const facts = (stats) => `<p class="s-facts">
 // ② 문항별 상세 — 전 문항표를 그대로 한 장에
 const itemsSlide = (ctx, n) => (ctx.items.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-문항표`, 's-items', `
-  ${title(n, '문항별', '상세 분석', '번호·배점·유형·난이도·단원을 한 장에 폅니다.')}
+  ${title(n, '전 문항', '한눈에', '번호·배점·유형·난이도·단원을 한 장에 폅니다.')}
   ${facts(ctx.stats)}
   ${panel('01', `전 문항 ${ctx.stats.count}개`, itemsTable(ctx.items))}`, ctx) : '');
 
 // ④ 출제 유형·난이도 — 배점이 어디에 실렸고 난이도가 어떻게 퍼졌나
 const distSlide = (ctx, n) => (ctx.items.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-분포`, 's-dist', `
-  ${title(n, '출제 유형·', '난이도 분석', '영역마다 배점이 어디에 실렸는지, 난이도가 어떻게 퍼졌는지 봅니다.')}
+  ${title(n, '영역·', '난이도 분포', '영역마다 배점이 어디에 실렸는지, 난이도가 어떻게 퍼졌는지 봅니다.')}
   <div class="s-row">
     ${panel('01', '영역별 배점 분포', stackBar(crossTab(ctx.items, 'area', 'difficulty', DIFF5, null, 'points'), 's-by-points'))}
     ${panel('02', '영역별 난이도 분포', stackBar(crossTab(ctx.items, 'area', 'difficulty', DIFF5), 's-by-count'))}
@@ -228,7 +241,7 @@ const distSlide = (ctx, n) => (ctx.items.length ? slide(
 // ⑥ 출제 단원 — 단원 비중과 단원마다 어떤 영역을 물었나
 const unitSlide = (ctx, n) => (ctx.stats.byUnit.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-단원`, 's-unit', `
-  ${title(n, '출제', '단원 분석', '어느 단원에서 몇 문항이 나왔는지, 그 단원에서 무엇을 물었는지 봅니다.')}
+  ${title(n, '단원별', '출제', '어느 단원에서 몇 문항이 나왔는지, 그 단원에서 무엇을 물었는지 봅니다.')}
   <div class="s-row">
     ${panel('01', '단원별 출제', unitTable(ctx.stats))}
     ${panel('02', '단원별 영역 비중', stackBar(crossTab(ctx.items, 'unit', 'area', [...new Set(ctx.items.map((it) => it.area).filter(Boolean))]), 's-by-area'))}
@@ -250,18 +263,24 @@ const backSlide = (ctx, school) => slide(`${ctx.meta.school}-${ctx.meta.subject}
   </div>`, ctx);
 
 // 번호가 붙는 장들. 조건이 맞지 않아 빠지면 그 번호는 건너뛰지 않고 다음 장이 받는다.
+// 장 차례는 121건 내신분석의 3부 구성을 따른다.
+//   1부 이번 시험은 이랬다 · 2부 우리 학원은 이렇게 대비했다 · 3부 다음 시험 대비 전략
+// 조건이 맞지 않아 빠지는 장이 있으면 그 번호는 다음 장이 받는다.
 const 번호장 = [
-  ['시험 한눈에', (ctx, school, n) => glance(ctx, n)],
-  ['난도 흐름', flowSlide],
-  ['시험 구성', (ctx, school, n) => compose(ctx, n)],
-  ['문항별 상세 분석', (ctx, school, n) => itemsSlide(ctx, n)],
-  ['출제 유형·난이도 분석', (ctx, school, n) => distSlide(ctx, n)],
+  // 1부
+  ['출제 범위와 문항 구성', (ctx, school, n) => rangeSlide(ctx, n)],
+  ['문항은 이렇게 나왔습니다', flowSlide],
+  ['전 문항 한눈에', (ctx, school, n) => itemsSlide(ctx, n)],
+  ['유형·배점·출처', (ctx, school, n) => compose(ctx, n)],
+  ['영역·난이도 분포', (ctx, school, n) => distSlide(ctx, n)],
   ['영역 × 난이도', (ctx, school, n) => cross(ctx, n)],
-  ['출제 단원 분석', (ctx, school, n) => unitSlide(ctx, n)],
-  ['어려웠던 이유', whyHard],
+  ['단원별 출제', (ctx, school, n) => unitSlide(ctx, n)],
+  ['점수가 갈린 문항', keySlide],
+  ['왜 갈렸나', whyHard],
+  // 2부
   ['우리 학원은 이렇게 대비했습니다', (ctx, school, n) => prepSlide(ctx, n)],
-  ['대표 문항', keySlide],
-  ['다음 시험 학습 방향', strategySlide],
+  // 3부
+  ['다음 시험 대비 전략', strategySlide],
 ];
 
 export function slideDeck(ctx, school) {

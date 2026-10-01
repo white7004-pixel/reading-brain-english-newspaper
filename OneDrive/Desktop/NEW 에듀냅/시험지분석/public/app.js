@@ -572,8 +572,6 @@ function setTheme(name) {
 }
 $('#theme').addEventListener('change', (e) => setTheme(e.target.value));
 
-$('#print').addEventListener('click', () => window.print());
-
 // 슬라이드는 16:9 라 A4 세로에 잘린다. 슬라이드만 남기고 종이를 가로로 돌려 인쇄한다.
 // @page 는 요소 선택자를 못 쓰므로 인쇄하는 동안만 <style> 을 끼워 넣는다.
 $('#print-slides').addEventListener('click', () => {

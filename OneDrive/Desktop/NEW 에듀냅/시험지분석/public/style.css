@@ -547,6 +547,16 @@ label.check small { flex-basis: 100%; }
 
 /* ── 참고 리포트에서 가져온 꼭지들 ───────────────────────── */
 
+/* 121건 1-1 — 범위 한 줄과 객관식/서술형 문항 수 */
+.page.slide .s-range { margin: .8em 0 0; padding: .55em .9em; border-radius: 6px;
+  background: var(--paper-d); border: 1px solid var(--line-d); font-size: .86em; line-height: 1.5; }
+.page.slide .s-range b { margin-right: .6em; color: var(--key); font-weight: 700; }
+.page.slide .s-kind { display: flex; flex-wrap: wrap; gap: .6em; margin: .55em 0 0; }
+.page.slide .s-kind span { padding: .35em .85em; border-radius: 99px; background: #fff; color: var(--ink); font-size: .82em; }
+.page.slide .s-kind b { font-weight: 700; color: var(--brand-ink); }
+.page.slide .s-range + .s-kind { margin-top: .5em; }
+.page.slide .s-range-panel .s-donut { margin-top: .8em; }
+
 /* 통계칩 셋 — 제목 바로 밑에 사실만 */
 .page.slide .s-facts { display: flex; flex-wrap: wrap; gap: .5em; margin: .8em 0 0; }
 .page.slide .s-facts span { padding: .4em .9em; border-radius: 99px; background: var(--paper-d);

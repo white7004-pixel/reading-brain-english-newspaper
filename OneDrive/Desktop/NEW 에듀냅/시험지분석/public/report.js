@@ -255,7 +255,7 @@ export function explainPages({ academy, meta, items }) {
   const 경고 = '학원 안에서만 보는 자료입니다 — 학부모·학생에게 그대로 주지 마세요';
   return Array.from({ length: 장수 }, (_, i) => sheet(
     `${meta.school}-${meta.grade}-${meta.subject}-문항해설(학원용)${장수 > 1 ? `-${i + 1}` : ''}`, `
-    ${header(academy, `${examName(meta)} ${meta.subject} 문항 해설`, `학원용 자료 · ${i + 1} / ${장수}`)}
+    ${header(academy, `${examName(meta)} ${meta.subject} 문항 해설`, 장수 > 1 ? `${i + 1} / ${장수}` : '')}
     <p class="r-warn">${esc(경고)}</p>
     <section class="r-explain">${table(['#번호', '유형', '영역 - 세부 포인트', '#배점', '난이도', '정답', '풀이 · 어디서 틀리나'],
       items.slice(i * EXPLAIN_PER_PAGE, (i + 1) * EXPLAIN_PER_PAGE).map(explainRow), 't-explain')}</section>

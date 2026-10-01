@@ -35,12 +35,30 @@ const 장들 = (html) => html.match(/class="page slide"/g) || [];
 // 제목은 `시험 <b>한눈에</b>` 처럼 마지막 낱말만 강조색이라, 태그를 걷고 읽는다
 const 글자 = (html) => html.replace(/<[^>]+>/g, '');
 
-test('슬라이드는 16:9 한 벌로 나오고, 표지부터 총평까지 이어진다', () => {
+// 장 차례는 121건 내신분석에서 찾은 3부 구성을 따른다 (참고 슬라이드의 차례를 베끼지 않는다).
+//   1부 이번 시험은 이랬다 — 범위·구성 / 문항별 구성 / 변별 문항
+//   2부 우리 학원은 이렇게 대비했다
+//   3부 다음 시험 대비 전략
+test('슬라이드는 16:9 한 벌로 나오고, 121건의 3부 구성을 따른다', () => {
   const html = slideDeck(ctx, school);
   assert.ok(장들(html).length >= 10, `장수 ${장들(html).length}`);
   const 글 = 글자(html);
-  ['이번 시험 분석', '시험 한눈에', '난도 흐름', '시험 구성', '영역 × 난이도',
-    '어려웠던 이유', '대표 문항', '학습 방향', '이번 시험 총평'].forEach((t) => assert.ok(글.includes(t), t));
+  ['출제 범위와 문항 구성', '문항은 이렇게 나왔습니다', '전 문항 한눈에',
+    '영역 × 난이도', '점수가 갈린 문항', '왜 갈렸나',
+    '다음 시험 대비 전략', '이번 시험 총평'].forEach((t) => assert.ok(글.includes(t), t));
+});
+
+test('1부 첫 장에 범위·단원별 문항 수·객관식 서술형 수가 함께 선다 (121건 1-1)', () => {
+  const 글 = 글자(slideDeck({ ...ctx, meta: { ...ctx.meta, range: '5과 Love · 6과 Growing Teens' } }, school));
+  assert.ok(글.includes('5과 Love · 6과 Growing Teens'), '범위를 적힌 그대로');
+  assert.ok(/객관식\s*3문항/.test(글), `객관식 수 — ${글.slice(0, 0)}`);
+  assert.ok(/서술형\s*1문항/.test(글), '서술형 수');
+  assert.ok(글.includes('5과') && 글.includes('6과'), '단원별 문항 수');
+});
+
+test('변별 문항은 번호와 배점을 함께 적는다 (121건의 표현)', () => {
+  const 글 = 글자(slideDeck(ctx, school));
+  assert.match(글, /3번[^]{0,40}6점|6점[^]{0,40}3번/, '번호와 배점이 한자리에');
 });
 
 test('표지에는 핵심 키워드 넷과 한 줄 총평이 들어간다', () => {
@@ -52,9 +70,9 @@ test('표지에는 핵심 키워드 넷과 한 줄 총평이 들어간다', () =
 test('심층분석은 대표 문항마다 한 장, 최대 세 장까지', () => {
   const 다섯 = { ...school, keyItems: ['1', '2', '3', '서답형 1', '1'].map((no, i) => ({ no, why: `이유${i}` })) };
   const html = slideDeck(ctx, 다섯);
-  assert.equal((html.match(/심층 분석/g) || []).length, 3);
+  assert.equal((html.match(/들여다보기/g) || []).length, 3);
   // 문항표에 없는 번호는 장을 만들지 않는다
-  assert.doesNotMatch(slideDeck(ctx, { ...school, keyItems: [{ no: '없음', why: 'x' }] }), /심층 분석/);
+  assert.doesNotMatch(slideDeck(ctx, { ...school, keyItems: [{ no: '없음', why: 'x' }] }), /들여다보기/);
 });
 
 test('우리 학원 대비 장은 원장님이 적어 두었을 때만 나온다', () => {
@@ -102,7 +120,7 @@ test('빈 문항표로도 터지지 않는다', () => {
 
 test('참고 리포트의 여섯 꼭지가 모두 슬라이드에 있다', () => {
   const 글 = 글자(slideDeck(ctx, school));
-  ['목차', '문항별 상세', '출제 유형·난이도', '출제 단원'].forEach((t) => assert.ok(글.includes(t), t));
+  ['목차', '전 문항 한눈에', '영역·난이도 분포', '단원별 출제'].forEach((t) => assert.ok(글.includes(t), t));
   // 전 문항표 — 번호가 글자인 서답형까지 그대로
   assert.ok(글.includes('서답형 1'), '전 문항표에 서답형 1');
   // 뒷표지의 원포인트 문구
