@@ -105,25 +105,25 @@ test('reportRequest 는 같은 번호가 두 번 있으면 막는다', () => {
 });
 
 test('reportRequest students 는 AI 에 학생1.. 로만 보내고 결과에서 표기를 되돌린다', () => {
-  const students = [{ label: '김OO', wrong: [{ no: 2, chosen: '' }] }, { label: 'KM', wrong: [] }];
+  const students = [{ label: '김OO', wrong: [{ no: '2', chosen: '' }] }, { label: 'KM', wrong: [] }];
   const r = reportRequest({ mode: 'students', meta, items, students });
   const text = r.content[0].text;
   assert.doesNotMatch(text, /김OO|KM/);
   assert.match(text, /"label":"학생1"/);
   assert.match(text, /"label":"학생2"/);
   const out = r.finish({ students: [
-    { label: '학생1', summary: 's', directions: [], causes: [{ no: 2, cause: '조건 누락', explain: 'b' }, { no: 1, cause: '어휘 부족', explain: 'a' }, { no: 2, cause: '조건 누락', explain: 'c' }].reverse() },
-    { label: '학생2', summary: 's', directions: [], causes: [{ no: 1, cause: '어휘 부족', explain: 'x' }] },
+    { label: '학생1', summary: 's', directions: [], causes: [{ no: '2', cause: '조건 누락', explain: 'b' }, { no: '1', cause: '어휘 부족', explain: 'a' }, { no: '2', cause: '조건 누락', explain: 'c' }].reverse() },
+    { label: '학생2', summary: 's', directions: [], causes: [{ no: '1', cause: '어휘 부족', explain: 'x' }] },
   ] });
   assert.deepEqual(out.students.map((s) => s.label), ['김OO', 'KM']);
-  assert.deepEqual(out.students[0].causes.map((c) => [c.no, c.explain]), [[2, 'c'], [2, 'b']]);
+  assert.deepEqual(out.students[0].causes.map((c) => [c.no, c.explain]), [['2', 'c'], ['2', 'b']]);
   assert.deepEqual(out.students[1].causes, []);
 });
 
 test('reportRequest school 결과는 문항표에 있는 변별 문항만 남긴다', () => {
   const r = reportRequest({ mode: 'school', meta, items });
-  const out = r.finish({ overview: 'o', strategy: [], keyItems: [{ no: 7, why: 'x' }, { no: 2, why: 'y' }] });
-  assert.deepEqual(out.keyItems, [{ no: 2, why: 'y' }]);
+  const out = r.finish({ overview: 'o', strategy: [], keyItems: [{ no: '7', why: 'x' }, { no: '2', why: 'y' }] });
+  assert.deepEqual(out.keyItems, [{ no: '2', why: 'y' }]);
 });
 
 test('학년을 알면 그 학년 교육과정을 프롬프트에 넣는다', () => {
@@ -198,4 +198,22 @@ test('AI 가 문항을 풀면서 짧은 풀이(teach)도 함께 적는다', () =
   assert.match(계약, /학원 안에서만/);
   // 지문을 옮겨 적지 말라고 못 박는다 (학교 저작물)
   assert.match(계약, /지문|본문 문장/);
+});
+
+test('시험지에 인쇄된 번호 표기를 그대로 받는다 (논술형2-1 · 서답형 3)', () => {
+  // 참고앱의 실제 리포트가 쓰는 번호다. 숫자로만 받던 때에는 담지 못했다.
+  const 표기 = ['1', '논술형2-1', '서답형 3'];
+  const 문항 = 표기.map((no) => ({ no, kind: '서술형', points: 10, unit: '', area: '독해', subtype: '', difficulty: '중', source: '교과서', answer: '', reason: '' }));
+  const r = reportRequest({ mode: 'school', meta, items: 문항 });
+  표기.forEach((no) => assert.match(r.content[0].text, new RegExp(`"no":"${no}"`)));
+  // 그 번호로 변별 문항을 돌려주면 그대로 남는다
+  const out = r.finish({ overview: 'o', trends: [], flow: [], strategy: [], keyItems: [{ no: '논술형2-1', why: 'x' }, { no: '없는번호', why: 'y' }] });
+  assert.deepEqual(out.keyItems, [{ no: '논술형2-1', why: 'x' }]);
+});
+
+test('번호가 비었거나 겹치면 막는다', () => {
+  const 한개 = (no) => [{ no, kind: '객관식', points: 100, unit: '', area: '독해', subtype: '', difficulty: '중', source: '교과서', answer: '', reason: '' }];
+  assert.throws(() => reportRequest({ mode: 'school', meta, items: 한개('  ') }), UserError);
+  const 겹침 = [...한개('서답형 1'), ...한개('서답형 1')];
+  assert.throws(() => reportRequest({ mode: 'school', meta, items: 겹침 }), /두 번/);
 });

@@ -1,5 +1,5 @@
 // AI 판단 기준(설계서 4장)과 요청 검증. 사진·학생 정보는 여기서 걸러서만 AI 로 간다.
-import { SUBJECTS, AREAS, DIFF5, KINDS, SOURCES, examStats, studentStats } from '../public/lib.js';
+import { SUBJECTS, AREAS, DIFF5, KINDS, SOURCES, examStats, studentStats, noText, byNoOrder } from '../public/lib.js';
 import { unitsFor, pointsFor, grammarFor } from '../public/curriculum.js';
 import { UserError } from './http.js';
 
@@ -131,7 +131,7 @@ const classifyOf = (s) => `## ${s} 영역 분류표\n${GUIDE[s].classify}`;
 export const EXTRACT_SCHEMA = obj({
   meta: obj({ subject: oneOf(SUBJECT_NAMES), school: str, grade: str, term: str, exam: str, date: str, minutes: int, range: str }),
   items: arr(obj({
-    no: int, kind: oneOf(KINDS), points: { type: 'number' }, unit: str, area: oneOf(AREAS), subtype: str,
+    no: str, kind: oneOf(KINDS), points: { type: 'number' }, unit: str, area: oneOf(AREAS), subtype: str,
     difficulty: oneOf(DIFF5), source: oneOf([...SOURCES, '']), answer: str, teach: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
   })),
   notes: str,
@@ -141,14 +141,14 @@ export const SCHOOL_SCHEMA = obj({
   overview: str,
   trends: arr(str),
   flow: arr(str),
-  keyItems: arr(obj({ no: int, why: str })),
+  keyItems: arr(obj({ no: str, why: str })),
   strategy: arr(obj({ area: str, tip: str })),
 });
 
 export const studentsSchema = (subject) => obj({
   students: arr(obj({
     label: str, summary: str,
-    causes: arr(obj({ no: int, cause: oneOf(GUIDE[subject].causes.map(([name]) => name)), explain: str })),
+    causes: arr(obj({ no: str, cause: oneOf(GUIDE[subject].causes.map(([name]) => name)), explain: str })),
     directions: arr(str),
   })),
 });
@@ -177,7 +177,7 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 �
 세트 문항(예: [9~10] 다음 글을 읽고)은 번호마다 따로 적습니다.
 
 ## 칸
-- no: 문항 번호. 서술형이 "서술형 1"처럼 따로 번호가 매겨져 있으면 객관식 마지막 번호 뒤에 이어 붙이고 reason 앞에 "(서술형 1)"을 적습니다.
+- no: 문항 번호를 **시험지에 적힌 그대로** 적습니다. 숫자면 "7", 따로 매겨져 있으면 "서술형 1"·"논술형2-1"·"서답형 3" 처럼 그 표기를 그대로 씁니다. 지어내거나 숫자로 바꾸지 않습니다.
 - kind: 객관식 / 서술형 (단답형도 서술형)
 - points: 시험지에 적힌 배점. 안 보이면 남은 점수를 나눈 추정값을 쓰고 unsure 에 points 를 넣습니다.
 - unit: 그 문항이 나온 교과서 단원. 시험지·범위에 적힌 말 그대로 짧게 (5과 / I. 수와 식의 계산 / 3단원 - 문학의 수용). 같은 단원은 늘 똑같이 적습니다. 알 수 없으면 빈 문자열
@@ -272,8 +272,8 @@ function cleanItems(list, subject) {
   const txt = (v, max) => String(v ?? '').slice(0, max);
   const seen = new Set();
   return list.map((it) => {
-    const no = Number(it?.no);
-    if (!Number.isInteger(no) || !KINDS.includes(it.kind) || !SUBJECTS[subject].includes(it.area) || !DIFF5.includes(it.difficulty)) {
+    const no = noText(it?.no).slice(0, 20);
+    if (!no || !KINDS.includes(it.kind) || !SUBJECTS[subject].includes(it.area) || !DIFF5.includes(it.difficulty)) {
       throw new UserError(`${it?.no}번 문항의 칸을 확인해 주세요`);
     }
     if (seen.has(no)) throw new UserError(`${no}번 문항이 두 번 있습니다`);
@@ -291,8 +291,8 @@ function cleanStudents(list, nos) {
   return list.map((s) => ({
     label: String(s?.label ?? '').slice(0, 20),
     wrong: (Array.isArray(s?.wrong) ? s.wrong : [])
-      .filter((w) => nos.has(Number(w?.no)))
-      .map((w) => ({ no: Number(w.no), chosen: String(w.chosen ?? '').slice(0, 10) })),
+      .filter((w) => nos.has(noText(w?.no)))
+      .map((w) => ({ no: noText(w.no), chosen: String(w.chosen ?? '').slice(0, 10) })),
   }));
 }
 
@@ -327,7 +327,7 @@ export function extractRequest(body) {
     system: EXTRACT_SYSTEM, schema: EXTRACT_SCHEMA, content, maxTokens: 32000,
     finish: (out) => ({
       meta: out.meta,
-      items: [...out.items].sort((a, b) => a.no - b.no).map((it) => fitArea(it, out.meta.subject)),
+      items: [...out.items].sort(byNoOrder).map((it) => fitArea(it, out.meta.subject)),
       notes: out.notes,
     }),
   };
@@ -341,7 +341,7 @@ export function reportRequest(body) {
     return {
       system: schoolSystem(meta.subject), schema: SCHOOL_SCHEMA, maxTokens: 16000,
       content: [{ type: 'text', text: `다음 자료로 학교 시험 분석 글을 써 주세요.\n${JSON.stringify({ 시험: meta, 통계: stats, 문항표: items })}` }],
-      finish: (out) => ({ ...out, keyItems: out.keyItems.filter((k) => items.some((it) => it.no === k.no)) }),
+      finish: (out) => ({ ...out, keyItems: out.keyItems.map((k) => ({ ...k, no: noText(k.no) })).filter((k) => items.some((it) => it.no === k.no)) }),
     };
   }
   if (body.mode === 'students') {
@@ -356,7 +356,7 @@ export function reportRequest(body) {
         return {
           students: out.students.map((s, i) => {
             const wrong = new Set(students[i].wrong.map((w) => w.no));
-            const causes = s.causes.filter((c) => wrong.has(c.no)).sort((a, b) => a.no - b.no);
+            const causes = s.causes.map((c) => ({ ...c, no: noText(c.no) })).filter((c) => wrong.has(c.no)).sort(byNoOrder);
             return { ...s, causes, label: students[i].label };
           }),
         };

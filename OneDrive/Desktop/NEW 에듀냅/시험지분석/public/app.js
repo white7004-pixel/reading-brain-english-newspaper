@@ -1,4 +1,4 @@
-import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents, esc } from './lib.js';
+import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents, esc, noText, noNum, byNoOrder } from './lib.js';
 import { unitsFor, GRADES } from './curriculum.js';
 import { schoolPage, studentPage, explainPages } from './report.js';
 import { shareCards } from './share.js';
@@ -224,7 +224,7 @@ function renderItems() {
     const cell = (field, html) => `<td data-field="${field}" class="${it.unsure.includes(field) ? 'unsure' : ''}">${html}</td>`;
     const no = esc(it.no);
     return `<tr data-i="${i}">
-      ${cell('no', `<input type="number" min="1" step="1" value="${no}" aria-label="${no}번 번호">`)}
+      ${cell('no', `<input value="${no}" aria-label="${no}번 번호" placeholder="7">`)}
       ${cell('kind', `<select aria-label="${no}번 유형">${options(KINDS, it.kind)}</select>`)}
       ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
       ${cell('unit', `<input list="unit-list" value="${esc(it.unit ?? '')}" aria-label="${no}번 단원" placeholder="5과">`)}
@@ -242,9 +242,10 @@ function renderItems() {
 }
 
 // 번호가 비었거나 겹치면 리포트 숫자가 틀어진다 → 고칠 때까지 만들지 않는다
+// 번호는 글자다 — 학교가 `논술형2-1` 처럼 매기기 때문이다.
 function itemProblem() {
-  if (state.items.some((it) => !Number.isInteger(it.no) || it.no < 1)) return '번호가 비어 있는 문항이 있습니다';
-  const nos = state.items.map((it) => it.no);
+  if (state.items.some((it) => !noText(it.no))) return '번호가 비어 있는 문항이 있습니다';
+  const nos = state.items.map((it) => noText(it.no));
   const dups = [...new Set(nos.filter((n, i) => nos.indexOf(n) !== i))];
   return dups.length ? `${dups.join(', ')}번이 두 번 있습니다` : '';
 }
@@ -262,7 +263,7 @@ $('#items').addEventListener('input', (e) => {
   if (!td) return;
   const it = state.items[Number(td.parentElement.dataset.i)];
   const field = td.dataset.field;
-  it[field] = field === 'points' || field === 'no' ? Number(e.target.value) : e.target.value;
+  it[field] = field === 'points' ? Number(e.target.value) : e.target.value;
   it.unsure = it.unsure.filter((name) => name !== field);
   td.classList.remove('unsure');
   if (field === 'unit') drawUnitList();
@@ -277,7 +278,8 @@ $('#items').addEventListener('click', (e) => {
 });
 
 $('#add-item').addEventListener('click', () => {
-  const no = Math.max(0, ...state.items.map((it) => Number(it.no) || 0)) + 1;
+  // 숫자 번호 중 가장 큰 것 다음. 글자 번호(논술형2-1)는 세지 않는다
+  const no = String(Math.max(0, ...state.items.map((it) => (noNum(it.no) === Infinity ? 0 : noNum(it.no)))) + 1);
   state.items.push({ no, kind: '객관식', points: 0, unit: '', area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
   renderItems();
 });
@@ -320,7 +322,7 @@ $('#make-report').addEventListener('click', async (e) => {
   if (problems.length) return;
   const button = e.currentTarget;
   button.disabled = true;
-  const items = [...state.items].sort((a, b) => a.no - b.no).map(({ unsure, ...it }) => it);
+  const items = [...state.items].sort(byNoOrder).map(({ unsure, ...it }) => it);
   const groups = [];
   for (let i = 0; i < students.length; i += GROUP) groups.push(students.slice(i, i + GROUP));
   try {

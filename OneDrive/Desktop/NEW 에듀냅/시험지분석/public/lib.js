@@ -30,6 +30,15 @@ export const weightTier = (points, avg) => {
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ESC[c]);
 
+// 문항 번호는 글자다. 학교가 `논술형2-1`·`서답형 3` 처럼 매기기 때문이다 (실제 리포트에서 확인).
+// 줄 세우기와 범위 줄이기에만 앞머리 숫자를 쓰고, 숫자가 아닌 번호는 뒤로 보낸다.
+export const noText = (no) => String(no ?? '').trim();
+export const noNum = (no) => {
+  const m = noText(no).match(/^\d+/);
+  return m ? Number(m[0]) : Infinity;
+};
+export const byNoOrder = (a, b) => noNum(a.no) - noNum(b.no) || noText(a.no).localeCompare(noText(b.no), 'ko');
+
 const round1 = (n) => Math.round(n * 10) / 10;
 const pct = (n, d) => (d ? Math.round((n / d) * 100) : 0);
 const sumPoints = (items) => round1(items.reduce((s, it) => s + (Number(it.points) || 0), 0));
@@ -39,7 +48,7 @@ function tally(items, key, order) {
     .map((label) => {
       const hit = items.filter((it) => it[key] === label);
       // nos: 학원 분석표가 늘 함께 적는 문항 번호 ("독해 3,7,11~14")
-      return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length), nos: hit.map((it) => Number(it.no)) };
+      return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length), nos: hit.map((it) => noText(it.no)) };
     })
     .filter((r) => r.count > 0);
 }
@@ -59,7 +68,7 @@ function byValue(items, key) {
   }
   return order.map((label) => {
     const hit = groups.get(label);
-    return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length), nos: hit.map((it) => Number(it.no)) };
+    return { label, count: hit.length, points: sumPoints(hit), pct: pct(hit.length, items.length), nos: hit.map((it) => noText(it.no)) };
   });
 }
 
@@ -69,10 +78,28 @@ function byPoints(items) {
   for (const it of items) {
     const points = Number(it.points) || 0;
     if (!groups.has(points)) groups.set(points, []);
-    groups.get(points).push(Number(it.no));
+    groups.get(points).push(noText(it.no));
   }
   return [...groups.entries()].sort((a, b) => b[0] - a[0])
-    .map(([points, nos]) => ({ points, count: nos.length, nos: nos.sort((a, b) => a - b) }));
+    .map(([points, nos]) => ({ points, count: nos.length, nos: nos.sort((a, b) => noNum(a) - noNum(b) || a.localeCompare(b, 'ko')) }));
+}
+
+// 두 기준을 한 장에 겹쳐 본다 (영역 × 난이도). 따로 보면 "어느 영역을 어렵게 냈나"가 안 보인다.
+// 줄은 나온 순서대로, 칸은 정해진 차례대로. 아무도 없는 줄·칸은 싣지 않는다 (빈 칸만 늘어난다).
+// rowOrder 를 주면 그 차례대로 (영역별 표와 줄 순서를 맞추려고). 없으면 시험지에 나온 순서대로.
+export function crossTab(items, rowKey, colKey, colOrder, rowOrder = null) {
+  const cols = colOrder.filter((c) => items.some((it) => it[colKey] === c));
+  const order = [];
+  for (const it of items) {
+    const label = String(it?.[rowKey] ?? '').trim();
+    if (label && !order.includes(label)) order.push(label);
+  }
+  if (rowOrder) order.sort((a, b) => rowOrder.indexOf(a) - rowOrder.indexOf(b));
+  const rows = order.map((label) => {
+    const hit = items.filter((it) => String(it?.[rowKey] ?? '').trim() === label);
+    return { label, cells: cols.map((c) => hit.filter((it) => it[colKey] === c).length), total: hit.length };
+  });
+  return { cols, rows, totals: cols.map((c) => items.filter((it) => it[colKey] === c).length), count: items.length };
 }
 
 export function examStats(items) {
@@ -106,15 +133,18 @@ export function examStats(items) {
 
 // 번호 목록을 분석표에 쓰는 모양으로 줄인다: [1,2,3,7,9,10] → "1~3, 7, 9, 10"
 export function nosText(nos) {
-  const s = [...nos].sort((a, b) => a - b);
+  const all = [...nos].map(noText).filter(Boolean);
+  // 숫자 번호만 물결로 줄인다. `논술형2-1` 같은 번호는 줄일 수 없으니 순서대로 뒤에 붙인다.
+  const n = all.filter((x) => /^\d+$/.test(x)).map(Number).sort((a, b) => a - b);
+  const rest = all.filter((x) => !/^\d+$/.test(x));
   const out = [];
-  for (let i = 0; i < s.length;) {
+  for (let i = 0; i < n.length;) {
     let j = i;
-    while (j + 1 < s.length && s[j + 1] === s[j] + 1) j++;
-    out.push(j - i >= 2 ? `${s[i]}~${s[j]}` : s.slice(i, j + 1).join(', '));
+    while (j + 1 < n.length && n[j + 1] === n[j] + 1) j++;
+    out.push(j - i >= 2 ? `${n[i]}~${n[j]}` : n.slice(i, j + 1).join(', '));
     i = j + 1;
   }
-  return out.join(', ');
+  return [...out, ...rest].join(', ');
 }
 
 export function studentStats(items, wrong) {
@@ -124,7 +154,7 @@ export function studentStats(items, wrong) {
     const missed = inArea.filter((it) => wrongNos.has(it.no));
     const correct = inArea.length - missed.length;
     // nos: 그 영역에서 틀린 문항 번호 (리포트 표에 그대로 적는다)
-    return { label, count: inArea.length, correct, pct: pct(correct, inArea.length), nos: missed.map((it) => Number(it.no)) };
+    return { label, count: inArea.length, correct, pct: pct(correct, inArea.length), nos: missed.map((it) => noText(it.no)) };
   }).filter((r) => r.count > 0);
   const total = sumPoints(items);
   return {
@@ -137,22 +167,29 @@ export function studentStats(items, wrong) {
 }
 
 // "김OO 4(③), 9, 25" 한 줄에 한 명. 다 맞으면 "김OO 0".
+const reEsc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export function parseStudents(text, itemNos) {
-  const known = new Set(itemNos);
+  const known = new Set([...itemNos].map(noText));
+  // `논술형2-1` 처럼 숫자로 시작하지 않는 번호는 시험마다 다르므로 그 시험의 번호만 알아본다.
+  // 긴 것부터 맞춰야 `논술형2-1` 이 `논술형2` 에서 잘리지 않는다.
+  const labels = [...known].filter((n) => !/^\d/.test(n)).sort((a, b) => b.length - a.length).map(reEsc);
+  const alt = labels.join('|');
+  const line1 = new RegExp(`^(.+?)\\s+(${labels.length ? `(?:\\d|${alt})` : '\\d'}.*)$`);
+  const token = new RegExp(`(${labels.length ? `${alt}|` : ''}\\d+)\\s*(?:\\(([^)]*)\\))?`, 'g');
   const students = [];
   const problems = [];
   text.split('\n').map((l) => l.trim()).filter(Boolean).forEach((line, i) => {
-    const m = line.match(/^(.+?)\s+(\d.*)$/);
+    const m = line.match(line1);
     if (!m) return problems.push(`${i + 1}번째 줄: 이름 뒤에 틀린 번호를 적어 주세요 (다 맞으면 0)`);
     const label = m[1].trim();
     if (/[가-힣]{2,}/.test(label)) problems.push(`${label}: 전체 이름 대신 성+OO 또는 이니셜로 적어 주세요`);
     const seen = new Set();
     const wrong = [];
-    for (const [, no, chosen] of m[2].matchAll(/(\d+)\s*(?:\(([^)]*)\))?/g)) {
-      const n = Number(no);
-      if (n === 0 || seen.has(n)) continue;
-      seen.add(n);
-      wrong.push({ no: n, chosen: (chosen || '').trim() });
+    for (const [, no, chosen] of m[2].matchAll(token)) {
+      if (no === '0' || seen.has(no)) continue;
+      seen.add(no);
+      wrong.push({ no, chosen: (chosen || '').trim() });
     }
     const unknown = wrong.filter((w) => !known.has(w.no)).map((w) => w.no);
     if (unknown.length) problems.push(`${label}: 시험에 없는 번호 ${unknown.join(', ')}`);

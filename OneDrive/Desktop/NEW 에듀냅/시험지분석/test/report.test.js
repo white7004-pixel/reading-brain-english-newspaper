@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages } from '../public/report.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable } from '../public/report.js';
 import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
@@ -39,8 +39,8 @@ const school = {
 
 test('학교 분석 A4 는 정해진 표와 줄로 이뤄진다', () => {
   const html = schoolPage(ctx, school);
-  // 시험 구성 · 영역별 · 변별 문항 · 전 문항 두 쪽 · 대비 (배점 구성은 한 줄, 단원은 이 시험에 없다)
-  assert.equal(html.match(/<table/g).length, 6);
+  // 시험 구성 · 영역별 · 변별 문항 · 대비 · 교차표 · 전 문항 (배점 구성은 한 줄, 단원은 이 시험에 없다)
+  assert.equal(html.match(/<table/g).length, 7);
   ['시험 구성', '영역별 출제', '배점 구성', '변별 문항', '전 문항 분석표', '다음 시험 이렇게 준비합니다'].forEach((h) => assert.match(html, new RegExp(h)));
   assert.doesNotMatch(html, /단원별 출제/); // 단원을 적지 않은 문항표에서는 단원 표를 내지 않는다
   // 구분 칸은 항목 수만큼 묶인다 (객관식·서술형 두 줄)
@@ -58,7 +58,7 @@ test('단원을 적은 문항표에서는 단원별 출제 표가 붙는다', ()
   const withUnit = items.map((it, i) => ({ ...it, unit: i ? '6과' : '5과' }));
   const html = schoolPage({ ...ctx, items: withUnit, stats: examStats(withUnit) }, school);
   assert.match(html, /단원별 출제/);
-  assert.equal(html.match(/<table/g).length, 7);
+  assert.equal(html.match(/<table/g).length, 8);
 });
 
 test('시험 정보 줄에는 날짜·시간·구성·범위가 들어간다', () => {
@@ -167,4 +167,18 @@ test('문항 해설은 문항이 많으면 여러 장으로 나뉜다', () => {
   const html = explainPages({ ...ctx, items: many, stats: examStats(many) });
   assert.ok(html.match(/class="page"/g).length > 1);
   assert.match(html, /1 \/ /);
+});
+
+test('영역 × 난이도 교차표는 총계 줄까지 한 장에 싣는다', () => {
+  const html = crossTable(examStats(items), items);
+  assert.match(html, /영역 × 난이도/);
+  ['어휘', '어법', '독해', '총계'].forEach((w) => assert.match(html, new RegExp(w)));
+  // 아무도 없는 난이도 칸(중하)은 싣지 않는다 — 빈 칸만 늘어난다
+  assert.doesNotMatch(html, /중하/);
+  // 총계 줄의 마지막 칸은 문항 수
+  assert.match(html, /<td class="num">3<\/td><\/tr>\s*<\/tbody>/);
+});
+
+test('교차표는 학교 분석 A4 에 들어간다', () => {
+  assert.match(schoolPage(ctx, school), /영역 × 난이도/);
 });

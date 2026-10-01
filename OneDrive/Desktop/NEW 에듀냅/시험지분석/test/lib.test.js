@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier } from '../public/lib.js';
+import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier, crossTab, DIFF5 } from '../public/lib.js';
 
 const items = [
   { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하', source: '교과서' },
@@ -25,7 +25,7 @@ test('examStats 는 학원 글이 쓰는 표(유형·배점·출처·고난도 �
   // 유형별: 객관식 2문항 60점 / 서술형 1문항 40점
   assert.deepEqual(s.byKind.map((r) => [r.label, r.count, r.points, r.pct]), [['객관식', 2, 60, 67], ['서술형', 1, 40, 33]]);
   // 배점별: 큰 배점부터, 번호까지 (학원 글의 "5점 문항 5개가 전부 어법")
-  assert.deepEqual(s.byPoints, [{ points: 40, count: 1, nos: [3] }, { points: 30, count: 2, nos: [1, 2] }]);
+  assert.deepEqual(s.byPoints, [{ points: 40, count: 1, nos: ['3'] }, { points: 30, count: 2, nos: ['1', '2'] }]);
   // 출처별: 교과서 2문항 70점 / 외부 1문항 30점
   assert.deepEqual(s.bySource.map((r) => [r.label, r.count, r.points]), [['교과서', 2, 70], ['외부', 1, 30]]);
   // 중상 이상 문항 수·배점·비율 ("중상 이상 55%, 그 배점 61.4점")
@@ -39,8 +39,8 @@ test('학원 분석지가 늘 적는 단원·체감 난이도·킬러 문항도 
   const s = examStats(withUnit);
   // 단원은 시험지에 나온 순서대로 (미리 정해진 목록이 없다)
   assert.deepEqual(s.byUnit.map((r) => [r.label, r.count, r.points, r.pct, r.nos]), [
-    ['5과', 2, 70, 67, [1, 3]],
-    ['6과', 1, 30, 33, [2]],
+    ['5과', 2, 70, 67, ['1', '3']],
+    ['6과', 1, 30, 33, ['2']],
   ]);
   // 체감 난이도는 다섯 칸 중 몇째인지 (보통=3)
   assert.deepEqual([s.overallScore, s.overallLabel], [4, '조금 어려움']);
@@ -59,8 +59,8 @@ test('단원이 없는 문항표에서는 단원 표를 만들지 않는다', ()
 
 test('영역별 표에는 그 영역의 문항 번호가 함께 있다', () => {
   const s = examStats(items);
-  assert.deepEqual(s.byArea.map((r) => r.nos), [[1], [3], [2]]); // 어휘1 · 어법3 · 독해2 (영역 차례대로)
-  assert.deepEqual(s.byKind.find((r) => r.label === '객관식').nos, [1, 2]);
+  assert.deepEqual(s.byArea.map((r) => r.nos), [['1'], ['3'], ['2']]); // 어휘1 · 어법3 · 독해2 (영역 차례대로)
+  assert.deepEqual(s.byKind.find((r) => r.label === '객관식').nos, ['1', '2']);
 });
 
 test('nosText 는 이어진 번호를 물결로 줄인다', () => {
@@ -82,13 +82,13 @@ test('studentStats 는 점수와 약점 영역을 계산한다', () => {
   assert.equal(s.wrongCount, 2);
   assert.deepEqual(s.byArea.map((r) => [r.label, r.correct, r.count, r.pct]), [['어휘', 1, 1, 100], ['어법', 0, 1, 0], ['독해', 0, 1, 0]]);
   assert.deepEqual(s.weakAreas, ['어법', '독해']);
-  assert.deepEqual(s.byArea.map((r) => r.nos), [[], [3], [2]]); // 영역마다 틀린 번호
+  assert.deepEqual(s.byArea.map((r) => r.nos), [[], ['3'], ['2']]); // 영역마다 틀린 번호
 });
 
 test('parseStudents 는 한 줄에 한 명씩 읽고 문제를 알려 준다', () => {
   const text = '김OO 4(③), 9, 25, 9\nB 0\n홍길동 1\n이OO\n박OO 99';
-  const { students, problems } = parseStudents(text, [1, 4, 9, 25]);
-  assert.deepEqual(students[0], { label: '김OO', wrong: [{ no: 4, chosen: '③' }, { no: 9, chosen: '' }, { no: 25, chosen: '' }] });
+  const { students, problems } = parseStudents(text, ['1', '4', '9', '25']);
+  assert.deepEqual(students[0], { label: '김OO', wrong: [{ no: '4', chosen: '③' }, { no: '9', chosen: '' }, { no: '25', chosen: '' }] });
   assert.deepEqual(students[1], { label: 'B', wrong: [] });
   assert.equal(problems.length, 3);
   assert.match(problems[0], /홍길동/);
@@ -119,7 +119,57 @@ test('배점 기준 눈금은 그 시험의 평균 배점에 견준다 (문항 �
 test('examStats 는 배점 눈금별 분포를 체감 난이도와 따로 낸다', () => {
   // 평균 33.3점 → 30점 둘은 표준, 40점 하나는 고난도(33.3×1.25=41.7 미달이라 응용)
   const s = examStats(items);
-  assert.deepEqual(s.byWeight.map((r) => [r.label, r.count, r.nos]), [['표준', 2, [1, 2]], ['응용', 1, [3]]]);
+  assert.deepEqual(s.byWeight.map((r) => [r.label, r.count, r.nos]), [['표준', 2, ['1', '2']], ['응용', 1, ['3']]]);
   // 체감 난이도와 어긋나는 문항이 변별 문항이다 — 두 눈금을 합치지 않는다
   assert.notDeepEqual(s.byWeight.map((r) => r.label), s.byDifficulty.map((r) => r.label));
+});
+
+// ── 문항 번호는 글자다 ──
+// 참고앱의 실제 리포트에 `논술형1`·`논술형2-1`·`논술형2-2`·`논술형3` 이 그대로 쓰인다.
+// 숫자로만 두면 담을 수 없어서 글자로 바꿨다. 범위로 줄이는 일은 숫자 번호에만 한다.
+test('nosText 는 숫자가 아닌 번호를 줄이지 않고 뒤에 그대로 붙인다', () => {
+  assert.equal(nosText(['1', '2', '3', '논술형2-1']), '1~3, 논술형2-1');
+  assert.equal(nosText(['논술형1', '논술형2-1']), '논술형1, 논술형2-1');
+  assert.equal(nosText(['7', '5']), '5, 7');
+});
+
+test('examStats 는 글자 번호를 그대로 들고 다닌다', () => {
+  const list = [
+    { no: '1', kind: '객관식', points: 50, area: '독해', difficulty: '중' },
+    { no: '논술형2-1', kind: '서술형', points: 50, area: '어법', difficulty: '상' },
+  ];
+  const s = examStats(list);
+  assert.deepEqual(s.byArea.map((r) => [r.label, r.nos]), [['어법', ['논술형2-1']], ['독해', ['1']]]);
+  assert.deepEqual(s.byKind.map((r) => r.nos), [['1'], ['논술형2-1']]);
+  assert.deepEqual(s.byPoints[0].nos, ['1', '논술형2-1']);
+});
+
+test('parseStudents 는 글자 번호도 읽는다', () => {
+  const { students, problems } = parseStudents('김OO 4(③), 논술형2-1\nB 0', ['4', '9', '논술형2-1']);
+  assert.deepEqual(students[0].wrong, [{ no: '4', chosen: '③' }, { no: '논술형2-1', chosen: '' }]);
+  assert.deepEqual(students[1].wrong, []);
+  assert.deepEqual(problems, []);
+});
+
+// ── 교차표 ──
+// 참고앱 리포트 4쪽이 유형×난이도 교차표를 싣는다. 영역별·난이도별을 따로 보면
+// "어느 영역에서 어렵게 냈나"가 안 보인다. 숫자는 이미 다 있으니 묶기만 하면 된다.
+test('crossTab 은 영역 × 난이도를 세고 총계 줄·칸을 붙인다', () => {
+  const list = [
+    { no: '1', area: '어휘', difficulty: '중', points: 3, kind: '객관식' },
+    { no: '2', area: '독해', difficulty: '중', points: 3, kind: '객관식' },
+    { no: '3', area: '독해', difficulty: '상', points: 4, kind: '객관식' },
+  ];
+  const t = crossTab(list, 'area', 'difficulty', DIFF5);
+  assert.deepEqual(t.cols, ['중', '상']);          // 아무도 없는 난이도 칸은 빼고
+  assert.deepEqual(t.rows.map((r) => [r.label, r.cells, r.total]), [
+    ['어휘', [1, 0], 1],
+    ['독해', [1, 1], 2],
+  ]);
+  assert.deepEqual([t.totals, t.count], [[2, 1], 3]);
+});
+
+test('crossTab 은 칸이 빌 수 있는 과목에서도 총계가 문항 수와 같다', () => {
+  const s = crossTab([], 'area', 'difficulty', DIFF5);
+  assert.deepEqual([s.cols, s.rows, s.count], [[], [], 0]);
 });

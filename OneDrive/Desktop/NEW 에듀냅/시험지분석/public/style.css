@@ -338,3 +338,8 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .r-explain .t th:nth-child(7) { width: 45%; }
 .r-explain .t td { vertical-align: top; }
 .r-explain .t td.c { white-space: nowrap; }
+
+/* 영역 × 난이도 교차표 — 0 은 점으로 흐리게 둬야 숫자가 있는 칸이 눈에 들어온다 */
+.r-cross { margin-bottom: .8em; }
+.r-cross .t td.zero { color: var(--muted); }
+.r-cross .t tr.sum > * { font-weight: 700; border-top: 1.5px solid var(--line); background: var(--zebra); }

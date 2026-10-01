@@ -1,6 +1,6 @@
 // A4 한 장 틀. AI 글과 계산된 숫자를 정해진 자리에 넣는다. 모든 글은 esc 로 넣는다.
 // 글자·간격은 .page 의 --fit 배율(em)을 따라 함께 줄어든다 (app.js fitPage).
-import { esc, to3, nosText } from './lib.js';
+import { esc, to3, nosText, crossTab, DIFF5, AREAS } from './lib.js';
 
 // cls 는 종류(예: card-news). 공유 카드가 같은 틀을 쓰되 크기만 다르게 한다.
 export const sheet = (fileName, html, cls = '') => `
@@ -78,6 +78,17 @@ export const composeTable = (stats) => table(['구분', '항목', '#문항', '#�
 
 export const areaTable = (stats) => table(['영역', '문항 번호', '#문항', '#배점', '#비율'],
   stats.byArea.map((r) => `<tr><td>${esc(r.label)}</td><td class="pt">${esc(nosText(r.nos))}</td>${num(r.count)}${num(r.points)}${barCell(r.pct, `${r.pct}%`)}</tr>`));
+
+// 영역 × 난이도 한 장. 영역별 표와 난이도 표를 따로 보면 "어느 영역을 어렵게 냈나"가 안 보인다.
+// 줄 차례는 영역별 표와 맞춘다. 맨 아래 총계 줄로 문항 수가 맞는지 바로 확인된다.
+export const crossTable = (stats, items) => {
+  const t = crossTab(items, 'area', 'difficulty', DIFF5, AREAS);
+  if (!t.rows.length) return '';
+  const cell = (n) => `<td class="num${n ? '' : ' zero'}">${n || '·'}</td>`;
+  const rows = t.rows.map((r) => `<tr><td>${esc(r.label)}</td>${r.cells.map(cell).join('')}${num(r.total)}</tr>`);
+  rows.push(`<tr class="sum"><td>총계</td>${t.totals.map(cell).join('')}${num(t.count)}</tr>`);
+  return table(['영역 × 난이도', ...t.cols.map((c) => `#${c}`), '#총계'], rows);
+};
 
 export const pointsTable = (stats) => table(['#배점', '#문항 수', '문항 번호'],
   stats.byPoints.map((r) => `<tr>${num(`${r.points}점`)}${num(r.count)}<td class="pt">${esc(nosText(r.nos))}</td></tr>`));
@@ -157,6 +168,7 @@ export function schoolPage({ academy, meta, items, stats }, school) {
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
   return front + sheet(`${file}-전문항표`, `
     ${header(academy, `${examName(meta)} ${meta.subject} 전 문항 분석표`, '내신 시험 분석 리포트 · 2 / 2')}
+    <section class="r-cross"><h3>영역 × 난이도 — 어디를 어렵게 냈나</h3>${crossTable(stats, items)}</section>
     <section class="r-items">${itemsTable(items)}</section>
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
 }
