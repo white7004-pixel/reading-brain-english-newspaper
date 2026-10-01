@@ -16,6 +16,17 @@ export const SOURCES = ['교과서', '부교재', '외부', '기출변형'];
 const TO3 = { 하: '하', 중하: '하', 중: '중', 중상: '상', 상: '상' };
 export const to3 = (d) => TO3[d] || d;
 
+// 배점 기준 눈금. 절대 점수가 아니라 그 시험의 평균 배점에 견준다 —
+// 영어 25문항·수학 21문항처럼 문항 수가 다르면 같은 5점의 무게가 다르다.
+// 평균 4점 시험에서는 표준 1~3점대 / 응용 4점대 / 고난도 5점 이상이 된다.
+// 체감 난이도(difficulty)와 합치지 않는다. 둘이 어긋나는 문항이 변별 문항이다.
+export const WEIGHTS = ['표준', '응용', '고난도'];
+export const weightTier = (points, avg) => {
+  const p = Number(points) || 0;
+  if (!avg) return '표준';
+  return p >= avg * 1.25 ? '고난도' : p >= avg ? '응용' : '표준';
+};
+
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ESC[c]);
 
@@ -85,6 +96,7 @@ export function examStats(items) {
     byKind: tally(items, 'kind', KINDS),
     bySource: tally(items, 'source', SOURCES),
     byPoints: byPoints(items),
+    byWeight: tally(items.map((it) => ({ ...it, weight: weightTier(it.points, items.length ? total / items.length : 0) })), 'weight', WEIGHTS),
     byUnit: byValue(items, 'unit'),
     hard: { count: hard.length, points: sumPoints(hard), pct: pct(hard.length, items.length) },
     killer: { count: killer.length, points: sumPoints(killer), pct: pct(killer.length, items.length) },

@@ -72,6 +72,7 @@ export const unitTable = (stats) => (stats.byUnit.length
 export const composeTable = (stats) => table(['구분', '항목', '#문항', '#배점', '#비율'], [
   ...groupRows('유형', stats.byKind),
   ...groupRows('난이도', stats.byDifficulty),
+  ...groupRows('배점 눈금', stats.byWeight),
   ...(stats.bySource.length ? groupRows('출처', stats.bySource) : []),
 ]);
 
@@ -93,6 +94,11 @@ export const keyTable = (items, keyItems) => {
   }));
 };
 
+// 2. 우리 학원은 이렇게 대비했습니다 — 원장님이 학원 정보에 한 번 적어 두고 시험마다 다시 쓴다.
+// AI 에게 맡기지 않는다. 학원이 무엇을 했는지는 원장님만 안다.
+export const prepList = (prep) => `<ul class="r-trend">${String(prep).split('\n').map((l) => l.trim()).filter(Boolean)
+  .map((l) => `<li contenteditable>${esc(l)}</li>`).join('')}</ul>`;
+
 export const strategyTable = (strategy) => table(['영역', '준비 방법'],
   strategy.map((s) => `<tr><td>${esc(s.area)}</td><td contenteditable>${esc(s.tip)}</td></tr>`), 't-2');
 
@@ -109,36 +115,37 @@ export function itemsTable(items) {
 // 문항 칸 격자: 한 줄 10칸
 export const grid = (items, cell) => `<ol class="r-grid">${items.map(cell).join('')}</ol>`;
 
+// 받은 내신분석 121건 중 100건이 쓰는 제목 꼴. 원장님이 화면에서 고칠 수 있다.
+export const verdictTitle = (meta) => `${meta.school} ${meta.grade} ${meta.term} ${meta.subject} ${meta.exam} 직후 총평`;
+
 export const examName = (meta) => `${meta.school} ${meta.grade} ${meta.term} ${meta.exam}`;
 
 export const nums = (cards) => `<div class="r-nums">${cards.map(([value, label]) => `<div><b>${value}</b><span>${esc(label)}</span></div>`).join('')}</div>`;
 
-// 학교 시험 분석 A4 한 장. 학원 블로그의 분석 글처럼 표로 읽히도록 짰다.
-// ① 핵심 수치 ② 총평 ③ 시험 구성·영역·배점 표 ④ 변별 문항 표 ⑤ 전 문항 표 ⑥ 대비 표
-// 문항이 이보다 많으면 전 문항 표를 둘째 장으로 뺀다 (한 장에 우겨 넣으면 글자가 너무 작아진다).
-// 30문항이 한 장에 0.76배로 들어가는 것을 재어 보고 정했다.
-const MANY = 30;
-
+// 학교 시험 분석 A4 두 장. 받은 내신분석 121건의 3부 구성을 따른다.
+// 1장 — ① 핵심 수치 ② 총평 ③ 문항 흐름 ④ 시험 구성·영역·배점 ⑤ 변별 문항 ⑥ 우리 학원 대비 ⑦ 다음 시험
+// 2장 — 전 문항 분석표
+// 전 문항 표는 늘 둘째 장으로 뺀다. 1장 내용만으로 이미 --fit 0.88 이고(재어 봤다),
+// 표까지 넣으면 0.70 까지 줄어 글씨를 읽기 어렵다. 표는 상담용 참고 자료라 뒤에 두는 것이 맞다.
 export function schoolPage({ academy, meta, items, stats }, school) {
   const unit = unitTable(stats);
   const file = `${meta.school}-${meta.grade}-${meta.subject}분석`;
-  const many = items.length > MANY;
   const front = sheet(file, `
-    ${header(academy, `${examName(meta)} ${meta.subject} 분석`, `내신 시험 분석 리포트${many ? ' · 1 / 2' : ''}`)}
+    ${header(academy, verdictTitle(meta), '내신 시험 분석 리포트 · 1 / 2')}
     ${examLine(meta, stats)}
     ${kpi(stats)}
     <section class="r-verdict"><b>한 줄 총평</b><p contenteditable>${esc(school.overview)}</p></section>
     ${school.trends?.length ? `<section><h3>출제 경향 요약</h3>${trendList(school.trends)}</section>` : ''}
+    ${school.flow?.length ? `<section><h3>문항은 이렇게 나왔습니다</h3>${trendList(school.flow)}</section>` : ''}
     <section class="r-row">
       <div><h3>시험 구성</h3>${composeTable(stats)}</div>
       <div>${unit ? `<h3>단원별 출제</h3>${unit}<h3 class="r-sub-h">영역별 출제</h3>` : '<h3>영역별 출제</h3>'}${areaTable(stats)}</div>
     </section>
     ${pointsLine(stats)}
     <section><h3>변별 문항 — 점수가 갈린 곳</h3>${keyTable(items, school.keyItems)}</section>
-    ${many ? '' : `<section class="r-items"><h3>전 문항 분석표</h3>${itemsTable(items)}</section>`}
+    ${academy.prep?.trim() ? `<section><h3>${esc(academy.name)}은 이렇게 대비했습니다</h3>${prepList(academy.prep)}</section>` : ''}
     <section><h3>다음 시험 이렇게 준비합니다</h3>${strategyTable(school.strategy)}</section>
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
-  if (!many) return front;
   return front + sheet(`${file}-전문항표`, `
     ${header(academy, `${examName(meta)} ${meta.subject} 전 문항 분석표`, '내신 시험 분석 리포트 · 2 / 2')}
     <section class="r-items">${itemsTable(items)}</section>

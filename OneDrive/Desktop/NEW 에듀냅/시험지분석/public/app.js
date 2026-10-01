@@ -132,7 +132,7 @@ $('#academy-form').elements.logo.addEventListener('change', async (e) => {
 academyForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const f = academyForm.elements;
-  state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src };
+  state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src, prep: f.prep.value.trim() };
   store.set('academy', state.academy);
   showAcademy();
   academyForm.closest('details').open = false;
@@ -409,6 +409,7 @@ if (saved) {
   f.academyName.value = saved.name;
   f.phone.value = saved.phone;
   f.color.value = saved.color;
+  f.prep.value = saved.prep ?? '';
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
 }
 showAcademy();

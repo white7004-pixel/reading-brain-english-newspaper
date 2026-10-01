@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage, studentPage } from '../public/report.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle } from '../public/report.js';
 import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
@@ -86,15 +86,17 @@ test('고난도(상) 문항은 전 문항 표에서 ★ 로 표시된다', () =>
   assert.match(html, /★ 고난도/);
 });
 
-test('문항이 많으면 전 문항 표를 둘째 장으로 뺀다', () => {
-  const many = Array.from({ length: 40 }, (_, i) => ({ ...items[i % 3], no: i + 1 }));
-  const html = schoolPage({ ...ctx, items: many, stats: examStats(many) }, school);
-  assert.equal(html.match(/class="page"/g).length, 2);
-  assert.match(html, /1 \/ 2/);
-  assert.match(html, /2 \/ 2/);
-  // 앞장에는 전 문항 표가 없고 뒷장에 있다
-  assert.equal(html.match(/전 문항 분석표/g).length, 1);
-  assert.equal(schoolPage(ctx, school).match(/class="page"/g).length, 1);
+test('전 문항 표는 문항 수와 상관없이 늘 둘째 장이다', () => {
+  // 1장 내용만으로 이미 꽉 차서, 표까지 넣으면 글자가 0.7배까지 줄어든다 (브라우저에서 재어 봤다)
+  [3, 40].forEach((n) => {
+    const list = Array.from({ length: n }, (_, i) => ({ ...items[i % 3], no: i + 1 }));
+    const html = schoolPage({ ...ctx, items: list, stats: examStats(list) }, school);
+    assert.equal(html.match(/class="page"/g).length, 2, `${n}문항`);
+    assert.match(html, /1 \/ 2/);
+    assert.match(html, /2 \/ 2/);
+    // 앞장에는 전 문항 표가 없고 뒷장에만 있다
+    assert.equal(html.match(/전 문항 분석표/g).length, 1, `${n}문항`);
+  });
 });
 
 test('학생 리포트 종이에는 학생 이름이 들어가지 않는다', () => {
@@ -111,4 +113,34 @@ test('학생 리포트 종이에는 학생 이름이 들어가지 않는다', ()
 
 test('A4 도 AI 글을 그대로 넣지 않는다', () => {
   assert.doesNotMatch(schoolPage(ctx, { ...school, overview: '<script>나쁨</script>' }), /<script>나쁨/);
+});
+
+test('제목은 받은 자료가 쓰는 "직후 총평" 꼴을 기본값으로 둔다', () => {
+  assert.equal(verdictTitle(ctx.meta), '에듀냅중학교 중2 1학기 영어 중간고사 직후 총평');
+  assert.match(schoolPage(ctx, school), /에듀냅중학교 중2 1학기 영어 중간고사 직후 총평/);
+});
+
+test('시험 구성 표에 배점 눈금(표준·응용·고난도)이 함께 들어간다', () => {
+  const html = schoolPage(ctx, school);
+  assert.match(html, /배점 눈금/);
+  assert.match(html, /표준/);
+});
+
+test('문항 구성(flow)은 받았을 때만 싣는다', () => {
+  assert.doesNotMatch(schoolPage(ctx, school), /문항은 이렇게 나왔습니다/);
+  const html = schoolPage(ctx, { ...school, flow: ['1~6번은 기본 유형입니다.', '<b>17번'] });
+  assert.match(html, /문항은 이렇게 나왔습니다/);
+  assert.match(html, /1~6번은 기본 유형입니다/);
+  assert.doesNotMatch(html, /<b>17번/); // esc 를 지난다
+});
+
+test('우리 학원 대비는 원장님이 적어 둔 것만 싣는다 (AI 가 쓰지 않는다)', () => {
+  assert.doesNotMatch(schoolPage(ctx, school), /이렇게 대비했습니다/);
+  const withPrep = { ...ctx, academy: { ...ctx.academy, prep: '시험 4주 전부터 자체 교재로 대비했습니다.\n<script>' } };
+  const html = schoolPage(withPrep, school);
+  assert.match(html, /이렇게 대비했습니다/);
+  assert.match(html, /시험 4주 전부터 자체 교재로 대비했습니다/);
+  assert.doesNotMatch(html, /<script>/);
+  // 다음 시험 전략보다 앞에 온다 (받은 자료의 3부 순서)
+  assert.ok(html.indexOf('이렇게 대비했습니다') < html.indexOf('다음 시험 이렇게 준비합니다'));
 });

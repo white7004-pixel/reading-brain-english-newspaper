@@ -155,3 +155,13 @@ test('학년을 알면 그 학년 교육과정을 프롬프트에 넣는다', ()
   assert.doesNotMatch(안내({ pages: [img] }), /교육과정 \(2022 개정\)/);
   assert.doesNotMatch(안내({ pages: [img], subject: '국어', grade: '초5' }), /교육과정 \(2022 개정\)/);
 });
+
+test('학교 분석 글은 받은 자료의 틀대로 문항 구성(flow)까지 쓴다', () => {
+  assert.ok(SCHOOL_SCHEMA.properties.flow, 'flow 칸이 있어야 한다');
+  const r = reportRequest({ mode: 'school', meta, items });
+  // 구간을 번호로 나눠 쓰라고 못 박는다 (121건이 모두 그렇게 쓴다)
+  assert.match(r.system, /flow:/);
+  assert.match(r.system, /문항 번호 구간으로 시작/);
+  // 배점 눈금 통계를 글에 쓸 수 있게 넘긴다
+  assert.match(r.content[0].text, /"byWeight":/);
+});

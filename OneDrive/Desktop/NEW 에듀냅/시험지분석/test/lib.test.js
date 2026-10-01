@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { examStats, studentStats, parseStudents, nosText, to3, esc } from '../public/lib.js';
+import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier } from '../public/lib.js';
 
 const items = [
   { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하', source: '교과서' },
@@ -106,4 +106,20 @@ test('parseStudents 는 한글 두 글자 이상이 이어진 표기를 막는�
 test('to3 와 esc', () => {
   assert.deepEqual(['하', '중하', '중', '중상', '상'].map(to3), ['하', '하', '중', '상', '상']);
   assert.equal(esc('<a href="x">&\'</a>'), '&lt;a href=&quot;x&quot;&gt;&amp;&#39;&lt;/a&gt;');
+});
+
+test('배점 기준 눈금은 그 시험의 평균 배점에 견준다 (문항 수가 달라도 쓸 수 있게)', () => {
+  // 에스키 영어 기준(표준 1~3점대 / 응용 4점대 / 고난도 5점+)은 평균 4점 시험에서 그대로 나온다
+  assert.deepEqual([3.9, 4, 4.9, 5, 7].map((p) => weightTier(p, 4)), ['표준', '응용', '응용', '고난도', '고난도']);
+  // 수학 21문항 100점(평균 4.76)이면 6점이 고난도, 5점은 응용 — 참고자료의 "6점짜리였던 20번"과 맞는다
+  assert.deepEqual([4.2, 5, 6].map((p) => weightTier(p, 100 / 21)), ['표준', '응용', '고난도']);
+  assert.equal(weightTier(5, 0), '표준'); // 배점이 없는 문항표
+});
+
+test('examStats 는 배점 눈금별 분포를 체감 난이도와 따로 낸다', () => {
+  // 평균 33.3점 → 30점 둘은 표준, 40점 하나는 고난도(33.3×1.25=41.7 미달이라 응용)
+  const s = examStats(items);
+  assert.deepEqual(s.byWeight.map((r) => [r.label, r.count, r.nos]), [['표준', 2, [1, 2]], ['응용', 1, [3]]]);
+  // 체감 난이도와 어긋나는 문항이 변별 문항이다 — 두 눈금을 합치지 않는다
+  assert.notDeepEqual(s.byWeight.map((r) => r.label), s.byDifficulty.map((r) => r.label));
 });
