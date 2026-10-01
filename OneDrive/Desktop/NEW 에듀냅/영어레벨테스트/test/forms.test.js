@@ -122,16 +122,13 @@ test('writeSummary: 맞힌 수와 틀린 문법 항목(겹치면 한 번)', () =
   assert.deepEqual(writeSummary(log), { correct: 1, total: 4, missed: ['과거완료', '부정어 도치'] });
 });
 
-test('1차 문제지 순서: 듣기 → 파닉스 → 독해 → 문법 → 어형 쓰기 → 영작, 영역 안에서는 쉬운 것부터', () => {
-  const ORDER = ['listening', 'phonics', 'reading', 'grammar', 'form', 'sentence'];
-  const LV = ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'];
+test('문제지 순서(실제·샘플): 1차·2차 모두 번호 순으로 단계가 오르고 번호는 1..n, 실제는 1차 46·2차 50', () => {
   for (const file of ['forms.json', 'forms.sample.json']) {
     const forms = JSON.parse(readFileSync(new URL(`../public/data/${file}`, import.meta.url), 'utf8'));
-    for (const [set, list] of Object.entries(forms.stage1)) {
-      const s = [...list].sort((a, b) => a.no - b.no);
-      const key = (x) => ORDER.indexOf(x.area) * 100 + LV.indexOf(x.level);
-      s.slice(1).forEach((x, i) => assert.ok(key(s[i]) <= key(x), `${file} ${set}: ${s[i].no}번(${s[i].area} ${s[i].level}) 뒤에 ${x.no}번(${x.area} ${x.level})`));
-      if (file === 'forms.json') assert.deepEqual(s.map((x) => x.no), Array.from({ length: 46 }, (_, i) => i + 1));
+    for (const book of ['stage1', 'stage2']) for (const [set, list] of Object.entries(forms[book])) {
+      assert.deepEqual(checkOrder(list), [], `${file} ${book} ${set}`);
+      assert.deepEqual([...list].sort((a, b) => a.no - b.no).map((x) => x.no), list.map((_, i) => i + 1), `${file} ${book} ${set} 번호`);
+      if (file === 'forms.json') assert.equal(list.length, book === 'stage1' ? 46 : 50, `${book} ${set} 문항 수`);
     }
   }
 });
@@ -159,9 +156,9 @@ test('checkOrder: 번호 순으로 단계가 내려가지 않고, 같은 단계 
 
 const s2 = (o = {}) => ({ id: 's2-A-1', no: 1, area: 'reading', level: '중2', kind: '주제', question: '주제는?', passage: 'p', choices: ['a', 'b', 'c', 'd', 'e'], answer: 4, status: 'ok', ...o });
 
-test('choiceCount·secondsFor: 1차 4지 90초, 2차 어휘 3지 20초, 문법 60초, 그 밖 5지 90초', () => {
+test('choiceCount·secondsFor: 1차 4지 90초, 2차 어휘 4지 20초, 문법 60초, 그 밖 5지 90초', () => {
   assert.equal(choiceCount(mc()), 4);
-  assert.equal(choiceCount(s2({ area: 'vocab' }), 2), 3);
+  assert.equal(choiceCount(s2({ area: 'vocab' }), 2), 4);
   assert.equal(choiceCount(s2(), 2), 5);
   assert.deepEqual(['vocab', 'grammar', 'reading', 'listening', 'sentence'].map((area) => secondsFor({ area }, 2)), [20, 60, 90, 90, 90]);
   assert.equal(secondsFor(mc()), 90);
@@ -169,7 +166,7 @@ test('choiceCount·secondsFor: 1차 4지 90초, 2차 어휘 3지 20초, 문법 6
 
 test('validateForm 2차: 영역·단계·선택지 수를 2차 기준으로', () => {
   assert.deepEqual(validateForm(s2(), 2), []);
-  assert.deepEqual(validateForm(s2({ area: 'vocab', passage: '', choices: ['a', 'b', 'c'], answer: 2 }), 2), []);
+  assert.deepEqual(validateForm(s2({ area: 'vocab', passage: '', choices: ['a', 'b', 'c', 'd'], answer: 2 }), 2), []);
   assert.deepEqual(validateForm(s2({ choices: ['a', 'b', 'c', 'd'], answer: 0 }), 2), ['선택지 5개']);
   assert.deepEqual(validateForm(s2({ level: '고3' }), 2), ['수준']);
   assert.deepEqual(validateForm(s2({ area: 'phonics' }), 2), ['영역']);
@@ -207,14 +204,14 @@ test('kindTally 와 stage2Est', () => {
   assert.deepEqual(stage2Est('고2'), { step: 19, unit: 0 });
 });
 
-test('샘플 2차 A: 모두 validateForm(it, 2) 통과, 번호는 1..n, 영역·단계 순서', () => {
+test('샘플 2차 A: 모두 validateForm(it, 2) 통과, 번호는 1..n, 단계 순서', () => {
   const sample = JSON.parse(readFileSync(new URL('../public/data/forms.sample.json', import.meta.url), 'utf8'));
   const a = [...sample.stage2.A].sort((x, y) => x.no - y.no);
   assert.deepEqual(a.map((x) => x.no), a.map((_, i) => i + 1));
   assert.deepEqual(a.map((x) => x.area), ['vocab', 'grammar', 'reading', 'listening', 'sentence']);
   for (const it of a) assert.deepEqual(validateForm(it, 2), [], it.id);
   assert.equal(usableForm(a, 2).length, a.length);
-  assert.equal(a[0].choices.length, 3);
+  assert.equal(a[0].choices.length, 4);
   assert.ok(a[1].keepOrder && a[1].passage && a[2].keepOrder && a[2].given);
   assert.deepEqual(sample.stage2.B, []);
 });

@@ -26,7 +26,7 @@ export function checkWrite(it, entries) {
 }
 
 // 선택지 수: 1차 4, 2차 어휘 3 · 그 밖 5
-export const choiceCount = (it, stage = 1) => (stage === 2 ? (it?.area === 'vocab' ? 3 : 5) : 4);
+export const choiceCount = (it, stage = 1) => (stage === 2 ? (it?.area === 'vocab' ? 4 : 5) : 4);
 // 문항당 제한 시간(초): 2차 어휘 20 · 문법 60 · 그 밖 90, 1차 90
 export const secondsFor = (it, stage = 1) => (stage === 2 ? { vocab: 20, grammar: 60 }[it?.area] ?? SECONDS : SECONDS);
 
