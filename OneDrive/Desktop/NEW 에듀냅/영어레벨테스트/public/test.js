@@ -1,5 +1,5 @@
 // 시험 화면: 1차 문제지 → 80점 이상이면 2차 넬트식 문제지(어휘·문법·독해·듣기·영작) → 결과.
-// 진행은 localStorage(elt:session)에 두어 새로고침해도 이어진다. 문항마다 제한 시간(secondsFor), 객관식에는 모름.
+// 진행은 localStorage(elt:session)에 두어 새로고침해도 이어진다. 문항마다 제한 시간(secondsFor), 모름 칸은 없다(10/2).
 import { stepData } from './core/scale.js';
 import { usableForm, checkWrite, isWrite, stage1Score, levelStep, railFor, secondsFor, AREA_KO, MIN_STAGE1, PASS } from './core/forms.js';
 import { showMC, showWrite, startTimer, stopTimer, picking } from './form-ui.js';
@@ -61,7 +61,7 @@ if (!session) {
     top(`1차 ${set}`, railFor(forms.stage1, session.s1.i), session.s1.i + 1, forms.stage1.length);
     if (!session.s1.started) {
       const listen = forms.stage1.some((i) => i.area === 'listening') ? `듣기, 영어 글 읽기, 소리, 문법, 영작 문제입니다. 모두 고르는 문제입니다. ${LISTEN_INTRO}` : '영어 글 읽기, 소리, 문법, 영작 문제입니다. 모두 고르는 문제입니다.';
-      return intro(`1차 (${forms.stage1.length}문항)`, `${listen} 문항마다 90초 안에 답합니다. 모르면 "모름"을 고르세요.`, () => { session.s1.started = true; keep(); route(); });
+      return intro(`1차 (${forms.stage1.length}문항)`, `${listen} 문항마다 90초 안에 답합니다.`, () => { session.s1.started = true; keep(); route(); });
     }
     ask(it, (rec) => { session.s1.log.push(rec); session.s1.i += 1; });
   }
@@ -86,7 +86,7 @@ if (!session) {
     top(`2차 ${set}`, railFor(forms.stage2, session.s2.i), session.s2.i + 1, forms.stage2.length);
     if (!session.s2.started) {
       const listen = forms.stage2.some((i) => i.area === 'listening') ? ` ${LISTEN_INTRO}` : '';
-      return intro(`2차 (${forms.stage2.length}문항)`, `${areas2} 문제입니다.${listen} 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다. 모르면 "모름"을 고르세요.`, () => { session.s2.started = true; keep(); route(); });
+      return intro(`2차 (${forms.stage2.length}문항)`, `${areas2} 문제입니다.${listen} 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다.`, () => { session.s2.started = true; keep(); route(); });
     }
     ask(it, (rec) => { session.s2.log.push({ ...rec, kind: it.kind || '' }); session.s2.i += 1; }, 2);
   }
@@ -123,7 +123,7 @@ if (!session) {
     if (session.shownAt) startTimer(session.shownAt, () => done({ timeout: true }), seconds);
   }
 
-  // 위 띠: 학년·단계와 영역 진행 막대(칸 너비는 문항 수 비례). n 이 있으면 큰 문항 번호와 아래 띠 "n / of"
+  // 위 띠: 학년·단계와 단계 진행 막대(칸 너비는 문항 수 비례). n 이 있으면 큰 문항 번호와 아래 띠 "n / of"
   function top(label, rail, n, of) {
     $('#section-name').textContent = `${session.grade} · ${label}`;
     const now = (c) => `${c.label} ${Math.min(c.done + 1, c.total)}/${c.total}`;

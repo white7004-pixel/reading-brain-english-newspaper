@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText } from '../public/core/forms.js';
+import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -136,25 +136,25 @@ test('1차 문제지 순서: 듣기 → 파닉스 → 독해 → 문법 → 어�
   }
 });
 
-test('railFor: 문제지 순서의 영역 묶음마다 한 칸, 지금 칸과 끝난 칸', () => {
-  const areas = ['listening', 'listening', 'phonics', 'reading', 'reading', 'reading', 'grammar', 'form', 'sentence'];
-  const list = areas.map((area, n) => ({ area, no: n + 1 }));
-  assert.deepEqual(railFor(list, 4), [
-    { key: 'listening', label: '듣기', done: 2, total: 2, current: false },
-    { key: 'phonics', label: '소리', done: 1, total: 1, current: false },
-    { key: 'reading', label: '독해', done: 1, total: 3, current: true },
-    { key: 'grammar', label: '문법', done: 0, total: 1, current: false },
-    { key: 'form', label: '어형', done: 0, total: 1, current: false },
-    { key: 'sentence', label: '영작', done: 0, total: 1, current: false },
+test('railFor: 이어지는 같은 단계마다 한 칸 (2차 고2 는 고2~3), 지금 칸과 끝난 칸', () => {
+  const levels = ['초3', '초3', '초4', '중1', '중1', '중1', '고2'];
+  const list = levels.map((level, n) => ({ area: 'reading', level, no: n + 1 }));
+  assert.deepEqual(railFor(list, 3), [
+    { key: '초3', label: '초3', done: 2, total: 2, current: false },
+    { key: '초4', label: '초4', done: 1, total: 1, current: false },
+    { key: '중1', label: '중1', done: 0, total: 3, current: true },
+    { key: '고2', label: '고2~3', done: 0, total: 1, current: false },
   ]);
-  assert.deepEqual(railFor(list, 0).map((c) => [c.key, c.done, c.current]).slice(0, 2), [['listening', 0, true], ['phonics', 0, false]]);
   assert.ok(railFor(list, list.length).every((c) => c.done === c.total && !c.current), '다 끝나면 모두 가득');
+  assert.deepEqual(railFor([], 0), []);
 });
 
-test('railFor: 세트에 없는 영역은 칸이 없다', () => {
-  const list = [{ area: 'phonics' }, { area: 'reading' }, { area: 'form' }];
-  assert.deepEqual(railFor(list, 1).map((c) => c.label), ['소리', '독해', '어형']);
-  assert.deepEqual(railFor([], 0), []);
+test('checkOrder: 번호 순으로 단계가 내려가지 않고, 같은 단계 안은 듣기→파닉스→어휘→문법→어형→독해→영작', () => {
+  const it = (no, level, area) => ({ id: `x${no}`, no, level, area });
+  assert.deepEqual(checkOrder([it(1, '초3', 'phonics'), it(2, '초3', 'reading'), it(3, '초4', 'grammar'), it(4, '중1', 'listening')]), []);
+  assert.deepEqual(checkOrder([it(2, '초4', 'reading'), it(1, '초3', 'reading')]), [], '번호 순으로 본다');
+  assert.equal(checkOrder([it(1, '중1', 'reading'), it(2, '초6', 'reading')]).length, 1);
+  assert.equal(checkOrder([it(1, '중2', 'reading'), it(2, '중2', 'vocab')]).length, 1);
 });
 
 const s2 = (o = {}) => ({ id: 's2-A-1', no: 1, area: 'reading', level: '중2', kind: '주제', question: '주제는?', passage: 'p', choices: ['a', 'b', 'c', 'd', 'e'], answer: 4, status: 'ok', ...o });

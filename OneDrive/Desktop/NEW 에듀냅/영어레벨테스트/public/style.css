@@ -334,7 +334,7 @@ body.exam { min-height: 100vh; display: flex; flex-direction: column; background
 .exam .question { margin: 0; font: 700 20px/1.55 var(--sans); white-space: pre-line; color: var(--ink); }
 .exam .question.en { font: 600 20px/1.55 var(--en); }
 
-/* 선택지: 번호 동그라미 + 글. 모름은 점선 + ? 로 조금 띄운다. 고르면 그 줄이 칠해진 채 넘어간다 */
+/* 선택지: 번호 동그라미 + 글. 고르면 그 줄이 칠해진 채 넘어간다 */
 .exam .choices { display: grid; gap: 10px; }
 .exam .choices button { display: grid; grid-template-columns: 30px 1fr; gap: 14px; align-items: center; text-align: left; padding: 13px 16px; border: 1px solid var(--line); border-radius: 3px; background: #fff; color: var(--ink); font: 500 17px/1.5 var(--sans); }
 .exam .choices button.en span { font-family: var(--en); }
@@ -344,8 +344,6 @@ body.exam { min-height: 100vh; display: flex; flex-direction: column; background
 .exam .choices button.pick i { background: var(--navy); color: #fff; }
 .exam .choices button:disabled { cursor: default; }
 .exam .choices button:disabled:not(.pick) { opacity: .55; }
-.exam .choices button.dont-know { border-style: dashed; color: var(--muted); margin-top: 8px; font-size: 15px; }
-.exam .choices button.dont-know i { border-style: dashed; border-color: var(--muted); color: var(--muted); }
 .exam .choices u, .exam .passage u, .exam .question u { text-underline-offset: 3px; text-decoration-color: var(--wine); }
 
 /* 듣기 재생기 */

@@ -39,7 +39,7 @@ function button(html, onclick, cls = '') {
   return b;
 }
 
-// 객관식: 선택지(3~5개) 와 끝에 모름. done({ choice }) 또는 done({ dontKnow: true })
+// 객관식: 선택지(4~5개). done({ choice }). 모름 칸은 10/2 원장 결정으로 뺐다
 export function showMC(it, done) {
   $('#write').hidden = true;
   $('#hint').hidden = true;
@@ -54,7 +54,7 @@ export function showMC(it, done) {
     pending = true;
     for (const x of $('#choices').children) x.disabled = true;
     b.classList.add('pick');
-    clearInterval(tick); // 칠한 채 기다리는 동안 시간이 다 되어 모름으로 넘어가지 않게
+    clearInterval(tick); // 칠한 채 기다리는 동안 시간이 다 되어 시간 초과로 넘어가지 않게
     $('#play').disabled = true;
     window.speechSynthesis?.cancel();
     setTimeout(() => done({ ...res, at }), PICK_MS);
@@ -62,10 +62,7 @@ export function showMC(it, done) {
   const row = (mark, html, res, cls) => { const b = button(`<i aria-hidden="true">${mark}</i><span>${html}</span>`, () => pickOne(res, b), cls); return b; };
   // 선택지가 지문 속 자리 번호(①~⑤)뿐이면 번호 동그라미만 (글은 화면 읽기용으로만)
   const spot = (c, i) => c === CIRCLED[i];
-  $('#choices').replaceChildren(
-    ...it.choices.map((c, i) => row(i + 1, spot(c, i) ? `<span class="sr">${c}</span>` : marked(c), { choice: i }, en(c) ? 'en' : '')),
-    row('?', '모름', { dontKnow: true }, 'dont-know'),
-  );
+  $('#choices').replaceChildren(...it.choices.map((c, i) => row(i + 1, spot(c, i) ? `<span class="sr">${c}</span>` : marked(c), { choice: i }, en(c) ? 'en' : '')));
 }
 
 // 쓰기: template 의 {} 마다 입력칸. Enter 는 다음 칸, 마지막 칸에서 Enter 는 제출. done({ entries })

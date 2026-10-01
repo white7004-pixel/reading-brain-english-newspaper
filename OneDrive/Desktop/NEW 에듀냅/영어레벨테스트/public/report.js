@@ -35,7 +35,7 @@ if (!result) {
   if (result.stage1 && (!result.stage1.passed || !SECTIONS.some((k) => result.sections[k]?.est))) {
     const s1 = result.stage1;
     $('#parent').innerHTML = stage1Page(result);
-    $('#director').innerHTML = `${band(result, '원장용', '레벨테스트 상세')}<p class="meta">${esc(result.name)} · ${esc(schoolGrade(result))} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${s1.set}세트)`, s1.log)}<p class="small">모름 ${s1.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s1.log.filter((x) => x.timeout).length}</p>${result.write2?.log.length ? formLog('2차 쓰기', result.write2.log) : ''}</div>${foot(result, '원장용')}`;
+    $('#director').innerHTML = `${band(result, '원장용', '레벨테스트 상세')}<p class="meta">${esc(result.name)} · ${esc(schoolGrade(result))} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${s1.set}세트)`, s1.log)}<p class="small">시간 초과 ${s1.log.filter((x) => x.timeout).length}</p>${result.write2?.log.length ? formLog('2차 쓰기', result.write2.log) : ''}</div>${foot(result, '원장용')}`;
   } else {
     const start = result.start || result.date;
     const taken = SECTIONS.filter((k) => result.sections[k]?.est);
@@ -325,7 +325,7 @@ function director(r, c) {
       <table><thead><tr><th>#</th><th>학기</th><th>단원</th><th>유형</th><th>정오</th><th>초</th></tr></thead><tbody>
       ${s.log.map((x, i) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${i + 1}</td><td>${labelOf(x.step)}</td><td>${x.unit}</td><td>${esc(x.kind)}</td><td>${mark(x)}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
       </tbody></table>
-      <p class="small">모름 ${s.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
+      <p class="small">시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
   }).join('');
   return `${band(r, '원장용', '레벨테스트 상세')}<p class="meta">${esc(r.name)} · ${esc(schoolGrade(r))} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.stage2?.log?.length ? `${formLog(`2차 (${r.stage2.set}세트)`, r.stage2.log)}<p class="small">영작 · ${tally(r.stage2.log, 'sentence')}</p>` : r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
     <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>

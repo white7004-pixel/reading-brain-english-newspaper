@@ -111,19 +111,33 @@ export function writeSummary(log) {
   return { correct: log.length - wrong.length, total: log.length, missed: [...new Set(wrong.map((x) => x.point).filter(Boolean))] };
 }
 
-// ── 시험 화면 위 띠의 영역 진행 막대 ──
+// ── 시험 화면 위 띠의 단계 진행 막대 (10/2: 문제지가 학년 단계 순) ──
 export const RAIL_KO = { vocab: '어휘', listening: '듣기', phonics: '소리', reading: '독해', grammar: '문법', form: '어형', sentence: '영작' };
-// 문제지(번호 순) 에서 이어지는 같은 영역을 한 칸으로. i = 지금 문항 자리(다 끝났으면 list.length)
+// 문제지(번호 순) 에서 이어지는 같은 단계를 한 칸으로. i = 지금 문항 자리(다 끝났으면 list.length)
 export function railFor(list, i) {
   const cells = [];
   list.forEach((it, n) => {
     let c = cells.at(-1);
-    if (c?.key !== it.area) cells.push(c = { key: it.area, label: RAIL_KO[it.area] ?? it.area, done: 0, total: 0, current: false });
+    if (c?.key !== it.level) cells.push(c = { key: it.level, label: STAGE_KO[it.level] ?? it.level, done: 0, total: 0, current: false });
     c.total += 1;
     if (n < i) c.done += 1;
     if (n === i) c.current = true;
   });
   return cells;
+}
+
+// 문제지 순서 검사 (설계 10/2): 번호 순으로 단계가 내려가지 않고, 같은 단계 안은 이 영역 차례
+export const AREA_ORDER = ['listening', 'phonics', 'vocab', 'grammar', 'form', 'reading', 'sentence'];
+export function checkOrder(list) {
+  const s = [...list].sort((a, b) => a.no - b.no);
+  const p = [];
+  s.slice(1).forEach((x, k) => {
+    const prev = s[k];
+    const d = LEVELS.indexOf(x.level) - LEVELS.indexOf(prev.level);
+    if (d < 0) p.push(`${x.no}번 ${x.level} 이 ${prev.no}번 ${prev.level} 보다 낮음`);
+    else if (d === 0 && AREA_ORDER.indexOf(x.area) < AREA_ORDER.indexOf(prev.area)) p.push(`${x.no}번 ${x.area} 가 같은 단계 ${prev.no}번 ${prev.area} 뒤`);
+  });
+  return p;
 }
 
 // ── 2차 영역별 수준 (단계마다 3분의 2) ──
