@@ -62,6 +62,23 @@
     });
   }
 
+  // 날짜별 응답 수: 첫 응답일 ~ 오늘(한국 시간), 빈 날은 0
+  function daily(rows, now) {
+    if (!rows.length) return [];
+    var day = function (t) { return kst(new Date(t).toISOString()).slice(0, 10); };
+    var counts = {}, first = null;
+    rows.forEach(function (r) {
+      var d = day(r.created_at);
+      counts[d] = (counts[d] || 0) + 1;
+      if (!first || d < first) first = d;
+    });
+    var out = [], end = day(now), t = Date.parse(first + 'T00:00:00Z');
+    for (var d = first; d <= end; t += 86400000, d = new Date(t).toISOString().slice(0, 10)) {
+      out.push({ day: d, n: counts[d] || 0 });
+    }
+    return out;
+  }
+
   function csvCell(v) {
     var s = v === undefined || v === null ? '' : String(v);
     return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
@@ -124,7 +141,7 @@
   }
 
   var RB = { items: items, empty: empty, missing: missing, filterRows: filterRows, summarize: summarize,
-    flagged: flagged, toCSV: toCSV, kst: kst, api: api };
+    flagged: flagged, toCSV: toCSV, kst: kst, daily: daily, api: api };
   if (typeof module !== 'undefined') module.exports = RB;
   else window.RB = RB;
 })();

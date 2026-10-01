@@ -61,4 +61,14 @@ assert.ok(csv.includes('"좋은 ""선생님"", 감사"'));
 assert.ok(csv.includes('원서정독'));
 assert.ok(RB.toCSV(P, rows).includes('초등 3학년 / 중등 1학년'));
 
+// 날짜별 응답 수 (한국 시간 자정 기준, 첫 응답일 ~ 오늘, 빈 날은 0)
+const days = RB.daily([
+  { created_at: '2026-09-29T15:00:00Z' }, // 9/30 00:00 KST
+  { created_at: '2026-09-30T14:59:00Z' }, // 9/30 23:59 KST
+  { created_at: '2026-10-01T15:30:00Z' }, // 10/2 00:30 KST
+], Date.parse('2026-10-03T01:00:00Z'));
+assert.deepStrictEqual(days, [
+  { day: '2026-09-30', n: 2 }, { day: '2026-10-01', n: 0 }, { day: '2026-10-02', n: 1 }, { day: '2026-10-03', n: 0 }]);
+assert.deepStrictEqual(RB.daily([], Date.now()), []);
+
 console.log('check.js 통과');
