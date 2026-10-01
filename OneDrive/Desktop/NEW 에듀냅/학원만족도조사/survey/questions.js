@@ -57,6 +57,8 @@
           desc: '수업이나 운영에 대해 특별히 만족하셨던 부분, 그리고 기타 전하고 싶은 말씀을 자유롭게 적어주세요.',
           items: [
             { id: 'good', type: 'text', required: true, label: '리딩브레인 수업 중 특히 만족하신 부분이 있다면 알려주세요.' },
+            { id: 'worry', type: 'text', required: false, flag: true, label: '최근에 우리 아이에 대해 고민이 있다면 어떤 내용인지 알려주세요.' },
+            { id: 'topics', type: 'text', required: false, label: '최근 관심 있는 교육 뉴스나 세미나로 듣고 싶은 주제를 알려주세요.' },
             { id: 'etc', type: 'text', required: false, label: '기타 전하고 싶은 의견이 있으시다면 자유롭게 남겨주세요.' }] }]
     },
 
