@@ -1,6 +1,7 @@
 // 문항 검수: 영역·학기로 골라 문항을 고치고 통과/버리기. 시험판은 브라우저에 임시 저장하고 items.json 으로 내려받는다.
 import { SCALE, SECTIONS, SECTION_KO, labelOf, unitName } from './core/scale.js';
 import { validateItem, coverage } from './core/bank.js';
+import { openNotes } from './notes.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -10,6 +11,9 @@ const shaped = (d) => (Array.isArray(d) ? d : []).filter((i) => i && i.id && Arr
 const status = (t, k = '') => { $('#review-status').textContent = t; $('#review-status').className = `status ${k}`; };
 
 let items = await loadItems();
+const notes = await openNotes('bank', { labelOf: (id) => { const i = items.find((x) => x.id === id); return i ? `${SECTION_KO[i.section]} ${labelOf(i.step)} ${i.unit}단원 · ${id}` : id; } });
+notes.onName = draw;
+$('.hero').after(notes.bar);
 $('#f-section').innerHTML = SECTIONS.map((k) => `<option value="${k}">${SECTION_KO[k]}</option>`).join('');
 $('#f-step').innerHTML = '<option value="">전체</option>' + SCALE.map((s) => `<option value="${s.step}">${labelOf(s.step)}</option>`).join('');
 for (const sel of ['#f-section', '#f-step', '#f-status']) $(sel).onchange = draw;
@@ -67,6 +71,8 @@ function card(it) {
     <label>해설<input data-k="explain_ko" value="${esc(it.explain_ko)}"></label>
     <p class="status error" data-problems></p>
     <div class="row"><button data-act="ok" type="button">통과</button><button data-act="rejected" type="button" class="btn-ghost">버리기</button></div>`;
+  notes.lock(el);
+  el.append(notes.block(it.id));
   el.addEventListener('input', () => { read(el, it); keep(); });
   el.addEventListener('change', () => { read(el, it); keep(); });
   for (const b of el.querySelectorAll('[data-act]')) {

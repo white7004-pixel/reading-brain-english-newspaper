@@ -381,6 +381,27 @@ body.exam {
 .exam .notes { background: #fdf6e3; border-left-color: var(--gold); }
 .exam .notes a { color: var(--olive); font-weight: 700; }
 
+/* 검수 화면 (문제지·문항 은행) — 같은 밝은 테마. 선생님 화면(body.teacher)은 원장용 칸을 감춘다 */
+.exam main a { color: var(--olive); font-weight: 600; }
+.exam .tag { background: var(--pane); color: var(--ink); }
+.exam .tag.ok { background: #d7efe4; }
+.exam .tag.rejected, .exam .tag.fix { background: #f7dcd4; }
+.exam .tag.draft { background: #fbedc4; }
+.exam .btn-ghost { background: #fff; color: var(--olive); border: 1px solid var(--olive); }
+.exam .btn-ghost:hover:not(:disabled) { background: #e6f0eb; }
+.exam .review-item textarea[readonly], .exam .review-item input[readonly] { background: var(--pane); border-color: transparent; }
+.teacher .owner-only { display: none; }
+.notes-bar h2 { margin-bottom: 10px; }
+.notes-bar .hint { margin: 10px 0 0; color: var(--muted); font-size: 14px; }
+.notes-list { margin: 10px 0 0; padding-left: 18px; line-height: 1.8; }
+.note-box { border-top: 1px dashed var(--rule); padding-top: 10px; display: grid; gap: 8px; }
+.note-box:empty { display: none; }
+.note-box p { margin: 0; }
+.note-box button[aria-pressed=false] { background: #fff; color: var(--olive); border: 1px solid var(--olive); }
+.exam .note-box button[aria-pressed=false]:hover:not(:disabled) { background: #e6f0eb; }
+.note-box button[aria-pressed=true] { background: var(--olive); color: #fff; border: 1px solid var(--olive); }
+.note-box button[data-v=fix][aria-pressed=true] { background: var(--warn); border-color: var(--warn); }
+
 @media (max-width: 900px) {
   .exam-top { height: auto; grid-template-columns: 1fr auto; gap: 8px 16px; padding: 10px 16px; }
   .exam-top .rail { grid-column: 1 / -1; grid-row: 2; }

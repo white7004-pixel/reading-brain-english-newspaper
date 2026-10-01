@@ -4,12 +4,17 @@
   "version": "0.1.0",
   "description": "에듀냅 영어 레벨테스트 시험판 — 중1~고3 단어·문법·독해·듣기 적응형 시험과 예상 진도 리포트",
   "type": "module",
-  "engines": { "node": ">=20.11" },
+  "engines": {
+    "node": ">=20.11"
+  },
   "scripts": {
     "test": "node --test \"test/**/*.test.js\"",
     "local": "node --env-file-if-exists=.env.local scripts/local.js",
     "sample": "node scripts/make-sample.js",
     "gen": "node --env-file-if-exists=.env.local scripts/gen-items.js"
   },
-  "dependencies": { "@anthropic-ai/sdk": "^0.125.0" }
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
+    "@vercel/blob": "^2.8.0"
+  }
 }

@@ -3,9 +3,10 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import comment from '../api/comment.js';
+import notes from '../api/notes.js';
 
 const ROOT = path.join(import.meta.dirname, '..', 'public');
-const API = { '/api/comment': comment };
+const API = { '/api/comment': comment, '/api/notes': notes };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png' };
 const PORT = Number(process.env.PORT) || 4320;
 

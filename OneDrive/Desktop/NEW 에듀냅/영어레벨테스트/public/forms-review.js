@@ -1,5 +1,6 @@
 // 문제지 검수: 1차 A·B, 2차 쓰기 A·B 를 번호 순으로 고치고 통과/버리기. 브라우저에 임시 저장하고 forms.json 으로 내려받는다.
 import { validateForm, isWrite, AREA_KO } from './core/forms.js';
+import { openNotes } from './notes.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -10,6 +11,10 @@ const arr = (x) => (Array.isArray(x) ? x.filter((i) => i && i.id) : []);
 const status = (t, k = '') => { $('#review-status').textContent = t; $('#review-status').className = `status ${k}`; };
 
 const forms = await loadForms();
+const where = new Map(BOOKS.flatMap(([book, set, ko]) => forms[book][set].map((i) => [i.id, `${ko} ${i.no}번`])));
+const notes = await openNotes('forms', { labelOf: (id) => where.get(id) ?? id });
+notes.onName = draw;
+$('.hero').after(notes.bar);
 $('#f-book').innerHTML = BOOKS.map(([, , ko], i) => `<option value="${i}">${ko}</option>`).join('');
 $('#f-book').onchange = draw;
 $('#f-status').onchange = draw;
@@ -60,6 +65,8 @@ function card(it) {
     <label>해설<input data-k="explain_ko" value="${esc(it.explain_ko)}"></label>
     <p class="status error" data-problems></p>
     <div class="row"><button data-act="ok" type="button">통과</button><button data-act="rejected" type="button" class="btn-ghost">버리기</button></div>`;
+  notes.lock(el);
+  el.append(notes.block(it.id));
   el.addEventListener('input', () => { read(el, it); keep(); });
   el.addEventListener('change', () => { read(el, it); keep(); });
   for (const b of el.querySelectorAll('[data-act]')) {

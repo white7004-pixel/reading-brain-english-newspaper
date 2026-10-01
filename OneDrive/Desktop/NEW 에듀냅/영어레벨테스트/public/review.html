@@ -6,29 +6,30 @@
 <title>문항 검수 · 영어 레벨테스트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&display=swap" rel="stylesheet" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@600;700;800&display=swap" rel="stylesheet" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script type="module" src="review.js"></script>
 </head>
-<body>
+<body class="exam home">
 <header class="site"><span class="logo">Edu<b>Nap</b></span><span class="site-tag"><a href="index.html">시험 화면</a></span></header>
 <main class="app">
   <div class="hero">
     <p class="eyebrow">REVIEW<span> · 문항 검수</span></p>
     <h1>문항 검수</h1>
-    <p class="lede">통과한 문항만 시험에 나옵니다. 다 보면 items.json 을 내려받아 public/data 폴더의 같은 이름 파일과 바꿔 주세요.</p>
+    <p class="lede owner-only">통과한 문항만 시험에 나옵니다. 다 보면 items.json 을 내려받아 public/data 폴더의 같은 이름 파일과 바꿔 주세요.</p>
     <p class="lede"><a href="forms-review.html">1차 문제지·2차 쓰기 검수는 여기 →</a></p>
   </div>
   <section class="card">
     <div class="grid">
       <label>영역<select id="f-section"></select></label>
       <label>학기<select id="f-step"></select></label>
-      <label>상태<select id="f-status"><option value="">전체</option><option value="draft">검수 전</option><option value="ok">통과</option><option value="rejected">버림</option></select></label>
-      <label>파일 불러오기<input id="file" type="file" accept=".json,application/json"></label>
-      <button id="download" type="button" class="wide">items.json 내려받기</button>
+      <label class="owner-only">상태<select id="f-status"><option value="">전체</option><option value="draft">검수 전</option><option value="ok">통과</option><option value="rejected">버림</option></select></label>
+      <label class="owner-only">파일 불러오기<input id="file" type="file" accept=".json,application/json"></label>
+      <button id="download" type="button" class="wide owner-only">items.json 내려받기</button>
     </div>
     <p id="review-status" class="status" role="status"></p>
-    <details><summary>통과 문항이 2개 미만인 단원 <span id="short-count"></span></summary><div id="short" class="short-list"></div></details>
+    <details class="owner-only"><summary>통과 문항이 2개 미만인 단원 <span id="short-count"></span></summary><div id="short" class="short-list"></div></details>
   </section>
   <div id="list"></div>
 </main>
