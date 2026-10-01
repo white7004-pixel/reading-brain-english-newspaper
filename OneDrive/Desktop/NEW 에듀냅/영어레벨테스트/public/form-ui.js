@@ -21,12 +21,12 @@ function text(it) {
 }
 
 // 왼쪽 칸(지문·듣기·우리말 뜻)에 넣을 것이 있으면 두 쪽, 없으면 한 쪽. 아래 띠 안내도 여기서.
-function layout(write) {
+function layout(write, it) {
   const listen = !$('#listen').hidden;
   const passage = !$('#passage').hidden;
   const hint = !$('#hint').hidden;
   $('#item').classList.toggle('one', !(listen || passage || hint));
-  $('#pane-label').textContent = listen ? '대화나 담화를 들으세요. 대본은 나오지 않습니다.' : passage ? '다음 글을 읽고 물음에 답하시오.' : hint ? '우리말 뜻' : '';
+  $('#pane-label').textContent = listen ? '대화나 담화를 들으세요. 대본은 나오지 않습니다.' : passage ? (it?.area === 'grammar' ? '다음 문장을 보고 물음에 답하시오.' : '다음 글을 읽고 물음에 답하시오.') : hint ? '우리말 뜻' : '';
   $('#foot-note').textContent = listen ? '이어폰으로 들어 주세요' : write ? '대문자·마침표는 따지지 않습니다' : '한 번 고르면 다음 문항으로 넘어갑니다';
 }
 
@@ -45,7 +45,7 @@ export function showMC(it, done) {
   $('#hint').hidden = true;
   $('#choices').hidden = false;
   text(it);
-  layout(false);
+  layout(false, it);
   pending = false;
   const shownAt = performance.now();
   const pickOne = (res, b) => {
@@ -75,7 +75,7 @@ export function showWrite(it, done) {
   text({ ...it, passage: '' });
   $('#hint').hidden = !it.hint_ko;
   $('#hint').textContent = it.hint_ko || '';
-  layout(true);
+  layout(true, it);
   pending = false;
   const shownAt = performance.now();
   const early = () => performance.now() - shownAt < GUARD_MS;

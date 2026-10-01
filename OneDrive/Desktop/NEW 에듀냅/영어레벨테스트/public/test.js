@@ -80,7 +80,7 @@ if (!session) {
   // ── 2차 문제지 (넬트식) ──
   function stage2() {
     if (!forms.stage2.length) { session.stage = 'end'; keep(); return route(); }
-    session.s2 ??= { i: 0, log: [], started: false };
+    if (!session.s2) { session.s2 = { i: 0, log: [], started: false }; session.shownAt = null; session.current = null; } // 예전 세션에 남은 시각으로 시계가 시작되지 않게
     const it = forms.stage2[session.s2.i];
     if (!it) { session.stage = 'end'; keep(); return route(); }
     top(`2차 ${set}`, railFor(forms.stage2, session.s2.i), session.s2.i + 1, forms.stage2.length);
