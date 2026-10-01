@@ -5,7 +5,7 @@ import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier }
 const items = [
   { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하', source: '교과서' },
   { no: 2, kind: '객관식', points: 30, area: '독해', difficulty: '중상', source: '외부' },
-  { no: 3, kind: '서술형', points: 40, area: '서술형', difficulty: '상', source: '교과서' },
+  { no: 3, kind: '서술형', points: 40, area: '어법', difficulty: '상', source: '교과서' },
 ];
 
 test('examStats 는 문항표로 분포와 비율을 계산한다', () => {
@@ -16,7 +16,7 @@ test('examStats 는 문항표로 분포와 비율을 계산한다', () => {
   assert.equal(s.essayPointsPct, 40);
   assert.equal(s.hardPct, 67);
   assert.equal(s.overall, '중상'); // 배점 가중 평균 (0*30+3*30+4*40)/100 = 2.5 → 3
-  assert.deepEqual(s.byArea.map((r) => [r.label, r.count, r.points, r.pct]), [['어휘', 1, 30, 33], ['독해', 1, 30, 33], ['서술형', 1, 40, 33]]);
+  assert.deepEqual(s.byArea.map((r) => [r.label, r.count, r.points, r.pct]), [['어휘', 1, 30, 33], ['어법', 1, 40, 33], ['독해', 1, 30, 33]]);
   assert.deepEqual(s.byDifficulty.map((r) => r.label), ['하', '중상', '상']);
 });
 
@@ -59,7 +59,7 @@ test('단원이 없는 문항표에서는 단원 표를 만들지 않는다', ()
 
 test('영역별 표에는 그 영역의 문항 번호가 함께 있다', () => {
   const s = examStats(items);
-  assert.deepEqual(s.byArea.map((r) => r.nos), [[1], [2], [3]]);
+  assert.deepEqual(s.byArea.map((r) => r.nos), [[1], [3], [2]]); // 어휘1 · 어법3 · 독해2 (영역 차례대로)
   assert.deepEqual(s.byKind.find((r) => r.label === '객관식').nos, [1, 2]);
 });
 
@@ -80,9 +80,9 @@ test('studentStats 는 점수와 약점 영역을 계산한다', () => {
   assert.equal(s.score, 30);
   assert.equal(s.total, 100);
   assert.equal(s.wrongCount, 2);
-  assert.deepEqual(s.byArea.map((r) => [r.label, r.correct, r.count, r.pct]), [['어휘', 1, 1, 100], ['독해', 0, 1, 0], ['서술형', 0, 1, 0]]);
-  assert.deepEqual(s.weakAreas, ['독해', '서술형']);
-  assert.deepEqual(s.byArea.map((r) => r.nos), [[], [2], [3]]); // 영역마다 틀린 번호
+  assert.deepEqual(s.byArea.map((r) => [r.label, r.correct, r.count, r.pct]), [['어휘', 1, 1, 100], ['어법', 0, 1, 0], ['독해', 0, 1, 0]]);
+  assert.deepEqual(s.weakAreas, ['어법', '독해']);
+  assert.deepEqual(s.byArea.map((r) => r.nos), [[], [3], [2]]); // 영역마다 틀린 번호
 });
 
 test('parseStudents 는 한 줄에 한 명씩 읽고 문제를 알려 준다', () => {

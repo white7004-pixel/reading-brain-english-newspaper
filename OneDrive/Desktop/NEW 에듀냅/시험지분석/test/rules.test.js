@@ -43,7 +43,7 @@ test('extractRequest 는 잘못된 입력을 막는다', () => {
 
 const items = [
   { no: 1, kind: '객관식', points: 50, area: '어휘', subtype: '문맥 어휘', difficulty: '하', answer: '③', reason: '기본 어휘' },
-  { no: 2, kind: '서술형', points: 50, area: '서술형', subtype: '조건 영작', difficulty: '상', answer: 'I wish I were', reason: '조건 3개' },
+  { no: 2, kind: '서술형', points: 50, area: '어법', subtype: '가정법 - 조건 영작', difficulty: '상', answer: 'I wish I were', reason: '조건 3개' },
 ];
 
 test('reportRequest school 은 서버에서 계산한 통계를 넘긴다', () => {
@@ -180,4 +180,12 @@ test('영어 분류표는 실제 시험지에 나온 세부유형을 담는다',
   ['있는 대로', '바르게 고친', '밑줄 의미', '대화 내용'].forEach((t) => assert.match(영어, new RegExp(t), t));
   // 서술형 8유형 — 어느 학교든 이 안에서 나온다
   ['배열 영작', '조건 영작', '빈칸 쓰기', '요약문 완성', '우리말 해석', '어법 고쳐 쓰기', '지칭 추론 쓰기'].forEach((t) => assert.match(영어, new RegExp(t), t));
+});
+
+test('영어 서답형은 묻는 내용의 영역으로 분류한다 (서술형은 영역이 아니라 kind 다)', () => {
+  // 하버드브레인 고덕중 분석표: "서답형 2 | 어법 - 관계대명사 사용한 영작 | 중상"
+  // 서답형을 따로 떼면 영역별 비중이 어법 8문항 → 5문항으로 줄어 시험을 잘못 읽게 된다
+  assert.ok(!SUBJECTS.영어.includes('서술형'), '영어 영역에 서술형이 남아 있으면 kind 와 이름이 겹친다');
+  assert.match(GUIDE.영어.classify, /서답형|서술형 문항도/);
+  assert.match(GUIDE.영어.classify, /kind/);
 });

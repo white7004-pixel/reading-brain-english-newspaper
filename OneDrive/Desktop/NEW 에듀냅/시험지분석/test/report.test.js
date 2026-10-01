@@ -23,7 +23,7 @@ test('table 은 # 로 시작하는 머리글을 숫자 칸으로 둔다', () => 
 const items = [
   { no: 1, kind: '객관식', points: 30, area: '어휘', subtype: '문맥 어휘', difficulty: '하', source: '교과서' },
   { no: 2, kind: '객관식', points: 30, area: '독해', subtype: '빈칸', difficulty: '중상', source: '외부' },
-  { no: 3, kind: '서술형', points: 40, area: '서술형', subtype: '조건 영작', difficulty: '상', source: '' },
+  { no: 3, kind: '서술형', points: 40, area: '어법', subtype: '관계대명사 - 조건 영작', difficulty: '상', source: '' },
 ];
 const ctx = {
   academy: { name: '에듀냅학원', phone: '031-000-0000', logo: '' },
