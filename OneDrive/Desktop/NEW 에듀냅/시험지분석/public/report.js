@@ -147,7 +147,50 @@ export const nums = (cards) => `<div class="r-nums">${cards.map(([value, label])
 // 2장 — 전 문항 분석표
 // 전 문항 표는 늘 둘째 장으로 뺀다. 1장 내용만으로 이미 --fit 0.88 이고(재어 봤다),
 // 표까지 넣으면 0.70 까지 줄어 글씨를 읽기 어렵다. 표는 상담용 참고 자료라 뒤에 두는 것이 맞다.
-export function schoolPage({ academy, meta, items, stats }, school) {
+// 리포트에 실제로 들어간 자리만 목차에 적는다 (없는 자리를 적으면 학부모가 찾다가 못 찾는다)
+const tocOf = ({ academy }, school) => [
+  '한 줄 총평',
+  school.trends?.length && '출제 경향 요약',
+  school.flow?.length && '문항은 이렇게 나왔습니다',
+  '시험 구성 · 영역별 출제',
+  '변별 문항 — 점수가 갈린 곳',
+  academy.prep?.trim() && `${academy.name}은 이렇게 대비했습니다`,
+  '다음 시험 이렇게 준비합니다',
+  '영역 × 난이도 · 전 문항 분석표',
+].filter(Boolean);
+
+// 표지 — 학부모가 가장 먼저 보는 쪽. 숫자도 총평도 넣지 않는다. 무엇이 들어 있는지만 알려 준다.
+export function coverPage(ctx, school) {
+  const { academy, meta } = ctx;
+  return sheet(`${meta.school}-${meta.grade}-${meta.subject}분석-표지`, `
+    <div class="c-cover">
+      <p class="c-tag"><span>${esc(`${meta.term} ${meta.exam}`)}</span>${academy.logo ? `<img class="c-logo" src="${esc(academy.logo)}" alt="${esc(academy.name)} 로고">` : ''}</p>
+      <p class="c-kind"><i></i>${esc(`${meta.grade} · ${meta.subject}`)}</p>
+      <h1 class="c-title"><b>${esc(meta.school)}</b><span contenteditable>${esc(`${meta.exam} 분석 리포트`)}</span></h1>
+      <p class="c-lead" contenteditable>시험 경향과 난이도, 문항 구성과 출제 내용, 총평과 학습 방향까지 한눈에 정리했습니다.</p>
+      <ol class="c-toc">${tocOf(ctx, school).map((t) => `<li><span>${esc(t)}</span></li>`).join('')}</ol>
+      <dl class="c-meta">${[['작성', academy.name], ['학교', meta.school], ['학년', meta.grade], ['과목', meta.subject]]
+        .map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+    </div>`);
+}
+
+// 뒷표지 — 학원 이름과 연락처. 한 줄 문구는 원장님이 적어 두면 싣는다.
+export function backPage({ academy, meta }) {
+  return sheet(`${meta.school}-${meta.grade}-${meta.subject}분석-뒷표지`, `
+    <div class="c-cover c-back">
+      <p class="c-tag"><span>${esc(`${meta.term} ${meta.exam}`)}</span></p>
+      <p class="c-kind">${esc([meta.school, meta.grade, meta.subject].join(' · '))}</p>
+      <div class="c-end">
+        ${academy.logo ? `<img class="c-logo" src="${esc(academy.logo)}" alt="${esc(academy.name)} 로고">` : ''}
+        <b>${esc(academy.name)}</b>
+        ${academy.slogan?.trim() ? `<p class="c-slogan" contenteditable>${esc(academy.slogan.trim())}</p>` : ''}
+        ${academy.phone ? `<p class="c-tel">문의 : ${esc(academy.phone)}</p>` : ''}
+      </div>
+    </div>`);
+}
+
+export function schoolPage(ctx, school) {
+  const { academy, meta, items, stats } = ctx;
   const unit = unitTable(stats);
   const file = `${meta.school}-${meta.grade}-${meta.subject}분석`;
   const front = sheet(file, `
@@ -166,11 +209,13 @@ export function schoolPage({ academy, meta, items, stats }, school) {
     ${academy.prep?.trim() ? `<section><h3>${esc(academy.name)}은 이렇게 대비했습니다</h3>${prepList(academy.prep)}</section>` : ''}
     <section><h3>다음 시험 이렇게 준비합니다</h3>${strategyTable(school.strategy)}</section>
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
-  return front + sheet(`${file}-전문항표`, `
+  const back = sheet(`${file}-전문항표`, `
     ${header(academy, `${examName(meta)} ${meta.subject} 전 문항 분석표`, '내신 시험 분석 리포트 · 2 / 2')}
     <section class="r-cross"><h3>영역 × 난이도 — 어디를 어렵게 냈나</h3>${crossTable(stats, items)}</section>
     <section class="r-items">${itemsTable(items)}</section>
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
+  // 표지·뒷표지는 원장님이 켤 때만. 두 장이 네 장이 되니 종이값은 원장님이 정하실 일이다.
+  return academy.cover ? coverPage(ctx, school) + front + back + backPage(ctx) : front + back;
 }
 
 // ── 문항 해설 (학원용) ─────────────────────────────────────────────

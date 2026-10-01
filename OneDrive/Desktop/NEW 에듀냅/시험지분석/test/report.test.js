@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable } from '../public/report.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable, coverPage, backPage } from '../public/report.js';
 import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
@@ -181,4 +181,43 @@ test('영역 × 난이도 교차표는 총계 줄까지 한 장에 싣는다', (
 
 test('교차표는 학교 분석 A4 에 들어간다', () => {
   assert.match(schoolPage(ctx, school), /영역 × 난이도/);
+});
+
+// ── 표지 · 뒷표지 ──
+// 참고앱 리포트는 표지(목차)로 시작하고 뒷표지(학원 한 줄)로 끝난다.
+// 학부모가 가장 먼저·마지막으로 보는 쪽인데 우리에겐 없었다.
+test('표지에는 학교·학년·과목과 목차가 들어가고 학생 정보는 없다', () => {
+  const html = coverPage(ctx, school);
+  assert.match(html, /에듀냅중학교/);
+  assert.match(html, /중2 · 영어/);
+  assert.match(html, /중간고사 분석 리포트/);
+  ['시험 구성', '변별 문항', '전 문항 분석표'].forEach((s) => assert.match(html, new RegExp(s)));
+  assert.match(html, /<ol class="c-toc">/);
+  // 표지에는 숫자를 싣지 않는다 — 무엇이 들어 있는지만 알린다 (목차 글귀는 빼고 센다)
+  const 목차뺀표지 = html.replace(/<ol class="c-toc">[\s\S]*?<\/ol>/, '');
+  assert.doesNotMatch(목차뺀표지, /\d+점|\d+문항|김OO/);
+});
+
+test('목차는 그 리포트에 실제로 있는 자리만 적는다', () => {
+  assert.doesNotMatch(coverPage(ctx, school), /출제 경향 요약|이렇게 대비했습니다/);
+  const 많은 = coverPage({ ...ctx, academy: { ...ctx.academy, prep: '네 주 전부터' } }, { ...school, trends: ['ㄱ'] });
+  assert.match(많은, /출제 경향 요약/);
+  assert.match(많은, /이렇게 대비했습니다/);
+});
+
+test('뒷표지는 학원 이름·한 줄 문구·연락처만 싣는다', () => {
+  const html = backPage({ ...ctx, academy: { ...ctx.academy, slogan: '<b>함께 가는 길' } });
+  assert.match(html, /에듀냅학원/);
+  assert.match(html, /031-000-0000/);
+  assert.match(html, /함께 가는 길/);
+  assert.doesNotMatch(html, /<b>함께/); // esc 를 지난다
+  assert.doesNotMatch(backPage(ctx), /class="c-slogan"/); // 안 적으면 자리도 없다
+});
+
+test('표지·뒷표지는 학교 분석 앞뒤에 붙고, 끄면 두 장만 남는다', () => {
+  const 넷 = schoolPage({ ...ctx, academy: { ...ctx.academy, cover: true } }, school);
+  assert.equal(넷.match(/class="page"/g).length, 4);
+  assert.ok(넷.indexOf('c-toc') < 넷.indexOf('한 줄 총평'));
+  assert.ok(넷.indexOf('전 문항 분석표') < 넷.lastIndexOf('c-back'));
+  assert.equal(schoolPage(ctx, school).match(/class="page"/g).length, 2); // 기본값은 끔
 });

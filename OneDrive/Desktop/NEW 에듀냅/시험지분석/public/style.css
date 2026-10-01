@@ -343,3 +343,42 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 .r-cross { margin-bottom: .8em; }
 .r-cross .t td.zero { color: var(--muted); }
 .r-cross .t tr.sum > * { font-weight: 700; border-top: 1.5px solid var(--line); background: var(--zebra); }
+
+/* ── 표지 · 뒷표지 ──────────────────────────────────────────────
+   학부모가 맨 처음·맨 끝에 보는 쪽. 숫자를 싣지 않고 무엇이 들어 있는지만 알린다.
+   .page 가 세로 flex 라 안쪽도 그대로 이어 간다. */
+.page .c-cover { flex: 1; display: flex; flex-direction: column; padding: 2em 1.5em 0; }
+.page .c-tag { display: flex; align-items: flex-start; justify-content: space-between; }
+.page .c-tag span { padding: .45em 1.1em; border-radius: 99px; background: var(--ink); color: #fff;
+  font: 700 .78em/1 var(--sub-font); letter-spacing: .02em; }
+.page .c-logo { width: 22mm; height: 22mm; object-fit: contain; }
+.page .c-kind { margin-top: 5em; display: flex; align-items: center; gap: .6em;
+  font: 700 .95em/1 var(--sub-font); color: var(--brand-ink); }
+.page .c-kind i { width: 1.6em; height: .35mm; background: var(--brand-ink); }
+.page .c-title { margin: .5em 0 0; font: 700 3.4em/1.12 var(--head-font); letter-spacing: -.05em; }
+.page .c-title b, .c-title span { display: block; }
+.page .c-title span { color: var(--brand-ink); }
+.page .c-lead { margin-top: .9em; max-width: 34em; color: var(--muted); line-height: 1.6; }
+.page .c-toc { margin: 2em 0 0; padding: 0; list-style: none; border-top: .6mm solid var(--ink); counter-reset: toc; }
+.page .c-toc li { counter-increment: toc; display: flex; gap: 1.6em; align-items: center;
+  padding: .85em .3em; border-bottom: .2mm solid var(--line); }
+.page .c-toc li::before { content: counter(toc, decimal-leading-zero);
+  font: 700 .86em/1 var(--sub-font); color: var(--brand-ink); }
+.page .c-toc li span { font-weight: 700; }
+.page .c-meta { margin: auto 0 1em; padding-top: 1em; border-top: .2mm solid var(--line);
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .5em; }
+.page .c-meta dt { margin: 0; font-size: .78em; color: var(--muted); }
+.page .c-meta dd { margin: .3em 0 0; font-weight: 700; }
+
+.page .c-back .c-kind { margin-top: .6em; color: var(--muted); }
+.page .c-back .c-kind i { display: none; }
+.page .c-end { margin: auto; text-align: center; }
+.page .c-end .c-logo { width: 26mm; height: 26mm; margin: 0 auto .8em; display: block; }
+.page .c-end > b { display: block; font: 700 2.2em/1.2 var(--head-font); letter-spacing: -.04em; }
+.page .c-slogan { margin-top: .6em; font-weight: 700; }
+.page .c-tel { margin-top: .9em; font-size: .85em; color: var(--muted); letter-spacing: .04em; }
+
+/* 학원 정보의 켜고 끄는 칸 */
+label.check { display: flex; align-items: center; gap: .5em; flex-wrap: wrap; }
+label.check input { width: auto; }
+label.check small { flex-basis: 100%; }
