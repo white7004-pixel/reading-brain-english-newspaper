@@ -298,7 +298,7 @@ select:disabled,textarea:disabled{opacity:.6}
   function drawDetail() {
     var f = formOf(st.view), S = f.def, allRows = st.data[f.slug];
     var rows = RB.filterRows(allRows, st.filters), sum = RB.summarize(S, rows);
-    var flagIt = RB.items(S).filter(function (i) { return i.flag; })[0], flags = RB.flagged(S, rows);
+    var flagIts = RB.items(S).filter(function (i) { return i.flag; }), flags = RB.flagged(S, rows);
     var h = header() + seg() + '<div class="bar">' +
       RB.items(S).filter(function (i) { return i.filter && i.options; }).map(function (i) {
         return '<select data-f="' + esc(i.id) + '" aria-label="' + esc(i.label) + '로 거르기"><option value="">' + esc(i.label) + ': 전체</option>' +
@@ -310,8 +310,13 @@ select:disabled,textarea:disabled{opacity:.6}
         return '<div class="stat"><div class="l">' + esc(short(x.title)) + ' 평균</div><div class="v">' + fmt(x.avg) + '<small> / 5</small></div></div>';
       }).join('') + '</div>';
     if (flags.length) {
-      h += '<div class="flag" role="note"><b>확인이 필요한 의견 ' + flags.length + '건</b><span style="font-size:13px">' + esc(flagIt.label) + '</span><ul>' +
-        flags.map(function (r) { return '<li>' + esc(r.answers[flagIt.id]) + ' <span style="opacity:.75">(' + tags(S, r.answers) + ')</span></li>'; }).join('') + '</ul></div>';
+      // 확인 필요 문항(고민·상담 신청 등)이 여럿이면 한 응답에 적힌 것을 모아 한 줄로
+      h += '<div class="flag" role="note"><b>확인이 필요한 의견 ' + flags.length + '건</b><ul>' +
+        flags.map(function (r) {
+          return '<li>' + flagIts.filter(function (i) { return !RB.empty(r.answers[i.id]); }).map(function (i) {
+            return (flagIts.length > 1 ? '<span style="opacity:.75">' + esc(i.label) + '</span> ' : '') + esc([].concat(r.answers[i.id]).join(', '));
+          }).join('<br>') + ' <span style="opacity:.75">(' + tags(S, r.answers) + ')</span></li>';
+        }).join('') + '</ul></div>';
     }
     if (!rows.length) {
       h += '<div class="empty">' + (allRows.length ? '고른 조건에 맞는 응답이 없습니다.' : '아직 응답이 없습니다.') + '</div>';

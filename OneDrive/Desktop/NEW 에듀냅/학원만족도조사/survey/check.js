@@ -7,9 +7,9 @@ const items = s => s.sections.flatMap(x => x.items);
 const P = SURVEYS.parent, S = SURVEYS.student;
 
 // 문항 수: 설계서 표와 같아야 한다
-assert.strictEqual(items(P).length, 18);
+assert.strictEqual(items(P).length, 20);
 assert.strictEqual(items(S).length, 22);
-assert.deepStrictEqual(P.sections.map(x => x.title), ['학생 레벨', '교수팀 & 수업 관련 만족도', '운영팀 관련 만족도', '자유의견']);
+assert.deepStrictEqual(P.sections.map(x => x.title), ['학생 레벨', '교수팀 & 수업 관련 만족도', '운영팀 관련 만족도', '자유의견', '상담 신청']);
 assert.ok(items(P).find(i => i.label === '담당 선생님의 수업 전달력에 만족하시나요?'));
 assert.ok(items(P).find(i => i.label === '담당 선생님의 수업 커리큘럼과 학생 관리에 만족하시나요?'));
 assert.strictEqual(items(S).filter(i => i.type === 'text').length, 8);

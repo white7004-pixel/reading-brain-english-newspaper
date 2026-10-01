@@ -23,7 +23,7 @@ await db.exec('set role anon');
 // 처음 값: 학부모·학생 설문이 들어 있다
 const parent = await one(`select public.survey_form('parent') r`);
 assert.strictEqual(parent.status, 'open');
-assert.strictEqual(parent.def.sections.length, 4);
+assert.strictEqual(parent.def.sections.length, 5);
 assert.strictEqual(parent.def.greeting, 'Dear parents,');
 assert.strictEqual((await one(`select public.survey_form('student') r`)).def.sections[1].items.length, 13);
 assert.strictEqual(await one(`select public.survey_form('nope') r`), null);
