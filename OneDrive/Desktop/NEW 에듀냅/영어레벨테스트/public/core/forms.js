@@ -169,3 +169,19 @@ export function stage2Est(level) {
   if (/ 수준 아래$/.test(level)) return { step: 9, unit: 0 };
   return { step: levelStep(level) + 2, unit: 0 };
 }
+
+// 2차 결과 → 결과지 sections (단어·문법·독해·듣기). log 는 비운다 — 원장용 적응형 표는 2차 문제지 표로 대신한다.
+export function stage2Sections(log) {
+  const lv = stage2Levels(log);
+  return Object.fromEntries(['vocab', 'grammar', 'reading', 'listening'].map((k) => {
+    const { level } = lv[k];
+    return [k, { est: stage2Est(level), level, log: [], skipped: level ? '' : '응시하지 않음' }];
+  }));
+}
+
+// 2차 수준 → 학년 단위 문장 ('중2' → '중2 과정 수준')
+export function stageText(level) {
+  if (!level) return '';
+  const m = /^(.+) 수준 아래$/.exec(level);
+  return m ? `${STAGE_KO[m[1]] ?? m[1]} 과정 전 단계` : `${STAGE_KO[level] ?? level} 과정 수준`;
+}

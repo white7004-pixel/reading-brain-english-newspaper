@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est } from '../public/core/forms.js';
+import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -217,4 +217,21 @@ test('샘플 2차 A: 모두 validateForm(it, 2) 통과, 번호는 1..n, 영역·
   assert.equal(a[0].choices.length, 3);
   assert.ok(a[1].keepOrder && a[1].passage && a[2].keepOrder && a[2].given);
   assert.deepEqual(sample.stage2.B, []);
+});
+
+test('stage2Sections: 2차 수준을 결과지 sections 로 (쓰기는 빼고, 없는 영역은 응시하지 않음)', () => {
+  const R = (area, level, correct) => ({ area, level, correct, kind: '' });
+  const s = stage2Sections([R('vocab', '중1', true), R('vocab', '중2', true), R('grammar', '중1', false), R('listening', '고2', true), R('sentence', '중1', true)]);
+  assert.deepEqual(Object.keys(s), ['vocab', 'grammar', 'reading', 'listening']);
+  assert.deepEqual(s.vocab, { est: { step: 13, unit: 0 }, level: '중2', log: [], skipped: '' });
+  assert.deepEqual(s.grammar, { est: { step: 9, unit: 0 }, level: '중1 수준 아래', log: [], skipped: '' });
+  assert.deepEqual(s.reading, { est: null, level: null, log: [], skipped: '응시하지 않음' });
+  assert.equal(s.listening.est.step, 19);
+});
+
+test('stageText: 2차 수준을 학년 단위 문장으로', () => {
+  assert.equal(stageText('중2'), '중2 과정 수준');
+  assert.equal(stageText('고2'), '고2~3 과정 수준');
+  assert.equal(stageText('중1 수준 아래'), '중1 과정 전 단계');
+  assert.equal(stageText(null), '');
 });

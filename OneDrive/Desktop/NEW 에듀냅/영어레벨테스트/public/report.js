@@ -3,7 +3,7 @@
 import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, ym, track, earlyText, END } from './core/progress.js';
 import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel, nextUnits } from './core/summary.js';
-import { areaLevels, startLevel, phonicsNote, writeSummary, LEVEL_AREAS, AREA_KO, PASS } from './core/forms.js';
+import { areaLevels, startLevel, phonicsNote, writeSummary, stage2Sections, stageText, kindTally, LEVEL_AREAS, AREA_KO, PASS } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -11,6 +11,8 @@ const status = (text, kind = '') => { $('#report-status').textContent = text; $(
 const EN = { vocab: 'Vocabulary', grammar: 'Grammar', reading: 'Reading', listening: 'Listening' };
 const COUNT = ['', '한', '두', '세', '네'];
 const dotDate = (d) => esc(String(d ?? '').replaceAll('-', '.'));
+// 지금 자리: 2차 문제지 결과는 학년 단위("중2 과정 수준"), 예전 적응형 결과는 단원 단위
+const where = (s) => (s.level ? stageText(s.level) : estLabel(s.est));
 const doneLabel = (road) => (road.months === 0 ? '이미 도달' : road.done ? road.points.at(-1).when : '10년 넘게');
 
 const id = new URLSearchParams(location.search).get('id');
@@ -24,6 +26,8 @@ if (!result) {
   $('#print-parent').onclick = () => printOnly('print-parent');
   $('#print-director').onclick = () => printOnly('print-director');
   $('#png').onclick = png;
+  // 1차 통과 뒤 2차 문제지를 본 학생: 2차 수준으로 영역별 결과를 만든다 (그 뒤는 예전 결과지 그대로)
+  if (result.stage1?.passed && result.stage2?.log?.length) result.sections = stage2Sections(result.stage2.log);
   if (result.stage1 && (!result.stage1.passed || !SECTIONS.some((k) => result.sections[k]?.est))) {
     const s1 = result.stage1;
     $('#parent').innerHTML = stage1Page(result);
@@ -34,6 +38,7 @@ if (!result) {
     const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
     const proj = project({ grade: result.grade, start, ests });
     const facts = commentFacts(result, proj);
+    for (const f of facts.sections) f.level = where(result.sections[f.key]);
     const c = templateComment(facts);
     const pages = 1 + taken.length;
     $('#parent').innerHTML = cover(result, proj, c, facts, start, pages) + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start, pages)).join('');
@@ -97,7 +102,8 @@ function info(r) {
 // 2차까지 본 학생: 1차 점수와 쓰기 결과 한 줄
 function stageLine(r) {
   if (!r.stage1) return '';
-  const w = r.write2?.log?.length ? writeSummary(r.write2.log) : null;
+  const wlog = r.stage2?.log?.length ? r.stage2.log.filter((x) => x.area === 'sentence') : r.write2?.log ?? [];
+  const w = wlog.length ? writeSummary(wlog) : null;
   const wtext = w ? ` · 쓰기 ${w.correct}/${w.total} (${w.missed.length ? `다시 볼 문법: ${esc(w.missed.join(', '))}` : '모두 맞힘'})` : '';
   return `<p class="fine">1차 ${esc(r.stage1.score)}점 통과 (${PASS}점 이상)${wtext}</p>`;
 }
@@ -143,7 +149,7 @@ function cover(r, proj, c, facts, start, pages) {
     const g = Math.round(p - now);
     const align = x < 10 ? ' l' : x > 90 ? ' r' : '';
     return `<div class="pos-r" style="--c:var(--${k})"><div class="nm"><i></i>${SECTION_KO[k]}</div>
-      <div class="tr"><div class="fill" style="width:${x}%"></div><div class="dot" style="left:${x}%"></div><div class="tip${align}" style="left:${x}%">${esc(estLabel(s.est))}</div></div>
+      <div class="tr"><div class="fill" style="width:${x}%"></div><div class="dot" style="left:${x}%"></div><div class="tip${align}" style="left:${x}%">${esc(where(s))}</div></div>
       <div class="gp ${g > 0 ? 'up' : g < 0 ? 'down' : ''}">${gapText(p, now)}</div><div class="sc">${x}<small>점</small></div></div>`;
   }).join('');
   const levels = `<div class="pos-h"><span></span><div class="g"><span>중1</span><span>중2</span><span>중3</span><span>고1</span><span>고2</span><span>고3</span></div><span class="r">학년 대비</span><span class="r">환산 점수</span></div>
@@ -222,17 +228,17 @@ function sectionPage(r, proj, k, n, start, pages) {
   return `<article class="sheet section-page" style="--c:var(--${k})">
     <header class="shead"><div><span class="cap">영역별 결과 · ${String(n).padStart(2, '0')}</span><h2>${SECTION_KO[k]}<small>${EN[k]}</small></h2></div>
       <div class="r">${esc(r.name)} · ${esc(r.grade)} · 수업 시작 ${dotDate(start)}<b>${esc(head)}</b></div></header>
-    ${sec('01', '현재 수준', 'stats', `<div><span>현재 단원</span><b>${esc(estLabel(est))}</b></div><div><span>환산 점수</span><b>${score(p)} <small>/ 100</small></b></div><div><span>학년 대비</span><b class="${g > 0 ? 'up' : g < 0 ? 'down' : ''}">${gapText(p, now)}</b></div><div><span>완료까지 걸리는 기간</span><b>${need}</b></div>`, 'margin-top:30px')}
+    ${sec('01', '현재 수준', 'stats', `<div><span>${r.sections[k].level ? '현재 수준' : '현재 단원'}</span><b>${esc(where(r.sections[k]))}</b></div><div><span>환산 점수</span><b>${score(p)} <small>/ 100</small></b></div><div><span>학년 대비</span><b class="${g > 0 ? 'up' : g < 0 ? 'down' : ''}">${gapText(p, now)}</b></div><div><span>완료까지 걸리는 기간</span><b>${need}</b></div>`, 'margin-top:30px')}
     ${sec('02', '남은 기간', 'dur', `<div class="ln"><span>고3 2월까지 남은 기간</span><div class="bar grey" style="width:${w(until)}%"></div><span class="v">${ym(until)}</span></div>
       <div class="ln"><span>고3 과정까지 걸리는 기간</span><div class="bar" style="width:${road.done ? w(road.months) : 100}%"></div><span class="v">${need}</span></div>
       <p class="gapnote">→ ${note}</p>`)}
-    ${sec('03', '학교 진도와<br>우리 학원 진도', 'chart', stair(r, est, start))}
+    ${sec('03', '학교 진도와<br>우리 학원 진도', 'chart', stair(r, est, start, where(r.sections[k])))}
     <section class="sec"><div class="lbl"><b>04</b><span>다음 단원</span></div>${steps}</section>
     ${foot(r, '4 · 6 · 9 · 11월은 시험 기간이라 진도 계산에서 뺐습니다', `${n + 1} / ${pages}`)}</article>`;
 }
 
 // 계단 그래프: 학원 진도(계단)와 학교 진도(점선). 숫자는 core 의 track 이 준다.
-function stair(r, est, start) {
+function stair(r, est, start, now) {
   const { points, ahead, done } = track({ est, grade: r.grade, start });
   if (points.length < 2) return '<p class="fine">고3 2월까지 한 달만 남아 그래프는 그리지 않습니다.</p>';
   const W = 560, H = 380, L = 44, R = 12, T = 22, B = 30;
@@ -261,7 +267,7 @@ function stair(r, est, start) {
   s += `<path d="${d}" fill="none" style="stroke:var(--c)" stroke-width="2.5" stroke-linejoin="round"/>`;
   const y0 = y(points[0].ours);
   const ly = y0 + 16 < H - B ? y0 + 14 : y0 - 8; // 아래 눈금 글자와 겹치면 점 위에
-  s += `<circle cx="${x(0)}" cy="${y0}" r="4" style="fill:var(--c)"/><text x="${x(0) + 8}" y="${ly}" font-size="10" font-weight="700" style="fill:var(--c)">지금 · ${esc(estLabel(est))}</text>`;
+  s += `<circle cx="${x(0)}" cy="${y0}" r="4" style="fill:var(--c)"/><text x="${x(0) + 8}" y="${ly}" font-size="10" font-weight="700" style="fill:var(--c)">지금 · ${esc(now)}</text>`;
   if (ahead != null) {
     const [ax, ay] = [x(ahead), y(points[ahead].school)];
     const right = ax > W - 190;
@@ -278,6 +284,8 @@ function stair(r, est, start) {
 
 // function 선언: 위쪽 최상위 코드가 먼저 실행되므로 const 면 초기화 전에 불려 오류가 난다
 function mark(x) { return x.correct ? '○' : x.timeout ? '시간' : x.dontKnow ? '모름' : '×'; }
+// 2차 유형별 정답 한 줄
+function tally(log, area) { return kindTally(log, area).map((t) => `${esc(t.kind || '기타')} ${t.correct}/${t.total}`).join(' · ') || '문항 없음'; }
 
 // 1차에서 끝난 학생: A4 한 쪽 (설계서 8장)
 function stage1Page(r) {
@@ -308,6 +316,10 @@ function formLog(title, log) {
 function director(r, c) {
   const logs = SECTIONS.map((k) => {
     const s = r.sections[k] || { log: [] };
+    if (s.level) {
+      const book = bookFor(r.academy?.books, k, s.est.step);
+      return `<div><h2>${SECTION_KO[k]}</h2><p class="small">${esc(stageText(s.level))} · 다음 시작 ${esc(nextLabel(k, s.est))}${book ? ` · 교재 ${esc(book)}` : ''}</p><p class="small">${tally(r.stage2.log, k)}</p></div>`;
+    }
     if (!s.log?.length) return `<div><h2>${SECTION_KO[k]}</h2><p class="small">${esc(s.skipped || '응시하지 않음')}</p></div>`;
     const range = shaky(s.log);
     const book = s.est ? bookFor(r.academy?.books, k, s.est.step) : '';
@@ -317,7 +329,7 @@ function director(r, c) {
       </tbody></table>
       <p class="small">모름 ${s.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
   }).join('');
-  return `${band(r, '원장용', '레벨테스트 상세')}<p class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
+  return `${band(r, '원장용', '레벨테스트 상세')}<p class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.stage2?.log?.length ? `${formLog(`2차 (${r.stage2.set}세트)`, r.stage2.log)}<p class="small">영작 · ${tally(r.stage2.log, 'sentence')}</p>` : r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
     <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>
     ${foot(r, '원장용')}`;
 }
