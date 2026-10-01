@@ -438,6 +438,11 @@ $('#make-report').addEventListener('click', async (e) => {
       + (state.academy.a4 ? schoolPage(ctx, school) : '')
       + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('')
       + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
+    // 버튼은 이번에 실제로 나온 것만 보여 준다 — 눌러도 아무 일 없는 버튼을 두지 않는다
+    const 카드 = document.querySelectorAll('#pages .sheet.card-news').length;
+    $('#save-cards').hidden = !카드;
+    $('#save-cards').textContent = `카드 ${카드}장 한 번에 받기`;
+    $('#print-slides').textContent = `슬라이드 ${document.querySelectorAll('#pages .sheet.slide').length}장 PDF 저장 (가로)`;
     setStatus('#report-status', '');
     show('#step-result');
     fitAll();
@@ -528,6 +533,20 @@ function setTheme(name) {
 $('#theme').addEventListener('change', (e) => setTheme(e.target.value));
 
 $('#print').addEventListener('click', () => window.print());
+
+// 슬라이드는 16:9 라 A4 세로에 잘린다. 슬라이드만 남기고 종이를 가로로 돌려 인쇄한다.
+// @page 는 요소 선택자를 못 쓰므로 인쇄하는 동안만 <style> 을 끼워 넣는다.
+$('#print-slides').addEventListener('click', () => {
+  const style = Object.assign(document.createElement('style'), {
+    textContent: '@media print { @page { size: A4 landscape; margin: 0 } }',
+  });
+  const 되돌리기 = () => { style.remove(); document.body.classList.remove('print-slides'); };
+  document.head.append(style);
+  document.body.classList.add('print-slides');
+  addEventListener('afterprint', 되돌리기, { once: true });
+  window.print();
+  setTimeout(되돌리기, 60_000); // afterprint 가 안 오는 브라우저를 위한 안전장치
+});
 
 // ---------- 시작 ----------
 const saved = store.get('academy');

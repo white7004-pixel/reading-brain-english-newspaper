@@ -327,8 +327,11 @@ button.ghost:hover:not(:disabled) { background: var(--tint); }
   .app > :not(#step-result), #step-result > .card, .tools { display: none !important; }
   .sheet { margin: 0; overflow: visible; }
   .sheet.card-news { display: none !important; } /* 카드는 이미지로 쓰는 것이라 인쇄에서는 뺀다 */
-  /* 발표 슬라이드는 16:9 라 A4 세로에 잘린다. 화면에서 넘기거나 장마다 PNG 로 받는다 */
+  /* 발표 슬라이드는 16:9 라 A4 세로에 잘린다. [슬라이드 PDF 저장] 으로 따로, 가로로 뽑는다 */
   .sheet.slide { display: none !important; }
+  /* [슬라이드 PDF 저장] 을 누른 동안 — 슬라이드만 남기고 종이를 가로로 (app.js 가 @page 를 끼운다) */
+  body.print-slides .sheet:not(.slide) { display: none !important; }
+  body.print-slides .sheet.slide { display: block !important; }
   .page { box-shadow: none; break-after: page; }
   .page [contenteditable]:hover { outline: none; }
 }
