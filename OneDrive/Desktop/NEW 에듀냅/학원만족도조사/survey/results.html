@@ -64,6 +64,19 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .share code{font-size:12px;word-break:break-all;color:var(--muted)}
 .btn.sm{min-height:40px;padding:0 12px;font-size:14px}
 .top{display:flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--muted);font-size:14px}.top .sp{flex:1}
+.seg{display:inline-flex;background:var(--line-soft);border-radius:12px;padding:3px;margin-bottom:16px}
+.seg button{border:0;background:none;min-height:40px;padding:0 18px;border-radius:10px;cursor:pointer;color:var(--muted);font:inherit}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--red);font-weight:600}
+.form{display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.form{grid-template-columns:1fr}}
+.phone{border:8px solid #2A2420;border-radius:30px;overflow:hidden;background:var(--bg);height:720px;max-width:400px;width:100%;margin:0 auto}
+.phone iframe{border:0;width:100%;height:100%;display:block}
+.qlist .sec{margin:0 0 18px}.qlist .sec h3{font-family:'Gowun Batang',serif;color:var(--navy);margin:0 0 4px;font-size:17px}
+.qlist .sec .d{font-size:13px;color:var(--muted);margin-bottom:8px}
+.qlist ol{margin:0;padding-left:22px}.qlist li{margin:0 0 10px}
+.qlist .ty{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:0 6px;color:var(--muted);margin-left:6px}
+.qlist .req{color:var(--red);font-size:12px;margin-left:4px}
+.qlist .op{font-size:13px;color:var(--muted);margin-top:2px}
 #poster{display:none}
 @media print{
   body{background:#fff}
@@ -95,7 +108,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
   var app = document.getElementById('app');
   var ids = Object.keys(SURVEYS);
   var NAMES = { parent: '학부모', student: '학생', teacher: '강사' };
-  var st = { pw: null, view: 'all', data: {}, grade: '', curriculum: '' };
+  var st = { pw: null, view: 'all', pane: 'result', data: {}, grade: '', curriculum: '' };
   // 설문 주소: 이 컴퓨터에서 열어도 QR 은 실제 주소로 만든다
   var BASE = /^(localhost|127\.)/.test(location.hostname) ? 'https://readingbrain-survey.vercel.app' : location.origin;
   var TITLES = { parent: '2027 리딩브레인 학부모 설문', student: '리딩브레인 학생 설문', teacher: '리딩브레인 강사 설문' };
@@ -130,7 +143,34 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
     });
   }
 
-  function draw() { if (st.view === 'all') drawAll(); else drawDetail(); }
+  function draw() { if (st.view === 'all') drawAll(); else if (st.pane === 'form') drawForm(); else drawDetail(); }
+  function seg() {
+    return '<div class="seg" role="group" aria-label="보기 고르기"><button data-pane="result" aria-pressed="' + (st.pane === 'result') + '">결과</button>' +
+      '<button data-pane="form" aria-pressed="' + (st.pane === 'form') + '">설문지</button></div>';
+  }
+  function bindSeg() {
+    app.querySelectorAll('[data-pane]').forEach(function (b) { b.onclick = function () { st.pane = b.dataset.pane; draw(); }; });
+  }
+  var TYPES = { single: '하나 고르기', multi: '여러 개 고르기', scale: '5점 척도', text: '서술' };
+  function drawForm() {
+    var S = SURVEYS[st.view], url = BASE + '/' + st.view, n = 0, total = RB.items(S).length;
+    var h = header() + seg() + '<div class="form"><div><div class="phone"><iframe title="' + esc(NAMES[st.view]) + ' 설문 미리보기" src="index.html?s=' + st.view + '&preview=1"></iframe></div>' +
+      '<div class="sub" style="text-align:center">눌러 보셔도 저장되지 않는 미리보기입니다</div></div>' +
+      '<div class="card qlist"><div class="head" style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0;flex:1">' + esc(S.kicker) + '</h2><span class="sub">' + S.sections.length + '섹션 · ' + total + '문항</span></div>' +
+      '<div class="share" style="border-top:0;padding-top:0;margin-bottom:16px"><div class="qr" role="img" aria-label="설문 QR코드">' + qrSVG(url) + '</div><div class="links"><code>' + esc(url) + '</code>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-copy="' + esc(url) + '">링크 복사</button><button class="btn sm" data-print="' + st.view + '">QR 안내문 인쇄</button></div></div></div>' +
+      S.sections.map(function (sec) {
+        return '<div class="sec"><h3>' + esc(sec.title) + '</h3>' + (sec.desc ? '<div class="d">' + esc(sec.desc) + '</div>' : '') + '<ol start="' + (n + 1) + '">' +
+          sec.items.map(function (it) {
+            n++;
+            var ops = it.options ? it.options.map(function (o) { return typeof o === 'object' ? o.v + ' ' + o.label : o; }).join(' / ') : '';
+            return '<li>' + esc(it.label) + '<span class="ty">' + TYPES[it.type] + '</span>' + (it.required ? '<span class="req">필수</span>' : '') +
+              (ops ? '<div class="op">' + esc(ops) + '</div>' : '') + '</li>';
+          }).join('') + '</ol></div>';
+      }).join('') + '</div></div>';
+    app.innerHTML = h;
+    bindTabs(); bindSeg(); bindShare();
+  }
 
   function header() {
     return '<div style="display:flex;align-items:center;gap:12px"><img src="logo.png" alt="리딩브레인 로고" width="48" height="46"><div><div class="kicker">READING BRAIN</div><h1 style="margin:0">학원설문조사 결과</h1></div></div><div style="height:16px"></div>' +
@@ -141,7 +181,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
   }
   function bindTabs() {
     app.querySelectorAll('[data-v]').forEach(function (b) {
-      b.onclick = function () { st.view = b.dataset.v; st.grade = st.curriculum = ''; draw(); window.scrollTo(0, 0); };
+      b.onclick = function () { st.view = b.dataset.v; if (b.dataset.to) st.pane = b.dataset.to; st.grade = st.curriculum = ''; draw(); window.scrollTo(0, 0); };
     });
   }
 
@@ -184,11 +224,16 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
         '<code>' + esc(url) + '</code>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-copy="' + esc(url) + '">링크 복사</button>' +
         '<button class="btn sm" data-print="' + id + '">QR 안내문 인쇄</button></div></div></div>' +
-        '<button class="btn sm red" data-v="' + id + '">상세 결과 보기</button></section>';
+        '<div style="display:flex;gap:8px"><button class="btn sm red" style="flex:1" data-v="' + id + '" data-to="result">결과 보기</button>' +
+        '<button class="btn sm" style="flex:1" data-v="' + id + '" data-to="form">설문지 보기</button></div></section>';
     });
     app.innerHTML = h + '</div>';
     bindTabs();
     document.getElementById('re').onclick = load;
+    bindShare();
+  }
+
+  function bindShare() {
     app.querySelectorAll('[data-copy]').forEach(function (b) {
       b.onclick = function () {
         var done = function () { b.textContent = '복사됨'; setTimeout(function () { b.textContent = '링크 복사'; }, 1500); };
@@ -237,7 +282,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
     var curIt = all.filter(function (i) { return i.id === 'curricula'; })[0];
     var flags = RB.flagged(S, rows), flagIt = all.filter(function (i) { return i.flag; })[0];
 
-    var h = header() +
+    var h = header() + seg() +
       '<div class="bar">' +
       (gradeIt ? '<select id="fg" aria-label="학년으로 거르기"><option value="">전체 학년</option>' + gradeIt.options.map(function (o) { return '<option' + (o === st.grade ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' : '') +
       (curIt ? '<select id="fc" aria-label="커리큘럼으로 거르기"><option value="">전체 커리큘럼</option>' + curIt.options.map(function (o) { return '<option' + (o === st.curriculum ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' : '') +
@@ -275,7 +320,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
     }
     app.innerHTML = h;
 
-    bindTabs();
+    bindTabs(); bindSeg();
     var fg = document.getElementById('fg'), fc = document.getElementById('fc');
     if (fg) fg.onchange = function () { st.grade = fg.value; draw(); };
     if (fc) fc.onchange = function () { st.curriculum = fc.value; draw(); };
