@@ -519,3 +519,8 @@ label.check small { flex-basis: 100%; }
 .page.slide .s-panel .t { font-size: .88em; }
 .page.slide .s-flowrow { grid-template-columns: 1.15fr 1fr; align-items: stretch; }
 .page.slide .s-flowrow .s-flow { margin: auto 0; }
+
+/* 슬라이드는 1280px 라 보통 창보다 넓다. 화면에서 볼 때만 줄여 보여 준다 (app.js 가 배율을 잰다).
+   PNG 는 원래 크기 그대로 나간다 — zoom 은 바깥 틀에만 걸고 .page 자체는 건드리지 않는다. */
+.sheet.slide { zoom: var(--slide-zoom, 1); }
+@media print { .sheet.slide { zoom: 1; } }

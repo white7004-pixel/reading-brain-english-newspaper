@@ -348,6 +348,7 @@ $('#make-report').addEventListener('click', async (e) => {
     setStatus('#report-status', '');
     show('#step-result');
     fitAll();
+    fitSlides();
     document.fonts.ready.then(fitAll); // 제목 웹폰트가 늦게 들어오면 높이가 바뀐다
   } catch (err) {
     setStatus('#report-status', `${err.message} — 버튼을 다시 누르면 다시 시도합니다`, true);
@@ -355,6 +356,15 @@ $('#make-report').addEventListener('click', async (e) => {
     button.disabled = false;
   }
 });
+
+// 슬라이드(1280px)는 창보다 넓다. 화면에서 볼 때만 줄인다. PNG 는 원래 크기로 받는다.
+const SLIDE_W = 1280;
+function fitSlides() {
+  // 창을 못 재는 자리(화면이 아직 안 뜬 때)에는 1 로 둔다 — 줄이지 않는 쪽이 안전하다
+  const w = $('#pages').clientWidth || document.documentElement.clientWidth || innerWidth || 0;
+  $('#pages').style.setProperty('--slide-zoom', w ? Math.min(1, w / SLIDE_W) : 1);
+}
+addEventListener('resize', fitSlides);
 
 // ---------- A4 한 장 맞추기 ----------
 // 넘치면 글자 배율(--fit)을 조금씩 줄인다. 고친 글이 짧아지면 다시 커지도록 매번 1 부터 계산한다.
