@@ -1,92 +1,104 @@
-/* 에듀냅(edunap.kr) 디자인 언어: 올리브 바탕 · 크림 글자 · 교과 입시 금색 · Hahmlet 제목 */
+/* 리딩브레인영어학원 디자인 (2026-10-01 원장 요청 — 에듀냅 올리브에서 바꿈):
+   아이보리 종이 · 네이비 글자 · 버건디 포인트. 영어레벨테스트·웹설문과 한 벌이다. */
 :root {
-  --olive: #03392A; --olive-card: #04432F; --card-line: rgba(95,227,192,.22);
-  --cream: #FCF4E2; --cream-2: rgba(252,244,226,.75); --cream-3: rgba(252,244,226,.62); --hair: rgba(252,244,226,.1);
-  --accent: #F5C24C; --coral: #FF8B6B;
-  --serif: 'Hahmlet', 'Noto Serif KR', 'Apple SD Gothic Neo', serif;
+  --navy: #0b2c46; --navy-2: #173c5c; --ink: #15202c; --muted: #646c78; --faint: #9aa0a8;
+  --wine: #7d1d1e; --wine-soft: #f6ecea; --champagne: #e7d6bc;
+  --paper: #f7f5f0; --card: #fff; --line: #e4dfd5; --line-2: #cfc8bb; --pane: #f2efe8; --tint: #eaeff4;
+  --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --wordmark: 'Montserrat', 'Pretendard', sans-serif;
   --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  /* A4 종이 (흰 바탕) */
-  --brand: #03392A; --gold: #E3B533; --ink: #16181d; --muted: #6b7280; --line: #e4e6ec;
+  /* A4 종이 (흰 바탕) — 학원 정보의 색이 덮어쓴다 */
+  --brand: #0b2c46; --gold: #7d1d1e;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { margin: 0; font: 15px/1.6 var(--sans); color: var(--cream); color-scheme: dark;
-  background:
-    radial-gradient(900px 620px at 88% -8%, rgba(95,227,192,.11), transparent 62%),
-    repeating-linear-gradient(90deg, rgba(252,244,226,.022) 0 1px, transparent 1px 160px),
-    var(--olive);
-  background-attachment: fixed; }
+body { margin: 0; font: 15px/1.65 var(--sans); color: var(--ink); background: var(--paper);
+  color-scheme: light; -webkit-font-smoothing: antialiased; }
+a { color: var(--navy); }
 
-.site { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--hair); }
-.logo { font-size: 19px; letter-spacing: -.02em; font-weight: 400; }
-.logo b { font-weight: 800; }
-.site-tag { font-size: 13px; color: rgba(252,244,226,.6); }
+/* 맨 위 학원 띠: 엠블럼 + 영문 이름 */
+.site { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 32px;
+  background: var(--card); border-bottom: 1px solid var(--line); box-shadow: inset 0 3px 0 var(--navy); }
+.logo { display: flex; align-items: center; gap: 12px; color: var(--navy); text-decoration: none; }
+.logo img { height: 42px; width: auto; display: block; }
+.logo span { font: 700 15px/1.1 var(--wordmark); letter-spacing: .16em; }
+.logo small { display: block; margin-top: 5px; font: 500 11.5px/1 var(--sans); letter-spacing: .04em; color: var(--muted); }
+.site-tag { font-size: 13px; color: var(--muted); }
 
 .app { max-width: 1000px; margin: 0 auto; padding: 16px; }
-.hero { padding: 48px 0 32px; }
-.eyebrow { margin: 0 0 14px; font-size: 11.8px; font-weight: 600; letter-spacing: .46em; color: var(--accent); }
-.eyebrow span { letter-spacing: 0; }
-.hero h1 { margin: 0; font: 700 clamp(44px, 8vw, 76px)/1.1 var(--serif); letter-spacing: -.045em; }
-.lede { margin: 14px 0 0; color: rgba(252,244,226,.6); font-size: 16px; }
+.hero { padding: 64px 0 40px; }
+.eyebrow { display: flex; align-items: center; gap: 14px; margin: 0 0 20px; font: 600 11.5px/1 var(--wordmark); letter-spacing: .32em; color: var(--wine); }
+.eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--wine); }
+.eyebrow span { font: 500 12.5px/1 var(--sans); letter-spacing: .02em; color: var(--muted); }
+.eyebrow span::before { content: '·'; margin-right: 12px; color: var(--line-2); }
+.hero h1 { margin: 0; font: 700 clamp(40px, 7vw, 60px)/1.2 var(--serif); letter-spacing: -.035em; color: var(--navy); }
+.lede { margin: 18px 0 0; max-width: 38em; color: var(--muted); font-size: 16px; line-height: 1.75; }
 
-.card { background: var(--olive-card); border: 1px solid var(--card-line); border-radius: 3px; padding: 22px; margin-bottom: 16px; }
-.card h2 { margin: 0 0 16px; font: 700 22px/1.35 var(--serif); letter-spacing: -.035em; }
-.step { display: block; margin-bottom: 4px; font: 600 11px/1.4 var(--sans); letter-spacing: .3em; color: var(--cream-3); }
-.card h2 small { font-family: var(--sans); font-size: 13px; font-weight: 400; letter-spacing: 0; color: var(--cream-3); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 30px 32px; margin-bottom: 18px;
+  box-shadow: 0 1px 2px rgba(11,44,70,.04), 0 14px 36px -22px rgba(11,44,70,.22); }
+.card h2 { margin: 0 0 22px; font: 700 22px/1.35 var(--serif); letter-spacing: -.02em; color: var(--navy); }
+.step { display: block; margin-bottom: 8px; font: 600 11px/1.4 var(--wordmark); letter-spacing: .28em; color: var(--wine); }
+.card h2 small { margin-left: 8px; font: 400 13px var(--sans); letter-spacing: 0; color: var(--muted); }
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: end; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end; }
 .grid .wide { grid-column: 1 / -1; }
-label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--cream-2); }
-input, select, textarea { font: inherit; color: var(--cream); padding: 9px 11px; border: 1px solid rgba(252,244,226,.18); border-radius: 3px; background: rgba(0,0,0,.18); width: 100%; }
-input::placeholder, textarea::placeholder { color: rgba(252,244,226,.35); }
-input:hover, select:hover, textarea:hover { border-color: rgba(252,244,226,.32); }
-select option { background: var(--olive-card); color: var(--cream); }
-input[type=color] { padding: 5px; height: 44px; cursor: pointer; background: var(--cream); border-color: var(--cream); }
+label { display: flex; flex-direction: column; gap: 7px; font-size: 13px; font-weight: 500; color: var(--muted); }
+input, select, textarea { font: inherit; color: var(--ink); padding: 11px 13px; border: 1px solid var(--line-2); border-radius: 3px;
+  background: #fff; width: 100%; transition: border-color .15s, box-shadow .15s; }
+input::placeholder, textarea::placeholder { color: #8d939c; }
+input:hover, select:hover, textarea:hover { border-color: #a9a294; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(11,44,70,.12); }
+select option { background: #fff; color: var(--ink); }
+input[type=color] { padding: 5px; height: 46px; cursor: pointer; }
 input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
-input[type=color]::-webkit-color-swatch { border: 1px solid rgba(252,244,226,.45); border-radius: 2px; }
-input[type=color]::-moz-color-swatch { border: 1px solid rgba(252,244,226,.45); border-radius: 2px; }
-input[type=file] { padding: 6px; color: var(--cream-2); }
-input[type=file]::file-selector-button { font: inherit; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 5px 12px; border: 1px solid rgba(245,194,76,.6); border-radius: 3px; background: transparent; color: var(--accent); cursor: pointer; }
-input[type=file]::file-selector-button:hover { background: rgba(245,194,76,.12); }
+input[type=color]::-webkit-color-swatch { border: 1px solid var(--line-2); border-radius: 2px; }
+input[type=color]::-moz-color-swatch { border: 1px solid var(--line-2); border-radius: 2px; }
+input[type=file] { padding: 7px; color: var(--muted); }
+input[type=file]::file-selector-button { font: inherit; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 6px 12px;
+  border: 1px solid var(--navy); border-radius: 3px; background: #fff; color: var(--navy); cursor: pointer; }
+input[type=file]::file-selector-button:hover { background: var(--tint); }
 #code-form input { flex: 1; min-width: 0; }
-button { font: inherit; font-weight: 700; padding: 10px 18px; border: 0; border-radius: 3px; background: var(--accent); color: var(--olive); cursor: pointer; }
-button:hover:not(:disabled) { background: #F8D06E; }
+button { font: inherit; font-weight: 600; letter-spacing: .01em; padding: 11px 20px; border: 0; border-radius: 3px;
+  background: var(--navy); color: #fff; cursor: pointer; transition: background .15s, border-color .15s; }
+button:hover:not(:disabled) { background: var(--navy-2); }
 button:disabled { opacity: .45; cursor: wait; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-#logo-preview { max-height: 48px; max-width: 160px; object-fit: contain; background: #fff; border-radius: 3px; padding: 4px; }
-.status { min-height: 1.6em; margin: 10px 0 0; color: rgba(252,244,226,.7); }
-.status.error, .problems { color: var(--coral); white-space: pre-line; }
-.status.warn { color: var(--accent); white-space: pre-line; }
-.notes { background: rgba(245,194,76,.12); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 3px 3px 0; margin: 0 0 8px; }
+:focus-visible { outline: 2px solid var(--wine); outline-offset: 2px; }
+#logo-preview { max-height: 48px; max-width: 160px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 3px; padding: 4px; }
+.status { min-height: 1.6em; margin: 10px 0 0; color: var(--muted); }
+.status.error, .problems { color: var(--wine); white-space: pre-line; }
+.status.warn { color: #8a5a12; white-space: pre-line; }
+.notes { background: var(--wine-soft); border-left: 2px solid var(--wine); padding: 11px 15px; margin: 0 0 8px; }
 .notes:empty { display: none; }
-.hint { color: var(--cream-3); font-size: 13px; }
-code { font: 600 13px/1 var(--sans); background: var(--olive); color: var(--cream); border: 1px solid var(--card-line); border-radius: 3px; padding: 2px 6px; white-space: nowrap; }
+.hint { color: var(--muted); font-size: 13px; }
+code { font: 600 13px/1 var(--sans); background: var(--pane); color: var(--navy); border: 1px solid var(--line); border-radius: 3px; padding: 2px 6px; white-space: nowrap; }
 .table-wrap { overflow-x: auto; margin-top: 8px; }
 #items { border-collapse: collapse; width: 100%; min-width: 950px; font-size: 14px; }
-#items th { color: var(--cream-3); font-size: 12px; font-weight: 600; letter-spacing: .08em; padding: 8px 6px; white-space: nowrap; }
-#items th, #items td { border-bottom: 1px solid var(--hair); text-align: left; vertical-align: middle; }
+#items th { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .08em; padding: 9px 6px; white-space: nowrap; }
+#items th, #items td { border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+#items thead th { border-bottom: 1px solid var(--line-2); }
 #items td { padding: 5px 6px; }
-#items td input, #items td select { padding: 5px 7px; }
+#items td input, #items td select { padding: 6px 8px; }
 #items td select { width: auto; }
 #items td[data-field=points] input { width: 70px; }
 #items td[data-field=unit] input { min-width: 120px; }
-#items td.unsure { background: rgba(245,194,76,.18); box-shadow: inset 0 0 0 1px var(--accent); }
-#items td.unsure :is(input, select) { background: rgba(245,194,76,.1); border-color: rgba(245,194,76,.55); }
+/* AI 가 자신 없어 한 칸 — 원장님이 꼭 보셔야 하는 자리라 버건디로 짚는다 */
+#items td.unsure { background: var(--wine-soft); box-shadow: inset 0 0 0 1px rgba(125,29,30,.35); }
+#items td.unsure :is(input, select) { background: #fff; border-color: rgba(125,29,30,.45); }
 .meta { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom: 14px; }
-.meta input.unsure { background: rgba(245,194,76,.1); border-color: var(--accent); }
-.academy { margin-top: 16px; border-top: 1px solid var(--hair); padding-top: 12px; }
-.academy summary { cursor: pointer; color: var(--cream-3); font-size: 13px; }
-.academy summary span { color: var(--cream-2); }
-.academy form { margin-top: 12px; }
-#items .reason { color: var(--cream-3); font-size: 12px; min-width: 200px; }
+.meta input.unsure { background: var(--wine-soft); border-color: rgba(125,29,30,.45); }
+.academy { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+.academy summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.academy summary span { color: var(--navy); font-weight: 600; }
+.academy form { margin-top: 14px; }
+#items .reason { color: var(--muted); font-size: 12px; min-width: 200px; }
 #items td[data-field=no] input { width: 64px; }
-button.ghost { background: transparent; color: var(--accent); border: 1px solid rgba(245,194,76,.6); font-weight: 600; }
-button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
+button.ghost { background: #fff; color: var(--navy); border: 1px solid var(--navy); font-weight: 600; }
+button.ghost:hover:not(:disabled) { background: var(--tint); }
 #items button.ghost { padding: 4px 10px; font-size: 13px; white-space: nowrap; }
 #add-item { margin-top: 10px; padding: 7px 14px; font-size: 14px; }
 #make-report { margin-top: 8px; }
 
-/* A4 리포트 — 흰 종이 한 장(297mm 고정), 에듀냅 제목 글꼴·올리브·금색 선 */
+/* A4 리포트 — 흰 종이 한 장(297mm 고정). 제목 글꼴·학원 대표색(--brand)·포인트선(--gold) */
 /* 가운데 정렬은 .sheet 가 맡는다: .page 에 auto 여백이 있으면 html-to-image 가 계산된 왼쪽 여백까지 복사해 PNG 가 밀린다 */
 /* 글자·간격은 모두 em: .page 의 --fit(app.js)이 줄면 함께 줄어든다. 종이 여백·선 두께만 mm */
 /* 결과는 카드(1080px)가 잘리지 않게 앱 폭(1000px)보다 넓게 펴서 가운데에 둔다 */
