@@ -311,6 +311,10 @@ body.exam {
 .split.one .pane { display: none; }
 .pane .lab { font-size: 13px; color: var(--muted); margin: 0 0 14px; }
 .exam .passage { white-space: pre-line; margin: 0; font: 20px/1.9 var(--en); }
+.exam .given { margin: 0 0 20px; background: #fff; border: 1.5px solid var(--olive); border-radius: 8px; padding: 14px 20px 16px; }
+.exam .given .lab { margin: 0 0 6px; }
+.exam .given p:last-child { margin: 0; font: 19px/1.7 var(--en); }
+.exam .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .exam .kor { margin: 0; background: #fff; border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px; font-size: 18px; line-height: 1.6; }
 .qside { padding: 36px 44px; min-width: 0; }
 .qh { display: flex; gap: 14px; align-items: baseline; margin: 0 0 26px; }

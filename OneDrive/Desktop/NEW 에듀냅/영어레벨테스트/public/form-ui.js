@@ -1,4 +1,4 @@
-// 문항 한 개 그리기와 문항별 시계. 시험 화면(test.js)이 1차·2차 적응형·쓰기 블록에 모두 쓴다.
+// 문항 한 개 그리기와 문항별 시계. 시험 화면(test.js)이 1차·2차 문제지에 쓴다.
 import { marked, SECONDS } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
@@ -9,7 +9,11 @@ const GUARD_MS = 300; // 문항이 뜬 직후의 누름·Enter 는 앞 문항에
 const PICK_MS = 180; // 고른 줄이 칠해진 것을 잠깐 보여 준 뒤 넘어간다
 const en = (s) => !/[ㄱ-ㅎ가-힣]/.test(s); // 한글이 없으면 영어 글꼴(Literata)
 
+const CIRCLED = '①②③④⑤';
+
 function text(it) {
+  $('#given').hidden = !it.given; // 문장 삽입: 지문 위에 주어진 문장
+  $('#given-text').innerHTML = marked(it.given);
   $('#passage').hidden = !it.passage;
   $('#passage').innerHTML = marked(it.passage);
   $('#question').innerHTML = marked(it.question);
@@ -35,7 +39,7 @@ function button(html, onclick, cls = '') {
   return b;
 }
 
-// 객관식: ①~④ 와 ⑤ 모름. done({ choice }) 또는 done({ dontKnow: true })
+// 객관식: 선택지(3~5개) 와 끝에 모름. done({ choice }) 또는 done({ dontKnow: true })
 export function showMC(it, done) {
   $('#write').hidden = true;
   $('#hint').hidden = true;
@@ -56,8 +60,10 @@ export function showMC(it, done) {
     setTimeout(() => done({ ...res, at }), PICK_MS);
   };
   const row = (mark, html, res, cls) => { const b = button(`<i aria-hidden="true">${mark}</i><span>${html}</span>`, () => pickOne(res, b), cls); return b; };
+  // 선택지가 지문 속 자리 번호(①~⑤)뿐이면 번호 동그라미만 (글은 화면 읽기용으로만)
+  const spot = (c, i) => c === CIRCLED[i];
   $('#choices').replaceChildren(
-    ...it.choices.map((c, i) => row(i + 1, marked(c), { choice: i }, en(c) ? 'en' : '')),
+    ...it.choices.map((c, i) => row(i + 1, spot(c, i) ? `<span class="sr">${c}</span>` : marked(c), { choice: i }, en(c) ? 'en' : '')),
     row('?', '모름', { dontKnow: true }, 'dont-know'),
   );
 }
@@ -102,16 +108,16 @@ export function showWrite(it, done) {
   inputs[0]?.focus();
 }
 
-// startedAt(ms) 부터 SECONDS 초. 다 되면 onTimeout 한 번.
-export function startTimer(startedAt, onTimeout) {
+// startedAt(ms) 부터 seconds 초. 다 되면 onTimeout 한 번.
+export function startTimer(startedAt, onTimeout, seconds = SECONDS) {
   stopTimer();
   const el = $('#timer');
   el.hidden = false;
-  $('#timer-ring').setAttribute('pathLength', SECONDS); // 고리 둘레를 SECONDS 로 두고 남은 초만큼 칠한다
+  $('#timer-ring').setAttribute('pathLength', seconds); // 고리 둘레를 seconds 로 두고 남은 초만큼 칠한다
   const draw = () => {
-    const left = Math.max(0, SECONDS - Math.floor((Date.now() - startedAt) / 1000));
+    const left = Math.max(0, seconds - Math.floor((Date.now() - startedAt) / 1000));
     $('#timer-sec').textContent = `${left}초`;
-    $('#timer-ring').style.strokeDasharray = `${left} ${SECONDS}`;
+    $('#timer-ring').style.strokeDasharray = `${left} ${seconds}`;
     el.classList.toggle('low', left <= 10);
     if (!left) { stopTimer(); onTimeout(); }
   };
