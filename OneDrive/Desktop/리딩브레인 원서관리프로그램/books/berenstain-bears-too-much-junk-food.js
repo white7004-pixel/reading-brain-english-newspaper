@@ -152,7 +152,9 @@ window.BOOK = {
     statement: "Changing a habit is hard at first, but a family can support each other to build a healthier way of living.",
     factual: [
       "What happens to the family because of eating too much junk food?",
-      "What does Mama do to start the change?"
+      "What does Mama do to start the change?",
+      "What do Papa and the cubs do to help the family become healthier?",
+      "How does the family live by the end of the story?"
     ],
     conceptual: [
       "Why might a parent decide to change what the whole family eats?",

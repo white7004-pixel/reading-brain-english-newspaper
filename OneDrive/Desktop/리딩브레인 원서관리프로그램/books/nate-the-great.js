@@ -190,6 +190,9 @@ window.BOOK = {
     statement: "A mystery is solved not by guessing, but by gathering clues and thinking carefully about what they mean.",
     factual: [
       "What picture is missing?",
+      "Who asks Nate to find it?",
+      "What colour was the missing picture?",
+      "What happens when red paint goes over yellow paint?",
       "What does Harry do?"
     ],
     conceptual: [

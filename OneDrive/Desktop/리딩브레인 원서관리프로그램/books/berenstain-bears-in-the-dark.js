@@ -156,8 +156,11 @@ window.BOOK = {
     globalContext: "Identities and relationships — how the people who care for us help us face our fears (우리를 돌보는 사람들은 두려움을 어떻게 함께 이겨 내도록 돕는가)",
     statement: "A caring adult's good ideas can help a child face and conquer a fear.",
     factual: [
+      "Who becomes afraid of the dark in this story?",
       "What makes Sister Bear afraid of the dark?",
-      "Who helps Sister Bear face her fear?"
+      "Who helps Sister Bear face her fear?",
+      "What does Papa Bear do to help Sister?",
+      "What happens to Sister's fear by the end of the story?"
     ],
     conceptual: [
       "Why might a scary story make it harder to feel calm at night?",

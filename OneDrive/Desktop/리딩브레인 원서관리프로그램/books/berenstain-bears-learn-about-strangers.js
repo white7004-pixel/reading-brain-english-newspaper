@@ -157,7 +157,10 @@ window.BOOK = {
     statement: "Learning safety rules can help you stay safe around people you do not know.",
     factual: [
       "What habit does Sister Bear have at the start of the story?",
-      "What do Papa and Mama teach her?"
+      "Who are the strangers in this story?",
+      "Who notices Sister's habit?",
+      "What do Papa and Mama teach her?",
+      "What does Sister do with the rules her parents teach her?"
     ],
     conceptual: [
       "Why might talking to people you do not know be unsafe?",

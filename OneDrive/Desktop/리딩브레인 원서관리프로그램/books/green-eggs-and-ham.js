@@ -183,6 +183,9 @@ window.BOOK = {
     statement: "Refusing to try something new keeps you from discovering what you might love.",
     factual: [
       "What food does Sam-I-Am keep offering?",
+      "What does the character say the first time Sam-I-Am asks?",
+      "Where does Sam-I-Am ask him to try it?",
+      "Where does everyone end up after the train crash?",
       "Does the character like it in the end?"
     ],
     conceptual: [

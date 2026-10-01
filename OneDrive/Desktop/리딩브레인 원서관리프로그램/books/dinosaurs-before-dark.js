@@ -198,7 +198,10 @@ window.BOOK = {
     statement: "Adventure happens when curiosity meets courage, even when there is real danger.",
     factual: [
       "What do Jack and Annie find in the tree house?",
-      "What time period does the book take them to?"
+      "What time period does the book take them to?",
+      "What kinds of dinosaurs do they see?",
+      "Who saves Jack from the Tyrannosaurus?",
+      "How do they get back to their own time?"
     ],
     conceptual: [
       "Why did Jack and Annie go into the forest even though it was dangerous?",

@@ -190,7 +190,10 @@ window.BOOK = {
     globalContext: "Identities and relationships — who counts as a friend (누구를 친구라 부르는가)",
     statement: "The same animal can be a pest to one person and a friend to another.",
     factual: [
+      "What was Buzz looking for?",
       "What kind of animal is Fly Guy?",
+      "Where did Buzz put the fly?",
+      "What did people say about a fly as a pet?",
       "What word does Fly Guy say?"
     ],
     conceptual: [

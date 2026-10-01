@@ -201,6 +201,9 @@ window.BOOK = {
     statement: "True friendship means being present for someone through small and big moments.",
     factual: [
       "What are the five stories in this book?",
+      "How does Frog make Toad's calendar say May?",
+      "Where does Toad finally find his lost button?",
+      "Who brings Frog's letter to Toad?",
       "What does Frog do to help in each story?"
     ],
     conceptual: [

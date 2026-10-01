@@ -71,7 +71,7 @@ const TABS = [
   { id: "read",   name: "낭독녹음",   when: B => !!B.readAloud, draw: () => drawRead()   },
   { id: "talk",   name: "AI 북토크",  draw: () => drawTalk()   },
   { id: "grammar",name: "문법",       when: B => !!B.grammar, draw: () => drawGrammar() },
-  { id: "debate", name: "북디베이트", when: B => !!(B.ib && (B.ib.debatable || []).length), draw: () => drawDebate() },
+  { id: "debate", name: "북토킹·디베이트", when: B => !!(B.ib && ((B.ib.debatable || []).length || (B.ib.factual || []).length)), draw: () => drawDebate() },
   { id: "write",  name: "IB워크시트", when: B => !!(B.mindMap || B.essay), draw: () => drawWrite()  },
   { id: "quiz",   name: "북퀴즈",     when: B => !!(B.quiz && B.quiz.length), draw: () => drawQuiz()   },
   { id: "report", name: "리딩리포트", draw: () => drawReport() },
@@ -1051,7 +1051,7 @@ const bookForTalk = () => ({
   summaryMap: B.summaryMap, comprehension: B.comprehension, quiz: B.quiz,
   vocabulary: B.vocabulary, grammar: B.grammar && { points: B.grammar.points },
   essay: B.essay && { prompt: B.essay.prompt, expressions: B.essay.expressions },
-  ib: B.ib && { debatable: B.ib.debatable }
+  ib: B.ib && { factual: B.ib.factual, conceptual: B.ib.conceptual, debatable: B.ib.debatable }
 });
 
 function drawTalk(){
@@ -1486,41 +1486,98 @@ function stopRead(){
    선생님과 학생이 IB 토론 질문(ib.debatable)으로 1분쯤 영어로 토론한다.
    녹음(내 목소리 다시 듣기) + 크롬 음성 인식으로 글자로 옮기기 → AI 분석(로그인 시 book-debate, 아니면 연습 분석)
    → 결과 카드 + 공유 링크(#d=). 결과는 "debate" 칸에 저장. */
-const DEB_GOAL = 60, DEB_MAX = 120;              // 1분 목표, 2분이면 자동으로 멈춘다
+const DEB_GOAL = 180, DEB_MAX = 420;             // 북토킹 3~5가지 + 디베이트 = 3분 목표, 7분이면 저절로 멈춘다
 const CRIT_KO = { knowledge: "책 이해", reasoning: "이유 말하기", evidence: "책 속 근거", perspectives: "다른 관점", language: "영어 표현" };
-let DB = null;   // 지금 토론: { q, stance, rec, sr, t0, tick, text, sec, blob }
+// 지금 북토킹·디베이트:
+//   phase 'talk'(북토킹) | 'debate'(핵심 디베이트)
+//   said[]  끝낸 북토킹 답 — 글자로 굳혀 둔다. 뒤에 글을 고쳐도 흔들리지 않는다
+//   marks[] 굳힌 자리의 글자 수 — 지금 질문의 말만 잘라 보여 줄 때 쓴다
+//   dtext   디베이트 칸을 손으로 고쳤을 때 (고치면 음성 인식이 덮어쓰지 않는다)
+//   q, stance, rec, sr, t0, tick, text, sec, blob
+let DB = null;
+
+/* 북토킹에서 아직 굳히지 않은 말 / 끝낸 답 / 디베이트에서 한 말 */
+const dbMark = () => DB.marks.length ? DB.marks[DB.marks.length - 1] : 0;
+const dbLive = () => String(DB.text || "").slice(dbMark()).trim();
+const dbAns  = i => i < DB.said.length ? DB.said[i] : "";
+const dbDeb  = () => DB.dtext !== undefined ? DB.dtext : dbLive();
+// 다음 질문으로 넘어갈 때 그 자리의 말을 글자로 굳힌다
+function dbFreeze(){ DB.said.push(dbLive()); DB.marks.push(String(DB.text || "").length); }
+// 녹음하는 동안 화면 전체를 다시 그리지 않는다 — 지금 칸 하나만 고쳐 쓴다
+function dbPaint(){
+  if (!DB) return;
+  if (DB.phase === "talk"){ const el = document.getElementById("btSaid"); if (el) el.textContent = dbLive() || "…"; return; }
+  const ta = document.getElementById("dbText");
+  if (ta && DB.dtext === undefined) ta.value = dbLive();
+}
+const dbFresh = () => ({ q: ((B.ib && B.ib.debatable) || [])[0] || "", stance: "", said: [], marks: [],
+                         phase: ((B.ib && B.ib.factual) || []).length ? "talk" : "debate" });
 
 function drawDebate(){
   const P = $("#p-debate"), saved = get("debate");
   const qs = (B.ib && B.ib.debatable) || [];
-  if (!qs.length){ P.innerHTML = `<div class="empty">이 책은 아직 토론 질문이 없습니다.</div>`; return; }
-  if (saved && !DB){                                             // 끝낸 토론: 결과부터
+  const fq = (B.ib && B.ib.factual) || [];        // ① 북토킹 — 책 내용을 확인하는 질문
+  const cq = (B.ib && B.ib.conceptual) || [];     // ② 생각 열기
+  const ev = B.evidence || {};
+  if (!qs.length && !fq.length){ P.innerHTML = `<div class="empty">이 책은 아직 북토킹·디베이트 질문이 없습니다.</div>`; return; }
+  if (saved && !DB){                                             // 끝낸 것: 결과부터
     P.innerHTML = debateHTML(saved) + `
       <div class="row rp-hide" style="justify-content:center; margin-top:14px">
         <button class="btn" id="dbShare">${kakaoOn() ? "💬 카카오톡으로 보내기" : "🔗 공유 링크 복사"}</button>
         <button class="btn ghost" id="dbPrint">🖨 인쇄</button>
-        <button class="btn ghost" id="dbAgain">다시 토론하기</button>
+        <button class="btn ghost" id="dbAgain">다시 하기</button>
         <span class="count" id="dbMsg"></span>
       </div>`;
-    $("#dbShare").onclick = () => shareLink(pageLink("d", saved), `${saved.name ? saved.name + " 학생의 " : ""}『${B.title}』 북디베이트 리포트`, $("#dbMsg"));
+    $("#dbShare").onclick = () => shareLink(pageLink("d", saved), `${saved.name ? saved.name + " 학생의 " : ""}『${B.title}』 북토킹·디베이트 리포트`, $("#dbMsg"));
     $("#dbPrint").onclick = () => RBReport.print($("#debRep"));
-    $("#dbAgain").onclick = () => { DB = { q: saved.q, stance: saved.stance }; drawDebate(); };
+    $("#dbAgain").onclick = () => { DB = dbFresh(); DB.q = saved.q || DB.q; drawDebate(); };
     return;
   }
-  DB = DB || { q: qs[0], stance: "" };
-  const recOn = !!(DB.rec || DB.sr);
-  P.innerHTML = `
-    <h2 class="h">북디베이트 — 선생님과 영어로 토론하기</h2>
-    <p class="sub">질문 하나를 골라 <b>내 입장</b>을 정하고, 선생님과 <b>1분 정도</b> 영어로 토론해요. 녹음이 끝나면 AI가 IB 방식으로 분석해 줘요.</p>
+  DB = DB || dbFresh();
+  const recOn = !!(DB.rec || DB.sr), ti = DB.said.length, talking = DB.phase === "talk";
+  const CARD = "border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px; margin:6px 0";
+
+  // ① 북토킹 — 책 이야기 3~5가지. 질문 하나씩 말로 답하고, 알아들은 말이 그 질문 아래 쌓인다.
+  const talkBox = !fq.length ? "" : `
     <div class="box">
-      <div class="dq-h">① 토론 질문</div>
+      <div class="dq-h">① 북토킹 — 책 이야기 ${fq.length}가지
+        <span class="count">${Math.min(ti + (talking ? 1 : 0), fq.length)} / ${fq.length}</span></div>
+      <ol style="margin:0; padding-left:22px">${fq.map((q, i) => {
+        const cur = talking && i === ti, a = dbAns(i);
+        return `<li style="${CARD}; ${cur ? "border-color:#2563eb; background:rgba(37,99,235,.06)" : a ? "" : "opacity:.55"}">
+          <b>${esc(q)}</b>
+          <div ${cur ? "id=\"btSaid\"" : ""} style="margin-top:6px; color:#444; min-height:1.2em">${esc(a) || (cur ? "…" : "")}</div>
+        </li>`;
+      }).join("")}</ol>
+      ${talking
+        ? `<div class="row"><button class="btn" id="btNext">${ti + 1 < fq.length ? "다음 질문 →" : "핵심 디베이트로 →"}</button></div>`
+        : (recOn ? "" : `<div class="row"><button class="btn ghost" id="btRedo">↺ 북토킹 다시</button></div>`)}
+      ${(ev.beats || []).length || ev.ending ? `<details style="margin-top:10px">
+        <summary style="cursor:pointer">👩‍🏫 선생님 칸 — 이 책의 근거</summary>
+        ${(ev.beats || []).length ? `<ul>${ev.beats.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+        ${ev.ending ? `<p><b>끝:</b> ${esc(ev.ending)}</p>` : ""}
+        <p class="tip">아이 답이 이 근거와 맞는지 보시면 됩니다. 여기 없는 것은 우리도 모릅니다 — 책에서 찾아오게 하세요.</p>
+      </details>` : ""}
+    </div>`;
+
+  // ② 생각 열기 — 답이 하나가 아닌 물음. 북토킹을 마친 뒤에 보인다.
+  const thinkBox = (talking || !cq.length) ? "" : `
+    <div class="box">
+      <div class="dq-h">② 생각 열기 — 답이 하나가 아닌 물음</div>
+      <ul>${cq.map(q => `<li>${esc(q)}</li>`).join("")}</ul>
+    </div>`;
+
+  // ③④⑤⑥ 핵심 디베이트
+  const debBox = (talking || !qs.length) ? "" : `
+    <div class="box">
+      <div class="dq-h">③ 토론 질문</div>
       <div class="dqs">${qs.map(q => `<button class="dq ${q === DB.q ? "on" : ""}" data-q="${esc(q)}" ${recOn ? "disabled" : ""}>${esc(q)}</button>`).join("")}</div>
-      <div class="dq-h">② 내 입장</div>
+      <div class="dq-h">④ 내 입장</div>
       <div class="gopts">${[["agree", "👍 Yes / Agree"], ["disagree", "👎 No / Disagree"], ["unsure", "🤔 It depends"]].map(([k, l]) =>
         `<button class="gopt ${DB.stance === k ? "on" : ""}" data-s="${k}" ${recOn ? "disabled" : ""}>${l}</button>`).join("")}</div>
     </div>
     <div class="box dframes">
-      <div class="dq-h">③ 이렇게 말해 보세요</div>
+      <div class="dq-h">⑤ 이렇게 말해 보세요</div>
       <ul>
         <li><b>주장</b> I believe ___ because ___.</li>
         <li><b>근거</b> For example, in the book, ___.</li>
@@ -1531,25 +1588,43 @@ function drawDebate(){
       <p class="tip">👩‍🏫 선생님 질문 예: Why do you think so? · Can you find an example in the book? · What would the other side say?</p>
     </div>
     <div class="box">
-      <div class="dq-h">④ 녹음하며 토론하기 <span class="count" id="dbTime">${fmtSec(DB.sec || 0)} / 1:00</span></div>
-      <div class="dbar"><i id="dbBar" style="width:${Math.min(100, (DB.sec || 0) / DEB_GOAL * 100)}%"></i></div>
-      <div class="row">
-        <button class="btn ${recOn ? "" : "red"}" id="dbRec">${recOn ? "■ 토론 끝" : DB.blob ? "● 다시 녹음" : "● 녹음 시작"}</button>
-        <audio id="dbAudio" controls ${DB.blob ? "" : "hidden"}></audio>
-      </div>
-      <p class="sub" style="margin:10px 0 4px">알아들은 말 (틀린 부분은 고쳐도 돼요)</p>
-      <textarea id="dbText" rows="5" placeholder="녹음하면 여기에 말이 글자로 나와요. 음성 인식이 안 되면 직접 써도 돼요.">${esc(DB.text || "")}</textarea>
+      <div class="dq-h">⑥ 토론에서 알아들은 말 (틀린 부분은 고쳐도 돼요)</div>
+      <textarea id="dbText" rows="5" placeholder="녹음하면 여기에 말이 글자로 나와요. 음성 인식이 안 되면 직접 써도 돼요.">${esc(dbDeb())}</textarea>
       <div class="row">
         <button class="btn" id="dbGo" ${recOn ? "disabled" : ""}>🤖 AI 분석 받기</button>
         <span class="count" id="dbNote"></span>
       </div>
     </div>`;
+
+  P.innerHTML = `
+    <h2 class="h">북토킹·디베이트 — 선생님과 영어로</h2>
+    <p class="sub">먼저 <b>북토킹</b>으로 책 이야기를 ${fq.length || "몇"}가지 나누고, 이어서 <b>북디베이트</b>로 토론해요.
+      녹음은 한 번만 누르면 끝까지 이어집니다. 끝나면 AI가 IB 방식으로 분석해 줘요.</p>
+    <div class="box">
+      <div class="dq-h">🎙 녹음 <span class="count" id="dbTime">${fmtSec(DB.sec || 0)} / 3:00</span></div>
+      <div class="dbar"><i id="dbBar" style="width:${Math.min(100, (DB.sec || 0) / DEB_GOAL * 100)}%"></i></div>
+      <div class="row">
+        <button class="btn ${recOn ? "" : "red"}" id="dbRec">${recOn ? "■ 끝내기" : DB.blob ? "● 다시 녹음" : "● 녹음 시작"}</button>
+        <audio id="dbAudio" controls ${DB.blob ? "" : "hidden"}></audio>
+      </div>
+      <p class="sub" style="margin:8px 0 0">${recOn ? "듣고 있어요. 영어로 말해 보세요." : "녹음을 누르고 북토킹부터 시작해요. 음성 인식이 안 되면 글로 써도 돼요."}</p>
+    </div>
+    ${talkBox}${thinkBox}${debBox}`;
+
   if (DB.blob) $("#dbAudio").src = URL.createObjectURL(DB.blob);
+  $("#dbRec").onclick = () => recOn ? stopDebate() : startDebate();
+  if ($("#btNext")) $("#btNext").onclick = () => {
+    dbFreeze();
+    if (DB.said.length >= fq.length) DB.phase = "debate";
+    drawDebate();
+  };
+  if ($("#btRedo")) $("#btRedo").onclick = () => {
+    DB.said = []; DB.marks = []; DB.dtext = undefined; DB.text = ""; DB.phase = "talk"; drawDebate();
+  };
   P.querySelectorAll(".dq").forEach(b => b.onclick = () => { DB.q = b.dataset.q; drawDebate(); });
   P.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { DB.stance = b.dataset.s; drawDebate(); });
-  $("#dbText").oninput = e => DB.text = e.target.value;
-  $("#dbRec").onclick = () => recOn ? stopDebate() : startDebate();
-  $("#dbGo").onclick = analyze;
+  if ($("#dbText")) $("#dbText").oninput = e => DB.dtext = e.target.value;
+  if ($("#dbGo")) $("#dbGo").onclick = analyze;
 }
 const fmtSec = s => `${Math.floor(s / 60)}:${String(Math.round(s) % 60).padStart(2, "0")}`;
 
@@ -1582,7 +1657,7 @@ async function startDebate(){
         else interim += e.results[i][0].transcript;
       }
       DB.text = (done + interim).trim();
-      const ta = document.getElementById("dbText"); if (ta) ta.value = DB.text;
+      dbPaint();
     };
     sr.onend = () => { if (DB && DB.rec) listen(); else if (DB) DB.sr = null; };
     DB.sr = sr; sr.start();
@@ -1608,16 +1683,24 @@ function stopDebate(){
 }
 
 async function analyze(){
-  const text = ($("#dbText").value || "").trim();
-  if (!DB.stance){ $("#dbNote").textContent = "② 내 입장을 먼저 골라 주세요."; return; }
-  if (text.split(/\s+/).length < 5){ $("#dbNote").textContent = "말한 내용이 너무 짧아요. 녹음하거나 직접 써 주세요."; return; }
+  const fq = (B.ib && B.ib.factual) || [];
+  const text = (($("#dbText") && $("#dbText").value) || "").trim();
+  if (!DB.stance){ $("#dbNote").textContent = "④ 내 입장을 먼저 골라 주세요."; return; }
+  if (text.split(/\s+/).filter(Boolean).length < 5){ $("#dbNote").textContent = "토론에서 한 말이 너무 짧아요. 녹음하거나 직접 써 주세요."; return; }
   $("#dbGo").disabled = true; $("#dbNote").textContent = "🤖 분석하는 중…";
-  const body = { book: bookForTalk(), question: DB.q, stance: DB.stance, transcript: text, seconds: Math.round(DB.sec || 0) };
+  // 북토킹 답과 디베이트 발언을 나누어 넘긴다 — 분석이 "책 내용을 정확히 알고 말했는가" 까지 본다
+  const talk = fq.map((q, i) => ({ q: q, a: dbAns(i) })).filter(x => x.a);
+  const full = (talk.length ? "[Book Talking — questions about the book]\n" +
+      talk.map((x, i) => "Q" + (i + 1) + ". " + x.q + "\nA" + (i + 1) + ". " + x.a).join("\n") + "\n\n" : "") +
+    "[Book Debate]\nQ. " + DB.q + "\n" + text;
+  const body = { book: bookForTalk(), question: DB.q, stance: DB.stance, bookTalk: talk,
+                 transcript: full, seconds: Math.round(DB.sec || 0) };
   let a;
-  try { a = aiOn() ? await RB.debate(body) : RBDebateLocal.localDebate({ book: B, transcript: text }); }
-  catch (e){ a = RBDebateLocal.localDebate({ book: B, transcript: text }); a.note = "AI 연결이 안 돼서 연습 분석으로 보여 줘요."; }
+  try { a = aiOn() ? await RB.debate(body) : RBDebateLocal.localDebate({ book: B, transcript: full }); }
+  catch (e){ a = RBDebateLocal.localDebate({ book: B, transcript: full }); a.note = "AI 연결이 안 돼서 연습 분석으로 보여 줘요."; }
   const D = { name: String(WHO || "").replace(/^@/, ""), date: today(), q: DB.q, stance: DB.stance,
-              sec: Math.round(DB.sec || 0), words: text.split(/\s+/).length, t: text.slice(0, 1500), a };
+              sec: Math.round(DB.sec || 0), words: full.split(/\s+/).filter(Boolean).length,
+              talk: talk, t: full.slice(0, 1500), a: a };
   put("debate", D);
   DB = null; drawDebate(); drawTabs();
   sayMix(a.summary_ko);
@@ -1630,14 +1713,16 @@ function debateHTML(D){
   const stance = { agree: "👍 Agree", disagree: "👎 Disagree", unsure: "🤔 It depends" }[D.stance] || "-";
   return `
     <div class="lrep" id="debRep">
-      <div class="lrbar">Reading Report · Book Debate</div>
-      <div class="lrhead"><h1>BOOK DEBATE</h1><img src="assets/logo-full.png" alt="리딩브레인" onerror="this.remove()"></div>
+      <div class="lrbar">Reading Report · Book Talking &amp; Debate</div>
+      <div class="lrhead"><h1>BOOK TALKING &amp; DEBATE</h1><img src="assets/logo-full.png" alt="리딩브레인" onerror="this.remove()"></div>
       <div class="lrinfo">
         ${B.cover ? `<img class="lrcover" src="${esc(B.cover)}" alt="">` : ""}
         <table><tr><th>Title</th><td>${esc(B.title)}</td><th>Name</th><td>${esc(D.name || "-")}</td></tr>
           <tr><th>Time</th><td>${fmtSec(+D.sec || 0)} · ${+D.words || 0} words</td><th>Date</th><td>${esc(D.date)}</td></tr>
           <tr><th>Position</th><td>${stance}</td><th>Score</th><td><b>${avg.toFixed(1)}</b> / 4</td></tr></table>
       </div>
+      ${(D.talk || []).length ? `<div class="lrtag">🗣 북토킹 — 책 이야기</div>
+      <ul class="dlist">${D.talk.map((x, i) => `<li><b>Q${i + 1}. ${esc(x.q)}</b><br>${esc(x.a)}</li>`).join("")}</ul>` : ""}
       <div class="dqbig">❓ ${esc(D.q)}</div>
       <div class="lrtag">📊 IB 토론 평가</div>
       <div class="dcrit">${Object.entries(CRIT_KO).map(([k, l]) => `

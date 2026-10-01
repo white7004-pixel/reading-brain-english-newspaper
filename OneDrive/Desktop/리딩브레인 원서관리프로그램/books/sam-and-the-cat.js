@@ -219,6 +219,8 @@ window.BOOK = {
     globalContext: "Identities and relationships — how we feel when something is taken (내 것을 빼앗겼을 때의 마음)",
     statement: "When someone takes our things, we feel mad or sad.",
     factual: [
+      "Who has a hat?",
+      "Who has the ham and the jam?",
       "What is on the mat?",
       "Who is on the van?"
     ],
