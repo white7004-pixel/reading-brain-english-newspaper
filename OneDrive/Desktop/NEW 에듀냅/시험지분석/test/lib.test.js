@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier, crossTab, DIFF5 } from '../public/lib.js';
+import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier, crossTab, DIFF5, difficultyFlow, donutSlices } from '../public/lib.js';
 
 const items = [
   { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하', source: '교과서' },
@@ -172,4 +172,32 @@ test('crossTab 은 영역 × 난이도를 세고 총계 줄·칸을 붙인다', 
 test('crossTab 은 칸이 빌 수 있는 과목에서도 총계가 문항 수와 같다', () => {
   const s = crossTab([], 'area', 'difficulty', DIFF5);
   assert.deepEqual([s.cols, s.rows, s.count], [[], [], 0]);
+});
+
+// ── 발표 슬라이드용 숫자 ──
+test('difficultyFlow 는 문항 차례대로 난이도를 좌표로 주고, 어려워지는 자리를 찾는다', () => {
+  const list = ['하', '중', '하', '중', '중상', '상', '중상'].map((d, i) => ({ no: String(i + 1), difficulty: d }));
+  const f = difficultyFlow(list);
+  assert.equal(f.points.length, 7);
+  assert.deepEqual(f.points[0], { x: 0, y: 0, no: '1', difficulty: '하', hard: false });
+  assert.deepEqual(f.points[4], { x: 4, y: 3, no: '5', difficulty: '중상', hard: true });
+  // 중상 이상이 연달아 둘 나오는 첫 자리 (5번)
+  assert.equal(f.hardFrom, 4);
+  assert.deepEqual([f.max, f.count], [4, 7]);
+});
+
+test('difficultyFlow 는 어려워지는 구간이 없으면 hardFrom 을 비워 둔다', () => {
+  const 쉬움 = ['중', '하', '중', '중'].map((d, i) => ({ no: String(i + 1), difficulty: d }));
+  assert.equal(difficultyFlow(쉬움).hardFrom, null);
+  // 중상이 하나만 있으면 아직 '구간'이 아니다
+  const 하나 = ['중', '상', '중', '하'].map((d, i) => ({ no: String(i + 1), difficulty: d }));
+  assert.equal(difficultyFlow(하나).hardFrom, null);
+  assert.deepEqual(difficultyFlow([]), { points: [], hardFrom: null, max: 4, count: 0 });
+});
+
+test('donutSlices 는 한 바퀴를 비율대로 나눠 마지막이 꼭 360 에서 끝난다', () => {
+  const s = donutSlices([{ label: '하', count: 1 }, { label: '중', count: 2 }, { label: '상', count: 1 }]);
+  assert.deepEqual(s.map((r) => [r.label, r.from, r.to]), [['하', 0, 90], ['중', 90, 270], ['상', 270, 360]]);
+  assert.deepEqual(s.map((r) => r.pct), [25, 50, 25]);
+  assert.deepEqual(donutSlices([]), []);
 });

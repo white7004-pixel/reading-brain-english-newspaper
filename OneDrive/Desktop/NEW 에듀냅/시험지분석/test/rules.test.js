@@ -231,3 +231,12 @@ test('대표 문항 표시는 AI 에 보내는 문항표에도 남는다', () =>
   const 문항 = [{ no: '1', kind: '객관식', points: 100, unit: '', area: '독해', subtype: '', difficulty: '중', source: '교과서', answer: '', reason: '', key: true }];
   assert.match(reportRequest({ mode: 'school', meta, items: 문항 }).content[0].text, /"key":true/);
 });
+
+test('발표 슬라이드가 쓰는 칸 셋을 AI 에게 받는다', () => {
+  ['keywords', 'whyHard', 'message'].forEach((k) => assert.ok(SCHOOL_SCHEMA.properties[k], k));
+  assert.deepEqual([...SCHOOL_SCHEMA.properties.whyHard.items.required].sort(), ['detail', 'title']);
+  const 지시 = reportRequest({ mode: 'school', meta, items }).system;
+  assert.match(지시, /keywords: .*4개|핵심 키워드/);
+  assert.match(지시, /whyHard/);
+  assert.match(지시, /message/);
+});

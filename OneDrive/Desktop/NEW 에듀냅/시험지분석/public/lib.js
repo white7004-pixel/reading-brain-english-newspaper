@@ -84,6 +84,34 @@ function byPoints(items) {
     .map(([points, nos]) => ({ points, count: nos.length, nos: nos.sort((a, b) => noNum(a) - noNum(b) || a.localeCompare(b, 'ko')) }));
 }
 
+// ── 발표 슬라이드가 그림으로 쓰는 숫자 (그리기는 slides.js 가 한다) ──
+// 문항 차례대로 난이도를 0~4 로 놓는다. 학원 분석 슬라이드가 "뒤로 갈수록 어려워졌다"를
+// 보여 줄 때 쓰는 꺾은선이다. 어디서부터 어려워졌는지는 **중상 이상이 연달아 둘** 나오는
+// 첫 자리로 잡는다 — 한 문항만 튀는 것은 구간이 아니다.
+export function difficultyFlow(items) {
+  const points = items.map((it, i) => {
+    const y = DIFF5.indexOf(it.difficulty);
+    return { x: i, y: y < 0 ? 2 : y, no: noText(it.no), difficulty: it.difficulty, hard: y >= 3 };
+  });
+  let hardFrom = null;
+  for (let i = 0; i + 1 < points.length; i++) {
+    if (points[i].hard && points[i + 1].hard) { hardFrom = i; break; }
+  }
+  return { points, hardFrom, max: DIFF5.length - 1, count: points.length };
+}
+
+// 도넛 한 바퀴를 비율대로 나눈다. 반올림이 쌓여 틈이 생기지 않게 마지막은 360 으로 닫는다.
+export function donutSlices(rows) {
+  const total = rows.reduce((n, r) => n + r.count, 0);
+  if (!total) return [];
+  let at = 0;
+  return rows.map((r, i) => {
+    const from = at;
+    at = i === rows.length - 1 ? 360 : from + (r.count / total) * 360;
+    return { label: r.label, count: r.count, pct: pct(r.count, total), from, to: at };
+  });
+}
+
 // 두 기준을 한 장에 겹쳐 본다 (영역 × 난이도). 따로 보면 "어느 영역을 어렵게 냈나"가 안 보인다.
 // 줄은 나온 순서대로, 칸은 정해진 차례대로. 아무도 없는 줄·칸은 싣지 않는다 (빈 칸만 늘어난다).
 // rowOrder 를 주면 그 차례대로 (영역별 표와 줄 순서를 맞추려고). 없으면 시험지에 나온 순서대로.

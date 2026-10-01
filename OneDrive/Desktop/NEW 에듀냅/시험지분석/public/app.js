@@ -2,6 +2,7 @@ import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents
 import { unitsFor, GRADES } from './curriculum.js';
 import { schoolPage, studentPage, explainPages } from './report.js';
 import { shareCards } from './share.js';
+import { slideDeck } from './slides.js';
 
 export const $ = (sel) => document.querySelector(sel);
 export const state = { academy: null, meta: null, items: [] };
@@ -146,7 +147,7 @@ $('#academy-form').elements.logo.addEventListener('change', async (e) => {
 academyForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const f = academyForm.elements;
-  state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src, prep: f.prep.value.trim(), slogan: f.slogan.value.trim(), cover: f.cover.checked };
+  state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src, prep: f.prep.value.trim(), slogan: f.slogan.value.trim(), cover: f.cover.checked, slides: f.slides.checked };
   store.set('academy', state.academy);
   showAcademy();
   academyForm.closest('details').open = false;
@@ -340,7 +341,8 @@ $('#make-report').addEventListener('click', async (e) => {
     const written = parts.flatMap((p) => p.students); // 서버가 학생 수·순서를 맞춰 돌려준다
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
     $('#pages').style.setProperty('--brand', state.academy.color);
-    $('#pages').innerHTML = shareCards(ctx, school) + schoolPage(ctx, school)
+    $('#pages').innerHTML = (state.academy.slides ? slideDeck(ctx, school) : '')
+      + shareCards(ctx, school) + schoolPage(ctx, school)
       + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('')
       + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
     setStatus('#report-status', '');
@@ -435,6 +437,7 @@ if (saved) {
   f.prep.value = saved.prep ?? '';
   f.slogan.value = saved.slogan ?? '';
   f.cover.checked = !!saved.cover;
+  f.slides.checked = saved.slides !== false;
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
 }
 showAcademy();

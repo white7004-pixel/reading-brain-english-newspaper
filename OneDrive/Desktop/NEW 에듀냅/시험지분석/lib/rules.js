@@ -143,6 +143,10 @@ export const SCHOOL_SCHEMA = obj({
   flow: arr(str),
   keyItems: arr(obj({ no: str, why: str })),
   strategy: arr(obj({ area: str, tip: str })),
+  // 아래 셋은 발표 슬라이드가 쓴다 (A4 는 쓰지 않는다)
+  keywords: arr(str),
+  whyHard: arr(obj({ title: str, detail: str })),
+  message: str,
 });
 
 export const studentsSchema = (subject) => obj({
@@ -222,6 +226,10 @@ const schoolSystem = (s) => `당신은 한국 입시학원의 ${s} 내신 분석
   why 는 2~3문장(200자 이내): ① 이 문항이 무엇을 알아야 풀리는지 ② 어디서 틀리기 쉬운지. 학부모가 그대로 읽는 글입니다.
   지문·선택지 원문은 옮기지 않습니다 (시험지는 학교 저작물입니다).
 - strategy: 이 시험에 나온 영역마다 1문장(40자 이내)씩 다음 시험 대비 방법. 구체적인 공부 활동으로 (예: ${GUIDE[s].strategy}).
+- keywords: 이번 시험을 한마디로 줄인 **핵심 키워드 4개**. 각 12자 이내의 명사구 (예: "후반부 난도 상승"). 받은 통계로 말할 수 있는 것만 씁니다.
+- whyHard: **이번 시험이 어려웠던 이유 3개**. title 은 10자 이내 명사구, detail 은 한 문장 60자 이내.
+  "무엇을 요구한 시험인가"를 말합니다. 쉬운 시험이면 어려웠다고 하지 말고 무엇이 변별을 갈랐는지 씁니다.
+- message: 학부모에게 남기는 **한 문장(60자 이내)**. 다음 시험을 어떻게 준비할지 방향을 말하고, 겁주거나 불안하게 하지 않습니다.
 
 ${TONE}
 
