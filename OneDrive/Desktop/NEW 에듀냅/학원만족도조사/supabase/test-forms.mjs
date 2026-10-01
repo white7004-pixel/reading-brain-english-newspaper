@@ -77,4 +77,11 @@ assert.strictEqual(list.find(f => f.slug === 'seminar').responses, 1);
 
 // 표는 여전히 직접 못 읽는다
 await assert.rejects(db.query(`select * from academy_survey.forms`));
+// 3단계: 구글폼 13개 (모두 마감으로, 두 번 실행해도 그대로)
+await db.exec('reset role');
+await db.exec("delete from academy_survey.forms where status = 'closed'");
+await db.exec(read('./003_seminar_forms.sql'));
+await db.exec(read('./003_seminar_forms.sql')); // 3단계도 두 번 실행해도 된다
+assert.strictEqual((await db.query("select count(*)::int n from academy_survey.forms where status = 'closed'")).rows[0].n, 13);
+
 console.log('설문 만들기 SQL 시험 통과');

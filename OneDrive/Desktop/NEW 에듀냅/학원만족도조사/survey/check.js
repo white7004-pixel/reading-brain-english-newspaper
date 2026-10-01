@@ -113,4 +113,16 @@ assert.deepStrictEqual(draft.intro, ['한 문단']);
 assert.strictEqual(draft.notice.length, 300);
 assert.throws(() => ai.parse('JSON 없음'));
 
+// 그림·안내 글(info)은 답을 받지 않는다: 집계·필수·CSV 에서 빠지고, 번호표는 겹치지 않는다
+const withInfo = { kicker: '설명회', sections: [{ title: '안내', items: [
+  { id: 'q1', type: 'info', label: '', image: '/img/a.jpg' },
+  { id: 'q2', type: 'scale', required: true, label: '추천', options: [{ v: 1, label: '아니다' }, { v: 2, label: '' }, { v: 3, label: '그렇다' }] }] }] };
+assert.deepStrictEqual(RB.validateDef(withInfo), []);
+assert.deepStrictEqual(RB.items(withInfo).map(i => i.id), ['q2']);
+assert.strictEqual(RB.newId(withInfo), 'q3');
+assert.strictEqual(RB.summarize(withInfo, [{ answers: { q2: 3 } }]).items.q2.avg, 3);
+assert.ok(!RB.toCSV(withInfo, []).includes('undefined'));
+withInfo.sections[0].items[1].options[2].label = '';
+assert.ok(RB.validateDef(withInfo).some(e => e.includes('양 끝')));
+
 console.log('check.js 통과');

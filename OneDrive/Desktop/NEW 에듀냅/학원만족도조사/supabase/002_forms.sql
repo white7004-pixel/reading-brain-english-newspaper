@@ -133,7 +133,7 @@ begin
 end;
 $$;
 
--- 설문 저장: 새로 만들기(p_new) 또는 고치기. 결과는 {ok:true} 또는 {error:'...'}
+-- 설문 저장 (그림은 설문 안에 data URL 로 들어오므로 3MB 까지): 새로 만들기(p_new) 또는 고치기. 결과는 {ok:true} 또는 {error:'...'}
 create or replace function public.survey_save_form(p_password text, p_slug text, p_def jsonb, p_new boolean)
 returns jsonb
 language plpgsql
@@ -148,12 +148,12 @@ begin
   if p_slug is null or p_slug !~ '^[a-z0-9][a-z0-9-]{1,39}$' or p_slug in ('s', 'results', 'dashboard', 'index') then
     return '{"error":"slug"}';
   end if;
-  if jsonb_typeof(p_def) <> 'object' or length(p_def::text) > 100000 then return '{"error":"bad"}'; end if;
+  if jsonb_typeof(p_def) <> 'object' or length(p_def::text) > 3000000 then return '{"error":"bad"}'; end if;
 
   select count(*) into n_items from academy_survey.items_of(p_def);
   if n_items = 0 then return '{"error":"empty"}'; end if;
   if exists (select 1 from academy_survey.items_of(p_def) x
-             where coalesce(x->>'type', '') not in ('single', 'multi', 'scale', 'text')
+             where coalesce(x->>'type', '') not in ('single', 'multi', 'scale', 'text', 'info')
                 or coalesce(x->>'id', '') !~ '^[A-Za-z0-9_]{1,40}$') then
     return '{"error":"bad"}';
   end if;
@@ -165,10 +165,11 @@ begin
   if p_new and old is not null then return '{"error":"exists"}'; end if;
   if not p_new and old is null then return '{"error":"missing"}'; end if;
 
-  -- 응답이 있으면: 옛 문항이 같은 id·종류·보기로 모두 남아 있어야 한다
+  -- 응답이 있으면 (그림·안내 글 info 는 빼고): 옛 문항이 같은 id·종류·보기로 모두 남아 있어야 한다
   if old is not null and exists (select 1 from academy_survey.responses r where r.survey = p_slug)
      and exists (select 1 from academy_survey.items_of(old) o
-                 where not exists (select 1 from academy_survey.items_of(p_def) n
+                 where o->>'type' <> 'info'
+                   and not exists (select 1 from academy_survey.items_of(p_def) n
                                    where n->>'id' = o->>'id' and n->>'type' = o->>'type'
                                      and coalesce(n->'options', 'null') = coalesce(o->'options', 'null'))) then
     return '{"error":"locked"}';

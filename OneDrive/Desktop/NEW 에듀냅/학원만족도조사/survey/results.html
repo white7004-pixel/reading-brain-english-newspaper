@@ -113,6 +113,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .ehead{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.ehead b{min-width:22px;color:var(--red)}.ehead .sp{flex:1}.ehead .wide{flex:1;width:auto}
 .ib{min-width:36px;min-height:36px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}.ib:disabled{opacity:.35;cursor:not-allowed}
 .aibox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--red-soft);border-radius:12px;padding:10px 12px;margin:0 0 14px}.aibox .sub{margin:0}
+.picf{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.picf img{max-width:160px;max-height:120px;border-radius:8px;border:1px solid var(--line-soft)}.picf label.btn{cursor:pointer}
 .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .lockn{font-size:12px;color:var(--warn-ink);background:var(--warn);border-radius:8px;padding:4px 8px}
 select:disabled,textarea:disabled{opacity:.6}
@@ -140,7 +141,7 @@ select:disabled,textarea:disabled{opacity:.6}
   var BASE = /^(localhost|127\.)/.test(location.hostname) ? 'https://readingbrain-survey.vercel.app' : location.origin;
   var SAT = [{ v: 5, label: '매우 만족' }, { v: 4, label: '만족' }, { v: 3, label: '보통' }, { v: 2, label: '불만족' }, { v: 1, label: '매우 불만족' }];
   var AGREE = [{ v: 1, label: '전혀 아니다' }, { v: 2, label: '아니다' }, { v: 3, label: '보통이다' }, { v: 4, label: '그렇다' }, { v: 5, label: '매우 그렇다' }];
-  var TYPES = { single: '하나 고르기', multi: '여러 개 고르기', scale: '5점 척도', text: '서술' };
+  var TYPES = { single: '하나 고르기', multi: '여러 개 고르기', scale: '척도', text: '글로 답하기', info: '그림·안내 글' };
   var ERRORS = {
     password: '비밀번호가 맞지 않습니다. 다시 들어가 주세요.',
     slug: '주소 이름은 영문 소문자·숫자·- 로 2~40자로 적어 주세요. (예: seminar-2026-11)',
@@ -317,7 +318,7 @@ select:disabled,textarea:disabled{opacity:.6}
     } else {
       S.sections.forEach(function (sec) {
         h += '<h2>' + esc(sec.title) + '</h2>';
-        var choice = sec.items.filter(function (i) { return i.type !== 'text'; }), texts = sec.items.filter(function (i) { return i.type === 'text'; });
+        var choice = sec.items.filter(function (i) { return i.type !== 'text' && i.type !== 'info'; }), texts = sec.items.filter(function (i) { return i.type === 'text'; });
         if (choice.length) h += '<div class="grid">' + choice.map(function (it) {
           var s = sum.items[it.id];
           return '<div class="card q"><div class="t">' + (s.avg !== undefined ? '<span class="avg">평균 ' + fmt(s.avg) + '</span>' : '') + esc(it.label) + '</div>' +
@@ -447,16 +448,44 @@ select:disabled,textarea:disabled{opacity:.6}
   function field(label, html, hint) {
     return '<label class="fld"><span>' + label + '</span>' + html + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
   }
+  function picField(src, attrs, label) {
+    return '<div class="picf">' + (src ? '<img src="' + esc(src) + '" alt=""><button class="btn sm" data-act="pic-del"' + attrs + '>그림 빼기</button>' : '') +
+      '<label class="btn sm">' + (src ? '그림 바꾸기' : label) + '<input type="file" accept="image/*" hidden data-pic="1"' + attrs + '></label></div>';
+  }
+  // 그림은 가로 1000px JPEG 로 줄여 설문 안에 넣는다
+  // ponytail: 그림이 설문 데이터 안에 들어가 무거워짐 — 그림이 많아지면 Supabase Storage 로
+  function shrink(file) {
+    return new Promise(function (ok, fail) {
+      var img = new Image();
+      img.onload = function () {
+        var k = Math.min(1, 1000 / img.width), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(img.src); ok(c.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = fail;
+      img.src = URL.createObjectURL(file);
+    });
+  }
   function itemEditor(it, si, ii, num) {
     var lock = lockedId(it.id), dis = lock ? ' disabled' : '';
     var a = ' data-s="' + si + '" data-i="' + ii + '"';
+    if (it.type === 'info') return '<div class="eitem"><div class="ehead"><b>' + num + '</b>' +
+      '<select data-ik="type"' + a + ' aria-label="문항 종류">' + Object.keys(TYPES).map(function (t) { return '<option value="' + t + '"' + (it.type === t ? ' selected' : '') + '>' + TYPES[t] + '</option>'; }).join('') + '</select>' +
+      '<span class="sp"></span><button class="ib" data-act="item-up"' + a + ' aria-label="위로">↑</button><button class="ib" data-act="item-down"' + a + ' aria-label="아래로">↓</button>' +
+      '<button class="ib" data-act="item-del"' + a + ' aria-label="지우기">✕</button></div>' +
+      '<input class="wide" data-ik="label"' + a + ' value="' + esc(it.label) + '" placeholder="제목 (없어도 됩니다)" aria-label="제목">' +
+      '<textarea data-ik="desc"' + a + ' rows="3" placeholder="안내 글 (없어도 됩니다)" aria-label="안내 글">' + esc(it.desc) + '</textarea>' +
+      picField(it.image, a, '＋ 그림 넣기') + '</div>';
     var h = '<div class="eitem"><div class="ehead"><b>' + num + '</b>' +
       '<select data-ik="type"' + a + dis + ' aria-label="문항 종류">' + Object.keys(TYPES).map(function (t) { return '<option value="' + t + '"' + (it.type === t ? ' selected' : '') + '>' + TYPES[t] + '</option>'; }).join('') + '</select>' +
       '<label class="chk"><input type="checkbox" data-ik="required"' + a + (it.required ? ' checked' : '') + '> 필수</label>' +
       '<span class="sp"></span>' +
       '<button class="ib" data-act="item-up"' + a + ' aria-label="위로">↑</button><button class="ib" data-act="item-down"' + a + ' aria-label="아래로">↓</button>' +
       '<button class="ib" data-act="item-del"' + a + dis + ' aria-label="문항 지우기">✕</button></div>' +
-      '<input class="wide" data-ik="label"' + a + ' value="' + esc(it.label) + '" placeholder="문항 글을 적어 주세요" aria-label="문항 글">';
+      '<input class="wide" data-ik="label"' + a + ' value="' + esc(it.label) + '" placeholder="문항 글을 적어 주세요" aria-label="문항 글">' +
+      '<input class="wide" data-ik="desc"' + a + ' value="' + esc(it.desc) + '" placeholder="설명 (없어도 됩니다)" aria-label="문항 설명">' +
+      picField(it.image, a, '＋ 문항 그림');
     if (it.type === 'single' || it.type === 'multi') {
       h += '<textarea data-ik="options"' + a + dis + ' rows="' + Math.max(3, it.options.length) + '" aria-label="보기" placeholder="보기를 한 줄에 하나씩">' + esc(it.options.join('\n')) + '</textarea>' +
         '<label class="chk"><input type="checkbox" data-ik="filter"' + a + (it.filter ? ' checked' : '') + '> 결과 화면에서 이 답으로 걸러 보기 (학년·반 같은 문항)</label>';
@@ -467,9 +496,10 @@ select:disabled,textarea:disabled{opacity:.6}
         '<option value="agree"' + (p === 'agree' ? ' selected' : '') + '>전혀 아니다 ~ 매우 그렇다</option>' +
         '<option value="custom"' + (p === 'custom' ? ' selected' : '') + '>직접 적기</option></select>' +
         '<label class="chk"><input type="checkbox" data-ik="noAvg"' + a + (it.noAvg ? ' checked' : '') + '> 평균에서 빼기 (양 끝이 모두 나쁜 문항, 예: 숙제 양)</label></div>' +
-        (p === 'custom' ? '<textarea data-ik="scaleLabels"' + a + dis + ' rows="5" aria-label="5점 말" placeholder="1점부터 5점까지 한 줄에 하나씩">' + esc(it.options.map(function (o) { return o.label; }).join('\n')) + '</textarea>' : '');
+        (p === 'custom' ? '<textarea data-ik="scaleLabels"' + a + dis + ' rows="' + it.options.length + '" aria-label="척도 말" placeholder="낮은 점수부터 한 줄에 하나씩 (가운데는 비워도 됩니다)">' + esc(it.options.map(function (o) { return o.label; }).join('\n')) + '</textarea>' : '');
     } else {
-      h += '<label class="chk"><input type="checkbox" data-ik="flag"' + a + (it.flag ? ' checked' : '') + '> 글이 적히면 대시보드에 "확인 필요"로 띄우기</label>';
+      h += '<label class="chk"><input type="checkbox" data-ik="short"' + a + (it.short ? ' checked' : '') + '> 한 줄 답 (이름·학교·연락처처럼)</label>' +
+        '<label class="chk"><input type="checkbox" data-ik="flag"' + a + (it.flag ? ' checked' : '') + '> 글이 적히면 대시보드에 "확인 필요"로 띄우기</label>';
     }
     if (lock) h += '<div class="lockn">응답이 있어 종류·보기는 바꿀 수 없습니다 (글자는 고칠 수 있음)</div>';
     return h + '</div>';
@@ -484,6 +514,7 @@ select:disabled,textarea:disabled{opacity:.6}
       '<div class="aibox"><button class="btn sm" id="ai">✨ AI로 제목·인사말 채우기</button><span class="sub" id="aimsg">설문 이름과 문항을 보고 아래 글을 써 드립니다. 쓴 뒤 고치시면 됩니다.</span></div>' +
       (e.isNew ? field('주소 이름', '<div class="slug"><span>' + esc(BASE) + '/s/</span><input data-k="slug" value="' + esc(e.slug) + '" placeholder="seminar-2026-11" autocapitalize="off" spellcheck="false"></div>', '영문 소문자·숫자·- 만, 2~40자. 저장한 뒤에는 바꿀 수 없습니다')
         : field('주소', '<code>' + esc(urlOf(e.slug)) + '</code>')) +
+      field('표지 그림', picField(d.image, ' data-cover="1"', '＋ 표지 그림 넣기'), '설명회 포스터 같은 그림. 첫 화면 제목 위에 나옵니다') +
       field('첫 화면 제목', '<input data-k="title" value="' + esc(d.title) + '" placeholder="비우면 설문 이름이 나옵니다">') +
       field('첫 인사 (작은 글씨)', '<input data-k="greeting" value="' + esc(d.greeting) + '" placeholder="Dear parents,">') +
       field('인사말', '<textarea data-k="intro" rows="4">' + esc((d.intro || []).join('\n')) + '</textarea>', '한 줄이 한 문단이 됩니다') +
@@ -518,7 +549,7 @@ select:disabled,textarea:disabled{opacity:.6}
   function lines(v) { return String(v).split('\n').map(function (x) { return x.trim(); }).filter(Boolean); }
   function build() {
     var d = clone(st.edit.def);
-    d.sections.forEach(function (s) { s.items.forEach(function (i) { if (i.type !== 'single' && i.type !== 'multi') delete i.filter; if (i.type !== 'text') delete i.flag; if (i.type !== 'scale') delete i.noAvg; }); });
+    d.sections.forEach(function (s) { s.items.forEach(function (i) { if (i.type !== 'single' && i.type !== 'multi') delete i.filter; if (i.type !== 'text') delete i.flag; if (i.type !== 'scale') delete i.noAvg; if (i.type !== 'text') delete i.short; }); });
     return d;
   }
   function bindEditor() {
@@ -533,15 +564,23 @@ select:disabled,textarea:disabled{opacity:.6}
       var it = d.sections[ds.s].items[ds.i];
       if (ds.ik === 'label') it.label = t.value;
       else if (ds.ik === 'options') it.options = lines(t.value);
+      else if (ds.ik === 'desc') { if (t.value) it.desc = t.value; else delete it.desc; }
       else if (ds.ik === 'scaleLabels') {
-        var ls = String(t.value).split('\n').slice(0, 5);
-        while (ls.length < 5) ls.push('');
-        it.options = ls.map(function (l, n) { return { v: n + 1, label: l.trim() }; });
+        var ls = String(t.value).split('\n');
+        it.options = it.options.map(function (o, n) { return { v: o.v, label: (ls[n] || '').trim() }; });
       } else return;
       touched();
     });
     ed.addEventListener('change', function (ev) {
       var t = ev.target, ds = t.dataset;
+      if (ds.pic) {
+        if (!t.files[0]) return;
+        shrink(t.files[0]).then(function (url) {
+          if (ds.cover) d.image = url; else d.sections[ds.s].items[ds.i].image = url;
+          e.dirty = true; drawEdit();
+        }, function () { alert('그림을 읽지 못했습니다. JPG·PNG 파일인지 확인해 주세요.'); });
+        return;
+      }
       if (ds.k && t.type === 'checkbox') { if (t.checked) d[ds.k] = true; else delete d[ds.k]; touched(); return; }
       if (!ds.ik) return;
       var it = d.sections[ds.s].items[ds.i];
@@ -551,6 +590,7 @@ select:disabled,textarea:disabled{opacity:.6}
         if (it.type === 'single' || it.type === 'multi') { if (!Array.isArray(it.options) || typeof it.options[0] === 'object' || !it.options.length) it.options = ['보기 1', '보기 2']; }
         else if (it.type === 'scale') it.options = clone(SAT);
         else delete it.options;
+        if (it.type === 'info') delete it.required;
       } else if (ds.ik === 'preset') {
         it.options = t.value === 'sat' ? clone(SAT) : t.value === 'agree' ? clone(AGREE) : it.options.map(function (o, n) { return { v: n + 1, label: o.label }; });
         if (t.value === 'custom' && preset(it.options) !== 'custom') it.options[0].label += ' '; // 직접 적기 칸이 열리게
@@ -562,6 +602,7 @@ select:disabled,textarea:disabled{opacity:.6}
       if (!b || b.disabled) return;
       var s = Number(b.dataset.s), i = Number(b.dataset.i), secs = d.sections, act = b.dataset.act;
       var swap = function (arr, x, y) { if (y < 0 || y >= arr.length) return; var t = arr[x]; arr[x] = arr[y]; arr[y] = t; };
+      if (act === 'pic-del') { if (b.dataset.cover) delete d.image; else delete secs[s].items[i].image; e.dirty = true; drawEdit(); return; }
       if (act === 'sec-add') secs.push({ title: '새 섹션', desc: '', items: [{ id: RB.newId(d), type: 'scale', required: true, label: '', options: clone(SAT) }] });
       else if (act === 'sec-del') { if (!confirm('이 섹션과 안의 문항을 모두 지울까요?')) return; secs.splice(s, 1); }
       else if (act === 'sec-up') swap(secs, s, s - 1);

@@ -1,9 +1,10 @@
 // 설문 화면·결과 화면이 함께 쓰는 검사·집계·저장 통로. node 에서도 읽힌다(check.js).
 (function () {
-  function items(survey) {
+  // 답을 받는 문항들 (all 이면 그림·안내 글(info)까지)
+  function items(survey, all) {
     var out = [];
     survey.sections.forEach(function (s) { out = out.concat(s.items); });
-    return out;
+    return all ? out : out.filter(function (i) { return i.type !== 'info'; });
   }
   function empty(v) {
     return v === undefined || v === null || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
@@ -47,9 +48,10 @@
       if (!sec.items.length) errs.push(name + ' 섹션에 문항이 없습니다. 문항을 넣거나 섹션을 지워 주세요.');
       sec.items.forEach(function (it) {
         n++;
-        if (!String(it.label || '').trim()) errs.push(n + '번 문항: 문항 글을 적어 주세요.');
+        if (it.type === 'info' ? !String(it.label || it.desc || it.image || '').trim() : !String(it.label || '').trim()) errs.push(n + '번 문항: 문항 글을 적어 주세요.');
         if ((it.type === 'single' || it.type === 'multi') && (it.options || []).length < 2) errs.push(n + '번 문항: 보기를 두 개 이상 적어 주세요.');
-        if (it.type === 'scale' && (it.options || []).some(function (o) { return !String(o.label || '').trim(); })) errs.push(n + '번 문항: 5점 척도의 말을 모두 적어 주세요.');
+        var sc = it.options || [];
+        if (it.type === 'scale' && (sc.length < 2 || !String(sc[0].label || '').trim() || !String(sc[sc.length - 1].label || '').trim())) errs.push(n + '번 문항: 척도 양 끝의 말을 적어 주세요.');
         if (ids[it.id]) errs.push(n + '번 문항: 다른 문항과 번호표(id)가 겹칩니다.');
         ids[it.id] = true;
       });
@@ -59,7 +61,7 @@
 
   function newId(def) {
     var used = {}, k = 1;
-    items(def).forEach(function (i) { used[i.id] = true; });
+    items(def, true).forEach(function (i) { used[i.id] = true; });
     while (used['q' + k]) k++;
     return 'q' + k;
   }
@@ -76,7 +78,7 @@
     survey.sections.forEach(function (sec) {
       var total = 0, cnt = 0;
       sec.items.forEach(function (it) {
-        if (it.type === 'text') return;
+        if (it.type === 'text' || it.type === 'info') return;
         var counts = {};
         it.options.forEach(function (o) { counts[typeof o === 'object' ? o.v : o] = 0; });
         var sum = 0, k = 0;

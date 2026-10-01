@@ -37,7 +37,7 @@ p{margin:0 0 10px;word-break:keep-all}
 .desc{color:var(--muted);font-size:14px;margin-bottom:8px}
 .q{padding:20px 0;border-top:1px dashed var(--line)}
 .q:first-of-type{border-top:0}
-.qt{font-size:calc(var(--fs) + 1px);margin-bottom:12px;word-break:keep-all}
+.qt{font-size:calc(var(--fs) + 1px);margin-bottom:12px;word-break:keep-all;white-space:pre-line}
 .qt .req{color:var(--red);margin-left:3px}
 .hint{font-size:13px;color:var(--muted);margin:-6px 0 10px}
 .err{display:none;color:var(--red);font-size:14px;margin-top:8px}
@@ -54,6 +54,11 @@ p{margin:0 0 10px;word-break:keep-all}
 textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px 14px;font:inherit;color:var(--ink);resize:vertical}
 button:focus-visible,textarea:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 textarea:focus{outline:none;border-color:var(--red)}
+input.short{width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:10px 14px;font:inherit;color:var(--ink)}
+input.short:focus{outline:none;border-color:var(--red)}
+.pic{display:block;width:100%;height:auto;border-radius:12px;margin:4px 0 12px}
+.qd{font-size:14px;color:var(--muted);white-space:pre-line;margin:-4px 0 10px}
+.info .qt{font-weight:600}
 .done{text-align:center;padding-top:60px}
 .done .mark{width:72px;height:72px;border-radius:50%;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:34px}
 .senderr{color:var(--red);font-size:14px;margin-top:12px;text-align:center}
@@ -102,6 +107,7 @@ textarea:focus{outline:none;border-color:var(--red)}
     app.innerHTML =
       '<img class="logo" src="/logo-full.png" alt="리딩브레인 READING BRAIN — Reading Is The Only Way!" width="180" height="154">' +
       (S.greeting ? '<div class="kicker serif">' + esc(S.greeting) + '</div>' : '') +
+      (S.image ? '<img class="pic" src="' + esc(S.image) + '" alt="">' : '') +
       '<h1>' + esc(S.title || S.kicker || '') + '</h1>' +
       (S.intro || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
       (S.notice ? '<div class="notice">' + esc(S.notice) + '</div>' : '') +
@@ -111,8 +117,12 @@ textarea:focus{outline:none;border-color:var(--red)}
   }
 
   function itemHTML(it) {
-    var v = answers[it.id], h = '<div class="q" id="q-' + it.id + '"><div class="qt">' + esc(it.label) +
-      (it.required ? '<span class="req" aria-label="필수">*</span>' : '') + '</div>';
+    var v = answers[it.id], pic = it.image ? '<img class="pic" src="' + esc(it.image) + '" alt="" loading="lazy">' : '';
+    var qd = it.desc ? '<div class="qd">' + esc(it.desc) + '</div>' : '';
+    // 그림·안내 글: 답을 받지 않는다
+    if (it.type === 'info') return '<div class="q info">' + (it.label ? '<div class="qt">' + esc(it.label) + '</div>' : '') + qd + pic + '</div>';
+    var h = '<div class="q" id="q-' + it.id + '">' + pic + '<div class="qt">' + esc(it.label) +
+      (it.required ? '<span class="req" aria-label="필수">*</span>' : '') + '</div>' + qd;
     if (it.type === 'scale') {
       h += '<div class="scale" role="radiogroup" aria-label="' + esc(it.label) + '">' + it.options.map(function (o) {
         return '<button type="button" role="radio" aria-checked="' + (v === o.v) + '" data-id="' + it.id + '" data-v="' + o.v + '">' +
@@ -126,6 +136,8 @@ textarea:focus{outline:none;border-color:var(--red)}
           var on = it.type === 'multi' ? (v || []).indexOf(o) >= 0 : v === o;
           return '<button type="button" role="' + (it.type === 'multi' ? 'checkbox' : 'radio') + '" aria-checked="' + on + '" data-id="' + it.id + '" data-n="' + n + '">' + esc(o) + '</button>';
         }).join('') + '</div>';
+    } else if (it.short) {
+      h += '<input class="short" data-id="' + it.id + '" maxlength="300" value="' + esc(v || '') + '" aria-label="' + esc(it.label) + '">';
     } else {
       h += '<textarea data-id="' + it.id + '" maxlength="2000" placeholder="자유롭게 적어 주세요" aria-label="' + esc(it.label) + '">' + esc(v || '') + '</textarea>';
     }
@@ -143,7 +155,7 @@ textarea:focus{outline:none;border-color:var(--red)}
       '<div class="senderr" id="senderr" hidden></div>';
     app.querySelectorAll('[data-id]').forEach(function (el) {
       var it = sec.items.filter(function (i) { return i.id === el.dataset.id; })[0];
-      if (el.tagName === 'TEXTAREA') {
+      if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
         el.oninput = function () { answers[it.id] = el.value; clearBad(it.id); };
         return;
       }
