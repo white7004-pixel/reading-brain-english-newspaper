@@ -285,7 +285,7 @@ function stair(r, est, start, now) {
 // function 선언: 위쪽 최상위 코드가 먼저 실행되므로 const 면 초기화 전에 불려 오류가 난다
 function mark(x) { return x.correct ? '○' : x.timeout ? '시간' : x.dontKnow ? '모름' : '×'; }
 // 2차 유형별 정답 한 줄
-function tally(log, area) { return kindTally(log, area).map((t) => `${esc(t.kind || '기타')} ${t.correct}/${t.total}`).join(' · ') || '문항 없음'; }
+function tally(log, area) { return kindTally(log, area).map((t) => `${t.kind ? `${esc(t.kind)} ` : ''}${t.correct}/${t.total}`).join(' · ') || '문항 없음'; }
 
 // 1차에서 끝난 학생: A4 한 쪽 (설계서 8장)
 function stage1Page(r) {
@@ -309,7 +309,7 @@ function stage1Page(r) {
 
 function formLog(title, log) {
   return `<div><h2>${esc(title)}</h2><table><thead><tr><th>번호</th><th>영역</th><th>수준</th><th>정오</th><th>쓴 답</th><th>초</th></tr></thead><tbody>
-    ${log.map((x) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${x.no}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : typeof x.given === 'number' ? '①②③④'[x.given] : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
+    ${log.map((x) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${x.no}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : typeof x.given === 'number' ? '①②③④⑤'[x.given] : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
     </tbody></table></div>`;
 }
 
