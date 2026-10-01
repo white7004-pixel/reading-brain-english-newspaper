@@ -64,7 +64,7 @@
           desc: '상담을 원하시는 분만 적어 주세요. 적어 주신 내용을 보고 학원에서 따로 연락드리겠습니다.',
           items: [
             { id: 'consult', type: 'multi', required: false, flag: true, hint: '원하시는 상담을 골라 주세요 (없으면 넘어가셔도 됩니다)',
-              label: '원장님 또는 담임 선생님과의 상담을 원하시나요?', options: ['원장님과 우리 아이 1:1 학습 로드맵 간담회', '담임 선생님과 1:1 전화 상담'] },
+              label: '원장님 또는 담임 선생님과의 상담을 원하시나요?', options: ['원장님과 우리 아이 1:1 학습 로드맵 상담', '담임 선생님과 1:1 전화 상담'] },
             { id: 'consult_who', type: 'text', short: true, required: false, flag: true,
               label: '상담을 원하시면 학생의 학교·학년·이름을 적어 주세요.', desc: '예) 빛가온중 2학년 김OO' }] }]
     },
