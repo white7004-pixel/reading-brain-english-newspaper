@@ -1,0 +1,6 @@
+# Vercel 에 올릴 때 빼는 것. scripts/vendor-pdfjs.js 는 postinstall 이 쓰므로 뺄 수 없다.
+docs
+test
+.claude
+.playwright-mcp
+public/vendor
