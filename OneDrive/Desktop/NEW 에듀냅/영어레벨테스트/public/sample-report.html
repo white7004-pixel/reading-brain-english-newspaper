@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>분석지 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@600;800&display=swap" rel="stylesheet" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" crossorigin>
+<style>
+/* 분석지 시안 (예시 학생 자료). 확정되면 report.js 로 옮긴다. */
+:root {
+  --brand: #0e3a2d; --ink: #17241f; --muted: #66726c; --hair: #e3ded2; --paper: #fff; --pane: #f4f6f3; --head: #eaf1ec;
+  --line: #3d68b8; --me: #e07b24; --now: #2f9a6a; --gold: #b8892a; --soft: #fdf3e6; --soft-line: #efc79a;
+  --sans: 'Pretendard', system-ui, sans-serif; --serif: 'Hahmlet', 'Pretendard', serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #e9ebe8; color: var(--ink); font: 13px/1.6 var(--sans); }
+.note { max-width: 794px; margin: 16px auto 0; padding: 12px 16px; background: #fff8e6; border: 1px solid #f0d9a4; border-radius: 8px; font-size: 13.5px; }
+.note b { color: #8a5a12; }
+.pages { display: grid; gap: 20px; justify-content: center; padding: 16px 0 40px; }
+.page { width: 794px; height: 1123px; background: var(--paper); box-shadow: 0 2px 14px rgba(0,0,0,.12); padding: 34px 38px 28px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+.mast { display: flex; justify-content: space-between; align-items: end; border-bottom: 3px solid var(--brand); padding-bottom: 10px; }
+.mast h1 { margin: 0; font: 800 24px/1.2 var(--serif); color: var(--brand); letter-spacing: -.02em; }
+.mast h1 small { font: 600 13px/1 var(--sans); color: var(--muted); margin-left: 10px; letter-spacing: 0; }
+.mast .who { text-align: right; font-size: 12.5px; color: var(--muted); }
+.mast .who b { color: var(--ink); font-size: 15px; margin-right: 6px; }
+.bar { display: flex; justify-content: space-between; align-items: center; background: var(--head); border-top: 2px solid #c9dccf; padding: 8px 14px; }
+.bar h2 { margin: 0; font: 800 16px/1.3 var(--sans); }
+.legend { display: flex; gap: 12px; font-size: 11.5px; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+.legend i.ln { width: 18px; height: 3px; border-radius: 2px; vertical-align: 3px; background: var(--line); }
+.legend i.dash { width: 18px; height: 0; border-radius: 0; border-top: 2px dashed var(--now); vertical-align: 3px; }
+
+/* 1. 종합 */
+.overall { display: grid; grid-template-columns: 150px 190px 1fr; gap: 16px; align-items: center; }
+.ring { position: relative; width: 150px; height: 150px; }
+.ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 800 32px/1 var(--sans); color: #2b5fb0; }
+.ring span { position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; font-size: 11px; color: var(--muted); }
+.boxes { display: grid; gap: 10px; }
+.box { background: var(--soft); border: 1px solid var(--soft-line); border-radius: 8px; text-align: center; padding: 10px 8px; }
+.box span { display: block; font-size: 12.5px; color: var(--ink); }
+.box b { display: block; font: 800 24px/1.3 var(--sans); color: var(--me); }
+.box b small { font-size: 13px; color: var(--ink); font-weight: 600; }
+.box b.sm { font-size: 18px; }
+
+/* 2. 항목별 */
+.items { display: grid; grid-template-columns: 250px 1fr 150px; gap: 10px; align-items: center; }
+.times { display: grid; gap: 4px; }
+.times .total { background: var(--soft); border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.times .total b { font: 800 18px/1 var(--sans); color: var(--me); }
+.times div { display: flex; justify-content: space-between; padding: 0 12px; font-size: 13.5px; }
+.times div b { color: var(--me); font-weight: 700; }
+
+/* 3. 영역별 세부 */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cards.three { grid-template-columns: repeat(3, 1fr); flex: 1; }
+.cards.three .card > h3 { font-size: 14.5px; padding: 8px 12px; }
+.cards.three .card > h3 em { display: block; margin: 0; }
+.cards.three .card svg { padding: 6px 4px 0; }
+.cards.three .facts b { font-size: 16px; }
+.cards.three .facts b.sm { font-size: 13px; }
+.cards.three .facts span { font-size: 11.5px; }
+.card { border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.card > h3 { margin: 0; background: var(--soft); padding: 8px 14px; font: 800 16px/1.4 var(--sans); }
+.card > h3 em { font-style: normal; color: var(--me); margin: 0 4px 0 8px; }
+.card > h3 small { font-size: 14px; font-weight: 700; }
+.card svg { display: block; }
+.facts { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px dashed var(--hair); margin-top: auto; }
+.facts > div { padding: 9px 10px; text-align: center; border-right: 1px dashed var(--hair); }
+.facts > div:nth-child(2n) { border-right: 0; }
+.facts > div:nth-child(n+3) { border-top: 1px dashed var(--hair); }
+.facts span { display: block; font-size: 12px; color: var(--ink); line-height: 1.45; }
+.facts b { display: block; font: 800 19px/1.35 var(--sans); color: var(--me); }
+.facts b small { font-size: 12px; color: var(--ink); font-weight: 600; }
+.facts b.sm { font-size: 14px; line-height: 1.5; }
+.kinds { padding: 2px 4px; display: grid; gap: 5px; text-align: left; }
+.kinds p { margin: 0; display: grid; grid-template-columns: 74px 1fr 36px; gap: 8px; align-items: center; font-size: 12px; }
+.kinds i { display: block; height: 8px; border-radius: 4px; background: #e8ece9; overflow: hidden; }
+.kinds i u { display: block; height: 100%; background: var(--line); }
+.kinds em { font-style: normal; text-align: right; font-weight: 700; }
+
+/* 앞으로의 진도 */
+.plan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.plan div { border: 1px solid var(--hair); border-radius: 8px; padding: 10px 14px; }
+.plan span { display: block; font-size: 12px; color: var(--muted); }
+.plan b { display: block; font: 800 18px/1.4 var(--sans); color: var(--brand); }
+.plan small { font-size: 12px; color: var(--muted); }
+.plan .gold { background: var(--soft); border-color: var(--soft-line); }
+.plan .gold b { color: var(--me); }
+/* 4. 총평 · 학습 방향 */
+.memo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.memo section { border: 1px solid var(--hair); border-radius: 8px; padding: 12px 14px; }
+.memo h3 { margin: 0 0 6px; font: 800 14px/1.4 var(--sans); color: var(--brand); }
+.memo p, .memo ol { margin: 0; font-size: 12.5px; line-height: 1.7; }
+.memo ol { padding-left: 18px; }
+.foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); border-top: 1px solid var(--hair); padding-top: 8px; }
+.foot b { color: var(--ink); }
+@media print {
+  body { background: #fff; }
+  .note { display: none; }
+  .pages { padding: 0; gap: 0; }
+  .page { box-shadow: none; break-after: page; }
+  @page { size: A4; margin: 0; }
+}
+</style>
+</head>
+<body>
+<p class="note"><b>분석지 시안 · 예시 학생 자료입니다.</b> 숫자는 모두 이 학생이 실제로 푼 문항에서 나옵니다. 동 학년 석차·분포·평균 시간처럼 다른 학생 결과가 있어야 하는 칸은 넣지 않았습니다. 곡선은 "학년별 문항을 몇 % 맞혔는지"입니다.</p>
+<div class="pages" id="pages"></div>
+<script type="module">
+// ── 예시 학생 (중2, 10월 응시). 위치: 초1=0 … 고3=11, 2학기는 +0.5 ──
+const G = ['초1', '초2', '초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'];
+const LV = [['L1', '초1~2'], ['L2', '초3~4'], ['L3', '초5~6'], ['L4', '중1'], ['L5', '중2'], ['L6', '중3'], ['L7', '고1'], ['L8', '고2'], ['L9', '고3']];
+const lvOf = (p) => Math.min(9, p < 2 ? 1 : p < 4 ? 2 : p < 6 ? 3 : Math.floor(p) - 2);
+const label = (p) => `${G[Math.floor(p)]} ${p % 1 ? '2' : '1'}학기`;
+const longLabel = (p) => `${G[Math.floor(p)][0] === '초' ? '초등학교' : G[Math.floor(p)][0] === '중' ? '중학교' : '고등학교'} ${G[Math.floor(p)].slice(1)}학년 ${p % 1 ? '2' : '1'}학기`;
+const NOW = 7.5;
+const A = [
+  { k: '단어', p: 7.0, acc: { 6: 100, 7: 75, 8: 33, 9: 0 }, min: 520, facts: [['중1 과정 단어', '4/4<small> 맞힘</small>'], ['중2 과정 단어', '75%<small> 맞힘</small>'], ['다음 수업 시작', '중2 1학기 5단원', 'sm'], ['모름을 고른 문항', '1개']] },
+  { k: '문법', p: 6.5, acc: { 5: 100, 6: 67, 7: 33, 8: 0 }, min: 555, facts: [['문법 12항목 중', '8개<small> 맞힘</small>'], ['다음 수업 시작', '중1 2학기 4단원', 'sm'], ['다시 볼 문법', '현재완료 · 관계대명사 what · 비교급', 'sm wide']] },
+  { k: '독해', p: 7.5, acc: { 6: 100, 7: 67, 8: 50, 9: 25 }, min: 870, kinds: [['주제·요지', 3, 3], ['세부 내용', 2, 3], ['추론', 1, 3], ['어휘 추론', 1, 2]], facts: [['문항 하나 평균', '58초'], ['다음 수업 시작', '중2 2학기 3단원', 'sm']] },
+  { k: '듣기', p: 6.5, acc: { 5: 100, 6: 67, 7: 50, 8: 0 }, min: 605, kinds: [['목적', 2, 2], ['세부 정보', 2, 3], ['이어질 응답', 1, 3]], facts: [['첫 듣기 뒤 평균', '31초'], ['두 번 들은 문항', '5개']] },
+  { k: '쓰기', p: 6.0, acc: { 5: 100, 6: 50, 7: 25 }, min: 380, facts: [['쓰기 11문항 중', '6개<small> 맞힘</small>'], ['대소문자·마침표', '따지지 않음', 'sm'], ['다시 볼 문법', '수동태 · 비교급 · to부정사', 'sm wide']] },
+];
+const avg = A.reduce((s, a) => s + a.p, 0) / A.length; // 6.7 → 중1 2학기, Lv. 4
+const mmss = (s) => `${Math.floor(s / 60)}분 ${String(s % 60).padStart(2, '0')}초`;
+const total = A.reduce((s, a) => s + a.min, 0);
+
+// 종합 게이지 (Lv 1~9)
+const ring = (lv) => { const C = 2 * Math.PI * 62; return `<svg viewBox="0 0 150 150" width="150" height="150"><circle cx="75" cy="75" r="62" fill="none" stroke="#d6dbe0" stroke-width="13"/><circle cx="75" cy="75" r="62" fill="none" stroke="#2b5fb0" stroke-width="13" stroke-dasharray="${(C * lv / 9).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 75 75)"/></svg>`; };
+
+// 수준 위치 (L1~L9 눈금 위에 내 수준·현재 학년)
+function levelLine() {
+  const W = 360, H = 150, L = 14, R = 14, T = 26, B = 40;
+  const x = (lv) => L + ((lv - 1) / 8) * (W - L - R);
+  const me = lvOf(avg), now = lvOf(NOW);
+  let s = `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="#c9cfcb" stroke-width="2"/>`;
+  LV.forEach(([l, g], i) => { s += `<circle cx="${x(i + 1)}" cy="${H - B}" r="3.5" fill="#c9cfcb"/><text x="${x(i + 1)}" y="${H - B + 16}" text-anchor="middle" font-size="10.5" fill="#66726c">${l}</text><text x="${x(i + 1)}" y="${H - B + 29}" text-anchor="middle" font-size="9.5" fill="#66726c">(${g})</text>`; });
+  s += `<rect x="${x(1)}" y="${H - B - 5}" width="${x(me) - x(1)}" height="10" rx="5" fill="#2b5fb0" opacity=".18"/>`;
+  s += `<line x1="${x(now)}" x2="${x(now)}" y1="${T}" y2="${H - B}" stroke="var(--now)" stroke-width="2" stroke-dasharray="4 3"/><text x="${x(now)}" y="${T - 8}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--now)">현재 학년 (중2)</text>`;
+  s += `<line x1="${x(me)}" x2="${x(me)}" y1="${T + 22}" y2="${H - B}" stroke="var(--me)" stroke-width="2"/><circle cx="${x(me)}" cy="${T + 22}" r="6" fill="var(--me)"/><text x="${x(me) - 10}" y="${T + 26}" text-anchor="end" font-size="11" font-weight="700" fill="var(--me)">내 수준</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%">${s}</svg>`;
+}
+
+// 레이더: 가운데 초1, 바깥 고3. 실선 = 내 수준, 점선 = 현재 학년
+function radar() {
+  const S = 250, c = S / 2, R = 82, n = A.length;
+  const pt = (i, v) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; const r = (v / 11) * R; return [c + r * Math.cos(a), c + r * Math.sin(a)]; };
+  let s = '';
+  for (const g of [3, 5, 7, 9, 11]) s += `<polygon points="${A.map((_, i) => pt(i, g).join(',')).join(' ')}" fill="none" stroke="#e1e5e2"/>`;
+  [5, 7, 9].forEach((g) => { const [x, y] = pt(0, g); s += `<text x="${x + 4}" y="${y + 3}" font-size="8.5" fill="#9aa39e">${G[g]}</text>`; });
+  A.forEach((a, i) => { const [x, y] = pt(i, 11); const [lx, ly] = pt(i, 13.4); s += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e1e5e2"/><text x="${lx}" y="${ly + 4}" text-anchor="middle" font-size="12" font-weight="600">${a.k}</text>`; });
+  s += `<polygon points="${A.map((_, i) => pt(i, NOW).join(',')).join(' ')}" fill="none" stroke="var(--now)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  s += `<polygon points="${A.map((a, i) => pt(i, a.p).join(',')).join(' ')}" fill="rgba(224,123,36,.15)" stroke="var(--me)" stroke-width="2"/>`;
+  A.forEach((a, i) => { const [x, y] = pt(i, a.p); s += `<circle cx="${x}" cy="${y}" r="4" fill="var(--me)"/>`; });
+  return `<svg viewBox="0 0 ${S} ${S}" width="250" height="250">${s}</svg>`;
+}
+
+// 소요 시간 막대 (이 학생만)
+function timeBars() {
+  const W = 300, H = 210, L = 38, B = 28, T = 10;
+  const max = 20 * 60, y = (sec) => T + (1 - sec / max) * (H - T - B);
+  let s = '';
+  for (let m = 0; m <= 20; m += 5) s += `<line x1="${L}" x2="${W}" y1="${y(m * 60)}" y2="${y(m * 60)}" stroke="#eceeec"/><text x="${L - 6}" y="${y(m * 60) + 4}" text-anchor="end" font-size="10" fill="#66726c">${m}분</text>`;
+  const bw = (W - L) / A.length;
+  A.forEach((a, i) => { const x = L + i * bw + bw * 0.22; s += `<rect x="${x}" y="${y(a.min)}" width="${bw * 0.56}" height="${H - B - y(a.min)}" rx="2" fill="var(--me)"/><text x="${x + bw * 0.28}" y="${H - B + 17}" text-anchor="middle" font-size="11.5">${a.k}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%">${s}</svg>`;
+}
+
+// 영역 카드 곡선: 학년별 정답률 + 내 수준(주황) + 현재 학년(초록 점선)
+function accCurve(a) {
+  const W = 236, H = 196, L = 30, R = 8, T = 18, B = 26;
+  const from = 2, to = 11; // 초3 ~ 고3
+  const x = (g) => L + ((g - from + 0.5) / (to - from + 1)) * (W - L - R); // 학년 칸 가운데
+  const y = (v) => T + (1 - v / 100) * (H - T - B);
+  let s = '';
+  for (let v = 0; v <= 100; v += 25) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#eceeec"/><text x="${L - 6}" y="${y(v) + 3.5}" text-anchor="end" font-size="8.5" fill="#66726c">${v}%</text>`;
+  for (let g = from; g <= to; g++) s += `<text x="${x(g)}" y="${H - B + 15}" text-anchor="middle" font-size="9" fill="#66726c">${G[g]}</text>`;
+  const pts = Object.entries(a.acc).map(([g, v]) => [x(+g), y(v), v]);
+  const at = (p) => x(p - 0.25); // 1학기는 학년 칸 왼쪽, 2학기는 오른쪽
+  s += `<line x1="${at(NOW)}" x2="${at(NOW)}" y1="${T}" y2="${H - B}" stroke="var(--now)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  s += `<polyline points="${pts.map(([px, py]) => `${px},${py}`).join(' ')}" fill="none" stroke="var(--line)" stroke-width="2.2"/>`;
+  pts.forEach(([px, py, v]) => { s += `<circle cx="${px}" cy="${py}" r="3.2" fill="#fff" stroke="var(--line)" stroke-width="1.8"/><text x="${px + 6}" y="${py - 5}" text-anchor="start" font-size="9.5" font-weight="700" fill="var(--line)">${v}%</text>`; });
+  s += `<line x1="${at(a.p)}" x2="${at(a.p)}" y1="${T}" y2="${H - B}" stroke="var(--me)" stroke-width="2"/><circle cx="${at(a.p)}" cy="${H - B}" r="5" fill="var(--me)"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%">${s}</svg>`;
+}
+
+function card(a) {
+  const facts = a.facts.map(([t, v, cls = '']) => `<div${cls.includes('wide') ? ' style="grid-column:1/-1"' : ''}><span>${t}</span><b class="${cls.includes('sm') ? 'sm' : ''}">${v}</b></div>`).join('');
+  const kinds = a.kinds ? `<div style="grid-column:1/-1"><span>문제 유형별로 맞힌 수</span><div class="kinds">${a.kinds.map(([n, c, t]) => `<p>${n}<i><u style="width:${(c / t) * 100}%"></u></i><em>${c}/${t}</em></p>`).join('')}</div></div>` : '';
+  return `<section class="card"><h3>${a.k}<em>${longLabel(a.p)}</em><small>수준</small></h3>${accCurve(a)}<div class="facts">${kinds}${facts}</div></section>`;
+}
+
+const mast = (title, page) => `<header class="mast"><h1>영어 레벨테스트 분석지<small>${title}</small></h1><div class="who"><b>김OO</b>중학교 2학년 · 응시 2026.10.01 · OO영어학원</div></header>`;
+const foot = (n) => `<div class="foot"><span><b>OO영어학원</b> · 031-000-0000</span><span>수준은 학교 교육과정 학년·학기 기준입니다</span><span>${n} / 2</span></div>`;
+
+document.getElementById('pages').innerHTML = `
+<article class="page">
+  ${mast('종합 결과')}
+  <div class="bar"><h2>종합 평가</h2><div class="legend"><span><i style="background:var(--me)"></i>내 수준</span><span><i class="dash"></i>현재 학년</span></div></div>
+  <div class="overall">
+    <div class="ring">${ring(lvOf(avg))}<b>Lv. ${lvOf(avg)}</b><span>9단계 중</span></div>
+    <div class="boxes">
+      <div class="box"><span>종합 수준</span><b>${label(Math.round(avg * 2) / 2)}<small> 수준</small></b></div>
+      <div class="box"><span>현재 학년(중2 2학기)과 비교</span><b class="sm">약 한 학기 낮음</b></div>
+    </div>
+    <div>${levelLine()}</div>
+  </div>
+  <div class="bar"><h2>항목별 평가 <span style="font-weight:600;font-size:13px;color:var(--muted);margin-left:6px">· 영역별 소요 시간</span></h2><div class="legend"><span><i style="background:var(--me)"></i>내 수준 · 나의 소요 시간</span><span><i class="dash"></i>현재 학년</span></div></div>
+  <div class="items">
+    <div>${radar()}</div>
+    <div>${timeBars()}</div>
+    <div class="times"><p class="total"><span>총</span><b>${mmss(total)}</b></p>${A.map((a) => `<div><span>${a.k}</span><b>${mmss(a.min)}</b></div>`).join('')}</div>
+  </div>
+  <div class="bar"><h2>영역별 수준 한눈에</h2></div>
+  <div class="cards" style="grid-template-columns:repeat(5,1fr);gap:8px">${A.map((a) => `<div class="box" style="background:#fff;border-color:var(--hair)"><span style="font-weight:700">${a.k}</span><b class="sm">${label(a.p)}</b><span style="color:${a.p >= NOW ? 'var(--now)' : 'var(--me)'};font-size:12px">${a.p >= NOW ? '학년 수준' : `${(NOW - a.p) * 2}학기 낮음`}</span></div>`).join('')}</div>
+  <div class="bar"><h2>앞으로의 진도</h2><div class="legend"><span>한 해 3학기 진도 · 4·6·9·11월 시험 기간은 빼고 계산</span></div></div>
+  <div class="plan">
+    <div><span>다음 수업 시작</span><b>문법 중1 2학기 4단원</b><small>가장 낮은 영역부터</small></div>
+    <div><span>학교 진도보다 앞서는 때</span><b>2027년 7월</b><small>중3 1학기</small></div>
+    <div class="gold"><span>고3 과정 완료 예상</span><b>2029년 1월</b><small>고3 졸업보다 1년 1개월 먼저</small></div>
+  </div>
+  <div class="memo">
+    <section><h3>총평</h3><p>독해는 학년 수준에 맞게 읽고 있고, 단어도 중2 1학기까지 안정적입니다. 문법은 중1 2학기에서 현재완료와 관계대명사 what 이 흔들려 독해·쓰기에도 영향을 줍니다. 듣기는 세부 정보는 잘 잡지만 이어질 응답 고르기가 약합니다.</p></section>
+    <section><h3>학습 방향</h3><ol><li>문법을 중1 2학기 4단원부터 다시 잡고, 같은 문법을 쓰기로 바로 연습합니다.</li><li>독해는 추론 문항을 매주 2지문씩 더합니다.</li><li>듣기는 대화 끝 응답 고르기를 집중 연습합니다.</li></ol></section>
+  </div>
+  ${foot(1)}
+</article>
+<article class="page">
+  ${mast('영역별 세부 결과')}
+  <div class="bar"><h2>영역별 세부 평가 결과</h2><div class="legend"><span><i class="ln"></i>학년별 정답률</span><span><i style="background:var(--me)"></i>내 수준</span><span><i class="dash"></i>현재 학년</span></div></div>
+  <div class="cards three">${A.map(card).join('')}<section class="card"><h3>읽는 법</h3><div style="padding:12px 14px;font-size:12.5px;line-height:1.75">
+    <p style="margin:0 0 8px"><b style="color:var(--line)">파란 곡선</b>은 학년별 문항을 몇 % 맞혔는지입니다. 시험이 학생 수준에 맞춰 문항을 고르므로, 학생이 푼 학년만 점이 찍힙니다.</p>
+    <p style="margin:0 0 8px"><b style="color:var(--me)">주황 선</b>은 이 학생의 수준, <b style="color:var(--now)">초록 점선</b>은 지금 다니는 학년입니다.</p>
+    <p style="margin:0">수준은 그 학년 문항을 3분의 2 이상 맞힌 데까지입니다. 다른 학생과 비교한 석차는 넣지 않았습니다.</p></div></section></div>
+  ${foot(2)}
+</article>`;
+
+// 좁은 화면(폰)에서는 쪽을 통째로 줄여 보여 준다
+const fit = () => { const z = Math.min(1, (innerWidth - 16) / 794); for (const p of document.querySelectorAll('.page')) p.style.zoom = z; };
+addEventListener('resize', fit);
+fit();
+</script>
+</body>
+</html>
