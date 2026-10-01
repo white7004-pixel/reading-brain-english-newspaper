@@ -26,13 +26,19 @@ export function shareCards({ academy, meta, items, stats }, school) {
     <section class="c-fill"><h3>시험 구성</h3>${composeTable(stats)}</section>
     ${footer(academy)}`, CARD);
 
-  // 문항표 카드 — 몇 장이 될지는 문항 수가 정한다. 한 장에 아홉 줄.
-  // 학부모가 가장 많이 들여다보는 장이라 지문·배점·정답 없이 유형과 난이도만 싣는다.
-  const 줄 = 9;
-  const 장수 = Math.ceil(items.length / 줄);
+  // 문항표 카드 — 학부모가 가장 많이 들여다보는 장이라 카드를 꽉 채운다 (원장님 요청 2026-10-02).
+  // 두 단으로 나눠 한 장에 24문항. 넘치면 장이 늘어난다. 지문·정답은 싣지 않는다.
+  const 줄 = 20;
+  const 장수 = Math.max(1, Math.ceil(items.length / 줄));
+  // 장이 둘 이상이면 고르게 나눈다 — 22문항을 20+2 로 두면 뒷장이 휑하다
+  const 장당 = Math.ceil(items.length / 장수) || 줄;
+  const 두단 = (몫) => {
+    const 반 = Math.ceil(몫.length / 2);
+    return `<div class="r-row r-row-tight">${typeTable(몫.slice(0, 반))}${typeTable(몫.slice(반))}</div>`;
+  };
   const 문항표 = Array.from({ length: 장수 }, (_, i) => sheet(`${file(`문항표${i + 1}`)}`, `
     ${header(academy, '문항별 유형과 난이도', `${name}${장수 > 1 ? ` · ${i + 1} / ${장수}` : ''}`)}
-    <section class="c-fill">${typeTable(items.slice(i * 줄, (i + 1) * 줄))}</section>
+    <section class="c-fill">${두단(items.slice(i * 장당, (i + 1) * 장당))}</section>
     ${footer(academy)}`, CARD)).join('');
 
   // 3장: 다음 시험 준비

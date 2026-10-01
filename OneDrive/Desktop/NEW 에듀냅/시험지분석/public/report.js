@@ -132,10 +132,11 @@ export const strategyTable = (strategy) => table(['영역', '준비 방법'],
 // 문항별 유형과 난이도만 세 칸으로. 공개 카드에 쓴다 — 배점·정답·지문은 넣지 않는다.
 // 학원들이 블로그 카드에 올리는 표가 이 모양이다 (문항 번호 / 문제 유형 / 난이도).
 // 서술형은 학교마다 번호를 따로 매겨 우리가 지어낼 수 없으므로 유형 칸에 적는다.
-export const typeTable = (items) => table(['#번호', '문제 유형', '난이도'],
+export const typeTable = (items) => table(['#번호', '문제 유형', '#배점', '난이도'],
   items.map((it) => {
-    const 유형 = [it.kind === '서술형' ? '서술형' : '', [it.area, it.subtype].filter(Boolean).join(' - ')].filter(Boolean).join(' · ');
-    return `<tr>${num(it.no)}<td>${esc(유형)}</td><td class="c">${badge(it.difficulty)}</td></tr>`;
+    // 카드는 두 단이라 칸이 좁다. 영역은 줄임말(abbr)로 적고 범례는 표 아래에 붙는다.
+    const 유형 = [it.kind === '서술형' ? '서술형' : '', [abbr(it.area), it.subtype].filter(Boolean).join(' - ')].filter(Boolean).join(' · ');
+    return `<tr>${num(it.no)}<td>${esc(유형)}</td>${num(it.points)}<td class="c">${badge(it.difficulty)}</td></tr>`;
   }), 't-2');
 
 // 전 문항 표. 한 장에 담으려 반으로 갈라 나란히 둔다.

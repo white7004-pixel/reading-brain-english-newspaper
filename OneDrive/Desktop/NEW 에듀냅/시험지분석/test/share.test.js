@@ -40,7 +40,7 @@ test('AI 글이 그대로 화면에 들어가지 않는다', () => {
   assert.doesNotMatch(html, /<script>/);
 });
 
-test('문항표 카드 — 문항 번호·문제 유형·난이도만 싣고 문항 수에 따라 장수가 늘어난다', () => {
+test('문항표 카드 — 두 단으로 꽉 채우고, 넘치면 장이 늘어난다', () => {
   const mk = (n) => Array.from({ length: n }, (_, i) => ({
     no: i + 1, kind: i >= n - 2 ? '서술형' : '객관식', points: 4, area: '어법',
     subtype: '관계대명사', difficulty: '중', answer: '③', reason: 'ㄱ',
@@ -49,9 +49,17 @@ test('문항표 카드 — 문항 번호·문제 유형·난이도만 싣고 문
     const items = mk(n);
     return shareCards({ ...ctx, items, stats: examStats(items) }, school).match(/class="page card-news"/g).length;
   };
-  // 9문항까지 한 장, 10문항부터 두 장 (하버드브레인 카드가 9줄씩이다)
-  assert.equal(cards(9) + 1, cards(10));
-  assert.ok(cards(27) > cards(9));
+  // 두 단으로 한 장에 20문항까지. 21문항부터 두 장 (원장님 요청 2026-10-02: 카드를 꽉 채운다)
+  assert.equal(cards(9), cards(20), '20문항까지 한 장');
+  assert.equal(cards(20) + 1, cards(21), '21문항부터 한 장 더');
+  assert.ok(cards(41) > cards(21));
+
+  // 한 장 안에서 표가 둘로 갈린다 — 왼쪽 단에 앞 번호, 오른쪽 단에 뒤 번호
+  const 한장 = shareCards({ ...ctx, items: mk(20), stats: examStats(mk(20)) }, school);
+  const 시작 = 한장.indexOf('문항별 유형과 난이도');
+  const 문항표장 = 한장.slice(시작, 한장.indexOf('</article>', 시작)); // 그 카드 한 장만
+  assert.equal((문항표장.match(/<table class="t/g) || []).length, 2, '두 단');
+  assert.match(문항표장, /배점/, '배점도 싣는다');
 
   const items = mk(27);
   const html = shareCards({ ...ctx, items, stats: examStats(items) }, school);
@@ -60,4 +68,22 @@ test('문항표 카드 — 문항 번호·문제 유형·난이도만 싣고 문
   assert.match(html, /서술형 · 어법 - 관계대명사/);
   // 지문·보기·정답은 공개 카드에 싣지 않는다
   assert.doesNotMatch(html, /③/);
+});
+
+test('문항표 카드가 여러 장이면 고르게 나눈다 — 뒷장이 휑하지 않게', () => {
+  const mk = (n) => Array.from({ length: n }, (_, i) => ({
+    no: i + 1, kind: '객관식', points: 4, area: '어법', subtype: '관계대명사', difficulty: '중', answer: '③', reason: 'ㄱ',
+  }));
+  const 줄수 = (n) => {
+    const items = mk(n);
+    const html = shareCards({ ...ctx, items, stats: examStats(items) }, school);
+    return [...html.matchAll(/문항별 유형과 난이도/g)].map((m) => {
+      const 끝 = html.indexOf('</article>', m.index);
+      // 문항 줄만 센다 — 머리글 행(<thead>)은 두 단이라 둘이 더 있다
+      return (html.slice(m.index, 끝).match(/<tr><td class="num">/g) || []).length;
+    });
+  };
+  assert.deepEqual(줄수(20), [20], '한 장이면 꽉 채운다');
+  assert.deepEqual(줄수(22), [11, 11], '두 장이면 반씩');
+  assert.deepEqual(줄수(21), [11, 10]);
 });
