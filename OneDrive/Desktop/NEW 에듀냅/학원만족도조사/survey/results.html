@@ -93,12 +93,39 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 }
 .demo{background:var(--warn);color:var(--warn-ink);font-size:13px;text-align:center;padding:6px}
 .logo{display:block;margin:0 auto 18px;width:180px;height:auto}
+.badge.gray{background:var(--line);color:var(--ink)}.badge.green{background:#E3F1E6;color:#22622F}
+.ov .card.closed{opacity:.7}
+.mlist{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.mrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.mrow .mi{flex:1;min-width:220px}.mrow .mt{font-weight:600;font-size:16px}
+.mrow .ma{display:flex;gap:6px;flex-wrap:wrap}
+.mrow code{font-size:12px}
+.sticky{position:sticky;top:12px}
+@media (max-width:860px){.sticky{position:static}}
+.editor .eh{font-family:'Gowun Batang',serif;color:var(--navy);font-size:17px;margin:18px 0 10px}.editor .eh:first-child{margin-top:0}
+.fld{display:block;margin:0 0 12px}.fld>span{display:block;font-size:13px;font-weight:600;margin-bottom:4px}.fld small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.fld input,.fld textarea,.editor .wide{width:100%}
+.editor textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:10px 12px;font:inherit;color:var(--ink);resize:vertical}
+.slug{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}.slug span{padding:0 4px 0 12px;color:var(--muted);font-size:13px;white-space:nowrap}.slug input{border:0;flex:1;min-width:80px}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;margin:6px 0;cursor:pointer}.chk input{min-height:auto;width:18px;height:18px}
+.esec{border:1px solid var(--line-soft);border-radius:14px;padding:12px;margin:0 0 12px;background:var(--bg)}
+.esec>.wide{margin:6px 0 10px}
+.eitem{background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:10px;margin:0 0 10px;display:flex;flex-direction:column;gap:8px}
+.ehead{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.ehead b{min-width:22px;color:var(--red)}.ehead .sp{flex:1}.ehead .wide{flex:1;width:auto}
+.ib{min-width:36px;min-height:36px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}.ib:disabled{opacity:.35;cursor:not-allowed}
+.aibox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--red-soft);border-radius:12px;padding:10px 12px;margin:0 0 14px}.aibox .sub{margin:0}
+.row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lockn{font-size:12px;color:var(--warn-ink);background:var(--warn);border-radius:8px;padding:4px 8px}
+select:disabled,textarea:disabled{opacity:.6}
+.savebar{display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--card);padding:12px 0 0;margin-top:8px;border-top:1px solid var(--line-soft)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;border-radius:12px;padding:10px 16px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 <div id="demo" class="demo" hidden>연습 모드 — 이 브라우저에 저장된 답만 보입니다. 비밀번호는 demo</div>
 <main class="wrap" id="app"></main>
 <div id="poster" aria-hidden="true"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="core.js"></script>
@@ -106,134 +133,88 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 <script>
 (function () {
   var app = document.getElementById('app');
-  var ids = Object.keys(SURVEYS);
-  var NAMES = { parent: '학부모', student: '학생', teacher: '강사' };
-  var st = { pw: null, view: 'all', pane: 'result', data: {}, grade: '', curriculum: '' };
-  // 설문 주소: 이 컴퓨터에서 열어도 QR 은 실제 주소로 만든다
-  var BASE = /^(localhost|127\.)/.test(location.hostname) ? 'https://readingbrain-survey.vercel.app' : location.origin;
-  var TITLES = { parent: '2027 리딩브레인 학부모 설문', student: '리딩브레인 학생 설문', teacher: '리딩브레인 강사 설문' };
+  // view: 'all' 전체 보기 · 'manage' 설문 관리 · 'edit' 고치기 · 설문 slug(그 설문의 결과|설문지)
+  var st = { pw: null, view: 'all', pane: 'result', forms: [], data: {}, filters: {}, edit: null };
   try { st.pw = sessionStorage.getItem('rb-pw'); } catch (e) {}
+  // QR·링크는 이 컴퓨터에서 열어도 실제 주소로
+  var BASE = /^(localhost|127\.)/.test(location.hostname) ? 'https://readingbrain-survey.vercel.app' : location.origin;
+  var SAT = [{ v: 5, label: '매우 만족' }, { v: 4, label: '만족' }, { v: 3, label: '보통' }, { v: 2, label: '불만족' }, { v: 1, label: '매우 불만족' }];
+  var AGREE = [{ v: 1, label: '전혀 아니다' }, { v: 2, label: '아니다' }, { v: 3, label: '보통이다' }, { v: 4, label: '그렇다' }, { v: 5, label: '매우 그렇다' }];
+  var TYPES = { single: '하나 고르기', multi: '여러 개 고르기', scale: '5점 척도', text: '서술' };
+  var ERRORS = {
+    password: '비밀번호가 맞지 않습니다. 다시 들어가 주세요.',
+    slug: '주소 이름은 영문 소문자·숫자·- 로 2~40자로 적어 주세요. (예: seminar-2026-11)',
+    exists: '같은 주소 이름의 설문이 이미 있습니다. 다른 이름을 적어 주세요.',
+    missing: '이 설문을 찾을 수 없습니다. 새로고침해 주세요.',
+    locked: '응답이 들어온 설문은 문항을 빼거나 종류·보기를 바꿀 수 없습니다. 글자 고치기와 문항 더하기만 됩니다. 크게 바꾸려면 "복사"해서 새 설문으로 만들어 주세요.',
+    empty: '문항이 하나도 없습니다.', dup: '문항 번호표(id)가 겹칩니다.', bad: '설문 내용을 읽을 수 없습니다.',
+    has_responses: '응답이 있는 설문은 지울 수 없습니다. "닫기"를 써 주세요.'
+  };
   if (RB.api.demo()) document.getElementById('demo').hidden = false;
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-
-  function login(msg) {
-    app.innerHTML = '<div class="login"><img class="logo" src="logo-full.png" alt="리딩브레인 READING BRAIN" width="180" height="154"><div class="kicker">READING BRAIN</div><h1>학원설문조사 결과</h1>' +
-      '<form id="f"><input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호" required>' +
-      '<button class="btn red">열기</button></form><div class="msg" role="alert">' + (msg || '') + '</div></div>';
-    document.getElementById('pw').focus();
-    document.getElementById('f').onsubmit = function (e) {
-      e.preventDefault();
-      st.pw = document.getElementById('pw').value;
-      load();
-    };
+  function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function formOf(slug) { return st.forms.filter(function (f) { return f.slug === slug; })[0]; }
+  function nameOf(f) { return (f.def && f.def.kicker) || f.slug; }
+  function urlOf(slug) { return BASE + RB.linkOf(slug); }
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'on';
+    clearTimeout(toast.t); toast.t = setTimeout(function () { t.className = ''; }, 2600);
+  }
+  function go(view, pane) {
+    if (st.view === 'edit' && st.edit && st.edit.dirty && view !== 'edit' && !confirm('저장하지 않은 고친 내용이 있습니다. 나갈까요?')) return;
+    st.view = view; if (pane) st.pane = pane; st.filters = {};
+    draw(); window.scrollTo(0, 0);
   }
 
-  function load() {
+  function login(msg) {
+    app.innerHTML = '<div class="login"><img class="logo" src="logo-full.png" alt="리딩브레인 READING BRAIN" width="180" height="154"><div class="kicker">READING BRAIN</div><h1>학원설문조사</h1>' +
+      '<form id="f"><input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호" required>' +
+      '<button class="btn red">열기</button></form><div class="msg" role="alert">' + esc(msg || '') + '</div></div>';
+    document.getElementById('pw').focus();
+    document.getElementById('f').onsubmit = function (e) { e.preventDefault(); st.pw = document.getElementById('pw').value; load(); };
+  }
+
+  // 설문 목록 + 설문마다 응답을 읽는다
+  // ponytail: 설문마다 한 번씩 읽음 — 설문이 수십 개가 되면 서버에서 한 번에 모아 읽기로
+  function load(then) {
     app.setAttribute('aria-busy', 'true');
-    Promise.all(ids.map(function (id) { return RB.api.results(st.pw, id); })).then(function (all) {
-      app.removeAttribute('aria-busy');
-      if (all.some(function (r) { return !r; })) { try { sessionStorage.removeItem('rb-pw'); } catch (e) {} return login('비밀번호가 맞지 않습니다.'); }
+    RB.api.adminForms(st.pw).then(function (list) {
+      if (!list) { try { sessionStorage.removeItem('rb-pw'); } catch (e) {} app.removeAttribute('aria-busy'); return login('비밀번호가 맞지 않습니다.'); }
       try { sessionStorage.setItem('rb-pw', st.pw); } catch (e) {}
-      ids.forEach(function (id, n) { st.data[id] = all[n]; });
-      draw();
-    }, function () {
+      st.forms = list;
+      return Promise.all(list.map(function (f) { return RB.api.results(st.pw, f.slug); })).then(function (all) {
+        list.forEach(function (f, n) { st.data[f.slug] = all[n] || []; });
+        app.removeAttribute('aria-busy');
+        if (['all', 'manage', 'edit'].indexOf(st.view) < 0 && !formOf(st.view)) st.view = 'all';
+        if (then) then(); else draw();
+      });
+    }).catch(function (e) {
       app.removeAttribute('aria-busy');
-      login('서버에 연결하지 못했습니다. 잠시 뒤 다시 열어 주세요.');
+      login(/404/.test(e && e.message) ? '서버에 설문 만들기 준비(SQL 2단계)가 아직 안 되어 있습니다.' : '서버에 연결하지 못했습니다. 잠시 뒤 다시 열어 주세요.');
     });
   }
 
-  function draw() { if (st.view === 'all') drawAll(); else if (st.pane === 'form') drawForm(); else drawDetail(); }
-  function seg() {
-    return '<div class="seg" role="group" aria-label="보기 고르기"><button data-pane="result" aria-pressed="' + (st.pane === 'result') + '">결과</button>' +
-      '<button data-pane="form" aria-pressed="' + (st.pane === 'form') + '">설문지</button></div>';
-  }
-  function bindSeg() {
-    app.querySelectorAll('[data-pane]').forEach(function (b) { b.onclick = function () { st.pane = b.dataset.pane; draw(); }; });
-  }
-  var TYPES = { single: '하나 고르기', multi: '여러 개 고르기', scale: '5점 척도', text: '서술' };
-  function drawForm() {
-    var S = SURVEYS[st.view], url = BASE + '/' + st.view, n = 0, total = RB.items(S).length;
-    var h = header() + seg() + '<div class="form"><div><div class="phone"><iframe title="' + esc(NAMES[st.view]) + ' 설문 미리보기" src="index.html?s=' + st.view + '&preview=1"></iframe></div>' +
-      '<div class="sub" style="text-align:center">눌러 보셔도 저장되지 않는 미리보기입니다</div></div>' +
-      '<div class="card qlist"><div class="head" style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0;flex:1">' + esc(S.kicker) + '</h2><span class="sub">' + S.sections.length + '섹션 · ' + total + '문항</span></div>' +
-      '<div class="share" style="border-top:0;padding-top:0;margin-bottom:16px"><div class="qr" role="img" aria-label="설문 QR코드">' + qrSVG(url) + '</div><div class="links"><code>' + esc(url) + '</code>' +
-      '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-copy="' + esc(url) + '">링크 복사</button><button class="btn sm" data-print="' + st.view + '">QR 안내문 인쇄</button></div></div></div>' +
-      S.sections.map(function (sec) {
-        return '<div class="sec"><h3>' + esc(sec.title) + '</h3>' + (sec.desc ? '<div class="d">' + esc(sec.desc) + '</div>' : '') + '<ol start="' + (n + 1) + '">' +
-          sec.items.map(function (it) {
-            n++;
-            var ops = it.options ? it.options.map(function (o) { return typeof o === 'object' ? o.v + ' ' + o.label : o; }).join(' / ') : '';
-            return '<li>' + esc(it.label) + '<span class="ty">' + TYPES[it.type] + '</span>' + (it.required ? '<span class="req">필수</span>' : '') +
-              (ops ? '<div class="op">' + esc(ops) + '</div>' : '') + '</li>';
-          }).join('') + '</ol></div>';
-      }).join('') + '</div></div>';
-    app.innerHTML = h;
-    bindTabs(); bindSeg(); bindShare();
+  function draw() {
+    if (st.view === 'all') drawAll();
+    else if (st.view === 'manage') drawManage();
+    else if (st.view === 'edit') drawEdit();
+    else if (st.pane === 'form') drawForm();
+    else drawDetail();
   }
 
   function header() {
-    return '<div style="display:flex;align-items:center;gap:12px"><img src="logo.png" alt="리딩브레인 로고" width="48" height="46"><div><div class="kicker">READING BRAIN</div><h1 style="margin:0">학원설문조사 결과</h1></div></div><div style="height:16px"></div>' +
+    var cur = formOf(st.view);
+    var extra = cur ? '<button role="tab" aria-selected="true">' + esc(nameOf(cur)) + '</button>'
+      : st.view === 'edit' ? '<button role="tab" aria-selected="true">' + (st.edit.isNew ? '새 설문' : '고치기 · ' + esc(st.edit.def.kicker)) + '</button>' : '';
+    return '<div style="display:flex;align-items:center;gap:12px"><img src="logo.png" alt="리딩브레인 로고" width="48" height="46"><div><div class="kicker">READING BRAIN</div><h1 style="margin:0">학원설문조사</h1></div></div><div style="height:16px"></div>' +
       '<div class="tabs" role="tablist"><button role="tab" data-v="all" aria-selected="' + (st.view === 'all') + '">전체 보기</button>' +
-      ids.map(function (id) {
-        return '<button role="tab" data-v="' + id + '" aria-selected="' + (id === st.view) + '">' + (NAMES[id] || id) + ' 설문</button>';
-      }).join('') + '</div>';
+      '<button role="tab" data-v="manage" aria-selected="' + (st.view === 'manage') + '">설문 관리</button>' + extra + '</div>';
   }
-  function bindTabs() {
-    app.querySelectorAll('[data-v]').forEach(function (b) {
-      b.onclick = function () { st.view = b.dataset.v; if (b.dataset.to) st.pane = b.dataset.to; st.grade = st.curriculum = ''; draw(); window.scrollTo(0, 0); };
-    });
-  }
-
-  // QR 라이브러리를 못 불러오면 빈 칸(링크는 그대로 보인다)
-  function qrSVG(text) {
-    if (typeof qrcode !== 'function') return '';
-    var q = qrcode(0, 'M'); q.addData(text); q.make();
-    return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-  }
-  function ago(t) {
-    var m = Math.floor((Date.now() - t) / 60000);
-    return m < 1 ? '방금' : m < 60 ? m + '분 전' : m < 1440 ? Math.floor(m / 60) + '시간 전' : Math.floor(m / 1440) + '일 전';
-  }
-  function md(d) { return Number(d.slice(5, 7)) + '/' + Number(d.slice(8, 10)); }
-
-  function drawAll() {
-    var latest = 0;
-    ids.forEach(function (id) { st.data[id].forEach(function (r) { latest = Math.max(latest, Date.parse(r.created_at)); }); });
-    var today = RB.kst(new Date().toISOString()).slice(0, 10);
-    var h = header() + '<div class="top"><span>마지막 응답: ' + (latest ? ago(latest) : '아직 없음') + '</span><span class="sp"></span>' +
-      '<button class="btn sm" id="re">새로고침</button></div><div class="ov">';
-    ids.forEach(function (id) {
-      var S = SURVEYS[id], rows = st.data[id], sum = RB.summarize(S, rows), url = BASE + '/' + id;
-      var flags = RB.flagged(S, rows).length;
-      var todayN = rows.filter(function (r) { return RB.kst(r.created_at).slice(0, 10) === today; }).length;
-      var days = RB.daily(rows, Date.now()).slice(-14);
-      var max = Math.max.apply(null, days.map(function (d) { return d.n; }).concat(1));
-      h += '<section class="card" aria-label="' + esc(NAMES[id] || id) + ' 설문 요약"><div class="head"><h2>' + esc(NAMES[id] || id) + ' 설문</h2>' +
-        (flags ? '<span class="badge">확인 필요 ' + flags + '</span>' : '') + '</div>' +
-        '<div class="mini"><div><div class="l">총 응답</div><div class="v">' + sum.n + '</div></div><div><div class="l">오늘</div><div class="v">' + todayN + '</div></div>' +
-        sum.sections.filter(function (x) { return x.avg !== null; }).map(function (x) {
-          return '<div><div class="l">' + esc(x.title.replace(' 관련 만족도', '').replace(' & 수업', '')) + ' 평균</div><div class="v">' + fmt(x.avg) + '</div></div>';
-        }).join('') + '</div>' +
-        (days.length
-          ? '<div><div class="days" role="img" aria-label="날짜별 응답 수">' + days.map(function (d) {
-              return '<span class="' + (d.n ? '' : 'zero') + '" style="height:' + Math.max(3, Math.round(d.n / max * 100)) + '%" title="' + md(d.day) + ' · ' + d.n + '명"></span>';
-            }).join('') + '</div><div class="dlab"><span>' + md(days[0].day) + '</span><span>날짜별 응답' + (days.length === 14 ? ' (최근 14일)' : '') + '</span><span>' + md(days[days.length - 1].day) + '</span></div></div>'
-          : '<div class="sub">아직 응답이 없습니다. 아래 링크나 QR로 설문을 보내 보세요.</div>') +
-        '<div class="share"><div class="qr" role="img" aria-label="' + esc(NAMES[id] || id) + ' 설문 QR코드">' + qrSVG(url) + '</div><div class="links">' +
-        '<code>' + esc(url) + '</code>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-copy="' + esc(url) + '">링크 복사</button>' +
-        '<button class="btn sm" data-print="' + id + '">QR 안내문 인쇄</button></div></div></div>' +
-        '<div style="display:flex;gap:8px"><button class="btn sm red" style="flex:1" data-v="' + id + '" data-to="result">결과 보기</button>' +
-        '<button class="btn sm" style="flex:1" data-v="' + id + '" data-to="form">설문지 보기</button></div></section>';
-    });
-    app.innerHTML = h + '</div>';
-    bindTabs();
-    document.getElementById('re').onclick = load;
-    bindShare();
-  }
-
-  function bindShare() {
+  function bindCommon() {
+    app.querySelectorAll('[data-v]').forEach(function (b) { b.onclick = function () { go(b.dataset.v, b.dataset.to); }; });
+    app.querySelectorAll('[data-pane]').forEach(function (b) { b.onclick = function () { st.pane = b.dataset.pane; draw(); }; });
     app.querySelectorAll('[data-copy]').forEach(function (b) {
       b.onclick = function () {
         var done = function () { b.textContent = '복사됨'; setTimeout(function () { b.textContent = '링크 복사'; }, 1500); };
@@ -242,68 +223,101 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
       };
     });
     app.querySelectorAll('[data-print]').forEach(function (b) { b.onclick = function () { poster(b.dataset.print); }; });
+    var re = document.getElementById('re');
+    if (re) re.onclick = function () { load(); };
+  }
+  function seg() {
+    return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="seg" role="group" aria-label="보기 고르기"><button data-pane="result" aria-pressed="' + (st.pane === 'result') + '">결과</button>' +
+      '<button data-pane="form" aria-pressed="' + (st.pane === 'form') + '">설문지</button></div>' +
+      '<span class="sp" style="flex:1"></span><button class="btn sm" data-edit="' + esc(st.view) + '" style="margin-bottom:16px">설문 고치기</button></div>';
   }
 
-  // A4 한 장: 로고 · 제목 · 큰 QR · 안내
-  function poster(id) {
-    var url = BASE + '/' + id, el = document.getElementById('poster');
-    el.innerHTML = '<img class="l" src="logo-full.png" alt=""><div class="k">' + (id === 'student' ? 'Dear friends,' : 'Dear parents,') + '</div>' +
-      '<h1>' + esc(TITLES[id] || SURVEYS[id].kicker) + '</h1><div class="q">' + qrSVG(url) + '</div>' +
-      '<div class="how">휴대폰 카메라로 QR코드를 찍어 주세요</div><div class="u">' + esc(url) + '</div>' +
-      '<div class="note">' + (id === 'student' ? '이름은 묻지 않아요 · 약 3분' : '무기명으로 진행됩니다 · 약 3분') + '<br>리딩브레인영어학원</div>';
-    document.body.classList.add('printing');
-    var img = el.querySelector('img');
-    var go = function () { window.print(); document.body.classList.remove('printing'); };
-    if (img.complete) go(); else img.onload = img.onerror = go;
+  function qrSVG(text) {
+    if (typeof qrcode !== 'function') return '';
+    var q = qrcode(0, 'M'); q.addData(text); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
   }
-
+  function shareBox(slug) {
+    var url = urlOf(slug);
+    return '<div class="share"><div class="qr" role="img" aria-label="설문 QR코드">' + qrSVG(url) + '</div><div class="links"><code>' + esc(url) + '</code>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-copy="' + esc(url) + '">링크 복사</button>' +
+      '<button class="btn sm" data-print="' + esc(slug) + '">QR 안내문 인쇄</button></div></div></div>';
+  }
+  function ago(t) {
+    var m = Math.floor((Date.now() - t) / 60000);
+    return m < 1 ? '방금' : m < 60 ? m + '분 전' : m < 1440 ? Math.floor(m / 60) + '시간 전' : Math.floor(m / 1440) + '일 전';
+  }
+  function md(d) { return Number(d.slice(5, 7)) + '/' + Number(d.slice(8, 10)); }
   function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
   function fmt(x) { return x === null || x === undefined ? '–' : x.toFixed(2); }
+  function short(t) { return t.replace(' 관련 만족도', '').replace(' & 수업', ''); }
 
+  // ── 전체 보기
+  function drawAll() {
+    var latest = 0, today = RB.kst(new Date().toISOString()).slice(0, 10);
+    st.forms.forEach(function (f) { st.data[f.slug].forEach(function (r) { latest = Math.max(latest, Date.parse(r.created_at)); }); });
+    var forms = st.forms.filter(function (f) { return f.status === 'open'; }).concat(st.forms.filter(function (f) { return f.status !== 'open'; }));
+    var h = header() + '<div class="top"><span>마지막 응답: ' + (latest ? ago(latest) : '아직 없음') + '</span><span class="sp"></span>' +
+      '<button class="btn sm" data-v="manage">＋ 새 설문 · 설문 관리</button><button class="btn sm" id="re">새로고침</button></div><div class="ov">';
+    forms.forEach(function (f) {
+      var S = f.def, rows = st.data[f.slug], sum = RB.summarize(S, rows), flags = RB.flagged(S, rows).length;
+      var todayN = rows.filter(function (r) { return RB.kst(r.created_at).slice(0, 10) === today; }).length;
+      var days = RB.daily(rows, Date.now()).slice(-14), max = Math.max.apply(null, days.map(function (d) { return d.n; }).concat(1));
+      h += '<section class="card' + (f.status === 'open' ? '' : ' closed') + '" aria-label="' + esc(nameOf(f)) + ' 요약"><div class="head"><h2>' + esc(nameOf(f)) + '</h2>' +
+        (f.status === 'open' ? '' : '<span class="badge gray">마감</span>') + (flags ? '<span class="badge">확인 필요 ' + flags + '</span>' : '') + '</div>' +
+        '<div class="mini"><div><div class="l">총 응답</div><div class="v">' + sum.n + '</div></div><div><div class="l">오늘</div><div class="v">' + todayN + '</div></div>' +
+        sum.sections.filter(function (x) { return x.avg !== null; }).map(function (x) {
+          return '<div><div class="l">' + esc(short(x.title)) + ' 평균</div><div class="v">' + fmt(x.avg) + '</div></div>';
+        }).join('') + '</div>' +
+        (days.length
+          ? '<div><div class="days" role="img" aria-label="날짜별 응답 수">' + days.map(function (d) {
+              return '<span class="' + (d.n ? '' : 'zero') + '" style="height:' + Math.max(3, Math.round(d.n / max * 100)) + '%" title="' + md(d.day) + ' · ' + d.n + '명"></span>';
+            }).join('') + '</div><div class="dlab"><span>' + md(days[0].day) + '</span><span>날짜별 응답' + (days.length === 14 ? ' (최근 14일)' : '') + '</span><span>' + md(days[days.length - 1].day) + '</span></div></div>'
+          : '<div class="sub">아직 응답이 없습니다. 아래 링크나 QR로 설문을 보내 보세요.</div>') +
+        shareBox(f.slug) +
+        '<div style="display:flex;gap:8px"><button class="btn sm red" style="flex:1" data-v="' + esc(f.slug) + '" data-to="result">결과 보기</button>' +
+        '<button class="btn sm" style="flex:1" data-v="' + esc(f.slug) + '" data-to="form">설문지 보기</button></div></section>';
+    });
+    app.innerHTML = h + '</div>' + (st.forms.length ? '' : '<div class="empty">설문이 없습니다. "설문 관리"에서 새 설문을 만들어 보세요.</div>');
+    bindCommon();
+  }
+
+  // ── 고른 설문의 결과
+  function tags(S, a) {
+    return RB.items(S).filter(function (i) { return i.filter; }).map(function (i) { return [].concat(a[i.id] || []).join(' · '); })
+      .filter(Boolean).map(esc).join(' · ');
+  }
   function optRows(it, s) {
-    var base = s.answered;
     return it.options.map(function (o) {
       var k = typeof o === 'object' ? o.v : o, label = typeof o === 'object' ? o.v + ' ' + o.label : o, c = s.counts[k] || 0;
-      return '<div class="opt"><span>' + esc(label) + '</span><span class="track"><span class="fill" style="width:' + pct(c, base) + '%"></span></span>' +
-        '<span class="n">' + c + ' · ' + pct(c, base) + '%</span></div>';
+      return '<div class="opt"><span>' + esc(label) + '</span><span class="track"><span class="fill" style="width:' + pct(c, s.answered) + '%"></span></span>' +
+        '<span class="n">' + c + ' · ' + pct(c, s.answered) + '%</span></div>';
     }).join('');
   }
-
-  function tags(a) {
-    return [].concat(a.grade || [], a.curricula || []).map(esc).join(' · ');
-  }
-
   function drawDetail() {
-    var S = SURVEYS[st.view], allRows = st.data[st.view];
-    var rows = RB.filterRows(allRows, { grade: st.grade, curriculum: st.curriculum });
-    var sum = RB.summarize(S, rows);
-    var all = RB.items(S);
-    var gradeIt = all.filter(function (i) { return i.id === 'grade'; })[0];
-    var curIt = all.filter(function (i) { return i.id === 'curricula'; })[0];
-    var flags = RB.flagged(S, rows), flagIt = all.filter(function (i) { return i.flag; })[0];
-
-    var h = header() + seg() +
-      '<div class="bar">' +
-      (gradeIt ? '<select id="fg" aria-label="학년으로 거르기"><option value="">전체 학년</option>' + gradeIt.options.map(function (o) { return '<option' + (o === st.grade ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' : '') +
-      (curIt ? '<select id="fc" aria-label="커리큘럼으로 거르기"><option value="">전체 커리큘럼</option>' + curIt.options.map(function (o) { return '<option' + (o === st.curriculum ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' : '') +
+    var f = formOf(st.view), S = f.def, allRows = st.data[f.slug];
+    var rows = RB.filterRows(allRows, st.filters), sum = RB.summarize(S, rows);
+    var flagIt = RB.items(S).filter(function (i) { return i.flag; })[0], flags = RB.flagged(S, rows);
+    var h = header() + seg() + '<div class="bar">' +
+      RB.items(S).filter(function (i) { return i.filter && i.options; }).map(function (i) {
+        return '<select data-f="' + esc(i.id) + '" aria-label="' + esc(i.label) + '로 거르기"><option value="">' + esc(i.label) + ': 전체</option>' +
+          i.options.map(function (o) { return '<option' + (o === st.filters[i.id] ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+      }).join('') +
       '<span class="sp"></span><button class="btn" id="re">새로고침</button><button class="btn" id="csv">엑셀(CSV) 받기</button></div>' +
       '<div class="stats"><div class="stat"><div class="l">응답 수</div><div class="v">' + sum.n + '<small> 명' + (rows.length !== allRows.length ? ' / 전체 ' + allRows.length : '') + '</small></div></div>' +
       sum.sections.filter(function (x) { return x.avg !== null; }).map(function (x) {
-        return '<div class="stat"><div class="l">' + esc(x.title.replace(' 관련 만족도', '')) + ' 평균</div><div class="v">' + fmt(x.avg) + '<small> / 5</small></div></div>';
+        return '<div class="stat"><div class="l">' + esc(short(x.title)) + ' 평균</div><div class="v">' + fmt(x.avg) + '<small> / 5</small></div></div>';
       }).join('') + '</div>';
-
     if (flags.length) {
       h += '<div class="flag" role="note"><b>확인이 필요한 의견 ' + flags.length + '건</b><span style="font-size:13px">' + esc(flagIt.label) + '</span><ul>' +
-        flags.map(function (r) { return '<li>' + esc(r.answers[flagIt.id]) + ' <span style="opacity:.75">(' + tags(r.answers) + ')</span></li>'; }).join('') + '</ul></div>';
+        flags.map(function (r) { return '<li>' + esc(r.answers[flagIt.id]) + ' <span style="opacity:.75">(' + tags(S, r.answers) + ')</span></li>'; }).join('') + '</ul></div>';
     }
-
     if (!rows.length) {
       h += '<div class="empty">' + (allRows.length ? '고른 조건에 맞는 응답이 없습니다.' : '아직 응답이 없습니다.') + '</div>';
     } else {
       S.sections.forEach(function (sec) {
         h += '<h2>' + esc(sec.title) + '</h2>';
-        var choice = sec.items.filter(function (i) { return i.type !== 'text'; });
-        var texts = sec.items.filter(function (i) { return i.type === 'text'; });
+        var choice = sec.items.filter(function (i) { return i.type !== 'text'; }), texts = sec.items.filter(function (i) { return i.type === 'text'; });
         if (choice.length) h += '<div class="grid">' + choice.map(function (it) {
           var s = sum.items[it.id];
           return '<div class="card q"><div class="t">' + (s.avg !== undefined ? '<span class="avg">평균 ' + fmt(s.avg) + '</span>' : '') + esc(it.label) + '</div>' +
@@ -313,28 +327,298 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
           var list = rows.filter(function (r) { return !RB.empty(r.answers[it.id]); });
           h += '<div class="q" style="margin:16px 0 8px"><div class="t">' + esc(it.label) + ' <span style="color:var(--muted);font-weight:400">' + list.length + '건</span></div></div>' +
             '<div class="texts">' + (list.length ? list.map(function (r) {
-              return '<div class="tx">' + esc(r.answers[it.id]) + '<div class="tags">' + tags(r.answers) + ' · ' + RB.kst(r.created_at) + '</div></div>';
+              return '<div class="tx">' + esc(r.answers[it.id]) + '<div class="tags">' + tags(S, r.answers) + ' · ' + RB.kst(r.created_at) + '</div></div>';
             }).join('') : '<div class="sub">적힌 의견이 없습니다.</div>') + '</div>';
         });
       });
     }
     app.innerHTML = h;
-
-    bindTabs(); bindSeg();
-    var fg = document.getElementById('fg'), fc = document.getElementById('fc');
-    if (fg) fg.onchange = function () { st.grade = fg.value; draw(); };
-    if (fc) fc.onchange = function () { st.curriculum = fc.value; draw(); };
-    document.getElementById('re').onclick = load;
+    bindCommon(); bindEditBtn();
+    app.querySelectorAll('[data-f]').forEach(function (sel) { sel.onchange = function () { st.filters[sel.dataset.f] = sel.value; draw(); }; });
     document.getElementById('csv').onclick = function () {
       var blob = new Blob([RB.toCSV(S, rows)], { type: 'text/csv;charset=utf-8' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = '리딩브레인-' + (NAMES[st.view] || st.view) + '설문-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.download = '리딩브레인-' + nameOf(f) + '-' + new Date().toISOString().slice(0, 10) + '.csv';
       a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     };
   }
 
+  // ── 고른 설문의 설문지 (폰 미리보기 + 문항 목록)
+  function questionList(S) {
+    var n = 0;
+    return S.sections.map(function (sec) {
+      return '<div class="sec"><h3>' + esc(sec.title) + '</h3>' + (sec.desc ? '<div class="d">' + esc(sec.desc) + '</div>' : '') + '<ol start="' + (n + 1) + '">' +
+        sec.items.map(function (it) {
+          n++;
+          var ops = it.options ? it.options.map(function (o) { return typeof o === 'object' ? o.v + ' ' + o.label : o; }).join(' / ') : '';
+          return '<li>' + esc(it.label) + '<span class="ty">' + TYPES[it.type] + '</span>' + (it.required ? '<span class="req">필수</span>' : '') +
+            (ops ? '<div class="op">' + esc(ops) + '</div>' : '') + '</li>';
+        }).join('') + '</ol></div>';
+    }).join('');
+  }
+  function drawForm() {
+    var f = formOf(st.view), S = f.def;
+    app.innerHTML = header() + seg() + '<div class="form"><div><div class="phone"><iframe title="' + esc(nameOf(f)) + ' 미리보기" src="index.html?s=' + encodeURIComponent(f.slug) + '&preview=1"></iframe></div>' +
+      '<div class="sub" style="text-align:center">눌러 보셔도 저장되지 않는 미리보기입니다</div></div>' +
+      '<div class="card qlist"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0;flex:1">' + esc(nameOf(f)) + '</h2><span class="sub">' +
+      S.sections.length + '섹션 · ' + RB.items(S).length + '문항' + (f.status === 'open' ? '' : ' · 마감') + '</span></div>' +
+      '<div style="margin-bottom:16px">' + shareBox(f.slug) + '</div>' + questionList(S) + '</div></div>';
+    bindCommon(); bindEditBtn();
+  }
+
+  // ── 설문 관리
+  function drawManage() {
+    var h = header() + '<div class="top"><span>설문 ' + st.forms.length + '개</span><span class="sp"></span><button class="btn sm red" id="new">＋ 새 설문 만들기</button></div><div class="mlist">';
+    st.forms.forEach(function (f) {
+      var n = st.data[f.slug].length, open = f.status === 'open';
+      h += '<div class="card mrow"><div class="mi"><div class="mt">' + esc(nameOf(f)) + (open ? ' <span class="badge green">받는 중</span>' : ' <span class="badge gray">마감</span>') + '</div>' +
+        '<div class="sub" style="margin:2px 0 0"><code>' + esc(urlOf(f.slug)) + '</code> · 응답 ' + n + ' · ' + RB.items(f.def).length + '문항</div></div>' +
+        '<div class="ma">' +
+        '<button class="btn sm" data-v="' + esc(f.slug) + '" data-to="result">결과</button>' +
+        '<button class="btn sm" data-v="' + esc(f.slug) + '" data-to="form">설문지</button>' +
+        '<button class="btn sm" data-edit="' + esc(f.slug) + '">고치기</button>' +
+        '<button class="btn sm" data-dup="' + esc(f.slug) + '">복사</button>' +
+        '<button class="btn sm" data-status="' + esc(f.slug) + '">' + (open ? '닫기' : '다시 열기') + '</button>' +
+        (n ? '' : '<button class="btn sm" data-del="' + esc(f.slug) + '">지우기</button>') + '</div></div>';
+    });
+    app.innerHTML = h + '</div><p class="sub">응답이 들어온 설문은 글자 고치기와 문항 더하기만 됩니다. 크게 바꾸려면 "복사"해서 새 설문으로 만드세요. 응답이 있는 설문은 지울 수 없고 "닫기"를 씁니다.</p>';
+    bindCommon(); bindEditBtn();
+    document.getElementById('new').onclick = function () { startEdit(null, blank()); };
+    app.querySelectorAll('[data-dup]').forEach(function (b) {
+      b.onclick = function () {
+        var d = clone(formOf(b.dataset.dup).def);
+        d.kicker = d.kicker + ' (복사)';
+        startEdit(null, d);
+      };
+    });
+    app.querySelectorAll('[data-status]').forEach(function (b) {
+      b.onclick = function () {
+        var f = formOf(b.dataset.status), next = f.status === 'open' ? 'closed' : 'open';
+        if (next === 'closed' && !confirm('「' + nameOf(f) + '」 설문을 닫을까요? 닫으면 링크를 연 분께 "마감되었습니다"가 뜹니다.')) return;
+        RB.api.setStatus(st.pw, f.slug, next).then(function (r) { done(r, next === 'open' ? '다시 열었습니다' : '닫았습니다'); });
+      };
+    });
+    app.querySelectorAll('[data-del]').forEach(function (b) {
+      b.onclick = function () {
+        var f = formOf(b.dataset.del);
+        if (!confirm('「' + nameOf(f) + '」 설문을 지울까요? 되돌릴 수 없습니다.')) return;
+        RB.api.deleteForm(st.pw, f.slug).then(function (r) { done(r, '지웠습니다'); });
+      };
+    });
+  }
+  function done(r, msg) {
+    if (r && r.ok) { load(function () { draw(); toast(msg); }); return true; }
+    alert(ERRORS[r && r.error] || '저장하지 못했습니다. 잠시 뒤 다시 해 주세요.');
+    return false;
+  }
+  function bindEditBtn() {
+    app.querySelectorAll('[data-edit]').forEach(function (b) {
+      b.onclick = function () { var f = formOf(b.dataset.edit); startEdit(f, clone(f.def)); };
+    });
+  }
+
+  // ── 새 설문 · 고치기
+  function blank() {
+    return {
+      kicker: '', title: '', greeting: 'Dear parents,',
+      intro: ['안녕하세요, 리딩브레인영어학원입니다.', '아래 문항에 솔직한 의견을 남겨 주시면 수업과 학원 운영에 반영하겠습니다.'],
+      notice: '본 설문은 무기명으로 진행되며, 답변 내용은 수업 운영 개선을 위한 참고 자료로만 활용됩니다.',
+      thanks: '소중한 의견 감사합니다. 보내 주신 의견은 수업과 학원 운영에 반영하겠습니다.',
+      once: true,
+      sections: [{ title: '질문', desc: '', items: [{ id: 'q1', type: 'scale', required: true, label: '', options: clone(SAT) }] }]
+    };
+  }
+  function startEdit(f, def) {
+    st.edit = {
+      isNew: !f, slug: f ? f.slug : '', def: def, base: f ? clone(f.def) : null,
+      locked: !!(f && st.data[f.slug].length), count: f ? st.data[f.slug].length : 0, dirty: false
+    };
+    go('edit');
+  }
+  function lockedId(id) {
+    return st.edit.locked && RB.items(st.edit.base).some(function (i) { return i.id === id; });
+  }
+  function preset(opts) {
+    var j = JSON.stringify(opts);
+    return j === JSON.stringify(SAT) ? 'sat' : j === JSON.stringify(AGREE) ? 'agree' : 'custom';
+  }
+  function field(label, html, hint) {
+    return '<label class="fld"><span>' + label + '</span>' + html + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+  }
+  function itemEditor(it, si, ii, num) {
+    var lock = lockedId(it.id), dis = lock ? ' disabled' : '';
+    var a = ' data-s="' + si + '" data-i="' + ii + '"';
+    var h = '<div class="eitem"><div class="ehead"><b>' + num + '</b>' +
+      '<select data-ik="type"' + a + dis + ' aria-label="문항 종류">' + Object.keys(TYPES).map(function (t) { return '<option value="' + t + '"' + (it.type === t ? ' selected' : '') + '>' + TYPES[t] + '</option>'; }).join('') + '</select>' +
+      '<label class="chk"><input type="checkbox" data-ik="required"' + a + (it.required ? ' checked' : '') + '> 필수</label>' +
+      '<span class="sp"></span>' +
+      '<button class="ib" data-act="item-up"' + a + ' aria-label="위로">↑</button><button class="ib" data-act="item-down"' + a + ' aria-label="아래로">↓</button>' +
+      '<button class="ib" data-act="item-del"' + a + dis + ' aria-label="문항 지우기">✕</button></div>' +
+      '<input class="wide" data-ik="label"' + a + ' value="' + esc(it.label) + '" placeholder="문항 글을 적어 주세요" aria-label="문항 글">';
+    if (it.type === 'single' || it.type === 'multi') {
+      h += '<textarea data-ik="options"' + a + dis + ' rows="' + Math.max(3, it.options.length) + '" aria-label="보기" placeholder="보기를 한 줄에 하나씩">' + esc(it.options.join('\n')) + '</textarea>' +
+        '<label class="chk"><input type="checkbox" data-ik="filter"' + a + (it.filter ? ' checked' : '') + '> 결과 화면에서 이 답으로 걸러 보기 (학년·반 같은 문항)</label>';
+    } else if (it.type === 'scale') {
+      var p = preset(it.options);
+      h += '<div class="row2"><select data-ik="preset"' + a + dis + ' aria-label="5점 말">' +
+        '<option value="sat"' + (p === 'sat' ? ' selected' : '') + '>매우 만족 ~ 매우 불만족</option>' +
+        '<option value="agree"' + (p === 'agree' ? ' selected' : '') + '>전혀 아니다 ~ 매우 그렇다</option>' +
+        '<option value="custom"' + (p === 'custom' ? ' selected' : '') + '>직접 적기</option></select>' +
+        '<label class="chk"><input type="checkbox" data-ik="noAvg"' + a + (it.noAvg ? ' checked' : '') + '> 평균에서 빼기 (양 끝이 모두 나쁜 문항, 예: 숙제 양)</label></div>' +
+        (p === 'custom' ? '<textarea data-ik="scaleLabels"' + a + dis + ' rows="5" aria-label="5점 말" placeholder="1점부터 5점까지 한 줄에 하나씩">' + esc(it.options.map(function (o) { return o.label; }).join('\n')) + '</textarea>' : '');
+    } else {
+      h += '<label class="chk"><input type="checkbox" data-ik="flag"' + a + (it.flag ? ' checked' : '') + '> 글이 적히면 대시보드에 "확인 필요"로 띄우기</label>';
+    }
+    if (lock) h += '<div class="lockn">응답이 있어 종류·보기는 바꿀 수 없습니다 (글자는 고칠 수 있음)</div>';
+    return h + '</div>';
+  }
+  function drawEdit() {
+    var e = st.edit, d = e.def, num = 0;
+    var h = header() + '<div class="form"><div class="sticky"><div class="phone"><iframe id="pv" title="미리보기" src="index.html?s=' + encodeURIComponent(e.slug || 'parent') + '&preview=1"></iframe></div>' +
+      '<div class="sub" style="text-align:center">고치는 대로 바로 바뀌는 미리보기 (저장 전)</div></div><div class="card editor">';
+    if (e.locked) h += '<div class="flag" style="margin:0 0 14px">응답이 <b style="display:inline">' + e.count + '개</b> 들어온 설문입니다. 글자 고치기와 문항 더하기만 됩니다. 크게 바꾸려면 "설문 관리"에서 복사해 새 설문으로 만드세요.</div>';
+    h += '<h3 class="eh">기본 정보</h3>' +
+      field('설문 이름', '<input data-k="kicker" value="' + esc(d.kicker) + '" placeholder="예: 11월 입시설명회 만족도">', '대시보드·브라우저 탭에 보이는 이름') +
+      '<div class="aibox"><button class="btn sm" id="ai">✨ AI로 제목·인사말 채우기</button><span class="sub" id="aimsg">설문 이름과 문항을 보고 아래 글을 써 드립니다. 쓴 뒤 고치시면 됩니다.</span></div>' +
+      (e.isNew ? field('주소 이름', '<div class="slug"><span>' + esc(BASE) + '/s/</span><input data-k="slug" value="' + esc(e.slug) + '" placeholder="seminar-2026-11" autocapitalize="off" spellcheck="false"></div>', '영문 소문자·숫자·- 만, 2~40자. 저장한 뒤에는 바꿀 수 없습니다')
+        : field('주소', '<code>' + esc(urlOf(e.slug)) + '</code>')) +
+      field('첫 화면 제목', '<input data-k="title" value="' + esc(d.title) + '" placeholder="비우면 설문 이름이 나옵니다">') +
+      field('첫 인사 (작은 글씨)', '<input data-k="greeting" value="' + esc(d.greeting) + '" placeholder="Dear parents,">') +
+      field('인사말', '<textarea data-k="intro" rows="4">' + esc((d.intro || []).join('\n')) + '</textarea>', '한 줄이 한 문단이 됩니다') +
+      field('안내 상자', '<textarea data-k="notice" rows="2">' + esc(d.notice) + '</textarea>') +
+      field('끝 인사 (제출 뒤)', '<textarea data-k="thanks" rows="2">' + esc(d.thanks) + '</textarea>') +
+      '<label class="chk"><input type="checkbox" data-k="once"' + (d.once ? ' checked' : '') + '> 같은 폰에서는 한 번만 내기 (학부모용. 태블릿을 돌려 쓰는 학생 설문은 끄세요)</label>' +
+      '<label class="chk"><input type="checkbox" data-k="big"' + (d.big ? ' checked' : '') + '> 글씨 크게 (어린 학생용)</label>' +
+      '<h3 class="eh">문항</h3>';
+    d.sections.forEach(function (sec, si) {
+      var lockSec = sec.items.some(function (i) { return lockedId(i.id); }), a = ' data-s="' + si + '"';
+      h += '<div class="esec"><div class="ehead"><input class="wide" data-sk="title"' + a + ' value="' + esc(sec.title) + '" placeholder="섹션 제목" aria-label="섹션 제목">' +
+        '<button class="ib" data-act="sec-up"' + a + ' aria-label="섹션 위로">↑</button><button class="ib" data-act="sec-down"' + a + ' aria-label="섹션 아래로">↓</button>' +
+        '<button class="ib" data-act="sec-del"' + a + (lockSec ? ' disabled' : '') + ' aria-label="섹션 지우기">✕</button></div>' +
+        '<input class="wide" data-sk="desc"' + a + ' value="' + esc(sec.desc) + '" placeholder="섹션 설명 (없어도 됩니다)" aria-label="섹션 설명">' +
+        sec.items.map(function (it, ii) { return itemEditor(it, si, ii, ++num); }).join('') +
+        '<button class="btn sm" data-act="item-add"' + a + '>＋ 문항 더하기</button></div>';
+    });
+    h += '<button class="btn sm" data-act="sec-add">＋ 섹션 더하기</button>' +
+      '<div class="msg" id="err" role="alert"></div>' +
+      '<div class="savebar"><button class="btn" data-v="manage">취소</button><button class="btn red" id="save">저장</button></div></div></div>';
+    app.innerHTML = h;
+    bindCommon();
+    bindEditor();
+    var pv = document.getElementById('pv');
+    pv.onload = function () { push(); setTimeout(push, 600); };
+  }
+  function push() {
+    var pv = document.getElementById('pv');
+    if (pv && pv.contentWindow) pv.contentWindow.postMessage({ type: 'rb-draft', def: build() }, location.origin);
+  }
+  var pushSoon = function () { clearTimeout(pushSoon.t); pushSoon.t = setTimeout(push, 250); };
+  function lines(v) { return String(v).split('\n').map(function (x) { return x.trim(); }).filter(Boolean); }
+  function build() {
+    var d = clone(st.edit.def);
+    d.sections.forEach(function (s) { s.items.forEach(function (i) { if (i.type !== 'single' && i.type !== 'multi') delete i.filter; if (i.type !== 'text') delete i.flag; if (i.type !== 'scale') delete i.noAvg; }); });
+    return d;
+  }
+  function bindEditor() {
+    var e = st.edit, d = e.def, ed = app.querySelector('.editor');
+    function touched() { e.dirty = true; pushSoon(); }
+    ed.addEventListener('input', function (ev) {
+      var t = ev.target, ds = t.dataset;
+      if (ds.k === 'slug') { e.slug = t.value.trim(); return; }
+      if (ds.k) { if (t.type === 'checkbox') return; d[ds.k] = ds.k === 'intro' ? lines(t.value) : t.value; touched(); return; }
+      if (ds.sk) { d.sections[ds.s][ds.sk] = t.value; touched(); return; }
+      if (!ds.ik) return;
+      var it = d.sections[ds.s].items[ds.i];
+      if (ds.ik === 'label') it.label = t.value;
+      else if (ds.ik === 'options') it.options = lines(t.value);
+      else if (ds.ik === 'scaleLabels') {
+        var ls = String(t.value).split('\n').slice(0, 5);
+        while (ls.length < 5) ls.push('');
+        it.options = ls.map(function (l, n) { return { v: n + 1, label: l.trim() }; });
+      } else return;
+      touched();
+    });
+    ed.addEventListener('change', function (ev) {
+      var t = ev.target, ds = t.dataset;
+      if (ds.k && t.type === 'checkbox') { if (t.checked) d[ds.k] = true; else delete d[ds.k]; touched(); return; }
+      if (!ds.ik) return;
+      var it = d.sections[ds.s].items[ds.i];
+      if (t.type === 'checkbox') { if (t.checked) it[ds.ik] = true; else delete it[ds.ik]; touched(); return; }
+      if (ds.ik === 'type') {
+        it.type = t.value;
+        if (it.type === 'single' || it.type === 'multi') { if (!Array.isArray(it.options) || typeof it.options[0] === 'object' || !it.options.length) it.options = ['보기 1', '보기 2']; }
+        else if (it.type === 'scale') it.options = clone(SAT);
+        else delete it.options;
+      } else if (ds.ik === 'preset') {
+        it.options = t.value === 'sat' ? clone(SAT) : t.value === 'agree' ? clone(AGREE) : it.options.map(function (o, n) { return { v: n + 1, label: o.label }; });
+        if (t.value === 'custom' && preset(it.options) !== 'custom') it.options[0].label += ' '; // 직접 적기 칸이 열리게
+      }
+      e.dirty = true; drawEdit();
+    });
+    ed.addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-act]');
+      if (!b || b.disabled) return;
+      var s = Number(b.dataset.s), i = Number(b.dataset.i), secs = d.sections, act = b.dataset.act;
+      var swap = function (arr, x, y) { if (y < 0 || y >= arr.length) return; var t = arr[x]; arr[x] = arr[y]; arr[y] = t; };
+      if (act === 'sec-add') secs.push({ title: '새 섹션', desc: '', items: [{ id: RB.newId(d), type: 'scale', required: true, label: '', options: clone(SAT) }] });
+      else if (act === 'sec-del') { if (!confirm('이 섹션과 안의 문항을 모두 지울까요?')) return; secs.splice(s, 1); }
+      else if (act === 'sec-up') swap(secs, s, s - 1);
+      else if (act === 'sec-down') swap(secs, s, s + 1);
+      else if (act === 'item-add') secs[s].items.push({ id: RB.newId(d), type: 'scale', required: true, label: '', options: clone(SAT) });
+      else if (act === 'item-del') secs[s].items.splice(i, 1);
+      else if (act === 'item-up') { if (i === 0 && s > 0) secs[s - 1].items.push(secs[s].items.splice(i, 1)[0]); else swap(secs[s].items, i, i - 1); }
+      else if (act === 'item-down') { if (i === secs[s].items.length - 1 && s < secs.length - 1) secs[s + 1].items.unshift(secs[s].items.splice(i, 1)[0]); else swap(secs[s].items, i, i + 1); }
+      e.dirty = true; drawEdit();
+    });
+    document.getElementById('ai').onclick = function () {
+      var btn = this, msg = document.getElementById('aimsg');
+      if (!String(d.kicker || '').trim()) { msg.textContent = '설문 이름을 먼저 적어 주세요.'; return; }
+      btn.disabled = true; msg.textContent = 'AI가 쓰는 중… (10초쯤)';
+      var labels = RB.items(d).map(function (i) { return i.label; }).filter(Boolean);
+      var ask = RB.api.demo()
+        ? Promise.resolve({ title: d.kicker, greeting: d.greeting || 'Dear parents,', intro: ['안녕하세요, 리딩브레인영어학원입니다.', '「' + d.kicker + '」에 대한 의견을 여쭙고자 합니다. (연습 모드 예시 글)'], notice: '무기명으로 진행됩니다.', thanks: '소중한 의견 감사합니다.' })
+        : fetch('/api/ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: st.pw, kicker: d.kicker, items: labels }) })
+            .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error); return j; }); });
+      ask.then(function (j) {
+        ['title', 'greeting', 'intro', 'notice', 'thanks'].forEach(function (k) { if (j[k] && j[k].length) d[k] = j[k]; });
+        e.dirty = true; drawEdit();
+        document.getElementById('aimsg').textContent = 'AI가 채웠습니다. 읽어 보시고 필요한 곳만 고쳐 주세요.';
+      }, function (err) {
+        btn.disabled = false;
+        msg.textContent = { nokey: 'AI 키가 아직 연결되지 않았습니다. (사용법-웹설문.md 의 "AI 글 채우기" 참고)', password: '비밀번호가 맞지 않습니다.' }[err.message] || 'AI 글을 받지 못했습니다. 잠시 뒤 다시 눌러 주세요.';
+      });
+    };
+    document.getElementById('save').onclick = function () {
+      var def = build(), errs = RB.validateDef(def), box = document.getElementById('err');
+      if (e.isNew && !RB.slugOk(e.slug)) errs.unshift(ERRORS.slug);
+      if (e.isNew && formOf(e.slug)) errs.unshift(ERRORS.exists);
+      if (e.locked && RB.lockCheck(e.base, def).length) errs.unshift(ERRORS.locked);
+      if (errs.length) { box.innerHTML = errs.map(esc).join('<br>'); box.scrollIntoView({ block: 'center' }); return; }
+      var btn = this; btn.disabled = true; btn.textContent = '저장 중…';
+      RB.api.saveForm(st.pw, e.slug, def, e.isNew).then(function (r) {
+        btn.disabled = false; btn.textContent = '저장';
+        if (r && r.ok) { e.dirty = false; var slug = e.slug; st.view = 'manage'; load(function () { draw(); toast('저장했습니다 · ' + urlOf(slug)); }); }
+        else box.textContent = ERRORS[r && r.error] || '저장하지 못했습니다. 잠시 뒤 다시 해 주세요.';
+      }, function () { btn.disabled = false; btn.textContent = '저장'; box.textContent = '서버에 연결하지 못했습니다. 잠시 뒤 다시 해 주세요.'; });
+    };
+  }
+
+  // ── A4 QR 안내문
+  function poster(slug) {
+    var f = formOf(slug), url = urlOf(slug), el = document.getElementById('poster');
+    el.innerHTML = '<img class="l" src="logo-full.png" alt="">' + (f.def.greeting ? '<div class="k">' + esc(f.def.greeting) + '</div>' : '') +
+      '<h1>' + esc(nameOf(f)) + '</h1><div class="q">' + qrSVG(url) + '</div>' +
+      '<div class="how">휴대폰 카메라로 QR코드를 찍어 주세요</div><div class="u">' + esc(url) + '</div>' +
+      '<div class="note">' + (f.def.once ? '무기명으로 진행됩니다' : '이름은 묻지 않아요') + ' · 약 3분<br>리딩브레인영어학원</div>';
+    document.body.classList.add('printing');
+    var img = el.querySelector('img');
+    var goPrint = function () { window.print(); document.body.classList.remove('printing'); };
+    if (img.complete) goPrint(); else img.onload = img.onerror = goPrint;
+  }
+
+  window.addEventListener('beforeunload', function (ev) { if (st.view === 'edit' && st.edit && st.edit.dirty) { ev.preventDefault(); ev.returnValue = ''; } });
   if (st.pw) load(); else login();
 })();
 </script>

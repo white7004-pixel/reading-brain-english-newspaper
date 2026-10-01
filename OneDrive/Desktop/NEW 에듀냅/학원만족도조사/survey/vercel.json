@@ -4,7 +4,8 @@
     { "source": "/parent", "destination": "/index" },
     { "source": "/student", "destination": "/index" },
     { "source": "/teacher", "destination": "/index" },
-    { "source": "/dashboard", "destination": "/results" }
+    { "source": "/dashboard", "destination": "/results" },
+    { "source": "/s/:slug", "destination": "/index" }
   ],
   "headers": [
     { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] }

@@ -16,6 +16,8 @@
     parent: {
       id: 'parent',
       once: true, // 같은 폰에서 두 번 내지 않게 (학생은 태블릿을 돌려 쓰니 막지 않는다)
+      greeting: 'Dear parents,',
+      thanks: '보내 주신 의견은 내년 교육 프로그램 운영과 학습 관리에 적극 반영하겠습니다.',
       title: '아이의 올바른 성장 방향을 묻다',
       kicker: '2027 리딩브레인 학부모 설문',
       intro: [
@@ -61,6 +63,8 @@
     student: {
       id: 'student',
       big: true,
+      greeting: 'Dear friends,',
+      thanks: '솔직하게 답해 줘서 고마워요! 더 즐거운 수업으로 보답할게요.',
       title: '리딩브레인 친구들의 솔직한 이야기',
       kicker: '리딩브레인 학생 설문',
       intro: [

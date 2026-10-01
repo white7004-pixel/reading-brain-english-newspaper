@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>리딩브레인 설문</title>
 <meta name="robots" content="noindex">
-<link rel="icon" href="favicon.png" type="image/png">
+<link rel="icon" href="/favicon.png" type="image/png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="리딩브레인영어학원">
 <meta property="og:title" content="리딩브레인 만족도 설문">
@@ -66,34 +66,45 @@ textarea:focus{outline:none;border-color:var(--red)}
 <body>
 <div id="demo" class="demo" hidden>연습 모드 — 답이 이 기기 브라우저에만 저장됩니다 (config.js 를 채우면 서버로 갑니다)</div>
 <main class="wrap" id="app" aria-live="polite"></main>
-<script src="config.js"></script>
-<script src="questions.js"></script>
-<script src="core.js"></script>
+<script src="/config.js"></script>
+<script src="/questions.js"></script>
+<script src="/core.js"></script>
 <script>
 (function () {
   var params = new URLSearchParams(location.search);
   var preview = params.get('preview') === '1'; // 대시보드 미리보기: 제출해도 저장하지 않는다
-  var key = params.get('s') || location.pathname.split('/').filter(Boolean).pop() || 'parent';
-  var S = SURVEYS[key] || SURVEYS.parent;
+  // 주소: /parent · /student · /s/설문이름 · ?s=설문이름
+  var parts = location.pathname.split('/').filter(Boolean);
+  var key = params.get('s') || (parts[0] === 's' ? parts[1] : parts[parts.length - 1]) || 'parent';
+  if (/\.html$/.test(key)) key = 'parent';
+  var S = null, slug = key;
   var app = document.getElementById('app');
   var answers = {};
   var step = -1; // -1 첫 화면, 0.. 섹션, 'done'
-  var doneKey = 'rb-done-' + S.id;
-  if (S.big) document.body.classList.add('big');
+  var doneKey = 'rb-done-' + key;
   if (RB.api.demo() || preview) document.getElementById('demo').hidden = false;
   if (preview) document.getElementById('demo').textContent = '미리보기 — 눌러 보셔도 저장되지 않습니다';
-  document.title = S.kicker;
+
+  function use(def) {
+    S = def;
+    document.body.classList.toggle('big', !!S.big);
+    document.title = S.kicker || '리딩브레인 설문';
+  }
+  function notice(title, text) {
+    app.innerHTML = '<div class="done"><img class="logo" src="/logo-full.png" alt="리딩브레인 READING BRAIN" width="180" height="154">' +
+      '<h1>' + esc(title) + '</h1><p>' + esc(text) + '</p><div class="foot">리딩브레인영어학원</div></div>';
+  }
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function once() { if (preview) return false; try { return S.once && localStorage.getItem(doneKey); } catch (e) { return false; } }
 
   function intro() {
     app.innerHTML =
-      '<img class="logo" src="logo-full.png" alt="리딩브레인 READING BRAIN — Reading Is The Only Way!" width="180" height="154">' +
-      '<div class="kicker serif">' + (S.id === 'student' ? 'Dear friends,' : 'Dear parents,') + '</div>' +
-      '<h1>' + esc(S.title) + '</h1>' +
-      S.intro.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
-      '<div class="notice">' + esc(S.notice) + '</div>' +
+      '<img class="logo" src="/logo-full.png" alt="리딩브레인 READING BRAIN — Reading Is The Only Way!" width="180" height="154">' +
+      (S.greeting ? '<div class="kicker serif">' + esc(S.greeting) + '</div>' : '') +
+      '<h1>' + esc(S.title || S.kicker || '') + '</h1>' +
+      (S.intro || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+      (S.notice ? '<div class="notice">' + esc(S.notice) + '</div>' : '') +
       '<button class="btn" id="go">시작하기</button>' +
       '<div class="foot">리딩브레인영어학원</div>';
     document.getElementById('go').onclick = function () { go(0); };
@@ -168,7 +179,7 @@ textarea:focus{outline:none;border-color:var(--red)}
     btn.disabled = true; btn.textContent = '보내는 중…'; box.hidden = true;
     var clean = {};
     Object.keys(answers).forEach(function (k) { if (!RB.empty(answers[k])) clean[k] = typeof answers[k] === 'string' ? answers[k].trim() : answers[k]; });
-    (preview ? Promise.resolve() : RB.api.submit(S.id, clean)).then(function () {
+    (preview ? Promise.resolve() : RB.api.submit(slug, clean)).then(function () {
       try { if (S.once && !preview) localStorage.setItem(doneKey, '1'); } catch (e) {}
       go('done');
     }, function () {
@@ -178,10 +189,9 @@ textarea:focus{outline:none;border-color:var(--red)}
   }
 
   function done(already) {
-    app.innerHTML = '<div class="done"><img class="logo" src="logo-full.png" alt="리딩브레인 READING BRAIN — Reading Is The Only Way!" width="180" height="154"><div class="mark" aria-hidden="true">✓</div>' +
+    app.innerHTML = '<div class="done"><img class="logo" src="/logo-full.png" alt="리딩브레인 READING BRAIN — Reading Is The Only Way!" width="180" height="154"><div class="mark" aria-hidden="true">✓</div>' +
       '<h1>' + (already ? '이미 참여하셨습니다' : '소중한 의견 감사합니다') + '</h1>' +
-      '<p>' + (S.id === 'student' ? '솔직하게 답해 줘서 고마워요! 더 즐거운 수업으로 보답할게요.'
-        : '보내 주신 의견은 내년 교육 프로그램 운영과 학습 관리에 적극 반영하겠습니다.') + '</p>' +
+      '<p>' + esc(S.thanks || '보내 주신 의견은 수업과 학원 운영에 반영하겠습니다.') + '</p>' +
       (S.once && !preview ? '' : '<div class="row"><button class="btn ghost" id="again" style="flex:1">' + (preview ? '처음부터 다시 보기' : '다음 친구 시작') + '</button></div>') +
       '<div class="foot">리딩브레인영어학원</div></div>';
     var again = document.getElementById('again');
@@ -194,7 +204,28 @@ textarea:focus{outline:none;border-color:var(--red)}
     window.scrollTo(0, 0);
   }
 
-  if (once()) done(true); else go(-1);
+  // 대시보드의 고치기 화면이 보내는 초안을 바로 보여 준다 (미리보기에서만)
+  if (preview) window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'rb-draft') return;
+    drafted = true;
+    use(e.data.def);
+    if (step === 'done' || step < 0 || step >= S.sections.length) go(-1); else go(step);
+  });
+
+  var drafted = false; // 고치기 화면의 초안이 오면 서버 내용보다 앞선다
+  function start(f) {
+    if (drafted) return;
+    if (!f) return notice('설문을 찾을 수 없습니다', '주소를 다시 확인해 주세요.');
+    use(f.def);
+    if (f.status === 'closed' && !preview) return notice('마감되었습니다', '참여해 주셔서 감사합니다. 이 설문은 마감되었습니다.');
+    if (once()) done(true); else go(-1);
+  }
+  app.innerHTML = '<p class="desc" style="text-align:center;padding-top:40vh">불러오는 중…</p>';
+  RB.api.form(key).then(start, function () {
+    // 서버를 못 읽으면 처음부터 있던 설문은 이 파일의 문항으로
+    if (SURVEYS[key]) start({ status: 'open', def: SURVEYS[key] });
+    else notice('잠시 연결이 어렵습니다', '인터넷 연결을 확인하고 다시 열어 주세요.');
+  });
 })();
 </script>
 </body>

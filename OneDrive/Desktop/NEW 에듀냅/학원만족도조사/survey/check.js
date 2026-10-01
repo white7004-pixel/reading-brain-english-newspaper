@@ -42,7 +42,8 @@ assert.strictEqual(sum.sections[0].avg, null); // 척도 없는 섹션
 assert.strictEqual(RB.filterRows(rows, { grade: '중등 1학년' }).length, 1);
 assert.strictEqual(RB.filterRows(rows, { grade: '초등 3학년' }).length, 2); // 자녀 둘
 assert.strictEqual(sum.items.grade.counts['초등 3학년'], 2);
-assert.strictEqual(RB.filterRows(rows, { curriculum: '미국교과' }).length, 1);
+assert.strictEqual(RB.filterRows(rows, { curricula: '미국교과' }).length, 1);
+assert.strictEqual(RB.filterRows(rows, { grade: '', curricula: '' }).length, 2);
 assert.strictEqual(RB.filterRows(rows, {}).length, 2);
 
 // 숙제량(noAvg)은 평균에서 빠진다
@@ -70,5 +71,46 @@ const days = RB.daily([
 assert.deepStrictEqual(days, [
   { day: '2026-09-30', n: 2 }, { day: '2026-10-01', n: 0 }, { day: '2026-10-02', n: 1 }, { day: '2026-10-03', n: 0 }]);
 assert.deepStrictEqual(RB.daily([], Date.now()), []);
+
+// 설문 만들기: 응답 생긴 설문 고치기 규칙 (서버와 같은 규칙)
+const base = { sections: [{ title: 'A', items: [
+  { id: 'q1', type: 'single', label: '하나', options: ['네', '아니요'] },
+  { id: 'q2', type: 'scale', label: '점수', options: [{ v: 1, label: '1' }, { v: 2, label: '2' }] }] }] };
+const clone = o => JSON.parse(JSON.stringify(o));
+const textEdit = clone(base); textEdit.sections[0].items[0].label = '하나요?'; textEdit.sections[0].title = 'B';
+textEdit.sections.push({ title: 'C', items: [{ id: 'q3', type: 'text', label: '더' }] });
+assert.deepStrictEqual(RB.lockCheck(base, textEdit), []);
+const optEdit = clone(base); optEdit.sections[0].items[0].options.push('몰라요');
+assert.deepStrictEqual(RB.lockCheck(base, optEdit), ['q1']);
+const typeEdit = clone(base); typeEdit.sections[0].items[1].type = 'single';
+assert.deepStrictEqual(RB.lockCheck(base, typeEdit), ['q2']);
+const gone = clone(base); gone.sections[0].items.pop();
+assert.deepStrictEqual(RB.lockCheck(base, gone), ['q2']);
+
+// 설문 검사: 고칠 곳을 사람 말로
+assert.deepStrictEqual(RB.validateDef({ kicker: '설명회', sections: [{ title: '질문', items: [{ id: 'q1', type: 'single', label: '좋았나요', options: ['네', '아니요'] }] }] }), []);
+const bad = RB.validateDef({ kicker: '', sections: [{ title: '', items: [
+  { id: 'q1', type: 'single', label: '', options: ['하나'] }, { id: 'q1', type: 'text', label: '글' }] }, { title: '빈 섹션', items: [] }] });
+assert.ok(bad.some(e => e.includes('설문 이름')));
+assert.ok(bad.some(e => e.includes('1번 문항') && e.includes('문항 글')));
+assert.ok(bad.some(e => e.includes('보기')));
+assert.ok(bad.some(e => e.includes('빈 섹션')));
+assert.strictEqual(RB.validateDef({ kicker: 'x', sections: [] }).length, 1);
+
+// 새 문항 id 는 겹치지 않게, 주소는 옛 설문만 짧게
+assert.strictEqual(RB.newId(base), 'q3');
+assert.strictEqual(RB.newId({ sections: [] }), 'q1');
+assert.strictEqual(RB.linkOf('parent'), '/parent');
+assert.strictEqual(RB.linkOf('seminar-1'), '/s/seminar-1');
+assert.strictEqual(RB.slugOk('seminar-1'), true);
+assert.strictEqual(RB.slugOk('Seminar'), false);
+assert.strictEqual(RB.slugOk('results'), false);
+
+// AI 초안: 앞뒤 말이 붙어도 JSON 만 꺼내고, 글 길이를 자른다
+const ai = require('./api/ai.js');
+const draft = ai.parse('네:\n{"title":"설명회","greeting":"Dear parents,","intro":"한 문단","notice":"' + 'x'.repeat(400) + '","thanks":"감사"}\n끝');
+assert.deepStrictEqual(draft.intro, ['한 문단']);
+assert.strictEqual(draft.notice.length, 300);
+assert.throws(() => ai.parse('JSON 없음'));
 
 console.log('check.js 통과');
