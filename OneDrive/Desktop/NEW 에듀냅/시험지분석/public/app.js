@@ -140,7 +140,7 @@ async function encodeAll(files) {
   throw new Error('사진 용량이 너무 큽니다. 장수를 줄여 주세요');
 }
 
-// ---------- 학원 정보 (시험판만. 에듀냅 안에서는 로그인한 학원 정보가 들어온다) ----------
+// ---------- 학원 정보 (한 번 적으면 이 브라우저에 기억한다) ----------
 const academyForm = $('#academy-form');
 const showAcademy = () => { $('#academy-now').textContent = state.academy ? `· ${state.academy.name}` : '· 아직 없음'; };
 

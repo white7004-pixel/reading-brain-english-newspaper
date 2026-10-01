@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>에듀냅 시험지 분석 (시험판)</title>
+<title>리딩브레인 시험지 분석</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=Nanum+Myeongjo:wght@700;800&family=Gothic+A1:wght@700;800&family=Gowun+Dodum&display=swap" rel="stylesheet" crossorigin>
@@ -36,11 +36,11 @@
     </form>
     <datalist id="unit-list"></datalist>
     <p id="upload-status" class="status" role="status"></p>
-    <!-- 에듀냅 안에서는 로그인한 학원 정보를 쓰므로 이 칸이 없다. 시험판에서만 이 브라우저에 기억한다. -->
+    <!-- 리포트에 찍히는 학원 정보. 한 번 적으면 이 브라우저에 기억한다. -->
     <details class="academy">
       <summary>리포트에 들어갈 학원 정보 <span id="academy-now"></span></summary>
       <form id="academy-form" class="grid">
-        <label>학원 이름<input name="academyName" required placeholder="에듀냅학원"></label>
+        <label>학원 이름<input name="academyName" required placeholder="리딩브레인영어학원"></label>
         <label>연락처<input name="phone" placeholder="031-000-0000"></label>
         <label>대표 색<input name="color" type="color" value="#03392A"></label>
         <label>로고 이미지<input name="logo" type="file" accept="image/*"></label>
@@ -62,7 +62,7 @@
     <h2><span class="step">STEP 02</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다 · <b>대표</b>를 1~3개 고르면 그 문항이 리포트에 카드로 실립니다 (안 고르면 AI가 고릅니다)</small></h2>
     <form id="meta-form" class="grid meta" aria-label="시험 정보">
       <label>과목<select name="subject"></select></label>
-      <label>학교<input name="school" placeholder="에듀냅중학교"></label>
+      <label>학교<input name="school" placeholder="○○중학교"></label>
       <label>학년<input name="grade" placeholder="중2"></label>
       <label>학기<input name="term" placeholder="1학기"></label>
       <label>시험<input name="exam" placeholder="중간고사"></label>

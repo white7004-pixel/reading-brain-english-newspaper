@@ -2,7 +2,7 @@
   "name": "@edunap/exam-analysis",
   "private": true,
   "version": "0.1.0",
-  "description": "에듀냅 시험지 분석 시험판 — 영어 시험지 사진으로 학교 분석과 학생 리포트를 만듭니다.",
+  "description": "리딩브레인 시험지 분석 — 시험지 사진으로 학교 분석과 학생 리포트를 만듭니다.",
   "type": "module",
   "engines": {
     "node": ">=20.11"
