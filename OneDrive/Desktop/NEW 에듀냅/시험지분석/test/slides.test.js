@@ -4,10 +4,10 @@ import { slideDeck, flowChart, donut } from '../public/slides.js';
 import { examStats, difficultyFlow } from '../public/lib.js';
 
 const items = [
-  { no: '1', kind: '객관식', points: 4, unit: '5과', area: '어휘', subtype: '영영풀이', difficulty: '하', source: '교과서', answer: '③', teach: '풀이' },
-  { no: '2', kind: '객관식', points: 4, unit: '5과', area: '독해', subtype: '빈칸', difficulty: '중', source: '외부', answer: '②', teach: '풀이' },
-  { no: '3', kind: '객관식', points: 6, unit: '6과', area: '어법', subtype: '관계대명사', difficulty: '중상', source: '', answer: '①', teach: '풀이' },
-  { no: '서답형 1', kind: '서술형', points: 6, unit: '6과', area: '어법', subtype: '조건 영작', difficulty: '상', source: '', answer: 'x', teach: '풀이' },
+  { no: '1', kind: '객관식', points: 4, unit: '5과', area: '어휘', subtype: '영영풀이', difficulty: '하', source: '교과서', answer: '③', teach: '학원전용해설' },
+  { no: '2', kind: '객관식', points: 4, unit: '5과', area: '독해', subtype: '빈칸', difficulty: '중', source: '외부', answer: '②', teach: '학원전용해설' },
+  { no: '3', kind: '객관식', points: 6, unit: '6과', area: '어법', subtype: '관계대명사', difficulty: '중상', source: '', answer: '①', teach: '학원전용해설' },
+  { no: '서답형 1', kind: '서술형', points: 6, unit: '6과', area: '어법', subtype: '조건 영작', difficulty: '상', source: '', answer: 'x', teach: '학원전용해설' },
 ];
 const ctx = {
   academy: { name: '에듀냅학원', phone: '031-000-0000', logo: '', color: '#03392A' },
@@ -68,7 +68,8 @@ test('슬라이드에 학생 이름·점수와 지문·정답이 새지 않는�
   const html = slideDeck(ctx, school);
   assert.doesNotMatch(html, /김OO|학생/);
   assert.doesNotMatch(html, /정답/);
-  assert.doesNotMatch(html, /풀이/); // teach 는 학원용 해설에만
+  assert.doesNotMatch(html, /학원전용해설/); // teach 는 학원용 해설 종이에만 간다
+  items.forEach((it) => assert.ok(!html.includes(`>${it.answer}<`), `정답 ${it.answer}`));
 });
 
 test('AI 글은 그대로 넣지 않는다', () => {
@@ -97,4 +98,37 @@ test('빈 문항표로도 터지지 않는다', () => {
   const 빈 = { ...ctx, items: [], stats: examStats([]) };
   const html = slideDeck(빈, { ...school, keyItems: [], strategy: [], trends: [], whyHard: [], keywords: [] });
   assert.ok(장들(html).length >= 6);
+});
+
+test('참고 리포트의 여섯 꼭지가 모두 슬라이드에 있다', () => {
+  const 글 = 글자(slideDeck(ctx, school));
+  ['목차', '문항별 상세', '출제 유형·난이도', '출제 단원'].forEach((t) => assert.ok(글.includes(t), t));
+  // 전 문항표 — 번호가 글자인 서답형까지 그대로
+  assert.ok(글.includes('서답형 1'), '전 문항표에 서답형 1');
+  // 뒷표지의 원포인트 문구
+  assert.ok(글.includes(school.message), '뒷표지 메시지');
+});
+
+test('장 번호는 실제로 들어간 장에만 1부터 차례로 붙고, 목차가 그대로 따른다', () => {
+  // 대비 장은 원장님이 적어 두지 않으면 빠진다 → 번호가 건너뛰지 않아야 한다
+  const html = slideDeck(ctx, school);
+  const 번호 = [...html.matchAll(/class="s-over">(\d\d)</g)].map((m) => m[1]);
+  assert.deepEqual(번호, 번호.map((_, i) => String(i + 1).padStart(2, '0')), `번호 ${번호}`);
+  // 목차 줄 수 = 번호가 붙은 장 수
+  const 목차 = [...html.matchAll(/class="s-toc-no">(\d\d)</g)].map((m) => m[1]);
+  assert.deepEqual(목차, 번호);
+});
+
+test('배점 분포 막대는 한 줄이 한 영역이고, 그 줄의 조각 폭을 합하면 100%다', () => {
+  const html = slideDeck(ctx, school);
+  const 줄 = [...html.matchAll(/<span class="s-stack-bar">([\s\S]*?)<span class="s-stack-sum">/g)].map((m) => m[1]);
+  assert.ok(줄.length >= 6, `막대 줄 ${줄.length}`);
+  for (const 한줄 of 줄) {
+    const 폭 = [...한줄.matchAll(/--w:([\d.]+)%/g)].map((m) => Number(m[1]));
+    assert.ok(폭.length >= 1, '조각이 하나는 있다');
+    assert.ok(Math.abs(폭.reduce((a, b) => a + b, 0) - 100) < 0.6, `합 ${폭}`);
+  }
+  // 어법은 중상·상 둘로 갈린다 → 그 줄은 조각이 둘이어야 한다
+  const 어법 = 줄.find((l) => /k-중상/.test(l) && /k-상/.test(l));
+  assert.ok(어법, '한 영역에 난이도가 둘이면 조각도 둘');
 });

@@ -2,8 +2,8 @@
 // A4 리포트·정사각 카드·학원용 해설과 별개의 네 번째 산출물이다.
 // 숫자는 examStats 에서만 오고, 모든 글은 esc 를 지난다.
 // 지문·선택지 원문과 정답·풀이는 **싣지 않는다** (원장님 결정 2026-10-01, 시험지는 학교 저작물).
-import { esc, nosText, difficultyFlow, donutSlices } from './lib.js';
-import { sheet, badge, examName, examLine, crossTable, composeTable, areaTable, unitTable, abbr } from './report.js';
+import { esc, nosText, difficultyFlow, donutSlices, crossTab, DIFF5 } from './lib.js';
+import { sheet, badge, examName, examLine, crossTable, composeTable, areaTable, unitTable, abbr, itemsTable } from './report.js';
 
 const SLIDE = 'slide';
 
@@ -89,8 +89,8 @@ const cover = (ctx, school) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬�
     <ul>${school.keywords.slice(0, 4).map((k) => `<li>${esc(k)}</li>`).join('')}</ul></div>` : ''}
   ${examLine(ctx.meta, ctx.stats)}`, ctx);
 
-const glance = (ctx) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-한눈에`, 's-glance', `
-  ${title('01', '시험', '한눈에')}
+const glance = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-한눈에`, 's-glance', `
+  ${title(n, '시험', '한눈에')}
   <div class="s-row">
     ${panel('01', '전체 난이도', donut(ctx.stats))}
     ${panel('02', '시험 구성', `<ul class="s-kpi">
@@ -100,11 +100,11 @@ const glance = (ctx) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이�
       <li><b>${esc(ctx.stats.textbookPct)}%</b><span>교과서에서 출제</span></li></ul>`)}
   </div>`, ctx);
 
-const flowSlide = (ctx, school) => {
+const flowSlide = (ctx, school, n) => {
   const flow = difficultyFlow(ctx.items);
   const 뒤 = flow.hardFrom == null ? null : ctx.items[flow.hardFrom];
   return slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-난도흐름`, 's-flowpage', `
-    ${title('02', '난도', '흐름', 뒤
+    ${title(n, '난도', '흐름', 뒤
       ? `${뒤.no}번 뒤로 중상 이상이 이어집니다. 뒤쪽에서 시간과 점수가 함께 갈렸습니다.`
       : '난도가 한쪽으로 몰리지 않고 고르게 퍼진 시험이었습니다.')}
     <div class="s-row s-flowrow">
@@ -113,35 +113,35 @@ const flowSlide = (ctx, school) => {
     </div>`, ctx);
 };
 
-const compose = (ctx) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-구성`, 's-compose', `
-  ${title('03', '시험', '구성', '무엇을 얼마나 물었는지 한 장에 모았습니다.')}
+const compose = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-구성`, 's-compose', `
+  ${title(n, '시험', '구성', '무엇을 얼마나 물었는지 한 장에 모았습니다.')}
   <div class="s-row">
     ${panel('01', '유형 · 난이도 · 배점 눈금', composeTable(ctx.stats))}
     ${panel('02', ctx.stats.byUnit.length ? '단원별 · 영역별 출제' : '영역별 출제',
     (ctx.stats.byUnit.length ? unitTable(ctx.stats) : '') + areaTable(ctx.stats))}
   </div>`, ctx);
 
-const cross = (ctx) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-교차표`, 's-cross', `
-  ${title('04', '영역 ×', '난이도', '어느 영역을 어렵게 냈는지 한 장에 보입니다.')}
+const cross = (ctx, n) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-교차표`, 's-cross', `
+  ${title(n, '영역 ×', '난이도', '어느 영역을 어렵게 냈는지 한 장에 보입니다.')}
   ${panel('01', '영역 × 난이도', crossTable(ctx.stats, ctx.items))}`, ctx);
 
-const whyHard = (ctx, school) => (school.whyHard?.length ? slide(
+const whyHard = (ctx, school, n) => (school.whyHard?.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-이유`, 's-why', `
-  ${title('05', '이번 시험이', '어려웠던 이유', '무엇을 요구한 시험이었는지 셋으로 나눠 봤습니다.')}
+  ${title(n, '이번 시험이', '어려웠던 이유', '무엇을 요구한 시험이었는지 셋으로 나눠 봤습니다.')}
   <div class="s-row s-three">${school.whyHard.slice(0, 3).map((w, i) => panel(
     String(i + 1).padStart(2, '0'), w.title, `<p contenteditable>${esc(w.detail)}</p>`, 's-tall')).join('')}</div>`, ctx) : '');
 
-const prepSlide = (ctx) => (ctx.academy.prep?.trim() ? slide(
+const prepSlide = (ctx, n) => (ctx.academy.prep?.trim() ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-대비`, 's-prep', `
-  ${title('06', `${ctx.academy.name}은`, '이렇게 대비했습니다', '')}
+  ${title(n, `${ctx.academy.name}은`, '이렇게 대비했습니다', '')}
   ${panel('01', '우리가 해 둔 것', steps(String(ctx.academy.prep).split('\n').map((l) => l.trim()).filter(Boolean).map((l) => [l, ''])))}`, ctx) : '');
 
-const keySlide = (ctx, school) => {
+const keySlide = (ctx, school, n) => {
   const byNo = new Map(ctx.items.map((it) => [it.no, it]));
   const list = school.keyItems.filter((k) => byNo.has(k.no));
   if (!list.length) return '';
   return slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-대표문항`, 's-key', `
-    ${title('07', '대표', '문항', '점수가 갈린 자리입니다.')}
+    ${title(n, '대표', '문항', '점수가 갈린 자리입니다.')}
     <div class="s-row s-three">${list.slice(0, 3).map((k, i) => {
     const it = byNo.get(k.no);
     return panel(String(i + 1).padStart(2, '0'), noLabel(k.no),
@@ -162,9 +162,9 @@ const deepSlides = (ctx, school) => {
   }).join('');
 };
 
-const strategySlide = (ctx, school) => (school.strategy?.length ? slide(
+const strategySlide = (ctx, school, n) => (school.strategy?.length ? slide(
   `${ctx.meta.school}-${ctx.meta.subject}슬라이드-학습방향`, 's-strategy', `
-  ${title('08', '다음 시험', '학습 방향', '이번 시험이 가리킨 곳부터 메웁니다.')}
+  ${title(n, '다음 시험', '학습 방향', '이번 시험이 가리킨 곳부터 메웁니다.')}
   ${panel('01', '영역별 준비 방법', steps(school.strategy.map((s) => [s.area, s.tip])))}`, ctx) : '');
 
 // 총평 — 한 장에 블록을 깔아 두는 대시보드. 참고 자료의 마지막 장이 이 모양이다.
@@ -191,18 +191,95 @@ const verdict = (ctx, school) => {
       <ul class="s-msg-cards">${(school.strategy || []).slice(0, 5).map((s, i) => `<li><b>${esc(String(i + 1).padStart(2, '0'))} ${esc(s.area)}</b><span>${esc(s.tip)}</span></li>`).join('')}</ul></div>` : ''}`, ctx);
 };
 
+// ── 참고 리포트가 가진 꼭지들 ───────────────────────────────
+// 100% 누적막대. 한 줄이 한 영역이고, 조각이 난이도(또는 배점)다.
+// 조각 폭은 --w(%) 로만 주어 CSS 가 색을 맡는다.
+const stackBar = (cross, cls) => (cross.rows.length ? `
+  <ul class="s-stack ${cls}">${cross.rows.map((r) => `
+    <li><span class="s-stack-label">${esc(abbr(r.label))}</span>
+      <span class="s-stack-bar">${r.cells.map((v, i) => (v
+    ? `<i class="k-${esc(cross.cols[i])}" style="--w:${((v / (r.total || 1)) * 100).toFixed(1)}%"><b>${esc(v)}</b></i>`
+    : '')).join('')}</span>
+      <span class="s-stack-sum">${esc(r.total)}</span></li>`).join('')}</ul>
+  <p class="s-stack-key">${cross.cols.map((c) => `<span class="k-${esc(c)}">${esc(c)}</span>`).join('')}</p>` : '');
+
+// 장마다 머리에 다는 통계칩 셋 — 참고 리포트가 이 모양이다
+const facts = (stats) => `<p class="s-facts">
+  <span>출제 영역 <b>${esc(stats.areaKinds)}가지</b></span>
+  <span>최고 배점 <b>${esc(stats.maxPoints)}점</b></span>
+  ${stats.topUnit ? `<span>최다 출제 단원 <b>${esc(stats.topUnit)}</b></span>` : ''}</p>`;
+
+// ② 문항별 상세 — 전 문항표를 그대로 한 장에
+const itemsSlide = (ctx, n) => (ctx.items.length ? slide(
+  `${ctx.meta.school}-${ctx.meta.subject}슬라이드-문항표`, 's-items', `
+  ${title(n, '문항별', '상세 분석', '번호·배점·유형·난이도·단원을 한 장에 폅니다.')}
+  ${facts(ctx.stats)}
+  ${panel('01', `전 문항 ${ctx.stats.count}개`, itemsTable(ctx.items))}`, ctx) : '');
+
+// ④ 출제 유형·난이도 — 배점이 어디에 실렸고 난이도가 어떻게 퍼졌나
+const distSlide = (ctx, n) => (ctx.items.length ? slide(
+  `${ctx.meta.school}-${ctx.meta.subject}슬라이드-분포`, 's-dist', `
+  ${title(n, '출제 유형·', '난이도 분석', '영역마다 배점이 어디에 실렸는지, 난이도가 어떻게 퍼졌는지 봅니다.')}
+  <div class="s-row">
+    ${panel('01', '영역별 배점 분포', stackBar(crossTab(ctx.items, 'area', 'difficulty', DIFF5, null, 'points'), 's-by-points'))}
+    ${panel('02', '영역별 난이도 분포', stackBar(crossTab(ctx.items, 'area', 'difficulty', DIFF5), 's-by-count'))}
+  </div>`, ctx) : '');
+
+// ⑥ 출제 단원 — 단원 비중과 단원마다 어떤 영역을 물었나
+const unitSlide = (ctx, n) => (ctx.stats.byUnit.length ? slide(
+  `${ctx.meta.school}-${ctx.meta.subject}슬라이드-단원`, 's-unit', `
+  ${title(n, '출제', '단원 분석', '어느 단원에서 몇 문항이 나왔는지, 그 단원에서 무엇을 물었는지 봅니다.')}
+  <div class="s-row">
+    ${panel('01', '단원별 출제', unitTable(ctx.stats))}
+    ${panel('02', '단원별 영역 비중', stackBar(crossTab(ctx.items, 'unit', 'area', [...new Set(ctx.items.map((it) => it.area).filter(Boolean))]), 's-by-area'))}
+  </div>`, ctx) : '');
+
+// 목차 — 실제로 들어간 장만. 번호는 slideDeck 이 매긴 그대로다.
+const tocSlide = (ctx, 차례) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-목차`, 's-toc', `
+  ${title('', '목차', '', '')}
+  <ol class="s-toc">${차례.map(([no, 이름]) => `
+    <li><span class="s-toc-no">${esc(no)}</span><span class="s-toc-name">${esc(이름)}</span></li>`).join('')}</ol>`, ctx);
+
+// 뒷표지 — 한 줄 메시지와 학원 연락처로 닫는다
+const backSlide = (ctx, school) => slide(`${ctx.meta.school}-${ctx.meta.subject}슬라이드-뒷표지`, 's-back', `
+  <div class="s-back-mid">
+    <p class="s-back-tag">${esc(examName(ctx.meta))} · ${esc(ctx.meta.subject)}</p>
+    ${school.message ? `<p class="s-back-msg" contenteditable>${esc(school.message)}</p>` : ''}
+    <p class="s-back-name">${esc(ctx.academy.name)}${ctx.academy.slogan ? `<small>${esc(ctx.academy.slogan)}</small>` : ''}</p>
+    ${ctx.academy.phone ? `<p class="s-back-call">문의 ${esc(ctx.academy.phone)}</p>` : ''}
+  </div>`, ctx);
+
+// 번호가 붙는 장들. 조건이 맞지 않아 빠지면 그 번호는 건너뛰지 않고 다음 장이 받는다.
+const 번호장 = [
+  ['시험 한눈에', (ctx, school, n) => glance(ctx, n)],
+  ['난도 흐름', flowSlide],
+  ['시험 구성', (ctx, school, n) => compose(ctx, n)],
+  ['문항별 상세 분석', (ctx, school, n) => itemsSlide(ctx, n)],
+  ['출제 유형·난이도 분석', (ctx, school, n) => distSlide(ctx, n)],
+  ['영역 × 난이도', (ctx, school, n) => cross(ctx, n)],
+  ['출제 단원 분석', (ctx, school, n) => unitSlide(ctx, n)],
+  ['어려웠던 이유', whyHard],
+  ['우리 학원은 이렇게 대비했습니다', (ctx, school, n) => prepSlide(ctx, n)],
+  ['대표 문항', keySlide],
+  ['다음 시험 학습 방향', strategySlide],
+];
+
 export function slideDeck(ctx, school) {
+  const 장 = [];
+  const 차례 = [];
+  for (const [이름, 만들기] of 번호장) {
+    const no = String(차례.length + 1).padStart(2, '0');
+    const html = 만들기(ctx, school, no);
+    if (!html) continue;              // 빠진 장은 번호를 쓰지 않는다
+    차례.push([no, 이름]);
+    장.push(html);
+  }
   return [
     cover(ctx, school),
-    glance(ctx),
-    flowSlide(ctx, school),
-    compose(ctx),
-    cross(ctx),
-    whyHard(ctx, school),
-    prepSlide(ctx),
-    keySlide(ctx, school),
+    tocSlide(ctx, 차례),
+    ...장,
     deepSlides(ctx, school),
-    strategySlide(ctx, school),
     verdict(ctx, school),
+    backSlide(ctx, school),
   ].filter(Boolean).join('');
 }

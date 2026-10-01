@@ -201,3 +201,36 @@ test('donutSlices 는 한 바퀴를 비율대로 나눠 마지막이 꼭 360 에
   assert.deepEqual(s.map((r) => r.pct), [25, 50, 25]);
   assert.deepEqual(donutSlices([]), []);
 });
+
+test('crossTab 은 개수뿐 아니라 배점으로도 셀 수 있다 (참고 리포트의 배점 분포 막대)', () => {
+  const items = [
+    { area: '어휘', difficulty: '하', points: 3 },
+    { area: '어휘', difficulty: '상', points: 7 },
+    { area: '독해', difficulty: '하', points: 5 },
+  ];
+  // cols 는 실제로 쓰인 난이도만 남는다 — 여기서는 하·상 둘
+  const 개수 = crossTab(items, 'area', 'difficulty', DIFF5);
+  assert.deepEqual(개수.cols, ['하', '상']);
+  assert.deepEqual(개수.rows[0], { label: '어휘', cells: [1, 1], total: 2 });
+
+  const 배점 = crossTab(items, 'area', 'difficulty', DIFF5, null, 'points');
+  assert.deepEqual(배점.rows[0], { label: '어휘', cells: [3, 7], total: 10 });
+  assert.deepEqual(배점.rows[1], { label: '독해', cells: [5, 0], total: 5 });
+  assert.deepEqual(배점.totals, [8, 7]);
+  assert.equal(배점.count, 15); // 배점으로 세면 전체도 배점 합
+});
+
+test('통계칩에 쓸 최고 배점과 최다 출제 단원이 나온다', () => {
+  const items = [
+    { kind: '객관식', points: 3, unit: '5과', area: '어휘', difficulty: '하' },
+    { kind: '객관식', points: 7, unit: '6과', area: '독해', difficulty: '상' },
+    { kind: '서술형', points: 5, unit: '6과', area: '어법', difficulty: '중' },
+  ];
+  const s = examStats(items);
+  assert.equal(s.maxPoints, 7);
+  assert.equal(s.topUnit, '6과');
+  assert.equal(s.areaKinds, 3); // 출제 영역 가짓수
+
+  const 빈 = examStats([]);
+  assert.deepEqual([빈.maxPoints, 빈.topUnit, 빈.areaKinds], [0, '', 0]);
+});

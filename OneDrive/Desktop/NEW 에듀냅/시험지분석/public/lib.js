@@ -115,7 +115,10 @@ export function donutSlices(rows) {
 // 두 기준을 한 장에 겹쳐 본다 (영역 × 난이도). 따로 보면 "어느 영역을 어렵게 냈나"가 안 보인다.
 // 줄은 나온 순서대로, 칸은 정해진 차례대로. 아무도 없는 줄·칸은 싣지 않는다 (빈 칸만 늘어난다).
 // rowOrder 를 주면 그 차례대로 (영역별 표와 줄 순서를 맞추려고). 없으면 시험지에 나온 순서대로.
-export function crossTab(items, rowKey, colKey, colOrder, rowOrder = null) {
+// weigh 를 주면 그 칸(보통 'points')을 더한다. 안 주면 문항 수를 센다.
+// 참고 리포트가 "유형별 배점 분포"와 "유형별 난이도 분포"를 둘 다 막대로 보여 주기 때문이다.
+export function crossTab(items, rowKey, colKey, colOrder, rowOrder = null, weigh = null) {
+  const 세기 = (list) => (weigh ? sumPoints(list) : list.length);
   const cols = colOrder.filter((c) => items.some((it) => it[colKey] === c));
   const order = [];
   for (const it of items) {
@@ -125,9 +128,13 @@ export function crossTab(items, rowKey, colKey, colOrder, rowOrder = null) {
   if (rowOrder) order.sort((a, b) => rowOrder.indexOf(a) - rowOrder.indexOf(b));
   const rows = order.map((label) => {
     const hit = items.filter((it) => String(it?.[rowKey] ?? '').trim() === label);
-    return { label, cells: cols.map((c) => hit.filter((it) => it[colKey] === c).length), total: hit.length };
+    return { label, cells: cols.map((c) => 세기(hit.filter((it) => it[colKey] === c))), total: 세기(hit) };
   });
-  return { cols, rows, totals: cols.map((c) => items.filter((it) => it[colKey] === c).length), count: items.length };
+  return {
+    cols, rows,
+    totals: cols.map((c) => 세기(items.filter((it) => it[colKey] === c))),
+    count: 세기(items),
+  };
 }
 
 export function examStats(items) {
@@ -156,6 +163,11 @@ export function examStats(items) {
     hard: { count: hard.length, points: sumPoints(hard), pct: pct(hard.length, items.length) },
     killer: { count: killer.length, points: sumPoints(killer), pct: pct(killer.length, items.length) },
     textbookPct: pct(items.filter((it) => it.source === '교과서').length, items.length),
+    // 참고 리포트가 장마다 머리에 다는 통계칩 셋 — 최고 배점·최다 출제 단원·출제 영역 가짓수
+    maxPoints: items.reduce((m, it) => Math.max(m, Number(it.points) || 0), 0),
+    // byValue 는 시험지에 나온 순서다. 최다 단원은 개수로 따로 고른다
+    topUnit: byValue(items, 'unit').reduce((a, b) => (b.count > a.count ? b : a), { label: '', count: 0 }).label,
+    areaKinds: new Set(items.map((it) => it.area).filter(Boolean)).size,
   };
 }
 

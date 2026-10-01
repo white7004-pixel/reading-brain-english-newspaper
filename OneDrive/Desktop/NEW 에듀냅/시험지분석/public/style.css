@@ -529,6 +529,62 @@ label.check small { flex-basis: 100%; }
 
 /* 어두운 바탕 위 표는 흰 판 안에만 선다 — 분석표 조각을 그대로 쓴다 */
 .page.slide .s-panel .t { font-size: .88em; }
+
+/* ── 참고 리포트에서 가져온 꼭지들 ───────────────────────── */
+
+/* 통계칩 셋 — 제목 바로 밑에 사실만 */
+.page.slide .s-facts { display: flex; flex-wrap: wrap; gap: .5em; margin: .8em 0 0; }
+.page.slide .s-facts span { padding: .4em .9em; border-radius: 99px; background: var(--paper-d);
+  border: 1px solid var(--line-d); font-size: .82em; color: var(--mute-d); }
+.page.slide .s-facts b { margin-left: .4em; color: #fff; }
+
+/* 목차 */
+.page.slide .s-toc { flex: 1; margin: 1.2em 0 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: min-content; gap: .55em 2.4em; align-content: start; }
+.page.slide .s-toc li { display: flex; align-items: baseline; gap: 1em; padding-bottom: .5em; border-bottom: 1px solid var(--line-d); }
+.page.slide .s-toc-no { font: 700 1.05em/1 var(--sub-font); color: var(--key); letter-spacing: .04em; }
+.page.slide .s-toc-name { font-size: 1.02em; }
+
+/* 100% 누적막대 — 한 줄이 한 영역, 조각이 난이도(또는 영역) */
+.page.slide .s-stack { margin: 0; padding: 0; list-style: none; display: grid; gap: .5em; }
+.page.slide .s-stack li { display: grid; grid-template-columns: 5.5em 1fr 2.4em; align-items: center; gap: .7em; }
+.page.slide .s-stack-label { font-size: .88em; font-weight: 700; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.page.slide .s-stack-bar { display: flex; height: 1.65em; border-radius: 3px; overflow: hidden; background: #eef0f4; }
+.page.slide .s-stack-bar i { width: var(--w); display: grid; place-items: center; min-width: 0; }
+.page.slide .s-stack-bar b { font: 700 .72em/1 var(--sub-font); color: #fff; }
+.page.slide .s-stack-sum { font: 700 .88em/1 var(--sub-font); color: var(--muted); text-align: right; }
+.page.slide .s-stack-key { margin: .7em 0 0; display: flex; flex-wrap: wrap; gap: .8em; font-size: .76em; color: var(--muted); }
+.page.slide .s-stack-key span { display: flex; align-items: center; gap: .35em; }
+.page.slide .s-stack-key span::before { content: ''; width: .75em; height: .75em; border-radius: 2px; background: currentColor; }
+
+/* 난이도 다섯 색 — 도넛 범례와 같은 색을 쓴다 */
+.page.slide :is(.s-stack-bar, .s-stack-key) .k-하 { background: var(--d-하); color: var(--d-하); }
+.page.slide :is(.s-stack-bar, .s-stack-key) .k-중하 { background: var(--d-중하); color: var(--d-중하); }
+.page.slide :is(.s-stack-bar, .s-stack-key) .k-중 { background: var(--d-중); color: var(--d-중); }
+.page.slide :is(.s-stack-bar, .s-stack-key) .k-중상 { background: var(--d-중상); color: var(--d-중상); }
+.page.slide :is(.s-stack-bar, .s-stack-key) .k-상 { background: var(--d-상); color: var(--d-상); }
+/* 단원별 영역 비중은 난이도가 아니라 영역이 조각이다 — 학원 대표색에서 뽑은 다섯 단계 */
+.page.slide .s-by-area .s-stack-bar i:nth-child(5n+1) { background: var(--brand-ink); }
+.page.slide .s-by-area .s-stack-bar i:nth-child(5n+2) { background: #4f6fd0; }
+.page.slide .s-by-area .s-stack-bar i:nth-child(5n+3) { background: #6f86c9; }
+.page.slide .s-by-area .s-stack-bar i:nth-child(5n+4) { background: #8fa0c4; }
+.page.slide .s-by-area .s-stack-bar i:nth-child(5n+5) { background: #b0bad2; }
+.page.slide .s-by-area .s-stack-key span::before { display: none; }
+
+/* 문항표 한 장 — 글씨를 줄여 24문항이 한 장에 들어가게 */
+.page.slide .s-items .s-panel { font-size: .8em; }
+.page.slide .s-items .r-legend { margin-top: .6em; font-size: .9em; color: var(--muted); }
+
+/* 뒷표지 */
+.page.slide .s-back { justify-content: center; text-align: center; }
+.page.slide .s-back-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .7em; }
+.page.slide .s-back-tag { margin: 0; font: 600 .8em/1 var(--sub-font); letter-spacing: .14em; color: var(--mute-d); }
+.page.slide .s-back-msg { margin: 0; max-width: 24em; font: 700 2em/1.45 var(--head-font); letter-spacing: -.035em; color: #fff; }
+.page.slide .s-back-name { margin: 1.4em 0 0; font: 700 1.25em/1.3 var(--head-font); color: var(--key); }
+.page.slide .s-back-name small { display: block; margin-top: .35em; font: 400 .6em/1.4 var(--sub-font); color: var(--mute-d); }
+.page.slide .s-back-call { margin: 0; font-size: .85em; color: var(--mute-d); }
+
 .page.slide .s-flowrow { grid-template-columns: 1.15fr 1fr; align-items: stretch; }
 .page.slide .s-flowrow .s-flow { margin: auto 0; }
 
