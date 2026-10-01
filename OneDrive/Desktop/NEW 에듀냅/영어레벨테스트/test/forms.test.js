@@ -206,3 +206,15 @@ test('kindTally 와 stage2Est', () => {
   assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
   assert.deepEqual(stage2Est('고2'), { step: 19, unit: 0 });
 });
+
+test('샘플 2차 A: 모두 validateForm(it, 2) 통과, 번호는 1..n, 영역·단계 순서', () => {
+  const sample = JSON.parse(readFileSync(new URL('../public/data/forms.sample.json', import.meta.url), 'utf8'));
+  const a = [...sample.stage2.A].sort((x, y) => x.no - y.no);
+  assert.deepEqual(a.map((x) => x.no), a.map((_, i) => i + 1));
+  assert.deepEqual(a.map((x) => x.area), ['vocab', 'grammar', 'reading', 'listening', 'sentence']);
+  for (const it of a) assert.deepEqual(validateForm(it, 2), [], it.id);
+  assert.equal(usableForm(a, 2).length, a.length);
+  assert.equal(a[0].choices.length, 3);
+  assert.ok(a[1].keepOrder && a[1].passage && a[2].keepOrder && a[2].given);
+  assert.deepEqual(sample.stage2.B, []);
+});
