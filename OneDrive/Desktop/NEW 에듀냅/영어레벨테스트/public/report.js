@@ -133,7 +133,7 @@ function cover(r, proj, c, facts, start, pages) {
     <div class="mast">${brandMark(r)}<span class="cap">학부모용 결과지</span></div>
     <div class="top-grid">
       <div><p class="kick cap">영어 레벨테스트 결과</p><h1>현재 수준과<br><strong>앞으로의 진도</strong></h1>
-        <p class="who"><span>${esc(r.name)}</span><span>${esc(schoolGrade(r))}</span><span>응시 ${dotDate(r.date)}</span><span>수업 시작 ${dotDate(start)}</span></p></div>
+        <p class="who"><span>${esc(r.name)}</span><span>${esc(schoolGrade(r))}</span><span>응시 ${dotDate(r.date)}</span></p></div>
       <div class="gauge">${gauge(avg == null ? null : score(avg))}</div>
     </div>
     <div class="kpis">
@@ -229,7 +229,7 @@ function sectionPage(r, proj, k, n, start, pages) {
     : '<div class="body"><p class="quote">고3 과정 복습</p></div>';
   return `<article class="sheet section-page" style="--c:var(--${k})">
     <header class="shead"><div><span class="cap">영역별 결과 · ${String(n).padStart(2, '0')}</span><h2>${SECTION_KO[k]}<small>${EN[k]}</small></h2></div>
-      <div class="r">${esc(r.name)} · ${esc(schoolGrade(r))} · 수업 시작 ${dotDate(start)}<b>${esc(head)}</b></div></header>
+      <div class="r">${esc(r.name)} · ${esc(schoolGrade(r))}<b>${esc(head)}</b></div></header>
     ${sec('01', '현재 수준', 'stats', `<div><span>${r.sections[k].level ? '현재 수준' : '현재 단원'}</span><b>${esc(where(r.sections[k]))}</b></div><div><span>환산 점수</span><b>${score(p)} <small>/ 100</small></b></div><div><span>학년 대비</span><b class="${g > 0 ? 'up' : g < 0 ? 'down' : ''}">${gapText(p, now)}</b></div><div><span>완료까지 걸리는 기간</span><b>${need}</b></div>`, 'margin-top:30px')}
     ${sec('02', '남은 기간', 'dur', `<div class="ln"><span>고3 2월까지 남은 기간</span><div class="bar grey" style="width:${w(until)}%"></div><span class="v">${ym(until)}</span></div>
       <div class="ln"><span>고3 과정까지 걸리는 기간</span><div class="bar" style="width:${road.done ? w(road.months) : 100}%"></div><span class="v">${need}</span></div>
