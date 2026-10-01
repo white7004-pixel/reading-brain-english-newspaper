@@ -191,7 +191,7 @@ if (!session) {
   function finishTest() {
     const s1 = session.s1 ? stage1Score(session.s1.log) : null;
     const result = {
-      id: session.id, name: session.name, grade: session.grade, date: session.date, start: session.start || session.date, academy: { ...session.academy, logo: undefined },
+      id: session.id, name: session.name, school: session.school || '', grade: session.grade, date: session.date, start: session.start || session.date, academy: { ...session.academy, logo: undefined },
       stage1: s1 && { set: session.set, ...s1, log: session.s1.log },
       stage2: session.s2?.log.length ? { set, log: session.s2.log } : null,
       sections: {}, // 결과지가 2차 영역을 stage2 로 채운다 (지금 결과지는 sections 를 읽는다)

@@ -7,6 +7,8 @@ import { areaLevels, startLevel, phonicsNote, writeSummary, stage2Sections, stag
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// 학교가 있으면 "OO중 중2" (예전 결과에는 학교가 없다)
+const schoolGrade = (r) => [r.school, r.grade].filter(Boolean).join(' ');
 const status = (text, kind = '') => { $('#report-status').textContent = text; $('#report-status').className = `status no-print ${kind}`; };
 const EN = { vocab: 'Vocabulary', grammar: 'Grammar', reading: 'Reading', listening: 'Listening' };
 const COUNT = ['', '한', '두', '세', '네'];
@@ -31,7 +33,7 @@ if (!result) {
   if (result.stage1 && (!result.stage1.passed || !SECTIONS.some((k) => result.sections[k]?.est))) {
     const s1 = result.stage1;
     $('#parent').innerHTML = stage1Page(result);
-    $('#director').innerHTML = `${band(result, '원장용', '레벨테스트 상세')}<p class="meta">${esc(result.name)} · ${esc(result.grade)} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${s1.set}세트)`, s1.log)}<p class="small">모름 ${s1.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s1.log.filter((x) => x.timeout).length}</p>${result.write2?.log.length ? formLog('2차 쓰기', result.write2.log) : ''}</div>${foot(result, '원장용')}`;
+    $('#director').innerHTML = `${band(result, '원장용', '레벨테스트 상세')}<p class="meta">${esc(result.name)} · ${esc(schoolGrade(result))} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${s1.set}세트)`, s1.log)}<p class="small">모름 ${s1.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s1.log.filter((x) => x.timeout).length}</p>${result.write2?.log.length ? formLog('2차 쓰기', result.write2.log) : ''}</div>${foot(result, '원장용')}`;
   } else {
     const start = result.start || result.date;
     const taken = SECTIONS.filter((k) => result.sections[k]?.est);
@@ -96,7 +98,7 @@ function sec(n, label, cls, body, style = '') {
 
 function info(r) {
   const a = r.academy || {};
-  return `<div class="info"><div><b>시험</b><span>영어 레벨테스트</span></div><div><b>이름</b><span>${esc(r.name)}</span></div><div><b>학원(학년)</b><span>${esc(a.name)} (${esc(r.grade)})</span></div><div><b>응시일</b><span>${esc(r.date)}</span></div></div>`;
+  return `<div class="info"><div><b>시험</b><span>영어 레벨테스트</span></div><div><b>이름</b><span>${esc(r.name)}</span></div><div><b>학원(학교·학년)</b><span>${esc(a.name)} (${esc(schoolGrade(r))})</span></div><div><b>응시일</b><span>${esc(r.date)}</span></div></div>`;
 }
 
 // 2차까지 본 학생: 1차 점수와 쓰기 결과 한 줄
@@ -131,7 +133,7 @@ function cover(r, proj, c, facts, start, pages) {
     <div class="mast">${brandMark(r)}<span class="cap">학부모용 결과지</span></div>
     <div class="top-grid">
       <div><p class="kick cap">영어 레벨테스트 결과</p><h1>현재 수준과<br><strong>앞으로의 진도</strong></h1>
-        <p class="who"><span>${esc(r.name)}</span><span>${esc(r.grade)}</span><span>응시 ${dotDate(r.date)}</span><span>수업 시작 ${dotDate(start)}</span></p></div>
+        <p class="who"><span>${esc(r.name)}</span><span>${esc(schoolGrade(r))}</span><span>응시 ${dotDate(r.date)}</span><span>수업 시작 ${dotDate(start)}</span></p></div>
       <div class="gauge">${gauge(avg == null ? null : score(avg))}</div>
     </div>
     <div class="kpis">
@@ -227,7 +229,7 @@ function sectionPage(r, proj, k, n, start, pages) {
     : '<div class="body"><p class="quote">고3 과정 복습</p></div>';
   return `<article class="sheet section-page" style="--c:var(--${k})">
     <header class="shead"><div><span class="cap">영역별 결과 · ${String(n).padStart(2, '0')}</span><h2>${SECTION_KO[k]}<small>${EN[k]}</small></h2></div>
-      <div class="r">${esc(r.name)} · ${esc(r.grade)} · 수업 시작 ${dotDate(start)}<b>${esc(head)}</b></div></header>
+      <div class="r">${esc(r.name)} · ${esc(schoolGrade(r))} · 수업 시작 ${dotDate(start)}<b>${esc(head)}</b></div></header>
     ${sec('01', '현재 수준', 'stats', `<div><span>${r.sections[k].level ? '현재 수준' : '현재 단원'}</span><b>${esc(where(r.sections[k]))}</b></div><div><span>환산 점수</span><b>${score(p)} <small>/ 100</small></b></div><div><span>학년 대비</span><b class="${g > 0 ? 'up' : g < 0 ? 'down' : ''}">${gapText(p, now)}</b></div><div><span>완료까지 걸리는 기간</span><b>${need}</b></div>`, 'margin-top:30px')}
     ${sec('02', '남은 기간', 'dur', `<div class="ln"><span>고3 2월까지 남은 기간</span><div class="bar grey" style="width:${w(until)}%"></div><span class="v">${ym(until)}</span></div>
       <div class="ln"><span>고3 과정까지 걸리는 기간</span><div class="bar" style="width:${road.done ? w(road.months) : 100}%"></div><span class="v">${need}</span></div>
@@ -329,7 +331,7 @@ function director(r, c) {
       </tbody></table>
       <p class="small">모름 ${s.log.filter((x) => x.dontKnow).length} · 시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
   }).join('');
-  return `${band(r, '원장용', '레벨테스트 상세')}<p class="meta">${esc(r.name)} · ${esc(r.grade)} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.stage2?.log?.length ? `${formLog(`2차 (${r.stage2.set}세트)`, r.stage2.log)}<p class="small">영작 · ${tally(r.stage2.log, 'sentence')}</p>` : r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
+  return `${band(r, '원장용', '레벨테스트 상세')}<p class="meta">${esc(r.name)} · ${esc(schoolGrade(r))} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.stage2?.log?.length ? `${formLog(`2차 (${r.stage2.set}세트)`, r.stage2.log)}<p class="small">영작 · ${tally(r.stage2.log, 'sentence')}</p>` : r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
     <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>
     ${foot(r, '원장용')}`;
 }

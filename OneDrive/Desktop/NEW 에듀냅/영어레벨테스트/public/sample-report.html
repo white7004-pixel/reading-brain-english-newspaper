@@ -193,7 +193,7 @@ function card(a) {
   return `<section class="card"><h3>${a.k}<em>${longLabel(a.p)}</em><small>수준</small></h3>${accCurve(a)}<div class="facts">${kinds}${facts}</div></section>`;
 }
 
-const mast = (title, page) => `<header class="mast"><h1>영어 레벨테스트 분석지<small>${title}</small></h1><div class="who"><b>김OO</b>중학교 2학년 · 응시 2026.10.01 · OO영어학원</div></header>`;
+const mast = (title, page) => `<header class="mast"><h1>영어 레벨테스트 분석지<small>${title}</small></h1><div class="who"><b>김OO</b>OO중학교 2학년 · 응시 2026.10.01 · OO영어학원</div></header>`;
 const foot = (n) => `<div class="foot"><span><b>OO영어학원</b> · 031-000-0000</span><span>수준은 학교 교육과정 학년·학기 기준입니다</span><span>${n} / 2</span></div>`;
 
 document.getElementById('pages').innerHTML = `

@@ -23,7 +23,7 @@ sf.addEventListener('submit', (e) => {
   const academy = load('elt:academy', {});
   const date = today();
   const set = nextSet(load('elt:lastSet', null));
-  const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, grade: sf.grade.value, date, start: sf.start.value || date, academy, set, stage: 1, s1: { i: 0, log: [], started: false }, shownAt: null, current: null, plays: 0 };
+  const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, school: sf.school.value.trim(), grade: sf.grade.value, date, start: sf.start.value || date, academy, set, stage: 1, s1: { i: 0, log: [], started: false }, shownAt: null, current: null, plays: 0 };
   if (!save('elt:session', session)) return status('#student-status', '이 브라우저에 저장할 수 없습니다 (사생활 보호 모드인지 확인해 주세요)', 'error');
   save('elt:lastSet', set);
   location.href = 'test.html';
