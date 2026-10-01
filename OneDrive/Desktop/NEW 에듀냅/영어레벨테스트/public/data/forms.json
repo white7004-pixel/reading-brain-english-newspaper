@@ -660,216 +660,144 @@
     "no": 38,
     "area": "form",
     "level": "초5",
-    "question": "[watch] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "My grandpa {} the news every evening.",
-    "hint_ko": "[우리 할아버지는 매일 저녁 뉴스를 보신다.]",
-    "answers": [
-     [
-      "watches"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리 할아버지는 매일 저녁 뉴스를 보신다.\nMy grandpa _____ the news every evening.",
+    "explain_ko": "3인칭 단수 현재, ch 로 끝나면 -es → watches.",
+    "status": "draft",
+    "choices": [
+     "watch",
+     "watchs",
+     "watches",
+     "watching"
     ],
-    "explain_ko": "3인칭 단수 현재, ch 로 끝나면 -es → watches",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s1-A-39",
     "no": 39,
     "area": "form",
     "level": "초5",
-    "question": "[do not] 과거 부정의 줄임말로 바꾸어 쓰세요.",
-    "template": "Tom {} clean his room yesterday.",
-    "hint_ko": "[Tom 은 어제 방을 청소하지 않았다.]",
-    "answers": [
-     [
-      "didn't"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\nTom 은 어제 방을 청소하지 않았다.\nTom _____ clean his room yesterday.",
+    "explain_ko": "과거(yesterday) 일반동사 부정 → didn't + 동사원형.",
+    "status": "draft",
+    "choices": [
+     "doesn't",
+     "didn't",
+     "don't",
+     "wasn't"
     ],
-    "explain_ko": "과거 부정 did not → 줄임말 didn't + 동사원형",
-    "status": "draft"
+    "answer": 1
    },
    {
     "id": "s1-A-40",
     "no": 40,
     "area": "form",
     "level": "초6",
-    "question": "[swim] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "Look! The children {} {} in the pool.",
-    "hint_ko": "[봐! 아이들이 수영장에서 수영하고 있어.]",
-    "answers": [
-     [
-      "are"
-     ],
-     [
-      "swimming"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n봐! 아이들이 수영장에서 수영하고 있어.\nLook! The children _____ in the pool.",
+    "explain_ko": "복수 주어 + 현재진행 → are swimming (m 을 겹쳐 씀).",
+    "status": "draft",
+    "choices": [
+     "are swimming",
+     "is swimming",
+     "are swiming",
+     "swims"
     ],
-    "explain_ko": "현재진행 are + swimming (m 을 한 번 더 쓴다)",
-    "status": "draft"
+    "answer": 0
    },
    {
     "id": "s1-A-41",
     "no": 41,
     "area": "form",
     "level": "초6",
-    "question": "[be, not] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "My parents {} at home last night.",
-    "hint_ko": "[우리 부모님은 어젯밤에 집에 계시지 않았다.]",
-    "answers": [
-     [
-      "weren't",
-      "were not"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리 부모님은 어젯밤에 집에 계시지 않았다.\nMy parents _____ at home last night.",
+    "explain_ko": "복수 주어, 과거 be동사 부정 → weren't.",
+    "status": "draft",
+    "choices": [
+     "wasn't",
+     "aren't",
+     "weren't",
+     "didn't"
     ],
-    "explain_ko": "복수 주어 + 과거 → were not (weren't)",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s1-A-42",
     "no": 42,
     "area": "form",
     "level": "중1",
-    "question": "[visit] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "I {} {} Jeju Island three times.",
-    "hint_ko": "[나는 제주도에 세 번 가 본 적이 있다.]",
-    "answers": [
-     [
-      "have"
-     ],
-     [
-      "visited"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n나는 제주도에 세 번 가 본 적이 있다.\nI _____ Jeju Island three times.",
+    "explain_ko": "경험의 현재완료, 주어 I → have visited.",
+    "status": "draft",
+    "choices": [
+     "has visited",
+     "have visit",
+     "am visiting",
+     "have visited"
     ],
-    "explain_ko": "경험의 현재완료 have + 과거분사 visited",
-    "status": "draft"
+    "answer": 3
    },
    {
     "id": "s1-A-43",
     "no": 43,
     "area": "sentence",
     "level": "초5",
-    "question": "그는 피아노를 잘 친다. (play, piano, well)",
-    "template": "{} {} {} {} {}.",
-    "answers": [
-     [
-      "He"
-     ],
-     [
-      "plays"
-     ],
-     [
-      "the"
-     ],
-     [
-      "piano"
-     ],
-     [
-      "well"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n그는 피아노를 잘 친다.",
+    "explain_ko": "3인칭 단수 현재 plays, 부사 well 은 목적어 뒤.",
+    "status": "draft",
+    "choices": [
+     "He play the piano well.",
+     "He plays the piano well.",
+     "He plays well the piano.",
+     "He is play the piano well."
     ],
-    "explain_ko": "He plays the piano well. 악기 앞에는 the",
-    "status": "draft"
+    "answer": 1
    },
    {
     "id": "s1-A-44",
     "no": 44,
     "area": "sentence",
     "level": "초6",
-    "question": "나는 우주 비행사가 되고 싶다. (want, be, astronaut)",
-    "template": "{} {} {} {} {} {}.",
-    "answers": [
-     [
-      "I"
-     ],
-     [
-      "want"
-     ],
-     [
-      "to"
-     ],
-     [
-      "be"
-     ],
-     [
-      "an"
-     ],
-     [
-      "astronaut"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 우주 비행사가 되고 싶다.",
+    "explain_ko": "want to + 동사원형, 모음 소리 앞에는 an.",
+    "status": "draft",
+    "choices": [
+     "I want be an astronaut.",
+     "I want to be a astronaut.",
+     "I want to be an astronaut.",
+     "I want being an astronaut."
     ],
-    "explain_ko": "I want to be an astronaut. want to + 동사원형, 모음 앞 an",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s1-A-45",
     "no": 45,
     "area": "sentence",
     "level": "초6",
-    "question": "너는 어제 왜 학교에 늦었니? (why, late, school, yesterday)",
-    "template": "{} {} {} {} {} {} {}?",
-    "answers": [
-     [
-      "Why"
-     ],
-     [
-      "were"
-     ],
-     [
-      "you"
-     ],
-     [
-      "late"
-     ],
-     [
-      "for",
-      "to"
-     ],
-     [
-      "school"
-     ],
-     [
-      "yesterday"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n너는 어제 왜 학교에 늦었니?",
+    "explain_ko": "의문사 + be동사 과거 + 주어 → Why were you ~?",
+    "status": "draft",
+    "choices": [
+     "Why you were late for school yesterday?",
+     "Why did you late for school yesterday?",
+     "Why are you late for school yesterday?",
+     "Why were you late for school yesterday?"
     ],
-    "explain_ko": "Why were you late for school yesterday? be동사 과거 의문문",
-    "status": "draft"
+    "answer": 3
    },
    {
     "id": "s1-A-46",
     "no": 46,
     "area": "sentence",
     "level": "중1",
-    "question": "이것은 이 도시에서 가장 높은 건물이다. (tall, building, city)",
-    "template": "{} {} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "This",
-      "It"
-     ],
-     [
-      "is"
-     ],
-     [
-      "the"
-     ],
-     [
-      "tallest"
-     ],
-     [
-      "building"
-     ],
-     [
-      "in"
-     ],
-     [
-      "this",
-      "the"
-     ],
-     [
-      "city"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n이것은 이 도시에서 가장 높은 건물이다.",
+    "explain_ko": "최상급 the tallest + 명사.",
+    "status": "draft",
+    "choices": [
+     "This is the tallest building in this city.",
+     "This is the taller building in this city.",
+     "This is tallest the building in this city.",
+     "This is the most tall building in this city."
     ],
-    "explain_ko": "This is the tallest building in this city. the + 최상급",
-    "status": "draft"
+    "answer": 0
    }
   ],
   "B": [
@@ -1532,215 +1460,144 @@
     "no": 38,
     "area": "form",
     "level": "초5",
-    "question": "[study] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "My sister {} English every night.",
-    "hint_ko": "[우리 언니는 매일 밤 영어를 공부한다.]",
-    "answers": [
-     [
-      "studies"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리 언니는 매일 밤 영어를 공부한다.\nMy sister _____ English every night.",
+    "explain_ko": "3인칭 단수 현재, 자음+y → ies → studies.",
+    "status": "draft",
+    "choices": [
+     "studys",
+     "studies",
+     "study",
+     "studied"
     ],
-    "explain_ko": "3인칭 단수 현재, 자음 + y 는 y 를 i 로 바꾸고 -es → studies",
-    "status": "draft"
+    "answer": 1
    },
    {
     "id": "s1-B-39",
     "no": 39,
     "area": "form",
     "level": "초5",
-    "question": "[do not] 과거 부정의 줄임말로 바꾸어 쓰세요.",
-    "template": "We {} have P.E. class last Friday.",
-    "hint_ko": "[우리는 지난 금요일에 체육 수업이 없었다.]",
-    "answers": [
-     [
-      "didn't"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리는 지난 금요일에 체육 수업이 없었다.\nWe _____ have P.E. class last Friday.",
+    "explain_ko": "과거(last Friday) 일반동사 부정 → didn't + 동사원형.",
+    "status": "draft",
+    "choices": [
+     "don't",
+     "weren't",
+     "didn't",
+     "doesn't"
     ],
-    "explain_ko": "과거 부정 did not → 줄임말 didn't + 동사원형 have",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s1-B-40",
     "no": 40,
     "area": "form",
     "level": "초6",
-    "question": "[write] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "Be quiet! My brother {} {} a letter.",
-    "hint_ko": "[조용히 해! 형이 편지를 쓰고 있어.]",
-    "answers": [
-     [
-      "is"
-     ],
-     [
-      "writing"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n조용히 해! 형이 편지를 쓰고 있어.\nBe quiet! My brother _____ a letter.",
+    "explain_ko": "단수 주어 + 현재진행 → is writing (e 를 빼고 -ing).",
+    "status": "draft",
+    "choices": [
+     "is writting",
+     "are writing",
+     "writing",
+     "is writing"
     ],
-    "explain_ko": "현재진행 is + writing (e 를 빼고 -ing)",
-    "status": "draft"
+    "answer": 3
    },
    {
     "id": "s1-B-41",
     "no": 41,
     "area": "form",
     "level": "초6",
-    "question": "[buy] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "Mom {} a new bag for me last week.",
-    "hint_ko": "[엄마는 지난주에 나에게 새 가방을 사 주셨다.]",
-    "answers": [
-     [
-      "bought"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n엄마는 지난주에 나에게 새 가방을 사 주셨다.\nMom _____ a new bag for me last week.",
+    "explain_ko": "buy 의 과거형은 bought. brought 는 bring(가져오다)의 과거형.",
+    "status": "draft",
+    "choices": [
+     "bought",
+     "buyed",
+     "buys",
+     "brought"
     ],
-    "explain_ko": "last week → 과거, buy 의 불규칙 과거 bought",
-    "status": "draft"
+    "answer": 0
    },
    {
     "id": "s1-B-42",
     "no": 42,
     "area": "form",
     "level": "중1",
-    "question": "[live] 알맞은 꼴로 바꾸어 쓰세요.",
-    "template": "My uncle {} {} in Jeonju since 2019.",
-    "hint_ko": "[우리 삼촌은 2019년부터 전주에 살고 있다.]",
-    "answers": [
-     [
-      "has"
-     ],
-     [
-      "lived"
-     ]
+    "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리 삼촌은 2019년부터 전주에 살고 있다.\nMy uncle _____ in Jeonju since 2019.",
+    "explain_ko": "since 와 함께 계속의 현재완료, 3인칭 단수 → has lived.",
+    "status": "draft",
+    "choices": [
+     "have lived",
+     "lives",
+     "has lived",
+     "lived"
     ],
-    "explain_ko": "since + 과거 시점 → 계속의 현재완료 has + lived",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s1-B-43",
     "no": 43,
     "area": "sentence",
     "level": "초5",
-    "question": "우리 엄마는 매일 아침 달리신다. (run, every, morning)",
-    "template": "{} {} {} {} {}.",
-    "answers": [
-     [
-      "My"
-     ],
-     [
-      "mom",
-      "mother"
-     ],
-     [
-      "runs"
-     ],
-     [
-      "every"
-     ],
-     [
-      "morning"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n우리 엄마는 매일 아침 달리신다.",
+    "explain_ko": "3인칭 단수 현재 → runs.",
+    "status": "draft",
+    "choices": [
+     "My mom run every morning.",
+     "My mom runs every morning.",
+     "My mom running every morning.",
+     "My mom is run every morning."
     ],
-    "explain_ko": "My mom runs every morning. 3인칭 단수 현재 runs",
-    "status": "draft"
+    "answer": 1
    },
    {
     "id": "s1-B-44",
     "no": 44,
     "area": "sentence",
     "level": "초6",
-    "question": "내 남동생은 자전거를 탈 수 있다. (can, ride, bike)",
-    "template": "{} {} {} {} {} {}.",
-    "answers": [
-     [
-      "My"
-     ],
-     [
-      "brother"
-     ],
-     [
-      "can"
-     ],
-     [
-      "ride"
-     ],
-     [
-      "a",
-      "his"
-     ],
-     [
-      "bike",
-      "bicycle"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n내 남동생은 자전거를 탈 수 있다.",
+    "explain_ko": "조동사 can 뒤에는 동사원형, can 은 모양이 바뀌지 않는다.",
+    "status": "draft",
+    "choices": [
+     "My brother can rides a bike.",
+     "My brother cans ride a bike.",
+     "My brother can ride a bike.",
+     "My brother can riding a bike."
     ],
-    "explain_ko": "My brother can ride a bike. can + 동사원형",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s1-B-45",
     "no": 45,
     "area": "sentence",
     "level": "초6",
-    "question": "너는 지난 일요일에 무엇을 했니? (what, do, last, Sunday)",
-    "template": "{} {} {} {} {} {}?",
-    "answers": [
-     [
-      "What"
-     ],
-     [
-      "did"
-     ],
-     [
-      "you"
-     ],
-     [
-      "do"
-     ],
-     [
-      "last"
-     ],
-     [
-      "Sunday"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n너는 지난 일요일에 무엇을 했니?",
+    "explain_ko": "의문사 + did + 주어 + 동사원형.",
+    "status": "draft",
+    "choices": [
+     "What did you do last Sunday?",
+     "What did you did last Sunday?",
+     "What do you did last Sunday?",
+     "What you did last Sunday?"
     ],
-    "explain_ko": "What did you do last Sunday? 일반동사 과거 의문문 did + 주어 + 동사원형",
-    "status": "draft"
+    "answer": 0
    },
    {
     "id": "s1-B-46",
     "no": 46,
     "area": "sentence",
     "level": "중1",
-    "question": "우리는 할머니를 찾아뵙기 위해 기차를 탔다. (take, train, visit, grandmother)",
-    "template": "{} {} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "We"
-     ],
-     [
-      "took"
-     ],
-     [
-      "a",
-      "the"
-     ],
-     [
-      "train"
-     ],
-     [
-      "to"
-     ],
-     [
-      "visit"
-     ],
-     [
-      "our",
-      "my"
-     ],
-     [
-      "grandmother",
-      "grandma"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n우리는 할머니를 찾아뵙기 위해 기차를 탔다.",
+    "explain_ko": "목적의 to부정사 to visit, 과거 took.",
+    "status": "draft",
+    "choices": [
+     "We took a train visit our grandmother.",
+     "We took a train to visit our grandmother.",
+     "We took a train to visiting our grandmother.",
+     "We take a train to visit our grandmother."
     ],
-    "explain_ko": "We took a train to visit our grandmother. '~하기 위해'(목적) → to부정사",
-    "status": "draft"
+    "answer": 1
    }
   ]
  },
@@ -3133,34 +2990,18 @@
     "area": "sentence",
     "level": "중1",
     "point": "to부정사(목적)",
-    "question": "우리말에 맞게 (use, keep, fresh)을 써서 문장을 완성하세요. 필요하면 낱말의 모양을 바꾸세요.",
-    "hint_ko": "우리는 음식을 신선하게 유지하기 위해 소금을 사용한다.",
-    "template": "{} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "We"
-     ],
-     [
-      "use"
-     ],
-     [
-      "salt"
-     ],
-     [
-      "to"
-     ],
-     [
-      "keep"
-     ],
-     [
-      "food"
-     ],
-     [
-      "fresh"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n우리는 음식을 신선하게 유지하기 위해 소금을 사용한다.",
+    "explain_ko": "목적의 to부정사 to keep, keep + 목적어 + 형용사(fresh).",
+    "status": "draft",
+    "kind": "영작",
+    "choices": [
+     "We use salt keep food fresh.",
+     "We use salt for keep food fresh.",
+     "We use salt to keep food fresh.",
+     "We use salt to keeping food fresh.",
+     "We use salt to keep food freshly."
     ],
-    "explain_ko": "'~하기 위해'는 to+동사원형. keep+목적어+형용사로 '~을 …하게 유지하다'.",
-    "status": "draft"
+    "answer": 2
    },
    {
     "id": "s2-A-47",
@@ -3168,35 +3009,18 @@
     "area": "sentence",
     "level": "중2",
     "point": "수동태",
-    "question": "우리말에 맞게 (boat, make)을 써서 문장을 완성하세요. 필요하면 낱말의 모양을 바꾸세요.",
-    "hint_ko": "이 배는 나의 할아버지에 의해 만들어졌다.",
-    "template": "{} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "This"
-     ],
-     [
-      "boat"
-     ],
-     [
-      "was"
-     ],
-     [
-      "made"
-     ],
-     [
-      "by"
-     ],
-     [
-      "my"
-     ],
-     [
-      "grandfather",
-      "grandpa"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n이 배는 나의 할아버지에 의해 만들어졌다.",
+    "explain_ko": "과거 수동태 was + p.p.(made), 행위자는 by.",
+    "status": "draft",
+    "kind": "영작",
+    "choices": [
+     "This boat made by my grandfather.",
+     "This boat was make by my grandfather.",
+     "This boat is made by my grandfather.",
+     "This boat was made from my grandfather.",
+     "This boat was made by my grandfather."
     ],
-    "explain_ko": "과거 수동태는 was+과거분사(made), 행위자는 by+목적격.",
-    "status": "draft"
+    "answer": 4
    },
    {
     "id": "s2-A-48",
@@ -3204,37 +3028,18 @@
     "area": "sentence",
     "level": "중3",
     "point": "간접의문문",
-    "question": "우리말에 맞게 (know, when, leave)을 써서 문장을 완성하세요. 필요하면 낱말의 모양을 바꾸세요.",
-    "hint_ko": "다음 기차가 언제 떠나는지 아니?",
-    "template": "{} {} {} {} {} {} {} {}?",
-    "answers": [
-     [
-      "Do"
-     ],
-     [
-      "you"
-     ],
-     [
-      "know"
-     ],
-     [
-      "when"
-     ],
-     [
-      "the"
-     ],
-     [
-      "next"
-     ],
-     [
-      "train"
-     ],
-     [
-      "leaves"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n다음 기차가 언제 떠나는지 아니?",
+    "explain_ko": "간접의문문은 의문사 + 주어 + 동사 순서.",
+    "status": "draft",
+    "kind": "영작",
+    "choices": [
+     "Do you know when the next train leaves?",
+     "Do you know when does the next train leave?",
+     "Do you know when leaves the next train?",
+     "When do you know the next train leaves?",
+     "Do you know the next train when leaves?"
     ],
-    "explain_ko": "간접의문문은 '의문사+주어+동사' 어순. 주어 the next train이 3인칭 단수라 leaves.",
-    "status": "draft"
+    "answer": 0
    },
    {
     "id": "s2-A-49",
@@ -3242,43 +3047,18 @@
     "area": "sentence",
     "level": "고1",
     "point": "가정법 과거완료",
-    "question": "우리말에 맞게 (know, win)을 써서 문장을 완성하세요. 필요하면 낱말의 모양을 바꾸세요.",
-    "hint_ko": "내가 규칙을 알았더라면, 나는 이겼을 텐데.",
-    "template": "{} {} {} {} {} {}, {} {} {} {}.",
-    "answers": [
-     [
-      "If"
-     ],
-     [
-      "I"
-     ],
-     [
-      "had"
-     ],
-     [
-      "known"
-     ],
-     [
-      "the"
-     ],
-     [
-      "rules"
-     ],
-     [
-      "I"
-     ],
-     [
-      "would"
-     ],
-     [
-      "have"
-     ],
-     [
-      "won"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n내가 규칙을 알았더라면, 나는 이겼을 텐데.",
+    "explain_ko": "가정법 과거완료: If + had p.p., 주어 + would have p.p.",
+    "status": "draft",
+    "kind": "영작",
+    "choices": [
+     "If I have known the rules, I would have won.",
+     "If I had knew the rules, I would have won.",
+     "If I had known the rules, I would have win.",
+     "If I had known the rules, I would have won.",
+     "If I had known the rules, I will have won."
     ],
-    "explain_ko": "과거 사실의 반대는 If+주어+had p.p., 주어+would have p.p.",
-    "status": "draft"
+    "answer": 3
    },
    {
     "id": "s2-A-50",
@@ -3286,31 +3066,18 @@
     "area": "sentence",
     "level": "고2",
     "point": "부정어 도치",
-    "question": "우리말에 맞게 (little, know, close)을 써서 문장을 완성하세요. 필요하면 낱말의 모양을 바꾸세요.",
-    "hint_ko": "나는 그 가게가 이미 문을 닫아 버렸다는 것을 전혀 몰랐다.",
-    "template": "{} {} {} {} that the store {} {}.",
-    "answers": [
-     [
-      "Little"
-     ],
-     [
-      "did"
-     ],
-     [
-      "I"
-     ],
-     [
-      "know"
-     ],
-     [
-      "had"
-     ],
-     [
-      "closed"
-     ]
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 그 가게가 이미 문을 닫아 버렸다는 것을 전혀 몰랐다.",
+    "explain_ko": "부정어 Little 이 앞에 오면 did + 주어 + 동사원형, 몰랐던 때보다 먼저 닫았으므로 had closed.",
+    "status": "draft",
+    "kind": "영작",
+    "choices": [
+     "Little I knew that the store had already closed.",
+     "Little did I know that the store had already closed.",
+     "Little did I knew that the store had already closed.",
+     "Little knew I that the store had already closed.",
+     "Little did I know that the store has already closed."
     ],
-    "explain_ko": "부정어 Little이 문장 앞에 오면 'did+주어+동사원형'으로 도치. 9칸이므로 접속사 that을 쓴다. had closed와 was closed 모두 정답.",
-    "status": "draft"
+    "answer": 1
    }
   ],
   "B": [
@@ -4135,35 +3902,18 @@
     "area": "sentence",
     "level": "중1",
     "kind": "영작",
-    "question": "우리말에 맞게 (to, see, outside)을(를) 써서 문장을 완성하세요. 필요하면 낱말의 형태를 바꾸세요.",
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 별을 보기 위해 밖으로 나갔다.",
     "point": "to부정사(목적)",
-    "hint_ko": "나는 별을 보기 위해 밖으로 나갔다.",
-    "template": "{} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "I"
-     ],
-     [
-      "went"
-     ],
-     [
-      "outside"
-     ],
-     [
-      "to"
-     ],
-     [
-      "see"
-     ],
-     [
-      "the"
-     ],
-     [
-      "stars"
-     ]
+    "explain_ko": "목적의 to부정사 to see, outside 앞에는 to 를 쓰지 않는다.",
+    "status": "draft",
+    "choices": [
+     "I went outside see the stars.",
+     "I went outside to seeing the stars.",
+     "I went to outside to see the stars.",
+     "I went outside to see the stars.",
+     "I go outside to see the stars."
     ],
-    "explain_ko": "'~하기 위해'는 to+동사원형: I went outside to see the stars.",
-    "status": "draft"
+    "answer": 3
    },
    {
     "id": "s2-B-47",
@@ -4171,35 +3921,18 @@
     "area": "sentence",
     "level": "중2",
     "kind": "영작",
-    "question": "우리말에 맞게 (write)을(를) 써서 문장을 완성하세요. 필요하면 낱말의 형태를 바꾸세요.",
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n이 편지는 우리 할머니에 의해 쓰였다.",
     "point": "수동태",
-    "hint_ko": "이 편지는 우리 할머니에 의해 쓰였다.",
-    "template": "{} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "This"
-     ],
-     [
-      "letter"
-     ],
-     [
-      "was"
-     ],
-     [
-      "written"
-     ],
-     [
-      "by"
-     ],
-     [
-      "my"
-     ],
-     [
-      "grandmother"
-     ]
+    "explain_ko": "과거 수동태 was + p.p.(written).",
+    "status": "draft",
+    "choices": [
+     "This letter was wrote by my grandmother.",
+     "This letter was written by my grandmother.",
+     "This letter written by my grandmother.",
+     "This letter was writing by my grandmother.",
+     "This letter wrote my grandmother."
     ],
-    "explain_ko": "과거 수동태는 was+과거분사(written)+by: This letter was written by my grandmother.",
-    "status": "draft"
+    "answer": 1
    },
    {
     "id": "s2-B-48",
@@ -4207,42 +3940,18 @@
     "area": "sentence",
     "level": "중3",
     "kind": "영작",
-    "question": "우리말에 맞게 (tell, when)을(를) 써서 문장을 완성하세요. 필요하면 낱말의 형태를 바꾸세요.",
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n그 콘서트가 언제 시작하는지 나에게 말해 줄 수 있니?",
     "point": "간접의문문",
-    "hint_ko": "그 콘서트가 언제 시작하는지 나에게 말해 줄 수 있니?",
-    "template": "{} {} {} {} {} {} {} {}?",
-    "answers": [
-     [
-      "Can",
-      "Could",
-      "Will",
-      "Would"
-     ],
-     [
-      "you"
-     ],
-     [
-      "tell"
-     ],
-     [
-      "me"
-     ],
-     [
-      "when"
-     ],
-     [
-      "the"
-     ],
-     [
-      "concert"
-     ],
-     [
-      "starts",
-      "begins"
-     ]
+    "explain_ko": "간접의문문은 의문사 + 주어 + 동사, tell + 사람 + 간접의문문.",
+    "status": "draft",
+    "choices": [
+     "Can you tell me when does the concert start?",
+     "Can you tell me when starts the concert?",
+     "Can you tell me the concert when starts?",
+     "Can you tell when me the concert starts?",
+     "Can you tell me when the concert starts?"
     ],
-    "explain_ko": "간접의문문은 '의문사+주어+동사' 순서: when the concert starts. 3인칭 단수 현재라 starts.",
-    "status": "draft"
+    "answer": 4
    },
    {
     "id": "s2-B-49",
@@ -4250,47 +3959,18 @@
     "area": "sentence",
     "level": "고1",
     "kind": "영작",
-    "question": "우리말에 맞게 (know, call)을(를) 써서 문장을 완성하세요. 필요하면 낱말의 형태를 바꾸세요.",
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n내가 그 소식을 알았더라면, 너에게 전화했을 텐데.",
     "point": "가정법 과거완료",
-    "hint_ko": "내가 그 소식을 알았더라면, 너에게 전화했을 텐데.",
-    "template": "{} {} {} {} {} {}, {} {} {} {} {}.",
-    "answers": [
-     [
-      "If"
-     ],
-     [
-      "I"
-     ],
-     [
-      "had"
-     ],
-     [
-      "known"
-     ],
-     [
-      "the"
-     ],
-     [
-      "news"
-     ],
-     [
-      "I"
-     ],
-     [
-      "would"
-     ],
-     [
-      "have"
-     ],
-     [
-      "called"
-     ],
-     [
-      "you"
-     ]
+    "explain_ko": "가정법 과거완료: If + had p.p., 주어 + would have p.p.",
+    "status": "draft",
+    "choices": [
+     "If I had known the news, I would have called you.",
+     "If I had known the news, I would have call you.",
+     "If I have known the news, I would have called you.",
+     "If I had knowed the news, I would have called you.",
+     "If I had known the news, I will have called you."
     ],
-    "explain_ko": "과거 사실의 반대는 If+주어+had p.p., 주어+would have p.p.: If I had known the news, I would have called you.",
-    "status": "draft"
+    "answer": 0
    },
    {
     "id": "s2-B-50",
@@ -4298,35 +3978,18 @@
     "area": "sentence",
     "level": "고2",
     "kind": "영작",
-    "question": "우리말에 맞게 Never로 시작하여 (see, such)을(를) 써서 문장을 완성하세요. 필요하면 낱말의 형태를 바꾸세요.",
+    "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 지금까지 그렇게 밝은 오로라를 한 번도 본 적이 없다.",
     "point": "부정어 도치",
-    "hint_ko": "나는 지금까지 그렇게 밝은 오로라를 한 번도 본 적이 없다.",
-    "template": "Never {} {} {} {} {} {} {}.",
-    "answers": [
-     [
-      "have"
-     ],
-     [
-      "I"
-     ],
-     [
-      "seen"
-     ],
-     [
-      "such"
-     ],
-     [
-      "a"
-     ],
-     [
-      "bright"
-     ],
-     [
-      "aurora"
-     ]
+    "explain_ko": "부정어 Never 가 앞에 오면 have + 주어 + p.p., such a + 형용사 + 명사.",
+    "status": "draft",
+    "choices": [
+     "Never I have seen such a bright aurora.",
+     "Never have I saw such a bright aurora.",
+     "Never have I seen such a bright aurora.",
+     "Never have I seen a such bright aurora.",
+     "Never did I seen such a bright aurora."
     ],
-    "explain_ko": "부정어 Never를 문장 앞에 두면 '조동사+주어' 순서로 도치: Never have I seen such a bright aurora. I have never seen …은 도치가 아니다.",
-    "status": "draft"
+    "answer": 2
    }
   ]
  }

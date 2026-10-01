@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText } from '../public/core/forms.js';
+import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -234,4 +234,28 @@ test('stageText: 2차 수준을 학년 단위 문장으로', () => {
   assert.equal(stageText('고2'), '고2~3 과정 수준');
   assert.equal(stageText('중1 수준 아래'), '중1 과정 전 단계');
   assert.equal(stageText(null), '');
+});
+
+test('어형·영작도 객관식으로: 선택지가 있으면 isWrite 아님, 1차 4지·2차 5지로 검사', () => {
+  const f = mc({ area: 'form', level: '초5' });
+  assert.equal(isWrite(f), false);
+  assert.deepEqual(validateForm(f), []);
+  assert.deepEqual(validateForm(mc({ area: 'sentence', level: '중1' })), []);
+  assert.deepEqual(validateForm(mc({ area: 'sentence', level: '중1', choices: ['a', 'b', 'c', 'd', 'e'], answer: 4 }), 2), []);
+  assert.deepEqual(validateForm(mc({ area: 'sentence', level: '중1' }), 2), ['선택지 5개']);
+  assert.deepEqual(validateForm(mc({ area: 'form', level: '중1', choices: ['a', 'b', 'c', 'd', 'e'] }), 2), ['영역']);
+  assert.equal(isWrite(wr()), true); // 문장 틀이 있으면 여전히 쓰기 (옛 2차 쓰기 블록)
+});
+
+test('문제지(실제·샘플)의 1차·2차에는 직접 쓰는 문항이 없다', () => {
+  for (const file of ['forms.json', 'forms.sample.json']) {
+    const forms = JSON.parse(readFileSync(new URL(`../public/data/${file}`, import.meta.url), 'utf8'));
+    for (const book of ['stage1', 'stage2']) for (const [set, list] of Object.entries(forms[book])) {
+      for (const it of list) {
+        assert.equal(isWrite(it), false, `${file} ${book} ${set} ${it.id}`);
+        assert.deepEqual(validateForm(it, book === 'stage2' ? 2 : 1), [], `${file} ${it.id}`);
+        assert.ok(!/샘플/.test(it.question), `${file} ${it.id}: 질문에 '샘플'`);
+      }
+    }
+  }
 });

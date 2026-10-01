@@ -2,7 +2,7 @@
 export const LEVELS = ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'];
 export const MC_AREAS = ['listening', 'reading', 'phonics', 'grammar'];
 export const WRITE_AREAS = ['form', 'sentence'];
-export const AREA_KO = { listening: '듣기', reading: '독해', phonics: '파닉스', grammar: '문법', form: '어형 쓰기', sentence: '영작', vocab: '어휘' };
+export const AREA_KO = { listening: '듣기', reading: '독해', phonics: '파닉스', grammar: '문법', form: '어형', sentence: '영작', vocab: '어휘' };
 // 2차 넬트식 문제지 (A/B). '고2' 단계는 고2~3.
 export const STAGES2 = ['중1', '중2', '중3', '고1', '고2'];
 export const STAGE_KO = { 중1: '중1', 중2: '중2', 중3: '중3', 고1: '고1', 고2: '고2~3' };
@@ -11,7 +11,8 @@ export const PASS = 80;
 export const MIN_STAGE1 = 20;
 export const SECONDS = 90;
 
-export const isWrite = (it) => WRITE_AREAS.includes(it?.area);
+// 문장 틀(template)이 있으면 직접 쓰기. 어형·영작도 선택지로 내면 객관식 (원장 결정 10/1: 시험에서 직접 쓰기는 뺀다)
+export const isWrite = (it) => WRITE_AREAS.includes(it?.area) && it?.template != null;
 export const blanks = (template) => (String(template ?? '').match(/\{\}/g) || []).length;
 export const nextSet = (last) => (last === 'A' ? 'B' : 'A');
 // 듣기 수준(중1~고3) → 그 학년 1학기 단계. 말 빠르기(scale 의 wpm)를 찾을 때 쓴다.
@@ -31,10 +32,10 @@ export const secondsFor = (it, stage = 1) => (stage === 2 ? { vocab: 20, grammar
 
 export function validateForm(it, stage = 1) {
   const p = [];
-  const mcAreas = stage === 2 ? S2_AREAS.filter((a) => a !== 'sentence') : MC_AREAS;
+  const areas = stage === 2 ? S2_AREAS : [...MC_AREAS, ...WRITE_AREAS];
   const n = choiceCount(it, stage);
   if (!it?.id) p.push('id');
-  if (![...mcAreas, ...WRITE_AREAS.filter((a) => stage !== 2 || a === 'sentence')].includes(it?.area)) p.push('영역');
+  if (!areas.includes(it?.area)) p.push('영역');
   if (!(stage === 2 ? STAGES2 : LEVELS).includes(it?.level)) p.push('수준');
   if (!Number.isInteger(it?.no) || it.no < 1) p.push('번호');
   if (!String(it?.question ?? '').trim()) p.push('질문');
@@ -44,7 +45,7 @@ export function validateForm(it, stage = 1) {
     const a = it.answers;
     if (!Array.isArray(a) || !a.length || !a.every((x) => Array.isArray(x) && x.length && x.every((y) => String(y).trim()))) p.push('인정 답');
     else if (a.length !== b) p.push('칸 수');
-  } else if (mcAreas.includes(it?.area)) {
+  } else if (areas.includes(it?.area)) {
     const c = it.choices;
     const okCount = Array.isArray(c) && c.length === n;
     if (!okCount || c.some((x) => !String(x).trim())) p.push(`선택지 ${n}개`);

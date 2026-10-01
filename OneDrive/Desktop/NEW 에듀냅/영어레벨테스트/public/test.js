@@ -60,7 +60,7 @@ if (!session) {
     if (!it) { session.stage = 'gate'; keep(); return route(); }
     top(`1차 ${set}`, railFor(forms.stage1, session.s1.i), session.s1.i + 1, forms.stage1.length);
     if (!session.s1.started) {
-      const listen = forms.stage1.some((i) => i.area === 'listening') ? `듣기, 영어 글 읽기, 소리, 문법, 쓰기 문제입니다. ${LISTEN_INTRO}` : '영어 글 읽기, 소리, 문법, 쓰기 문제입니다.';
+      const listen = forms.stage1.some((i) => i.area === 'listening') ? `듣기, 영어 글 읽기, 소리, 문법, 영작 문제입니다. 모두 고르는 문제입니다. ${LISTEN_INTRO}` : '영어 글 읽기, 소리, 문법, 영작 문제입니다. 모두 고르는 문제입니다.';
       return intro(`1차 (${forms.stage1.length}문항)`, `${listen} 문항마다 90초 안에 답합니다. 모르면 "모름"을 고르세요.`, () => { session.s1.started = true; keep(); route(); });
     }
     ask(it, (rec) => { session.s1.log.push(rec); session.s1.i += 1; });
