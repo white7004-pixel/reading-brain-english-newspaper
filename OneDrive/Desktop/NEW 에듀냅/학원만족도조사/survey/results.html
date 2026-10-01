@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>학원설문조사 결과</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root{--bg:#FBF8F3;--card:#FFFDF9;--red:#8A1F24;--red-soft:#F5E6E4;--navy:#0C2F4E;--ink:#3A2E2A;--muted:#7A6A60;--line:#D9CBBE;--line-soft:#E8DFD3;--warn:#FFF3C4;--warn-ink:#6B4E00}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 56px}
+.kicker{color:var(--red);font-family:'Gowun Batang',serif;font-size:14px}
+h1{color:var(--navy);font-family:'Gowun Batang',serif;font-weight:700;font-size:24px;margin:2px 0 16px}
+h2{color:var(--navy);font-family:'Gowun Batang',serif;font-weight:700;font-size:19px;margin:28px 0 12px}
+.card{background:var(--card);border:1px solid var(--line-soft);border-radius:14px;padding:16px}
+button,select,input{font:inherit;color:var(--ink)}
+.btn{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+input,select{min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 12px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.login{max-width:360px;margin:12vh auto 0;text-align:center}
+.login form{display:flex;gap:8px;margin-top:16px}.login input{flex:1;min-width:0}
+.msg{color:var(--red);font-size:14px;margin-top:10px;min-height:20px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line-soft);margin-bottom:16px}
+.tabs button{border:0;background:none;padding:10px 14px;min-height:44px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected=true]{color:var(--red);border-color:var(--red);font-weight:600}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.bar .sp{flex:1}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line-soft);border-radius:14px;padding:14px 16px}
+.stat .l{font-size:13px;color:var(--muted)}.stat .v{font-size:28px;font-weight:700;font-family:'Gowun Batang',serif}.stat .v small{font-size:14px;color:var(--muted);font-family:Pretendard,sans-serif;font-weight:400}
+.flag{background:var(--warn);border-radius:14px;padding:14px 16px;margin-top:16px;color:var(--warn-ink)}
+.flag b{display:block;margin-bottom:6px}.flag ul{margin:0;padding-left:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:12px}
+.q .t{font-weight:600;margin-bottom:10px;word-break:keep-all}
+.q .avg{float:right;background:var(--red-soft);color:var(--red);border-radius:10px;padding:0 8px;font-size:13px;margin-left:8px}
+.opt{display:grid;grid-template-columns:minmax(80px,38%) 1fr 64px;gap:8px;align-items:center;font-size:14px;margin:5px 0}
+.opt .track{height:12px;background:var(--line-soft);border-radius:6px;overflow:hidden}
+.opt .fill{display:block;height:100%;background:var(--red);border-radius:6px}
+.opt .n{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.sub{font-size:13px;color:var(--muted);margin-top:8px}
+.texts{display:flex;flex-direction:column;gap:8px}
+.tx{background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:12px 14px;white-space:pre-wrap;word-break:break-word}
+.tx .tags{font-size:12px;color:var(--muted);margin-top:6px}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+.demo{background:var(--warn);color:var(--warn-ink);font-size:13px;text-align:center;padding:6px}
+.logo{display:block;margin:0 auto 18px;width:84px;height:auto}
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden>연습 모드 — 이 브라우저에 저장된 답만 보입니다. 비밀번호는 demo</div>
+<main class="wrap" id="app"></main>
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="core.js"></script>
+<script>
+(function () {
+  var app = document.getElementById('app');
+  var ids = Object.keys(SURVEYS);
+  var NAMES = { parent: '학부모', student: '학생', teacher: '강사' };
+  var st = { pw: null, survey: ids[0], rows: [], grade: '', curriculum: '' };
+  try { st.pw = sessionStorage.getItem('rb-pw'); } catch (e) {}
+  if (RB.api.demo()) document.getElementById('demo').hidden = false;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function login(msg) {
+    app.innerHTML = '<div class="login"><img class="logo" src="logo.png" alt="리딩브레인 로고" width="84" height="80"><div class="kicker">READING BRAIN</div><h1>학원설문조사 결과</h1>' +
+      '<form id="f"><input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호" required>' +
+      '<button class="btn red">열기</button></form><div class="msg" role="alert">' + (msg || '') + '</div></div>';
+    document.getElementById('pw').focus();
+    document.getElementById('f').onsubmit = function (e) {
+      e.preventDefault();
+      st.pw = document.getElementById('pw').value;
+      load();
+    };
+  }
+
+  function load() {
+    app.setAttribute('aria-busy', 'true');
+    RB.api.results(st.pw, st.survey).then(function (rows) {
+      app.removeAttribute('aria-busy');
+      if (!rows) { try { sessionStorage.removeItem('rb-pw'); } catch (e) {} return login('비밀번호가 맞지 않습니다.'); }
+      try { sessionStorage.setItem('rb-pw', st.pw); } catch (e) {}
+      st.rows = rows;
+      draw();
+    }, function () {
+      app.removeAttribute('aria-busy');
+      login('서버에 연결하지 못했습니다. 잠시 뒤 다시 열어 주세요.');
+    });
+  }
+
+  function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
+  function fmt(x) { return x === null || x === undefined ? '–' : x.toFixed(2); }
+
+  function optRows(it, s) {
+    var base = s.answered;
+    return it.options.map(function (o) {
+      var k = typeof o === 'object' ? o.v : o, label = typeof o === 'object' ? o.v + ' ' + o.label : o, c = s.counts[k] || 0;
+      return '<div class="opt"><span>' + esc(label) + '</span><span class="track"><span class="fill" style="width:' + pct(c, base) + '%"></span></span>' +
+        '<span class="n">' + c + ' · ' + pct(c, base) + '%</span></div>';
+    }).join('');
+  }
+
+  function tags(a) {
+    return [a.grade].concat(a.curricula || []).filter(Boolean).map(esc).join(' · ');
+  }
+
+  function draw() {
+    var S = SURVEYS[st.survey];
+    var rows = RB.filterRows(st.rows, { grade: st.grade, curriculum: st.curriculum });
+    var sum = RB.summarize(S, rows);
+    var all = RB.items(S);
+    var gradeIt = all.filter(function (i) { return i.id === 'grade'; })[0];
+    var curIt = all.filter(function (i) { return i.id === 'curricula'; })[0];
+    var flags = RB.flagged(S, rows), flagIt = all.filter(function (i) { return i.flag; })[0];
+
+    var h = '<div style="display:flex;align-items:center;gap:12px"><img src="logo.png" alt="리딩브레인 로고" width="48" height="46"><div><div class="kicker">READING BRAIN</div><h1 style="margin:0">학원설문조사 결과</h1></div></div><div style="height:16px"></div>' +
+      '<div class="tabs" role="tablist">' + ids.map(function (id) {
+        return '<button role="tab" data-s="' + id + '" aria-selected="' + (id === st.survey) + '">' + (NAMES[id] || id) + ' 설문</button>';
+      }).join('') + '</div>' +
+      '<div class="bar">' +
+      (gradeIt ? '<select id="fg" aria-label="학년으로 거르기"><option value="">전체 학년</option>' + gradeIt.options.map(function (o) { return '<option' + (o === st.grade ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' : '') +
+      (curIt ? '<select id="fc" aria-label="커리큘럼으로 거르기"><option value="">전체 커리큘럼</option>' + curIt.options.map(function (o) { return '<option' + (o === st.curriculum ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' : '') +
+      '<span class="sp"></span><button class="btn" id="re">새로고침</button><button class="btn" id="csv">엑셀(CSV) 받기</button></div>' +
+      '<div class="stats"><div class="stat"><div class="l">응답 수</div><div class="v">' + sum.n + '<small> 명' + (rows.length !== st.rows.length ? ' / 전체 ' + st.rows.length : '') + '</small></div></div>' +
+      sum.sections.filter(function (x) { return x.avg !== null; }).map(function (x) {
+        return '<div class="stat"><div class="l">' + esc(x.title.replace(' 관련 만족도', '')) + ' 평균</div><div class="v">' + fmt(x.avg) + '<small> / 5</small></div></div>';
+      }).join('') + '</div>';
+
+    if (flags.length) {
+      h += '<div class="flag" role="note"><b>확인이 필요한 의견 ' + flags.length + '건</b><span style="font-size:13px">' + esc(flagIt.label) + '</span><ul>' +
+        flags.map(function (r) { return '<li>' + esc(r.answers[flagIt.id]) + ' <span style="opacity:.75">(' + tags(r.answers) + ')</span></li>'; }).join('') + '</ul></div>';
+    }
+
+    if (!rows.length) {
+      h += '<div class="empty">' + (st.rows.length ? '고른 조건에 맞는 응답이 없습니다.' : '아직 응답이 없습니다.') + '</div>';
+    } else {
+      S.sections.forEach(function (sec) {
+        h += '<h2>' + esc(sec.title) + '</h2>';
+        var choice = sec.items.filter(function (i) { return i.type !== 'text'; });
+        var texts = sec.items.filter(function (i) { return i.type === 'text'; });
+        if (choice.length) h += '<div class="grid">' + choice.map(function (it) {
+          var s = sum.items[it.id];
+          return '<div class="card q"><div class="t">' + (s.avg !== undefined ? '<span class="avg">평균 ' + fmt(s.avg) + '</span>' : '') + esc(it.label) + '</div>' +
+            optRows(it, s) + (it.type === 'multi' ? '<div class="sub">여러 개 고른 답은 고른 것마다 셉니다 (응답자 대비 %)</div>' : '') + '</div>';
+        }).join('') + '</div>';
+        texts.forEach(function (it) {
+          var list = rows.filter(function (r) { return !RB.empty(r.answers[it.id]); });
+          h += '<div class="q" style="margin:16px 0 8px"><div class="t">' + esc(it.label) + ' <span style="color:var(--muted);font-weight:400">' + list.length + '건</span></div></div>' +
+            '<div class="texts">' + (list.length ? list.map(function (r) {
+              return '<div class="tx">' + esc(r.answers[it.id]) + '<div class="tags">' + tags(r.answers) + ' · ' + RB.kst(r.created_at) + '</div></div>';
+            }).join('') : '<div class="sub">적힌 의견이 없습니다.</div>') + '</div>';
+        });
+      });
+    }
+    app.innerHTML = h;
+
+    app.querySelectorAll('[role=tab]').forEach(function (b) {
+      b.onclick = function () { st.survey = b.dataset.s; st.grade = st.curriculum = ''; load(); };
+    });
+    var fg = document.getElementById('fg'), fc = document.getElementById('fc');
+    if (fg) fg.onchange = function () { st.grade = fg.value; draw(); };
+    if (fc) fc.onchange = function () { st.curriculum = fc.value; draw(); };
+    document.getElementById('re').onclick = load;
+    document.getElementById('csv').onclick = function () {
+      var blob = new Blob([RB.toCSV(S, rows)], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '리딩브레인-' + (NAMES[st.survey] || st.survey) + '설문-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    };
+  }
+
+  if (st.pw) load(); else login();
+})();
+</script>
+</body>
+</html>

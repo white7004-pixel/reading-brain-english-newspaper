@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>리딩브레인 설문</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+:root{--bg:#FBF8F3;--card:#FFFDF9;--red:#8A1F24;--red-soft:#F5E6E4;--navy:#0C2F4E;--ink:#3A2E2A;--muted:#7A6A60;--line:#D9CBBE;--line-soft:#E8DFD3;--fs:16px;--dot:46px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:var(--fs);line-height:1.6;-webkit-text-size-adjust:100%}
+body.big{--fs:17px;--dot:52px}
+.wrap{max-width:560px;margin:0 auto;padding:28px 20px 48px}
+.serif{font-family:'Gowun Batang',serif}
+.kicker{color:var(--red);font-size:14px;letter-spacing:.02em}
+h1{color:var(--navy);font-family:'Gowun Batang',serif;font-weight:700;font-size:26px;line-height:1.35;margin:6px 0 18px;word-break:keep-all}
+h2{color:var(--navy);font-family:'Gowun Batang',serif;font-weight:700;font-size:21px;margin:0 0 6px;word-break:keep-all}
+p{margin:0 0 10px;word-break:keep-all}
+.notice{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;color:var(--muted);font-size:14px;margin:18px 0 24px}
+.btn{display:block;width:100%;min-height:52px;border:0;border-radius:14px;background:var(--red);color:#fff;font:inherit;font-weight:600;font-size:17px;cursor:pointer}
+.btn:disabled{opacity:.6}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:10px;margin-top:28px}.row .btn{flex:1}.row .ghost{flex:0 0 32%}
+.bars{display:flex;gap:5px;margin:0 0 22px}.bars span{flex:1;height:4px;border-radius:2px;background:var(--line-soft)}.bars span.on{background:var(--red)}
+.step{font-size:13px;color:var(--muted);margin-bottom:4px}
+.desc{color:var(--muted);font-size:14px;margin-bottom:8px}
+.q{padding:20px 0;border-top:1px dashed var(--line)}
+.q:first-of-type{border-top:0}
+.qt{font-size:calc(var(--fs) + 1px);margin-bottom:12px;word-break:keep-all}
+.qt .req{color:var(--red);margin-left:3px}
+.hint{font-size:13px;color:var(--muted);margin:-6px 0 10px}
+.err{display:none;color:var(--red);font-size:14px;margin-top:8px}
+.q.bad .err{display:block}
+.scale{display:flex;justify-content:space-between;gap:4px}
+.scale button{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:0;font:inherit;color:var(--muted);font-size:12px;line-height:1.3;cursor:pointer;word-break:keep-all;min-width:0}
+.scale .dot{width:var(--dot);height:var(--dot);border-radius:50%;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink);transition:background .15s,border-color .15s}
+.scale button[aria-checked=true]{color:var(--red);font-weight:600}
+.scale button[aria-checked=true] .dot{background:var(--red);border-color:var(--red);color:#fff}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pills.grid{display:grid;grid-template-columns:1fr 1fr}
+.pills button{min-height:46px;padding:8px 16px;border:1px solid var(--line);border-radius:23px;background:var(--card);font:inherit;color:var(--ink);cursor:pointer;flex:1 1 auto;transition:background .15s,border-color .15s;word-break:keep-all}
+.pills button[aria-checked=true]{background:var(--red-soft);border-color:var(--red);color:var(--red);font-weight:600}
+textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px 14px;font:inherit;color:var(--ink);resize:vertical}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+textarea:focus{outline:none;border-color:var(--red)}
+.done{text-align:center;padding-top:60px}
+.done .mark{width:72px;height:72px;border-radius:50%;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:34px}
+.senderr{color:var(--red);font-size:14px;margin-top:12px;text-align:center}
+.demo{background:#FFF3C4;color:#6B4E00;font-size:13px;text-align:center;padding:6px}
+.foot{margin-top:40px;text-align:center;font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.logo{display:block;margin:0 auto 18px;width:84px;height:auto}
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden>연습 모드 — 답이 이 기기 브라우저에만 저장됩니다 (config.js 를 채우면 서버로 갑니다)</div>
+<main class="wrap" id="app" aria-live="polite"></main>
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="core.js"></script>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var key = params.get('s') || location.pathname.split('/').filter(Boolean).pop() || 'parent';
+  var S = SURVEYS[key] || SURVEYS.parent;
+  var app = document.getElementById('app');
+  var answers = {};
+  var step = -1; // -1 첫 화면, 0.. 섹션, 'done'
+  var doneKey = 'rb-done-' + S.id;
+  if (S.big) document.body.classList.add('big');
+  if (RB.api.demo()) document.getElementById('demo').hidden = false;
+  document.title = S.kicker;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function once() { try { return S.once && localStorage.getItem(doneKey); } catch (e) { return false; } }
+
+  function intro() {
+    app.innerHTML =
+      '<img class="logo" src="logo.png" alt="리딩브레인 로고" width="84" height="80">' +
+      '<div class="kicker serif">' + (S.id === 'student' ? 'Dear friends,' : 'Dear parents,') + '</div>' +
+      '<h1>' + esc(S.title) + '</h1>' +
+      S.intro.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+      '<div class="notice">' + esc(S.notice) + '</div>' +
+      '<button class="btn" id="go">시작하기</button>' +
+      '<div class="foot">리딩브레인영어학원</div>';
+    document.getElementById('go').onclick = function () { go(0); };
+  }
+
+  function itemHTML(it) {
+    var v = answers[it.id], h = '<div class="q" id="q-' + it.id + '"><div class="qt">' + esc(it.label) +
+      (it.required ? '<span class="req" aria-label="필수">*</span>' : '') + '</div>';
+    if (it.type === 'scale') {
+      h += '<div class="scale" role="radiogroup" aria-label="' + esc(it.label) + '">' + it.options.map(function (o) {
+        return '<button type="button" role="radio" aria-checked="' + (v === o.v) + '" data-id="' + it.id + '" data-v="' + o.v + '">' +
+          '<span class="dot">' + o.v + '</span>' + esc(o.label) + '</button>';
+      }).join('') + '</div>';
+    } else if (it.type === 'single' || it.type === 'multi') {
+      if (it.type === 'multi') h += '<div class="hint">여러 개 고를 수 있어요</div>';
+      var many = it.options.length > 6;
+      h += '<div class="pills' + (many ? ' grid' : '') + '" role="' + (it.type === 'multi' ? 'group' : 'radiogroup') + '" aria-label="' + esc(it.label) + '">' +
+        it.options.map(function (o, n) {
+          var on = it.type === 'multi' ? (v || []).indexOf(o) >= 0 : v === o;
+          return '<button type="button" role="' + (it.type === 'multi' ? 'checkbox' : 'radio') + '" aria-checked="' + on + '" data-id="' + it.id + '" data-n="' + n + '">' + esc(o) + '</button>';
+        }).join('') + '</div>';
+    } else {
+      h += '<textarea data-id="' + it.id + '" maxlength="2000" placeholder="자유롭게 적어 주세요" aria-label="' + esc(it.label) + '">' + esc(v || '') + '</textarea>';
+    }
+    return h + '<div class="err">' + (it.type === 'text' ? '한 줄이라도 적어 주세요' : '하나를 골라 주세요') + '</div></div>';
+  }
+
+  function section() {
+    var sec = S.sections[step], last = step === S.sections.length - 1;
+    app.innerHTML =
+      '<div class="bars" aria-hidden="true">' + S.sections.map(function (_, n) { return '<span class="' + (n <= step ? 'on' : '') + '"></span>'; }).join('') + '</div>' +
+      '<div class="step">' + (step + 1) + ' / ' + S.sections.length + '</div>' +
+      '<h2>' + esc(sec.title) + '</h2>' + (sec.desc ? '<div class="desc">' + esc(sec.desc) + '</div>' : '') +
+      sec.items.map(itemHTML).join('') +
+      '<div class="row"><button class="btn ghost" id="back">이전</button><button class="btn" id="next">' + (last ? '제출하기' : '다음') + '</button></div>' +
+      '<div class="senderr" id="senderr" hidden></div>';
+    app.querySelectorAll('[data-id]').forEach(function (el) {
+      var it = sec.items.filter(function (i) { return i.id === el.dataset.id; })[0];
+      if (el.tagName === 'TEXTAREA') {
+        el.oninput = function () { answers[it.id] = el.value; clearBad(it.id); };
+        return;
+      }
+      el.onclick = function () {
+        if (it.type === 'scale') answers[it.id] = Number(el.dataset.v);
+        else if (it.type === 'single') answers[it.id] = it.options[el.dataset.n];
+        else {
+          var o = it.options[el.dataset.n], cur = (answers[it.id] || []).slice(), at = cur.indexOf(o);
+          if (at >= 0) cur.splice(at, 1); else cur.push(o);
+          answers[it.id] = it.options.filter(function (x) { return cur.indexOf(x) >= 0; });
+        }
+        el.parentNode.querySelectorAll('button').forEach(function (b) {
+          var on = it.type === 'scale' ? Number(b.dataset.v) === answers[it.id]
+            : it.type === 'single' ? it.options[b.dataset.n] === answers[it.id]
+            : answers[it.id].indexOf(it.options[b.dataset.n]) >= 0;
+          b.setAttribute('aria-checked', on);
+        });
+        clearBad(it.id);
+      };
+    });
+    document.getElementById('back').onclick = function () { go(step - 1); };
+    document.getElementById('next').onclick = function () {
+      var miss = RB.missing({ sections: [sec] }, answers);
+      miss.forEach(function (id) { document.getElementById('q-' + id).classList.add('bad'); });
+      if (miss.length) { document.getElementById('q-' + miss[0]).scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      if (last) send(this); else go(step + 1);
+    };
+  }
+  function clearBad(id) { var q = document.getElementById('q-' + id); if (q) q.classList.remove('bad'); }
+
+  function send(btn) {
+    var box = document.getElementById('senderr');
+    btn.disabled = true; btn.textContent = '보내는 중…'; box.hidden = true;
+    var clean = {};
+    Object.keys(answers).forEach(function (k) { if (!RB.empty(answers[k])) clean[k] = typeof answers[k] === 'string' ? answers[k].trim() : answers[k]; });
+    RB.api.submit(S.id, clean).then(function () {
+      try { if (S.once) localStorage.setItem(doneKey, '1'); } catch (e) {}
+      go('done');
+    }, function () {
+      btn.disabled = false; btn.textContent = '다시 보내기';
+      box.hidden = false; box.textContent = '보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 적으신 답은 그대로 있어요.';
+    });
+  }
+
+  function done(already) {
+    app.innerHTML = '<div class="done"><img class="logo" src="logo.png" alt="리딩브레인 로고" width="84" height="80"><div class="mark" aria-hidden="true">✓</div>' +
+      '<h1>' + (already ? '이미 참여하셨습니다' : '소중한 의견 감사합니다') + '</h1>' +
+      '<p>' + (S.id === 'student' ? '솔직하게 답해 줘서 고마워요! 더 즐거운 수업으로 보답할게요.'
+        : '보내 주신 의견은 내년 교육 프로그램 운영과 학습 관리에 적극 반영하겠습니다.') + '</p>' +
+      (S.once ? '' : '<div class="row"><button class="btn ghost" id="again" style="flex:1">다음 친구 시작</button></div>') +
+      '<div class="foot">리딩브레인영어학원</div></div>';
+    var again = document.getElementById('again');
+    if (again) again.onclick = function () { answers = {}; go(-1); };
+  }
+
+  function go(n) {
+    step = n;
+    if (n === 'done') done(false); else if (n < 0) intro(); else section();
+    window.scrollTo(0, 0);
+  }
+
+  if (once()) done(true); else go(-1);
+})();
+</script>
+</body>
+</html>
