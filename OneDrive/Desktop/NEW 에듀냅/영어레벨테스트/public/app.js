@@ -2,6 +2,7 @@
 import { GRADES } from './core/scale.js';
 import { checkName, parseBooks } from './core/student.js';
 import { nextSet } from './core/forms.js';
+import { academyOf } from './core/academy.js';
 
 const $ = (s) => document.querySelector(s);
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -9,7 +10,7 @@ const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); retur
 const status = (sel, text, kind = '') => { const el = $(sel); el.textContent = text; el.className = `status ${kind}`; };
 const today = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD, 이 기기 시간
 
-const a = load('elt:academy', {});
+const a = academyOf(load('elt:academy', null));
 const sf = $('#student-form');
 sf.grade.innerHTML = GRADES.map((g) => `<option${g === '중2' ? ' selected' : ''}>${g}</option>`).join('');
 if (load('elt:session', null)) $('#resume').hidden = false;
@@ -19,7 +20,7 @@ sf.addEventListener('submit', (e) => {
   const name = sf.name.value.trim();
   const problem = checkName(name);
   if (problem) return status('#student-status', problem, 'error');
-  const academy = load('elt:academy', {});
+  const academy = academyOf(load('elt:academy', null));
   const date = today();
   const set = nextSet(load('elt:lastSet', null));
   const session = { id: `${name}:${date}:${Date.now().toString(36)}`, name, school: sf.school.value.trim(), grade: sf.grade.value, date, start: date, academy, set, stage: 1, s1: { i: 0, log: [], started: false }, shownAt: null, current: null, plays: 0 };

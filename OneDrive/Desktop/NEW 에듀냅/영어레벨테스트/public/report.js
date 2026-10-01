@@ -1,5 +1,6 @@
 // 리포트 (시안1 업그레이드): 학부모용 = 표지 + 응시한 영역마다 1쪽, 원장용 = 1쪽. 교재명은 원장용에만.
 // 숫자는 전부 core 가 계산한다. 여기서는 그리기만. AI 는 총평 문장만 쓰고, 실패하면 틀 문장이 남는다. 글은 눌러서 고칠 수 있다.
+import { logoOf } from './core/academy.js';
 import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, ym, track, earlyText, END } from './core/progress.js';
 import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel, nextUnits } from './core/summary.js';
@@ -71,7 +72,7 @@ function logoSrc(r) {
   if (!logo) {
     try { logo = JSON.parse(localStorage.getItem('elt:academy'))?.logo; } catch { /* 로고 없이 이름만 */ }
   }
-  return /^data:image\//.test(logo ?? '') ? logo : '';
+  return logoOf({ ...r.academy, logo });
 }
 
 // 로고 판(흰 바탕) + 학원 이름
@@ -112,13 +113,13 @@ function stageLine(r) {
 
 function gauge(sc) {
   const C = 2 * Math.PI * 74;
-  const arc = sc ? `<circle cx="88" cy="88" r="74" fill="none" stroke="#e9cf8c" stroke-width="5" stroke-linecap="round" stroke-dasharray="${((C * sc) / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 88 88)"/>` : '';
+  const arc = sc ? `<circle cx="88" cy="88" r="74" fill="none" stroke="#e7d6bc" stroke-width="5" stroke-linecap="round" stroke-dasharray="${((C * sc) / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 88 88)"/>` : '';
   return `<svg viewBox="0 0 176 176" aria-label="환산 점수 ${sc ?? '-'}점">
-    <circle cx="88" cy="88" r="74" fill="none" stroke="rgba(246,239,220,.14)" stroke-width="5"/>${arc}
-    <circle cx="88" cy="88" r="62" fill="none" stroke="rgba(246,239,220,.1)" stroke-width="1"/>
-    <text x="88" y="92" text-anchor="middle" font-family="Hahmlet" font-size="50" font-weight="600" fill="#f6efdc">${sc ?? '-'}</text>
-    <text x="88" y="114" text-anchor="middle" font-family="Pretendard" font-size="10.5" fill="rgba(246,239,220,.6)" letter-spacing="2">/ 100</text>
-    <text x="88" y="130" text-anchor="middle" font-family="Pretendard" font-size="9.5" fill="rgba(233,207,140,.8)">환산 점수</text></svg>`;
+    <circle cx="88" cy="88" r="74" fill="none" stroke="rgba(247,243,235,.14)" stroke-width="5"/>${arc}
+    <circle cx="88" cy="88" r="62" fill="none" stroke="rgba(247,243,235,.1)" stroke-width="1"/>
+    <text x="88" y="92" text-anchor="middle" font-family="MaruBuri" font-size="50" font-weight="600" fill="#f7f3eb">${sc ?? '-'}</text>
+    <text x="88" y="114" text-anchor="middle" font-family="Pretendard" font-size="10.5" fill="rgba(247,243,235,.6)" letter-spacing="2">/ 100</text>
+    <text x="88" y="130" text-anchor="middle" font-family="Pretendard" font-size="9.5" fill="rgba(231,214,188,.85)">환산 점수</text></svg>`;
 }
 
 function cover(r, proj, c, facts, start, pages) {
@@ -201,7 +202,7 @@ function eta(r, proj, start) {
   const lift = Math.max(...stations.map((s) => s.level));
   const doneAt = x(proj.perSection[last].done ? proj.perSection[last].months : span);
   return `<div class="eta" style="--lift:${lift}">
-    <div class="axis" style="background:linear-gradient(90deg, var(--ink) 0 ${doneAt}%, #d6cdb7 ${doneAt}%)"></div>${ticks}
+    <div class="axis" style="background:linear-gradient(90deg, var(--ink) 0 ${doneAt}%, #d3ccbf ${doneAt}%)"></div>${ticks}
     ${stations.map((s) => `<i class="pt${s.cls === 'grad' ? ' hollow' : ''}" style="left:${x(s.at)}%${s.dot ? `;background:${s.dot}` : ''}"></i>
       <span class="st ${s.cls}${edge(s)}" style="left:${x(s.at)}%;--up:${s.level}"><b${s.color ? ` style="color:${s.color}"` : ''}>${s.b}</b><small>${s.small}</small></span>`).join('')}
   </div>`;
@@ -251,17 +252,17 @@ function stair(r, est, start, now) {
   const x = (i) => L + (i / N) * (W - L - R);
   const y = (p) => T + ((END - Math.max(LO, p)) / (END - LO)) * (H - T - B);
   let s = '';
-  points.forEach((p, i) => { if (i > 0 && p.exam) s += `<rect x="${x(i - 0.5)}" y="${T}" width="${x(1) - x(0)}" height="${H - T - B}" fill="#f1ece0"/>`; });
+  points.forEach((p, i) => { if (i > 0 && p.exam) s += `<rect x="${x(i - 0.5)}" y="${T}" width="${x(1) - x(0)}" height="${H - T - B}" fill="#f2eee6"/>`; });
   for (let p = LO; p <= END; p += 2) {
-    s += `<line x1="${L}" x2="${W - R}" y1="${y(p)}" y2="${y(p)}" stroke="#e4ddcc"/>`;
-    s += p < END ? `<text x="${L - 8}" y="${y(p + 1) + 4}" text-anchor="end" font-size="10" fill="#6f7a74">${esc(labelOf(p).split(' ')[0])}</text>`
-      : `<text x="${L - 8}" y="${y(END) + 4}" text-anchor="end" font-size="10" font-weight="700" fill="#b8892a">완료</text>`;
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(p)}" y2="${y(p)}" stroke="#e6e1d6"/>`;
+    s += p < END ? `<text x="${L - 8}" y="${y(p + 1) + 4}" text-anchor="end" font-size="10" fill="#646c78">${esc(labelOf(p).split(' ')[0])}</text>`
+      : `<text x="${L - 8}" y="${y(END) + 4}" text-anchor="end" font-size="10" font-weight="700" fill="#7d1d1e">완료</text>`;
   }
   points.forEach((p, i) => {
-    if (i > 0 && p.month.endsWith('-03') && i < N - 3) s += `<line x1="${x(i)}" x2="${x(i)}" y1="${H - B}" y2="${H - B + 4}" stroke="#6f7a74"/><text x="${x(i)}" y="${H - B + 16}" text-anchor="middle" font-size="9.5" fill="#6f7a74">${p.month.slice(0, 4)}.3 ${esc(p.when.split(' ')[0])}</text>`;
+    if (i > 0 && p.month.endsWith('-03') && i < N - 3) s += `<line x1="${x(i)}" x2="${x(i)}" y1="${H - B}" y2="${H - B + 4}" stroke="#646c78"/><text x="${x(i)}" y="${H - B + 16}" text-anchor="middle" font-size="9.5" fill="#646c78">${p.month.slice(0, 4)}.3 ${esc(p.when.split(' ')[0])}</text>`;
   });
-  s += `<text x="${x(N)}" y="${H - B + 16}" text-anchor="end" font-size="9.5" fill="#6f7a74">${esc(points.at(-1).when)}</text>`;
-  s += `<polyline points="${points.map((p, i) => `${x(i)},${y(p.school)}`).join(' ')}" fill="none" stroke="#8b938e" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+  s += `<text x="${x(N)}" y="${H - B + 16}" text-anchor="end" font-size="9.5" fill="#646c78">${esc(points.at(-1).when)}</text>`;
+  s += `<polyline points="${points.map((p, i) => `${x(i)},${y(p.school)}`).join(' ')}" fill="none" stroke="#8e959e" stroke-width="1.5" stroke-dasharray="4 4"/>`;
   const stop = done ?? points.length - 1;
   let d = `M${x(0)},${y(points[0].ours)}`;
   for (let i = 1; i <= stop; i++) if (points[i].ours !== points[i - 1].ours) d += ` H${x(i)} V${y(points[i].ours)}`;
@@ -273,12 +274,12 @@ function stair(r, est, start, now) {
   if (ahead != null) {
     const [ax, ay] = [x(ahead), y(points[ahead].school)];
     const right = ax > W - 190;
-    s += `<circle cx="${ax}" cy="${ay}" r="3.5" fill="#fcfaf5" stroke="#17241f" stroke-width="1.5"/><text x="${right ? ax - 8 : ax + 8}" y="${ay + 14}" text-anchor="${right ? 'end' : 'start'}" font-size="10" fill="#17241f">학교 진도보다 앞서는 때 · ${esc(points[ahead].when)}</text>`;
+    s += `<circle cx="${ax}" cy="${ay}" r="3.5" fill="#fcfbf8" stroke="#15202c" stroke-width="1.5"/><text x="${right ? ax - 8 : ax + 8}" y="${ay + 14}" text-anchor="${right ? 'end' : 'start'}" font-size="10" fill="#15202c">학교 진도보다 앞서는 때 · ${esc(points[ahead].when)}</text>`;
   }
   if (done != null) {
     const dx = x(done);
     const left = dx > W / 2;
-    s += `<circle cx="${dx}" cy="${y(END)}" r="6" fill="#b8892a" stroke="#fcfaf5" stroke-width="2"/><text x="${left ? dx - 10 : dx + 10}" y="${y(END) - 9}" text-anchor="${left ? 'end' : 'start'}" font-size="11" font-weight="700" fill="#8a6414">${done ? `${esc(points[done].when)} · 고3 과정 완료` : '이미 고3 과정 완료'}</text>`;
+    s += `<circle cx="${dx}" cy="${y(END)}" r="6" fill="#7d1d1e" stroke="#fcfbf8" stroke-width="2"/><text x="${left ? dx - 10 : dx + 10}" y="${y(END) - 9}" text-anchor="${left ? 'end' : 'start'}" font-size="11" font-weight="700" fill="#7d1d1e">${done ? `${esc(points[done].when)} · 고3 과정 완료` : '이미 고3 과정 완료'}</text>`;
   }
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="학교 진도와 우리 학원 진도">${s}</svg>
     <div class="legend"><span><i></i>우리 학원 진도 (한 해 3학기)</span><span><i class="dash"></i>학교 진도</span><span><i class="band"></i>내신 시험 기간</span></div>`;
@@ -361,7 +362,7 @@ async function fillComment(facts) {
 
 async function png() {
   try {
-    const url = await window.htmlToImage.toPng($('#parent .sheet'), { pixelRatio: 2, backgroundColor: '#fcfaf5' });
+    const url = await window.htmlToImage.toPng($('#parent .sheet'), { pixelRatio: 2, backgroundColor: '#fcfbf8' });
     const a = document.createElement('a');
     a.href = url;
     a.download = `${result.name}-레벨테스트-표지.png`;

@@ -3,30 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>분석지 시안</title>
+<title>리딩브레인 분석지 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@600;800&display=swap" rel="stylesheet" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet" crossorigin>
+<link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" crossorigin>
 <style>
 /* 분석지 시안 (예시 학생 자료). 확정되면 report.js 로 옮긴다. */
 :root {
-  --brand: #0e3a2d; --ink: #17241f; --muted: #66726c; --hair: #e3ded2; --paper: #fff; --pane: #f4f6f3; --head: #eaf1ec;
-  --line: #3d68b8; --me: #e07b24; --now: #2f9a6a; --gold: #b8892a; --soft: #fdf3e6; --soft-line: #efc79a;
-  --sans: 'Pretendard', system-ui, sans-serif; --serif: 'Hahmlet', 'Pretendard', serif;
+  --brand: #0b2c46; --ink: #15202c; --muted: #646c78; --hair: #e4dfd5; --paper: #fff; --pane: #f7f5f0; --head: #eef1f5;
+  --line: #2c5596; --me: #7d1d1e; --now: #a0742a; --gold: #a0742a; --soft: #f6ecea; --soft-line: #e2c2bd;
+  --sans: 'Pretendard', system-ui, sans-serif; --serif: 'MaruBuri', 'Pretendard', serif;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: #e9ebe8; color: var(--ink); font: 13px/1.6 var(--sans); }
+body { margin: 0; background: #eceae5; color: var(--ink); font: 13px/1.6 var(--sans); }
 .note { max-width: 794px; margin: 16px auto 0; padding: 12px 16px; background: #fff8e6; border: 1px solid #f0d9a4; border-radius: 8px; font-size: 13.5px; }
 .note b { color: #8a5a12; }
 .pages { display: grid; gap: 20px; justify-content: center; padding: 16px 0 40px; }
 .page { width: 794px; height: 1123px; background: var(--paper); box-shadow: 0 2px 14px rgba(0,0,0,.12); padding: 34px 38px 28px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
-.mast { display: flex; justify-content: space-between; align-items: end; border-bottom: 3px solid var(--brand); padding-bottom: 10px; }
-.mast h1 { margin: 0; font: 800 24px/1.2 var(--serif); color: var(--brand); letter-spacing: -.02em; }
+.mast { display: flex; justify-content: space-between; align-items: end; gap: 14px; border-bottom: 3px solid var(--brand); padding-bottom: 10px; }
+.mast .emblem { height: 46px; width: auto; align-self: center; }
+.mast h1 { flex: 1; margin: 0; font: 700 24px/1.2 var(--serif); color: var(--brand); letter-spacing: -.02em; }
 .mast h1 small { font: 600 13px/1 var(--sans); color: var(--muted); margin-left: 10px; letter-spacing: 0; }
 .mast .who { text-align: right; font-size: 12.5px; color: var(--muted); }
 .mast .who b { color: var(--ink); font-size: 15px; margin-right: 6px; }
-.bar { display: flex; justify-content: space-between; align-items: center; background: var(--head); border-top: 2px solid #c9dccf; padding: 8px 14px; }
+.bar { display: flex; justify-content: space-between; align-items: center; background: var(--head); border-top: 2px solid #c9d3de; padding: 8px 14px; }
 .bar h2 { margin: 0; font: 800 16px/1.3 var(--sans); }
 .legend { display: flex; gap: 12px; font-size: 11.5px; color: var(--muted); flex-wrap: wrap; }
 .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
@@ -36,7 +38,7 @@ body { margin: 0; background: #e9ebe8; color: var(--ink); font: 13px/1.6 var(--s
 /* 1. 종합 */
 .overall { display: grid; grid-template-columns: 150px 190px 1fr; gap: 16px; align-items: center; }
 .ring { position: relative; width: 150px; height: 150px; }
-.ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 800 32px/1 var(--sans); color: #2b5fb0; }
+.ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 800 32px/1 var(--sans); color: #0b2c46; }
 .ring span { position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; font-size: 11px; color: var(--muted); }
 .boxes { display: grid; gap: 10px; }
 .box { background: var(--soft); border: 1px solid var(--soft-line); border-radius: 8px; text-align: center; padding: 10px 8px; }
@@ -77,7 +79,7 @@ body { margin: 0; background: #e9ebe8; color: var(--ink); font: 13px/1.6 var(--s
 .facts b.sm { font-size: 14px; line-height: 1.5; }
 .kinds { padding: 2px 4px; display: grid; gap: 5px; text-align: left; }
 .kinds p { margin: 0; display: grid; grid-template-columns: 74px 1fr 36px; gap: 8px; align-items: center; font-size: 12px; }
-.kinds i { display: block; height: 8px; border-radius: 4px; background: #e8ece9; overflow: hidden; }
+.kinds i { display: block; height: 8px; border-radius: 4px; background: #ece9e3; overflow: hidden; }
 .kinds i u { display: block; height: 100%; background: var(--line); }
 .kinds em { font-style: normal; text-align: right; font-weight: 700; }
 
@@ -129,16 +131,16 @@ const mmss = (s) => `${Math.floor(s / 60)}분 ${String(s % 60).padStart(2, '0')}
 const total = A.reduce((s, a) => s + a.min, 0);
 
 // 종합 게이지 (Lv 1~9)
-const ring = (lv) => { const C = 2 * Math.PI * 62; return `<svg viewBox="0 0 150 150" width="150" height="150"><circle cx="75" cy="75" r="62" fill="none" stroke="#d6dbe0" stroke-width="13"/><circle cx="75" cy="75" r="62" fill="none" stroke="#2b5fb0" stroke-width="13" stroke-dasharray="${(C * lv / 9).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 75 75)"/></svg>`; };
+const ring = (lv) => { const C = 2 * Math.PI * 62; return `<svg viewBox="0 0 150 150" width="150" height="150"><circle cx="75" cy="75" r="62" fill="none" stroke="#d6dbe0" stroke-width="13"/><circle cx="75" cy="75" r="62" fill="none" stroke="#0b2c46" stroke-width="13" stroke-dasharray="${(C * lv / 9).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 75 75)"/></svg>`; };
 
 // 수준 위치 (L1~L9 눈금 위에 내 수준·현재 학년)
 function levelLine() {
   const W = 360, H = 150, L = 14, R = 14, T = 26, B = 40;
   const x = (lv) => L + ((lv - 1) / 8) * (W - L - R);
   const me = lvOf(avg), now = lvOf(NOW);
-  let s = `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="#c9cfcb" stroke-width="2"/>`;
-  LV.forEach(([l, g], i) => { s += `<circle cx="${x(i + 1)}" cy="${H - B}" r="3.5" fill="#c9cfcb"/><text x="${x(i + 1)}" y="${H - B + 16}" text-anchor="middle" font-size="10.5" fill="#66726c">${l}</text><text x="${x(i + 1)}" y="${H - B + 29}" text-anchor="middle" font-size="9.5" fill="#66726c">(${g})</text>`; });
-  s += `<rect x="${x(1)}" y="${H - B - 5}" width="${x(me) - x(1)}" height="10" rx="5" fill="#2b5fb0" opacity=".18"/>`;
+  let s = `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="#cfcac0" stroke-width="2"/>`;
+  LV.forEach(([l, g], i) => { s += `<circle cx="${x(i + 1)}" cy="${H - B}" r="3.5" fill="#cfcac0"/><text x="${x(i + 1)}" y="${H - B + 16}" text-anchor="middle" font-size="10.5" fill="#646c78">${l}</text><text x="${x(i + 1)}" y="${H - B + 29}" text-anchor="middle" font-size="9.5" fill="#646c78">(${g})</text>`; });
+  s += `<rect x="${x(1)}" y="${H - B - 5}" width="${x(me) - x(1)}" height="10" rx="5" fill="#0b2c46" opacity=".18"/>`;
   s += `<line x1="${x(now)}" x2="${x(now)}" y1="${T}" y2="${H - B}" stroke="var(--now)" stroke-width="2" stroke-dasharray="4 3"/><text x="${x(now)}" y="${T - 8}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--now)">현재 학년 (중2)</text>`;
   s += `<line x1="${x(me)}" x2="${x(me)}" y1="${T + 22}" y2="${H - B}" stroke="var(--me)" stroke-width="2"/><circle cx="${x(me)}" cy="${T + 22}" r="6" fill="var(--me)"/><text x="${x(me) - 10}" y="${T + 26}" text-anchor="end" font-size="11" font-weight="700" fill="var(--me)">내 수준</text>`;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%">${s}</svg>`;
@@ -149,9 +151,9 @@ function radar() {
   const S = 250, c = S / 2, R = 82, n = A.length;
   const pt = (i, v) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; const r = (v / 11) * R; return [c + r * Math.cos(a), c + r * Math.sin(a)]; };
   let s = '';
-  for (const g of [3, 5, 7, 9, 11]) s += `<polygon points="${A.map((_, i) => pt(i, g).join(',')).join(' ')}" fill="none" stroke="#e1e5e2"/>`;
-  [5, 7, 9].forEach((g) => { const [x, y] = pt(0, g); s += `<text x="${x + 4}" y="${y + 3}" font-size="8.5" fill="#9aa39e">${G[g]}</text>`; });
-  A.forEach((a, i) => { const [x, y] = pt(i, 11); const [lx, ly] = pt(i, 13.4); s += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e1e5e2"/><text x="${lx}" y="${ly + 4}" text-anchor="middle" font-size="12" font-weight="600">${a.k}</text>`; });
+  for (const g of [3, 5, 7, 9, 11]) s += `<polygon points="${A.map((_, i) => pt(i, g).join(',')).join(' ')}" fill="none" stroke="#e4e1da"/>`;
+  [5, 7, 9].forEach((g) => { const [x, y] = pt(0, g); s += `<text x="${x + 4}" y="${y + 3}" font-size="8.5" fill="#9aa0a8">${G[g]}</text>`; });
+  A.forEach((a, i) => { const [x, y] = pt(i, 11); const [lx, ly] = pt(i, 13.4); s += `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#e4e1da"/><text x="${lx}" y="${ly + 4}" text-anchor="middle" font-size="12" font-weight="600">${a.k}</text>`; });
   s += `<polygon points="${A.map((_, i) => pt(i, NOW).join(',')).join(' ')}" fill="none" stroke="var(--now)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
   s += `<polygon points="${A.map((a, i) => pt(i, a.p).join(',')).join(' ')}" fill="rgba(224,123,36,.15)" stroke="var(--me)" stroke-width="2"/>`;
   A.forEach((a, i) => { const [x, y] = pt(i, a.p); s += `<circle cx="${x}" cy="${y}" r="4" fill="var(--me)"/>`; });
@@ -163,7 +165,7 @@ function timeBars() {
   const W = 300, H = 210, L = 38, B = 28, T = 10;
   const max = 20 * 60, y = (sec) => T + (1 - sec / max) * (H - T - B);
   let s = '';
-  for (let m = 0; m <= 20; m += 5) s += `<line x1="${L}" x2="${W}" y1="${y(m * 60)}" y2="${y(m * 60)}" stroke="#eceeec"/><text x="${L - 6}" y="${y(m * 60) + 4}" text-anchor="end" font-size="10" fill="#66726c">${m}분</text>`;
+  for (let m = 0; m <= 20; m += 5) s += `<line x1="${L}" x2="${W}" y1="${y(m * 60)}" y2="${y(m * 60)}" stroke="#eeece7"/><text x="${L - 6}" y="${y(m * 60) + 4}" text-anchor="end" font-size="10" fill="#646c78">${m}분</text>`;
   const bw = (W - L) / A.length;
   A.forEach((a, i) => { const x = L + i * bw + bw * 0.22; s += `<rect x="${x}" y="${y(a.min)}" width="${bw * 0.56}" height="${H - B - y(a.min)}" rx="2" fill="var(--me)"/><text x="${x + bw * 0.28}" y="${H - B + 17}" text-anchor="middle" font-size="11.5">${a.k}</text>`; });
   return `<svg viewBox="0 0 ${W} ${H}" width="100%">${s}</svg>`;
@@ -176,8 +178,8 @@ function accCurve(a) {
   const x = (g) => L + ((g - from + 0.5) / (to - from + 1)) * (W - L - R); // 학년 칸 가운데
   const y = (v) => T + (1 - v / 100) * (H - T - B);
   let s = '';
-  for (let v = 0; v <= 100; v += 25) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#eceeec"/><text x="${L - 6}" y="${y(v) + 3.5}" text-anchor="end" font-size="8.5" fill="#66726c">${v}%</text>`;
-  for (let g = from; g <= to; g++) s += `<text x="${x(g)}" y="${H - B + 15}" text-anchor="middle" font-size="9" fill="#66726c">${G[g]}</text>`;
+  for (let v = 0; v <= 100; v += 25) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#eeece7"/><text x="${L - 6}" y="${y(v) + 3.5}" text-anchor="end" font-size="8.5" fill="#646c78">${v}%</text>`;
+  for (let g = from; g <= to; g++) s += `<text x="${x(g)}" y="${H - B + 15}" text-anchor="middle" font-size="9" fill="#646c78">${G[g]}</text>`;
   const pts = Object.entries(a.acc).map(([g, v]) => [x(+g), y(v), v]);
   const at = (p) => x(p - 0.25); // 1학기는 학년 칸 왼쪽, 2학기는 오른쪽
   s += `<line x1="${at(NOW)}" x2="${at(NOW)}" y1="${T}" y2="${H - B}" stroke="var(--now)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
@@ -193,8 +195,8 @@ function card(a) {
   return `<section class="card"><h3>${a.k}<em>${longLabel(a.p)}</em><small>수준</small></h3>${accCurve(a)}<div class="facts">${kinds}${facts}</div></section>`;
 }
 
-const mast = (title, page) => `<header class="mast"><h1>영어 레벨테스트 분석지<small>${title}</small></h1><div class="who"><b>김OO</b>OO중학교 2학년 · 응시 2026.10.01 · OO영어학원</div></header>`;
-const foot = (n) => `<div class="foot"><span><b>OO영어학원</b> · 031-000-0000</span><span>수준은 학교 교육과정 학년·학기 기준입니다</span><span>${n} / 2</span></div>`;
+const mast = (title, page) => `<header class="mast"><img class="emblem" src="brand/rb-mark.png" alt=""><h1>영어 레벨테스트 분석지<small>${title}</small></h1><div class="who"><b>김OO</b>OO중학교 2학년 · 응시 2026.10.01 · 리딩브레인영어학원</div></header>`;
+const foot = (n) => `<div class="foot"><span><b>리딩브레인영어학원</b> · 02-2135-8311</span><span>수준은 학교 교육과정 학년·학기 기준입니다</span><span>${n} / 2</span></div>`;
 
 document.getElementById('pages').innerHTML = `
 <article class="page">
