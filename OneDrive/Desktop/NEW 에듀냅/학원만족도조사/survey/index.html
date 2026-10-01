@@ -98,7 +98,7 @@ textarea:focus{outline:none;border-color:var(--red)}
           '<span class="dot">' + o.v + '</span>' + esc(o.label) + '</button>';
       }).join('') + '</div>';
     } else if (it.type === 'single' || it.type === 'multi') {
-      if (it.type === 'multi') h += '<div class="hint">여러 개 고를 수 있어요</div>';
+      if (it.type === 'multi') h += '<div class="hint">' + esc(it.hint || '여러 개 고를 수 있어요') + '</div>';
       var many = it.options.length > 6;
       h += '<div class="pills' + (many ? ' grid' : '') + '" role="' + (it.type === 'multi' ? 'group' : 'radiogroup') + '" aria-label="' + esc(it.label) + '">' +
         it.options.map(function (o, n) {

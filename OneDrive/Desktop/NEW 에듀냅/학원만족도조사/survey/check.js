@@ -19,14 +19,14 @@ assert.strictEqual(new Set(ids).size, ids.length, 'id 중복');
 assert.ok(!JSON.stringify(SURVEYS).includes('원더스'), '다른 학원 이름 금지');
 
 // 필수 누락
-const full = { grade: '초등 3학년', curricula: ['원서정독'], t_deliver: 5, t_curr: 4, t_report: 4, rel: '그렇다', diff: '적절하다', load: '적절하다', hw: '많다', hw_diligence: '숙제를 가끔 못해갈 때가 있다', growth: '그렇다', o_notice: 5, o_reply: 3, o_admin: 4, good: '좋아요' };
+const full = { grade: ['초등 3학년'], curricula: ['원서정독'], t_deliver: 5, t_curr: 4, t_report: 4, rel: '그렇다', diff: '적절하다', load: '적절하다', hw: '많다', hw_diligence: '숙제를 가끔 못해갈 때가 있다', growth: '그렇다', o_notice: 5, o_reply: 3, o_admin: 4, good: '좋아요' };
 assert.deepStrictEqual(RB.missing(P, full), []);
 assert.deepStrictEqual(RB.missing(P, Object.assign({}, full, { curricula: [], good: '  ' })), ['curricula', 'good']);
 
 // 집계
 const rows = [
   { answers: full },
-  { answers: Object.assign({}, full, { grade: '중등 1학년', curricula: ['원서정독', '미국교과'], t_deliver: 3, o_notice: 4, o_reply: 4, o_admin: 4 }) },
+  { answers: Object.assign({}, full, { grade: ['초등 3학년', '중등 1학년'], curricula: ['원서정독', '미국교과'], t_deliver: 3, o_notice: 4, o_reply: 4, o_admin: 4 }) },
 ];
 const sum = RB.summarize(P, rows);
 assert.strictEqual(sum.n, 2);
@@ -40,12 +40,15 @@ assert.strictEqual(sum.sections[0].avg, null); // 척도 없는 섹션
 
 // 거르기
 assert.strictEqual(RB.filterRows(rows, { grade: '중등 1학년' }).length, 1);
+assert.strictEqual(RB.filterRows(rows, { grade: '초등 3학년' }).length, 2); // 자녀 둘
+assert.strictEqual(sum.items.grade.counts['초등 3학년'], 2);
 assert.strictEqual(RB.filterRows(rows, { curriculum: '미국교과' }).length, 1);
 assert.strictEqual(RB.filterRows(rows, {}).length, 2);
 
 // 숙제량(noAvg)은 평균에서 빠진다
 const srow = { answers: { grade: '초등 4학년', s_fun: 5, s_hw: 1, s_trouble: '쉬는 시간에 놀려요' } };
 const ssum = RB.summarize(S, [srow]);
+assert.strictEqual(RB.filterRows([srow], { grade: '초등 4학년' }).length, 1); // 학생은 한 학년(문자열)
 assert.strictEqual(ssum.items.s_hw.avg, undefined);
 assert.strictEqual(ssum.sections[1].avg, 5);
 assert.strictEqual(RB.flagged(S, [srow, { answers: { s_trouble: ' ' } }]).length, 1);
@@ -56,5 +59,6 @@ assert.ok(csv.startsWith('﻿'));
 assert.ok(csv.slice(1).split('\r\n')[0].startsWith('제출 시각,현재 자녀 학년'));
 assert.ok(csv.includes('"좋은 ""선생님"", 감사"'));
 assert.ok(csv.includes('원서정독'));
+assert.ok(RB.toCSV(P, rows).includes('초등 3학년 / 중등 1학년'));
 
 console.log('check.js 통과');

@@ -28,7 +28,7 @@
         { title: '학생 레벨',
           desc: '커리큘럼별, 학년별 수업 난이도 및 학습량, 숙제량 등의 적정도를 파악하기 위하여 학생의 커리큘럼과 학년 선택 부탁드립니다.',
           items: [
-            { id: 'grade', type: 'single', required: true, filter: true, label: '현재 자녀 학년',
+            { id: 'grade', type: 'multi', required: true, filter: true, label: '현재 자녀 학년', hint: '자녀가 둘 이상 다니면 모두 골라 주세요',
               options: ['초등 1학년', '초등 2학년', '초등 3학년', '초등 4학년', '초등 5학년', '초등 6학년', '중등 1학년', '중등 2학년', '중등 3학년', '고등 1학년', '고등 2학년', '고등 3학년'] },
             { id: 'curricula', type: 'multi', required: true, filter: true, label: '현재 자녀가 수강중인 커리큘럼',
               options: ['기초원서(파닉스)', '원서정독', '중고등특목관(문법/단어/독해)', '미국교과', '영자신문/논픽션리딩', '스터디포스'] }] },

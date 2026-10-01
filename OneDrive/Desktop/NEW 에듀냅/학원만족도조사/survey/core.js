@@ -19,7 +19,7 @@
   function filterRows(rows, f) {
     return rows.filter(function (r) {
       var a = r.answers || {};
-      if (f.grade && a.grade !== f.grade) return false;
+      if (f.grade && [].concat(a.grade || []).indexOf(f.grade) < 0) return false; // 학부모는 학년 여러 개
       if (f.curriculum && (a.curricula || []).indexOf(f.curriculum) < 0) return false;
       return true;
     });
