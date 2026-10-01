@@ -37,6 +37,7 @@
           items: [
             { id: 't_deliver', type: 'scale', required: true, options: SAT, label: '담당 선생님의 수업 전달력에 만족하시나요?' },
             { id: 't_curr', type: 'scale', required: true, options: SAT, label: '담당 선생님의 수업 커리큘럼과 학생 관리에 만족하시나요?' },
+            { id: 't_report', type: 'scale', required: true, options: SAT, label: '자녀의 진도와 부족한 부분에 대한 상담·학습 보고에 만족하시나요?' },
             { id: 'rel', type: 'single', required: true, options: YNM, label: '자녀가 선생님과 긍정적인 관계를 형성하고 있나요?' },
             { id: 'diff', type: 'single', required: true, options: ['쉽다', '적절하다', '어렵다'], label: '현재 수업 난이도는 자녀에게 적절하다고 느끼시나요?' },
             { id: 'load', type: 'single', required: true, options: ['부담된다', '적절하다', '부족하다'], label: '수업 학습량(수업 중 처리 분량)은 자녀에게 부담되지 않나요?' },
@@ -85,6 +86,7 @@
             { id: 's_grow', type: 'scale', required: true, options: AGREE, label: '수업을 통해 내 영어 실력이 좋아지고 있다고 느낀다.' },
             { id: 's_books', type: 'scale', required: true, options: AGREE, label: '학원에서 읽는 원서와 활동이 나에게 도움이 된다.' },
             { id: 's_mood', type: 'scale', required: true, options: AGREE, label: '학원 분위기(교실, 선생님, 친구들)가 편안하다.' },
+            { id: 's_recommend', type: 'scale', required: true, options: AGREE, label: '친구에게 리딩브레인을 소개해 주고 싶다.' },
             { id: 's_hw', type: 'scale', required: true, options: HW, noAvg: true, label: '숙제나 과제의 양은 어떤가요?' }] },
         { title: '내 생각 적기', desc: '쓰고 싶은 것만 적어도 괜찮아요.',
           items: [
