@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable, coverPage, backPage } from '../public/report.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable, coverPage, backPage, keyCards } from '../public/report.js';
 import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
@@ -21,9 +21,9 @@ test('table 은 # 로 시작하는 머리글을 숫자 칸으로 둔다', () => 
 });
 
 const items = [
-  { no: 1, kind: '객관식', points: 30, area: '어휘', subtype: '문맥 어휘', difficulty: '하', source: '교과서' },
-  { no: 2, kind: '객관식', points: 30, area: '독해', subtype: '빈칸', difficulty: '중상', source: '외부' },
-  { no: 3, kind: '서술형', points: 40, area: '어법', subtype: '관계대명사 - 조건 영작', difficulty: '상', source: '' },
+  { no: '1', kind: '객관식', points: 30, area: '어휘', subtype: '문맥 어휘', difficulty: '하', source: '교과서' },
+  { no: '2', kind: '객관식', points: 30, area: '독해', subtype: '빈칸', difficulty: '중상', source: '외부' },
+  { no: '3', kind: '서술형', points: 40, area: '어법', subtype: '관계대명사 - 조건 영작', difficulty: '상', source: '' },
 ];
 const ctx = {
   academy: { name: '에듀냅학원', phone: '031-000-0000', logo: '' },
@@ -33,15 +33,16 @@ const ctx = {
 };
 const school = {
   overview: '서술형 배점이 높았습니다.',
-  keyItems: [{ no: 3, why: '조건이 세 개였습니다' }],
+  keyItems: [{ no: '3', why: '조건이 세 개였습니다' }],
   strategy: [{ area: '독해', tip: '지문 요약 쓰기' }],
 };
 
 test('학교 분석 A4 는 정해진 표와 줄로 이뤄진다', () => {
   const html = schoolPage(ctx, school);
-  // 시험 구성 · 영역별 · 변별 문항 · 대비 · 교차표 · 전 문항 (배점 구성은 한 줄, 단원은 이 시험에 없다)
-  assert.equal(html.match(/<table/g).length, 7);
-  ['시험 구성', '영역별 출제', '배점 구성', '변별 문항', '전 문항 분석표', '다음 시험 이렇게 준비합니다'].forEach((h) => assert.match(html, new RegExp(h)));
+  // 시험 구성 · 영역별 · 대비 · 교차표 · 전 문항 두 쪽 (배점 구성은 한 줄, 단원은 이 시험에 없다,
+  // 대표 문항은 표가 아니라 카드다)
+  assert.equal(html.match(/<table/g).length, 6);
+  ['시험 구성', '영역별 출제', '배점 구성', '대표 문항', '전 문항 분석표', '다음 시험 이렇게 준비합니다'].forEach((h) => assert.match(html, new RegExp(h)));
   assert.doesNotMatch(html, /단원별 출제/); // 단원을 적지 않은 문항표에서는 단원 표를 내지 않는다
   // 구분 칸은 항목 수만큼 묶인다 (객관식·서술형 두 줄)
   assert.match(html, /rowspan="2" scope="rowgroup">유형/);
@@ -58,7 +59,7 @@ test('단원을 적은 문항표에서는 단원별 출제 표가 붙는다', ()
   const withUnit = items.map((it, i) => ({ ...it, unit: i ? '6과' : '5과' }));
   const html = schoolPage({ ...ctx, items: withUnit, stats: examStats(withUnit) }, school);
   assert.match(html, /단원별 출제/);
-  assert.equal(html.match(/<table/g).length, 8);
+  assert.equal(html.match(/<table/g).length, 7);
 });
 
 test('시험 정보 줄에는 날짜·시간·구성·범위가 들어간다', () => {
@@ -89,7 +90,7 @@ test('고난도(상) 문항은 전 문항 표에서 ★ 로 표시된다', () =>
 test('전 문항 표는 문항 수와 상관없이 늘 둘째 장이다', () => {
   // 1장 내용만으로 이미 꽉 차서, 표까지 넣으면 글자가 0.7배까지 줄어든다 (브라우저에서 재어 봤다)
   [3, 40].forEach((n) => {
-    const list = Array.from({ length: n }, (_, i) => ({ ...items[i % 3], no: i + 1 }));
+    const list = Array.from({ length: n }, (_, i) => ({ ...items[i % 3], no: String(i + 1) }));
     const html = schoolPage({ ...ctx, items: list, stats: examStats(list) }, school);
     assert.equal(html.match(/class="page"/g).length, 2, `${n}문항`);
     assert.match(html, /1 \/ 2/);
@@ -100,9 +101,9 @@ test('전 문항 표는 문항 수와 상관없이 늘 둘째 장이다', () => 
 });
 
 test('학생 리포트 종이에는 학생 이름이 들어가지 않는다', () => {
-  const student = { label: '김OO', wrong: [{ no: 2, chosen: '' }] };
+  const student = { label: '김OO', wrong: [{ no: '2', chosen: '' }] };
   const stats = studentStats(items, student.wrong);
-  const text = { summary: '기본 개념은 안정적입니다.', causes: [{ no: 2, cause: '단서 놓침·추론 오류', explain: '근거를 못 찾았을 수 있습니다.' }], directions: ['오답 재풀이'] };
+  const text = { summary: '기본 개념은 안정적입니다.', causes: [{ no: '2', cause: '단서 놓침·추론 오류', explain: '근거를 못 찾았을 수 있습니다.' }], directions: ['오답 재풀이'] };
   const html = studentPage(ctx, student, stats, text);
   // 인쇄되는 종이(.page) 안에는 이름이 없다. 파일 이름(data-png)에만 남아 원장님이 구분한다.
   const page = html.slice(html.indexOf('<article'));
@@ -220,4 +221,27 @@ test('표지·뒷표지는 학교 분석 앞뒤에 붙고, 끄면 두 장만 남
   assert.ok(넷.indexOf('c-toc') < 넷.indexOf('한 줄 총평'));
   assert.ok(넷.indexOf('전 문항 분석표') < 넷.lastIndexOf('c-back'));
   assert.equal(schoolPage(ctx, school).match(/class="page"/g).length, 2); // 기본값은 끔
+});
+
+// ── 대표 문항 ──
+// 참고앱은 원장님이 1~3개를 체크하고, 그 문항마다 한 문단과 칩 넷(배점·난이도·유형·단원)을 싣는다.
+// 우리는 표 한 줄짜리였다. 카드로 키우고 자리는 둘째 장으로 옮긴다 (첫 장은 이미 꽉 찼다).
+test('대표 문항은 칩과 문단을 갖춘 카드로 나온다', () => {
+  const html = keyCards(items, [{ no: '3', why: '조건이 세 개였습니다.' }]);
+  assert.match(html, /대표 문항 1/);
+  assert.match(html, /문항 번호 : 3/);
+  assert.match(html, /조건이 세 개였습니다/);
+  ['배점 : 40', '난이도 : 상', '영역 : 어법'].forEach((c) => assert.match(html, new RegExp(c)));
+  assert.doesNotMatch(html, /단원 :/); // 이 문항표에는 단원이 없다
+});
+
+test('대표 문항 카드는 문항표에 없는 번호를 싣지 않는다', () => {
+  assert.equal(keyCards(items, [{ no: '없음', why: 'x' }]), '');
+});
+
+test('대표 문항은 둘째 장으로 가고 첫 장에서는 빠진다', () => {
+  const html = schoolPage(ctx, school);
+  const 첫장 = html.slice(0, html.indexOf('class="page"', 10));
+  assert.doesNotMatch(첫장, /대표 문항/);
+  assert.match(html, /대표 문항 — 점수가 갈린 곳/);
 });

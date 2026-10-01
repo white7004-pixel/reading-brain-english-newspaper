@@ -382,3 +382,14 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
 label.check { display: flex; align-items: center; gap: .5em; flex-wrap: wrap; }
 label.check input { width: auto; }
 label.check small { flex-basis: 100%; }
+
+/* 대표 문항 카드 — 참고앱처럼 문단과 칩으로. 표 한 줄보다 길게 쓸 수 있다 */
+.page .k-list { margin: 0; padding: 0; list-style: none; display: grid; gap: .7em; }
+.page .k-card { padding: .9em 1em; border: .25mm solid var(--line); border-radius: calc(var(--radius) * 3); background: var(--tint); }
+.page .k-no { display: flex; align-items: baseline; gap: .7em; }
+.page .k-no b { font: 700 1.05em/1.2 var(--head-font); }
+.page .k-no span { font-size: .82em; color: var(--muted); }
+.page .k-why { margin-top: .45em; line-height: 1.6; }
+.page .k-chips { margin-top: .7em; display: flex; flex-wrap: wrap; gap: .4em; }
+.page .k-chips span { padding: .3em .8em; border-radius: 99px; background: var(--track);
+  font-size: .8em; font-weight: 700; color: var(--brand-ink); }

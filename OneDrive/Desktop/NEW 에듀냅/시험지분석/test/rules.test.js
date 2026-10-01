@@ -217,3 +217,17 @@ test('번호가 비었거나 겹치면 막는다', () => {
   const 겹침 = [...한개('서답형 1'), ...한개('서답형 1')];
   assert.throws(() => reportRequest({ mode: 'school', meta, items: 겹침 }), /두 번/);
 });
+
+test('원장님이 고른 대표 문항이 있으면 그 번호로만 쓰게 한다', () => {
+  const 문항 = ['1', '2', '3'].map((no) => ({ no, kind: '객관식', points: 33, unit: '', area: '독해', subtype: '', difficulty: no === '3' ? '상' : '중', source: '교과서', answer: '', reason: '', key: no === '2' }));
+  const r = reportRequest({ mode: 'school', meta, items: 문항 });
+  assert.match(r.content[0].text, /대표 문항으로 고른 번호[^\n]*2/);
+  // 고르지 않으면 AI 가 고른다 — 지시가 들어가지 않는다
+  const 없음 = reportRequest({ mode: 'school', meta, items: 문항.map((it) => ({ ...it, key: false })) });
+  assert.doesNotMatch(없음.content[0].text, /대표 문항으로 고른 번호/);
+});
+
+test('대표 문항 표시는 AI 에 보내는 문항표에도 남는다', () => {
+  const 문항 = [{ no: '1', kind: '객관식', points: 100, unit: '', area: '독해', subtype: '', difficulty: '중', source: '교과서', answer: '', reason: '', key: true }];
+  assert.match(reportRequest({ mode: 'school', meta, items: 문항 }).content[0].text, /"key":true/);
+});

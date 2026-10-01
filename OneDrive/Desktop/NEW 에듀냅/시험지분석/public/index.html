@@ -57,7 +57,7 @@
   </section>
 
   <section id="step-confirm" class="card" hidden>
-    <h2><span class="step">STEP 02</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다</small></h2>
+    <h2><span class="step">STEP 02</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다 · <b>대표</b>를 1~3개 고르면 그 문항이 리포트에 카드로 실립니다 (안 고르면 AI가 고릅니다)</small></h2>
     <form id="meta-form" class="grid meta" aria-label="시험 정보">
       <label>과목<select name="subject"></select></label>
       <label>학교<input name="school" placeholder="에듀냅중학교"></label>
@@ -72,7 +72,7 @@
     <p id="confirm-total" class="status"></p>
     <div class="table-wrap">
       <table id="items">
-        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th>판단 근거</th><th></th></tr></thead>
+        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th title="리포트에 카드로 실을 문항. 1~3개를 고르면 AI 가 그 문항만 씁니다">대표</th><th>판단 근거</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>

@@ -96,13 +96,29 @@ export const pointsTable = (stats) => table(['#배점', '#문항 수', '문항 �
 // 표로 세울 자리가 없을 때 쓰는 한 줄 ("7점 3문항 20~22 · 4.2점 18문항 2~19")
 export const pointsLine = (stats) => `<p class="r-points"><b>배점 구성</b>${stats.byPoints.map((r) => `<span>${esc(r.points)}점 ${esc(r.count)}문항 <i>${esc(nosText(r.nos))}</i></span>`).join('')}</p>`;
 
-// 변별 문항: 왜 어려웠는지까지. 문항표에 없는 번호는 AI 글에서 이미 걸러져 온다.
+// 변별 문항 표 — 좁은 자리(정사각 공유 카드)용. A4 는 아래 keyCards 를 쓴다.
 export const keyTable = (items, keyItems) => {
   const byNo = new Map(items.map((it) => [it.no, it]));
   return table(['#번호', '영역 · 세부유형', '#배점', '난이도', '왜 어려웠나'], keyItems.map((k) => {
     const it = byNo.get(k.no) || {};
     return `<tr>${num(k.no)}<td>${esc([it.area, it.subtype].filter(Boolean).join(' · '))}</td>${num(it.points ?? '')}<td class="c">${it.difficulty ? badge(it.difficulty) : ''}</td><td contenteditable>${esc(k.why)}</td></tr>`;
   }));
+};
+
+// 대표 문항 — 점수가 갈린 곳. 원장님이 확인 표에서 고르고(없으면 AI 가 고른다),
+// 문항마다 한 문단과 칩 넷을 싣는다. 지문·선택지 원문은 넣지 않는다 (시험지는 학교 저작물).
+export const keyCards = (items, keyItems) => {
+  const byNo = new Map(items.map((it) => [it.no, it]));
+  const cards = keyItems.filter((k) => byNo.has(k.no)).map((k, i) => {
+    const it = byNo.get(k.no);
+    const chips = [['배점', `${it.points}점`], ['난이도', it.difficulty], ['영역', [it.area, it.subtype].filter(Boolean).join(' · ')], ['단원', it.unit]]
+      .filter(([, v]) => v !== '' && v != null);
+    return `<li class="k-card">
+      <p class="k-no"><b>대표 문항 ${i + 1}</b><span>문항 번호 : ${esc(k.no)}</span></p>
+      <p class="k-why" contenteditable>${esc(k.why)}</p>
+      <p class="k-chips">${chips.map(([n, v]) => `<span>${esc(n)} : ${esc(v)}</span>`).join('')}</p></li>`;
+  });
+  return cards.length ? `<ul class="k-list">${cards.join('')}</ul>` : '';
 };
 
 // 2. 우리 학원은 이렇게 대비했습니다 — 원장님이 학원 정보에 한 번 적어 두고 시험마다 다시 쓴다.
@@ -205,12 +221,12 @@ export function schoolPage(ctx, school) {
       <div>${unit ? `<h3>단원별 출제</h3>${unit}<h3 class="r-sub-h">영역별 출제</h3>` : '<h3>영역별 출제</h3>'}${areaTable(stats)}</div>
     </section>
     ${pointsLine(stats)}
-    <section><h3>변별 문항 — 점수가 갈린 곳</h3>${keyTable(items, school.keyItems)}</section>
     ${academy.prep?.trim() ? `<section><h3>${esc(academy.name)}은 이렇게 대비했습니다</h3>${prepList(academy.prep)}</section>` : ''}
     <section><h3>다음 시험 이렇게 준비합니다</h3>${strategyTable(school.strategy)}</section>
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
   const back = sheet(`${file}-전문항표`, `
     ${header(academy, `${examName(meta)} ${meta.subject} 전 문항 분석표`, '내신 시험 분석 리포트 · 2 / 2')}
+    ${keyCards(items, school.keyItems) && `<section><h3>대표 문항 — 점수가 갈린 곳</h3>${keyCards(items, school.keyItems)}</section>`}
     <section class="r-cross"><h3>영역 × 난이도 — 어디를 어렵게 냈나</h3>${crossTable(stats, items)}</section>
     <section class="r-items">${itemsTable(items)}</section>
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);

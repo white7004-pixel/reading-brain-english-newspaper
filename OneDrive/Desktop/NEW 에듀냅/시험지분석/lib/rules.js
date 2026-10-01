@@ -218,7 +218,9 @@ const schoolSystem = (s) => `당신은 한국 입시학원의 ${s} 내신 분석
 - flow: 문항이 어떤 순서로 흘렀는지 3~4개. 한 항목은 한 문장(100자 이내)이고 **반드시 문항 번호 구간으로 시작**합니다.
   앞쪽 기본 유형 → 중간 대표 유형 → 뒤쪽 변별 문항 → 서술형 순으로 나눕니다 (예: "1~6번은 단원별 기본 개념을 확인하는 문항이었습니다.").
   배점이 큰 문항을 말할 때는 배점을 함께 적습니다 ("17번은 7점 배점의 …"). 번호는 받은 통계(byPoints·byWeight·byDifficulty)의 번호만 씁니다.
-- keyItems: 변별 문항 3개. 난이도 중상·상이면서 배점이 높은 문항을 우선합니다. why 는 왜 어려웠는지 1문장(60자 이내) (함정 선택지, 학년보다 높은 개념, 추론 단계).
+- keyItems: 대표 문항. 문항표에 key: true 가 있으면 **그 문항만** 그 순서대로 씁니다. 없으면 난이도 중상·상이면서 배점이 높은 문항 3개를 고릅니다.
+  why 는 2~3문장(200자 이내): ① 이 문항이 무엇을 알아야 풀리는지 ② 어디서 틀리기 쉬운지. 학부모가 그대로 읽는 글입니다.
+  지문·선택지 원문은 옮기지 않습니다 (시험지는 학교 저작물입니다).
 - strategy: 이 시험에 나온 영역마다 1문장(40자 이내)씩 다음 시험 대비 방법. 구체적인 공부 활동으로 (예: ${GUIDE[s].strategy}).
 
 ${TONE}
@@ -281,7 +283,7 @@ function cleanItems(list, subject) {
     return {
       no, kind: it.kind, points: Number(it.points) || 0, unit: txt(it.unit, 30).trim(), area: it.area, subtype: txt(it.subtype, 40), difficulty: it.difficulty,
       source: SOURCES.includes(it.source) ? it.source : '', // 모르면 빈 칸 — 원장님이 확인 표에서 고른다
-      answer: txt(it.answer, 200), reason: txt(it.reason, 200),
+      answer: txt(it.answer, 200), reason: txt(it.reason, 200), key: it.key === true,
     };
   });
 }
@@ -338,9 +340,15 @@ export function reportRequest(body) {
   const items = cleanItems(body.items, meta.subject);
   const stats = examStats(items);
   if (body.mode === 'school') {
+    const picked = items.filter((it) => it.key).map((it) => it.no);
     return {
       system: schoolSystem(meta.subject), schema: SCHOOL_SCHEMA, maxTokens: 16000,
-      content: [{ type: 'text', text: `다음 자료로 학교 시험 분석 글을 써 주세요.\n${JSON.stringify({ 시험: meta, 통계: stats, 문항표: items })}` }],
+      content: [{ type: 'text', text: [
+        '다음 자료로 학교 시험 분석 글을 써 주세요.',
+        // 원장님이 고르셨으면 AI 가 다시 고르지 않는다. 어느 문항이 대표인지는 가르친 사람이 가장 잘 안다.
+        picked.length ? `대표 문항으로 고른 번호: ${picked.join(', ')} — keyItems 는 이 번호만, 이 순서로 씁니다.` : '',
+        JSON.stringify({ 시험: meta, 통계: stats, 문항표: items }),
+      ].filter(Boolean).join('\n') }],
       finish: (out) => ({ ...out, keyItems: out.keyItems.map((k) => ({ ...k, no: noText(k.no) })).filter((k) => items.some((it) => it.no === k.no)) }),
     };
   }

@@ -233,6 +233,7 @@ function renderItems() {
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
       ${cell('source', `<select aria-label="${no}번 출처"><option value=""${it.source ? '' : ' selected'}>— 모름</option>${options(SOURCES, it.source)}</select>`)}
       ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${no}번 정답">`)}
+      <td class="c"><input type="checkbox" data-key${it.key ? ' checked' : ''} aria-label="${no}번 대표 문항"></td>
       <td class="reason">${esc(it.reason)}</td>
       <td><button type="button" class="ghost" data-del aria-label="${no}번 삭제">삭제</button></td>
     </tr>`;
@@ -270,6 +271,11 @@ $('#items').addEventListener('input', (e) => {
   if (field === 'points' || field === 'no') updateTotal();
 });
 
+$('#items').addEventListener('change', (e) => {
+  if (!e.target.matches('[data-key]')) return;
+  state.items[Number(e.target.closest('tr').dataset.i)].key = e.target.checked;
+});
+
 $('#items').addEventListener('click', (e) => {
   const tr = e.target.closest('[data-del]')?.closest('tr');
   if (!tr) return;
@@ -280,7 +286,7 @@ $('#items').addEventListener('click', (e) => {
 $('#add-item').addEventListener('click', () => {
   // 숫자 번호 중 가장 큰 것 다음. 글자 번호(논술형2-1)는 세지 않는다
   const no = String(Math.max(0, ...state.items.map((it) => (noNum(it.no) === Infinity ? 0 : noNum(it.no)))) + 1);
-  state.items.push({ no, kind: '객관식', points: 0, unit: '', area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
+  state.items.push({ no, key: false, kind: '객관식', points: 0, unit: '', area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
   renderItems();
 });
 
