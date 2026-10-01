@@ -1,6 +1,6 @@
 // 리포트 (시안1 업그레이드): 학부모용 = 표지 + 응시한 영역마다 1쪽, 원장용 = 1쪽. 교재명은 원장용에만.
 // 숫자는 전부 core 가 계산한다. 여기서는 그리기만. AI 는 총평 문장만 쓰고, 실패하면 틀 문장이 남는다. 글은 눌러서 고칠 수 있다.
-import { logoOf } from './core/academy.js';
+import { ACADEMY } from './core/academy.js';
 import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, ym, track, earlyText, END } from './core/progress.js';
 import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel, nextUnits } from './core/summary.js';
@@ -25,7 +25,8 @@ try { result = JSON.parse(localStorage.getItem(`elt:result:${id}`)); } catch { /
 if (!result) {
   status('결과를 찾지 못했습니다. 시험을 본 기기와 브라우저에서 열어 주세요.', 'error');
 } else {
-  if (/^#[0-9a-f]{6}$/i.test(result.academy?.color ?? '')) document.documentElement.style.setProperty('--brand', result.academy.color);
+  result.academy = ACADEMY; // 학원 정보·로고는 리딩브레인으로 고정 (예전 결과도)
+  document.documentElement.style.setProperty('--brand', ACADEMY.color);
   $('#print-parent').onclick = () => printOnly('print-parent');
   $('#print-director').onclick = () => printOnly('print-director');
   $('#png').onclick = png;
@@ -67,13 +68,7 @@ function fitCover() {
   else if ($('#report-status').textContent === msg) status('글자는 눌러서 고칠 수 있습니다');
 }
 
-function logoSrc(r) {
-  let logo = r.academy?.logo;
-  if (!logo) {
-    try { logo = JSON.parse(localStorage.getItem('elt:academy'))?.logo; } catch { /* 로고 없이 이름만 */ }
-  }
-  return logoOf({ ...r.academy, logo });
-}
+function logoSrc(r) { return r.academy?.logo ?? ''; }
 
 // 로고 판(흰 바탕) + 학원 이름
 function brandMark(r) {
