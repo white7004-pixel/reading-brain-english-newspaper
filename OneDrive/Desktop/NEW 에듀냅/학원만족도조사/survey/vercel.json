@@ -1,10 +1,9 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/parent", "destination": "/index.html" },
-    { "source": "/student", "destination": "/index.html" },
-    { "source": "/teacher", "destination": "/index.html" }
+    { "source": "/parent", "destination": "/index" },
+    { "source": "/student", "destination": "/index" },
+    { "source": "/teacher", "destination": "/index" }
   ],
   "headers": [
     { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] }
