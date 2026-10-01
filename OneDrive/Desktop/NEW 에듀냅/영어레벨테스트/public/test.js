@@ -83,7 +83,7 @@ if (!session) {
     if (!session.s2) { session.s2 = { i: 0, log: [], started: false }; session.shownAt = null; session.current = null; } // 예전 세션에 남은 시각으로 시계가 시작되지 않게
     const it = forms.stage2[session.s2.i];
     if (!it) { session.stage = 'end'; keep(); return route(); }
-    top(`2차 ${set}`, railFor(forms.stage2, session.s2.i), session.s2.i + 1, forms.stage2.length);
+    top(`2차 ${set}`, railFor(forms.stage2, session.s2.i, 2), session.s2.i + 1, forms.stage2.length);
     if (!session.s2.started) {
       const listen = forms.stage2.some((i) => i.area === 'listening') ? ` ${LISTEN_INTRO}` : '';
       return intro(`2차 (${forms.stage2.length}문항)`, `${areas2} 문제입니다.${listen} 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다.`, () => { session.s2.started = true; keep(); route(); });

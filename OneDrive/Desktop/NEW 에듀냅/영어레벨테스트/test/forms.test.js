@@ -136,12 +136,14 @@ test('문제지 순서(실제·샘플): 1차·2차 모두 번호 순으로 단�
 test('railFor: 이어지는 같은 단계마다 한 칸 (2차 고2 는 고2~3), 지금 칸과 끝난 칸', () => {
   const levels = ['초3', '초3', '초4', '중1', '중1', '중1', '고2'];
   const list = levels.map((level, n) => ({ area: 'reading', level, no: n + 1 }));
-  assert.deepEqual(railFor(list, 3), [
+  assert.deepEqual(railFor(list, 3, 2), [
     { key: '초3', label: '초3', done: 2, total: 2, current: false },
     { key: '초4', label: '초4', done: 1, total: 1, current: false },
     { key: '중1', label: '중1', done: 0, total: 3, current: true },
     { key: '고2', label: '고2~3', done: 0, total: 1, current: false },
   ]);
+  const s1 = ['고1', '고2', '고3'].map((level, n) => ({ area: 'listening', level, no: n + 1 }));
+  assert.deepEqual(railFor(s1, 0).map((c) => c.label), ['고1', '고2', '고3'], '1차는 고2·고3 따로');
   assert.ok(railFor(list, list.length).every((c) => c.done === c.total && !c.current), '다 끝나면 모두 가득');
   assert.deepEqual(railFor([], 0), []);
 });

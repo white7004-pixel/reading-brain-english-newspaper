@@ -25,7 +25,7 @@ export function checkWrite(it, entries) {
   return it.answers.every((ok, i) => ok.some((a) => norm(a) === norm(entries?.[i])));
 }
 
-// 선택지 수: 1차 4, 2차 어휘 3 · 그 밖 5
+// 선택지 수: 1차 4, 2차 어휘 4 · 그 밖 5
 export const choiceCount = (it, stage = 1) => (stage === 2 ? (it?.area === 'vocab' ? 4 : 5) : 4);
 // 문항당 제한 시간(초): 2차 어휘 20 · 문법 60 · 그 밖 90, 1차 90
 export const secondsFor = (it, stage = 1) => (stage === 2 ? { vocab: 20, grammar: 60 }[it?.area] ?? SECONDS : SECONDS);
@@ -114,11 +114,11 @@ export function writeSummary(log) {
 // ── 시험 화면 위 띠의 단계 진행 막대 (10/2: 문제지가 학년 단계 순) ──
 export const RAIL_KO = { vocab: '어휘', listening: '듣기', phonics: '소리', reading: '독해', grammar: '문법', form: '어형', sentence: '영작' };
 // 문제지(번호 순) 에서 이어지는 같은 단계를 한 칸으로. i = 지금 문항 자리(다 끝났으면 list.length)
-export function railFor(list, i) {
+export function railFor(list, i, stage = 1) {
   const cells = [];
   list.forEach((it, n) => {
     let c = cells.at(-1);
-    if (c?.key !== it.level) cells.push(c = { key: it.level, label: STAGE_KO[it.level] ?? it.level, done: 0, total: 0, current: false });
+    if (c?.key !== it.level) cells.push(c = { key: it.level, label: (stage === 2 && STAGE_KO[it.level]) || it.level, done: 0, total: 0, current: false });
     c.total += 1;
     if (n < i) c.done += 1;
     if (n === i) c.current = true;
