@@ -16,6 +16,7 @@
     "@anthropic-ai/sdk": "^0.125.0"
   },
   "devDependencies": {
+    "@rhwp/core": "^0.8.6",
     "pdfjs-dist": "6.3.289"
   }
 }

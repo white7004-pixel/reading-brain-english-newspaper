@@ -122,10 +122,92 @@ async function pdfToImages(file, max, label) {
   }
 }
 
-// 고른 파일(사진·PDF 섞어도 됨)을 고른 순서대로 쪽 그림 목록으로
+// ---------- 한글(.hwp·.hwpx) → 쪽 그림 ----------
+// 학교가 시험지를 한글 파일로 주는 일이 많다. rhwp 가 쪽마다 SVG 로 그려 주면
+// 그것을 그림으로 바꿔 사진·PDF 와 똑같은 길로 보낸다. wasm 이 10MB 라 한글을 올릴 때만 불러온다.
+const RHWP = new URL('vendor/rhwp/', location.href).href;
+const isHwp = (file) => /\.hwpx?$/i.test(file.name);
+let rhwpReady = null;
+
+function loadRhwp() {
+  rhwpReady ??= (async () => {
+    // rhwp 는 글자 너비를 호스트에 묻는다. 글자 하나씩 묻기 때문에 글꼴별로 모아 둔다.
+    const ctx = document.createElement('canvas').getContext('2d');
+    const 너비 = new Map();
+    globalThis.measureTextWidth = (font, text) => {
+      let 표 = 너비.get(font);
+      if (!표) 너비.set(font, (표 = new Map()));
+      let w = 표.get(text);
+      if (w === undefined) { ctx.font = font; 표.set(text, (w = ctx.measureText(text).width)); }
+      return w;
+    };
+    const rhwp = await import(`${RHWP}rhwp.js`);
+    await rhwp.default({ module_or_path: `${RHWP}rhwp_bg.wasm` });
+    return rhwp;
+  })().catch((e) => { rhwpReady = null; throw e; });
+  return rhwpReady;
+}
+
+// SVG 글자를 캔버스에 그리려면 그림으로 먼저 바꿔야 한다. <img> 에 통째로 실어 그린다.
+async function svgToFile(svg, name, scale) {
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('한글 쪽을 그림으로 바꾸지 못했습니다'));
+      el.src = url;
+    });
+    const canvas = Object.assign(document.createElement('canvas'), {
+      width: Math.round(img.width * scale), height: Math.round(img.height * scale),
+    });
+    const g = canvas.getContext('2d');
+    g.fillStyle = '#fff';                      // SVG 바탕이 비어 있어 흰 종이를 먼저 깐다
+    g.fillRect(0, 0, canvas.width, canvas.height);
+    g.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+    return new File([blob], name, { type: 'image/jpeg' });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function hwpToImages(file, max, label) {
+  let rhwp;
+  try {
+    rhwp = await loadRhwp();
+  } catch {
+    throw new Error('한글 파일 읽기 기능을 불러오지 못했습니다. 한글에서 PDF 로 저장해 올려 주세요');
+  }
+  let viewer;
+  try {
+    try {
+      // HwpViewer 가 문서를 가져간다. 그래서 문서를 따로 free 하면 터진다 (null pointer passed to rust)
+      viewer = new rhwp.HwpViewer(new rhwp.HwpDocument(new Uint8Array(await file.arrayBuffer())));
+    } catch {
+      throw new Error(`${file.name} 을(를) 열지 못했습니다. 한글에서 PDF 로 저장해 올려 주세요`);
+    }
+    const 쪽수 = viewer.pageCount();
+    if (쪽수 > max) throw tooMany(label, max, 쪽수);
+    const out = [];
+    for (let n = 0; n < 쪽수; n++) {
+      const svg = viewer.renderPageSvg(n);
+      out.push(await svgToFile(svg, `${file.name}-${n + 1}.jpg`, 2000 / 794)); // A4 폭 794 → 2000px
+    }
+    return out;
+  } finally {
+    viewer?.free();
+  }
+}
+
+// 고른 파일(사진·PDF·한글 섞어도 됨)을 고른 순서대로 쪽 그림 목록으로
 async function toImages(files, max, label) {
   const out = [];
-  for (const f of files) out.push(...(isPdf(f) ? await pdfToImages(f, max, label) : [f]));
+  for (const f of files) {
+    if (isPdf(f)) out.push(...await pdfToImages(f, max, label));
+    else if (isHwp(f)) out.push(...await hwpToImages(f, max, label));
+    else out.push(f);
+  }
   if (out.length > max) throw tooMany(label, max, out.length);
   return out;
 }
@@ -168,7 +250,7 @@ $('#upload-form').addEventListener('submit', async (e) => {
   const button = e.submitter;
   button.disabled = true;
   try {
-    setStatus('#upload-status', '사진·PDF 를 준비하는 중…');
+    setStatus('#upload-status', '시험지 파일을 준비하는 중…');
     const pages = await toImages([...f.pages.files], 6, '시험지');
     const encoded = await encodeAll(pages);
     setStatus('#upload-status', 'AI가 문항을 읽고 직접 풀어 정답까지 적고 있습니다. 1~3분 걸립니다…');
