@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { checkName, parseBooks } from '../public/core/student.js';
 
-test('이름은 성+OO 또는 이니셜만', () => {
-  for (const ok of ['김OO', '김○○', '남궁OO', 'KJ', 'j']) assert.equal(checkName(ok), '', ok);
-  for (const bad of ['김민수', 'Kim Minsu', '']) assert.notEqual(checkName(bad), '', bad);
+test('이름은 전체 이름 그대로 (비었거나 20자 넘으면 안 됨)', () => {
+  for (const ok of ['김민수', '남궁민수', 'Kim Minsu', '김OO', 'KJ']) assert.equal(checkName(ok), '', ok);
+  for (const bad of ['', '   ', '가'.repeat(21)]) assert.notEqual(checkName(bad), '', bad);
 });
 
 test('교재 설정: 영역, 시작 학기, 끝 학기, 교재명', () => {

@@ -1,12 +1,12 @@
 // 학생 이름 확인과 학원 교재 설정 읽기.
 import { stepOf } from './scale.js';
 
-// 성+OO(김OO·남궁○○) 또는 영문 이니셜 1~3자만 받는다. 전체 이름은 받지 않는다.
+// 전체 이름을 그대로 받는다 (원장 결정 10/1). 결과는 이 컴퓨터 브라우저에만 저장되고 AI 총평에는 이름을 보내지 않는다.
 export function checkName(name) {
   const n = String(name ?? '').trim();
   if (!n) return '이름을 적어 주세요';
-  if (/^[가-힣]{1,2}(OO|○○|ㅇㅇ|\*\*)?$/.test(n) || /^[A-Za-z]{1,3}$/.test(n)) return '';
-  return '성+OO(예: 김OO) 또는 이니셜(예: KJ)로만 적어 주세요';
+  if (n.length > 20) return '이름은 20자 안으로 적어 주세요';
+  return '';
 }
 
 const SECTION_OF = { 단어: 'vocab', 문법: 'grammar', 독해: 'reading', 듣기: 'listening' };
