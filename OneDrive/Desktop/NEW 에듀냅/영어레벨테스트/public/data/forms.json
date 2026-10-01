@@ -9,13 +9,13 @@
     "question": "밑줄 친 부분의 소리가 다른 것은?",
     "choices": [
      "c__u__p",
-     "s__u__n",
      "c__u__te",
+     "s__u__n",
      "b__u__s"
     ],
     "explain_ko": "cute 의 u 는 [유:], cup·sun·bus 의 u 는 짧은 [어].",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-A-2",
@@ -27,14 +27,14 @@
     "passage": "I have a fish tank. It is in my room. I have three fish. One fish is red. One fish is yellow. One fish is blue and small. The red fish is fast. The blue fish is slow. I feed them every morning. I love my fish.",
     "question": "What is the story about?",
     "choices": [
-     "the writer's room",
      "the writer's fish",
+     "the writer's room",
      "a pet shop",
      "the writer's morning"
     ],
     "explain_ko": "물고기 세 마리의 색과 빠르기, 먹이 주기 이야기. room·morning 은 지문에 한 번 나온 세부.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-A-3",
@@ -46,14 +46,14 @@
     "passage": "I have a fish tank. It is in my room. I have three fish. One fish is red. One fish is yellow. One fish is blue and small. The red fish is fast. The blue fish is slow. I feed them every morning. I love my fish.",
     "question": "Which fish is slow?",
     "choices": [
-     "the blue fish",
      "the red fish",
      "the yellow fish",
-     "all the fish"
+     "all the fish",
+     "the blue fish"
     ],
     "explain_ko": "The blue fish is slow. 빨간 물고기는 fast.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-4",
@@ -101,13 +101,13 @@
     "question": "밑줄 친 부분의 소리가 다른 것은?",
     "choices": [
      "__th__ink",
-     "__th__is",
      "__th__ree",
+     "__th__is",
      "ba__th__"
     ],
     "explain_ko": "this 의 th 는 목소리를 내는 [ð], think·three·bath 의 th 는 바람 소리 [θ].",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-A-7",
@@ -116,14 +116,14 @@
     "level": "초4",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nBen and his dog _____ in the garden.",
     "choices": [
-     "are",
      "is",
+     "are",
      "am",
      "be"
     ],
     "explain_ko": "주어가 Ben and his dog(둘)이므로 be동사는 are.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-A-8",
@@ -132,7 +132,7 @@
     "level": "초4",
     "kind": "세부 내용",
     "passageId": "s1-A-p3",
-    "passage": "My name is Jake. I am nine years old. I like jump rope very much. I jump rope in the park every day. Today my friend Sam is with me. We are counting our jumps. Sam jumps forty times. I jump fifty times! Now we are drinking cold water under a big tree. Jump rope is fun and easy.",
+    "passage": "My name is Jake. I am nine years old. I love my jump rope very much. I jump rope in the park every day. Today my friend Sam is with me. We are counting our jumps. Sam jumps forty times. I jump fifty times! Now we are drinking cold water under a big tree. Jump rope is fun and easy.",
     "question": "How many times does Jake jump?",
     "choices": [
      "forty times",
@@ -151,17 +151,17 @@
     "level": "초4",
     "kind": "주제",
     "passageId": "s1-A-p3",
-    "passage": "My name is Jake. I am nine years old. I like jump rope very much. I jump rope in the park every day. Today my friend Sam is with me. We are counting our jumps. Sam jumps forty times. I jump fifty times! Now we are drinking cold water under a big tree. Jump rope is fun and easy.",
+    "passage": "My name is Jake. I am nine years old. I love my jump rope very much. I jump rope in the park every day. Today my friend Sam is with me. We are counting our jumps. Sam jumps forty times. I jump fifty times! Now we are drinking cold water under a big tree. Jump rope is fun and easy.",
     "question": "What is the story mainly about?",
     "choices": [
+     "Jake's jump rope time with his friend",
      "a big tree in the park",
      "Sam's favorite drink",
-     "Jake's jump rope time with his friend",
      "how to count to fifty"
     ],
     "explain_ko": "Jake 가 친구 Sam 과 줄넘기를 하는 이야기. 나무·물·숫자는 일부 세부.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-A-10",
@@ -173,14 +173,14 @@
     "passage": "Today is Saturday. It is snowing a lot. The trees are white. The roads are white, too. There are no cars on my street. My brother and I are making a snowman in the yard. We call him Snowy. He has a carrot nose and two stone eyes. Mom is taking pictures of us. My hands are cold, but I am very happy.",
     "question": "What is Mom doing?",
     "choices": [
-     "She is making a snowman.",
      "She is taking pictures.",
+     "She is making a snowman.",
      "She is driving a car.",
      "She is cleaning the yard."
     ],
     "explain_ko": "Mom is taking pictures of us. 눈사람은 글쓴이와 남동생(형)이 만든다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-A-11",
@@ -208,14 +208,14 @@
     "level": "초5",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nThis watermelon is _____ than that one.",
     "choices": [
-     "bigger",
      "biger",
      "big",
-     "biggest"
+     "biggest",
+     "bigger"
     ],
     "explain_ko": "than 앞은 비교급. big 은 g 를 한 번 더 쓰고 -er → bigger.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-13",
@@ -224,14 +224,14 @@
     "level": "초5",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n내 남동생은 학교에 노란 우산을 가지고 다닌다.\nMy little brother _____ a yellow umbrella to school.",
     "choices": [
+     "carries",
      "carrys",
      "carry",
-     "carried",
-     "carries"
+     "carried"
     ],
     "explain_ko": "3인칭 단수 현재. 자음 + y 는 y 를 i 로 바꾸고 -es → carries. carried 는 과거.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-A-14",
@@ -241,13 +241,13 @@
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리 개는 어젯밤에 저녁을 먹지 않았다.\nOur dog _____ its dinner last night.",
     "choices": [
      "didn't ate",
-     "didn't eat",
      "doesn't eat",
-     "don't eat"
+     "don't eat",
+     "didn't eat"
     ],
     "explain_ko": "과거 부정은 didn't + 동사원형. last night 이므로 doesn't·don't 는 시제가 틀린다.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-A-15",
@@ -259,14 +259,14 @@
     "passage": "Last Saturday, Lily spent a day with her aunt Rose. Aunt Rose is a zookeeper. It was a busy day. In the morning, they washed the elephant with a big brush. The elephant liked the cold water and moved its ears. After lunch, Lily gave fruit to the monkeys. The monkeys were noisy. One small monkey took a banana from her hand. Lily laughed. At the end of the day, she was very tired. But she smiled all the way home.\n* zookeeper: 동물원 사육사",
     "question": "What is the story about?",
     "choices": [
-     "Lily's day at the zoo with her aunt",
      "how to wash an elephant",
      "a monkey's favorite food",
-     "Lily's trip to a farm"
+     "Lily's trip to a farm",
+     "Lily's day at the zoo with her aunt"
     ],
     "explain_ko": "사육사 이모와 동물원에서 보낸 하루. 코끼리 씻기·원숭이 바나나는 일부 장면.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-16",
@@ -280,12 +280,12 @@
     "choices": [
      "She washed the elephant.",
      "She went home.",
-     "She ate a banana.",
-     "She gave fruit to the monkeys."
+     "She gave fruit to the monkeys.",
+     "She ate a banana."
     ],
     "explain_ko": "After lunch, Lily gave fruit to the monkeys. 코끼리는 아침에 씻겼고, 바나나는 원숭이가 가져갔다.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-A-17",
@@ -294,17 +294,17 @@
     "level": "초5",
     "kind": "목적",
     "passageId": "s1-A-p6",
-    "passage": "Last month, many students asked for a cooking event. So we planned a Family Pancake Morning! It is on Saturday, May 10, at nine in the morning. It takes place in the school kitchen. Children make pancakes with their parents. We have strawberries, bananas, and honey for toppings. Each family pays three dollars. Children under seven do not pay. Please bring your own apron. Sign up at the school office by Wednesday. See you there!\n* apron: 앞치마",
+    "passage": "Last month, many students asked for a cooking event. So we planned a Family Pancake Morning! It is on Saturday, May 10, at nine in the morning. It takes place in the school kitchen. Children make pancakes with their parents. We have strawberries, bananas, and honey for toppings. Each person pays three dollars. Children under seven do not pay. Please bring your own apron. Sign up at the school office by Wednesday. See you there!\n* apron: 앞치마",
     "question": "What is this notice for?",
     "choices": [
+     "a pancake event for families",
      "a new school kitchen",
      "a fruit market",
-     "a pancake event for families",
      "a cooking contest for teachers"
     ],
     "explain_ko": "가족 팬케이크 아침 행사를 알리는 안내문. 학교 부엌·과일은 행사의 세부.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-A-18",
@@ -313,17 +313,17 @@
     "level": "초5",
     "kind": "세부 내용",
     "passageId": "s1-A-p6",
-    "passage": "Last month, many students asked for a cooking event. So we planned a Family Pancake Morning! It is on Saturday, May 10, at nine in the morning. It takes place in the school kitchen. Children make pancakes with their parents. We have strawberries, bananas, and honey for toppings. Each family pays three dollars. Children under seven do not pay. Please bring your own apron. Sign up at the school office by Wednesday. See you there!\n* apron: 앞치마",
-    "question": "What should each family bring?",
+    "passage": "Last month, many students asked for a cooking event. So we planned a Family Pancake Morning! It is on Saturday, May 10, at nine in the morning. It takes place in the school kitchen. Children make pancakes with their parents. We have strawberries, bananas, and honey for toppings. Each person pays three dollars. Children under seven do not pay. Please bring your own apron. Sign up at the school office by Wednesday. See you there!\n* apron: 앞치마",
+    "question": "What should people bring?",
     "choices": [
+     "an apron",
      "strawberries",
      "honey",
-     "three pancakes",
-     "an apron"
+     "three pancakes"
     ],
     "explain_ko": "Please bring your own apron. 딸기·꿀은 학교가 준비한다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-A-19",
@@ -333,14 +333,14 @@
     "point": "일반동사 과거",
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 어제 쿠키를 구웠다.",
     "choices": [
+     "I baked cookies yesterday.",
      "I bake cookies yesterday.",
      "I bakeed cookies yesterday.",
-     "I baked cookies yesterday.",
      "I baked yesterday cookies."
     ],
     "explain_ko": "yesterday 이므로 과거 baked(e 로 끝나면 -d 만). 목적어 cookies 는 동사 바로 뒤.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-A-20",
@@ -350,13 +350,13 @@
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nLook at those dark clouds. It _____ rain soon.",
     "choices": [
      "are going to",
-     "is going to",
      "going to",
+     "is going to",
      "is go to"
     ],
     "explain_ko": "주어 It + be going to + 동사원형. be동사가 빠지거나 are 이면 틀린다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-A-21",
@@ -365,14 +365,14 @@
     "level": "초6",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n아빠가 지금 부엌에서 감자를 자르고 계신다.\nDad _____ potatoes in the kitchen now.",
     "choices": [
-     "is cutting",
      "is cuting",
+     "is cutting",
      "are cutting",
      "cuts"
     ],
     "explain_ko": "현재진행 is + -ing. cut 은 t 를 한 번 더 쓰고 -ing → cutting.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-A-22",
@@ -383,12 +383,12 @@
     "choices": [
      "finded",
      "find",
-     "finds",
-     "found"
+     "found",
+     "finds"
     ],
     "explain_ko": "find 의 과거는 불규칙 found. finded 는 없는 말.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-A-23",
@@ -401,13 +401,13 @@
     "question": "글의 내용과 일치하지 않는 것은?",
     "choices": [
      "반은 다음 주 금요일에 Hill Park에 간다.",
-     "버스로 가면 10분 정도 걸린다.",
      "자전거로 가면 학생마다 1달러를 내야 한다.",
+     "버스로 가면 10분 정도 걸린다.",
      "걸어서 가면 강과 오래된 다리를 볼 수 있다."
     ],
     "explain_ko": "1달러를 내는 것은 버스이고, 자전거는 무료(it is free)다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-A-24",
@@ -440,12 +440,12 @@
     "choices": [
      "종이 연은 세 연 중 가장 무겁다.",
      "할아버지가 천 연에 꽃을 그리신다.",
-     "플라스틱 연은 비에 잘 상하지 않는다.",
-     "이번 토요일에는 바람이 약할 것이다."
+     "이번 토요일에는 바람이 약할 것이다.",
+     "플라스틱 연은 비에 잘 상하지 않는다."
     ],
     "explain_ko": "rain does not hurt it(플라스틱 연). 종이 연은 가장 가볍고, 꽃은 할머니가 그리며, 토요일은 바람이 세다.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s1-A-26",
@@ -458,13 +458,13 @@
     "question": "빈칸에 들어갈 말로 가장 알맞은 것은?",
     "choices": [
      "lightest",
-     "heaviest",
      "newest",
+     "heaviest",
      "smallest"
     ],
     "explain_ko": "토요일은 바람이 세고, 센 바람이 필요한 것은 가장 무거운 천 연. lightest 는 센 바람에 찢어지는 종이 연.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-A-27",
@@ -475,13 +475,13 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n우리는 내일 동물원에 갈 것이다.",
     "choices": [
      "We will going to the zoo tomorrow.",
+     "We will go to the zoo tomorrow.",
      "We will goes to the zoo tomorrow.",
-     "We go will to the zoo tomorrow.",
-     "We will go to the zoo tomorrow."
+     "We go will to the zoo tomorrow."
     ],
     "explain_ko": "will 뒤에는 동사원형 go. going·goes 는 형태가 틀리고, will 은 동사 앞에 온다.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-A-28",
@@ -492,13 +492,13 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n너는 수영장에서 뛰면 안 된다.",
     "choices": [
      "You must not running at the pool.",
-     "You must not run at the pool.",
      "You must don't run at the pool.",
+     "You must not run at the pool.",
      "You not must run at the pool."
     ],
     "explain_ko": "금지는 must not + 동사원형. must 뒤에 don't 를 쓰거나 not 을 must 앞에 두지 않는다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-A-29",
@@ -511,12 +511,12 @@
     "choices": [
      "오후 4시",
      "오후 4시 20분",
-     "오후 5시",
-     "오후 4시 30분"
+     "오후 4시 30분",
+     "오후 5시"
     ],
     "explain_ko": "4시는 피아노 수업, 4시 30분은 이동 시간 때문에 안 되어 5시로 정했다.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s1-A-30",
@@ -527,14 +527,14 @@
     "question": "대화를 듣고, 두 사람이 대화하는 장소로 가장 알맞은 곳을 고르시오.",
     "script": "W: Hello. May I take your order?\nM: Yes. I'd like the tomato soup and a cheese sandwich.\nW: Sorry, we don't have tomato soup today.\nM: Oh, then I'll have the chicken soup.\nW: Okay. Would you like some juice or tea?\nM: Orange juice, please. Can I sit by the window?\nW: Of course. Your food will be ready soon.",
     "choices": [
-     "식당",
      "빵집",
      "과일 가게",
+     "식당",
      "요리 교실"
     ],
     "explain_ko": "주문을 받고(take your order) 수프·음료를 고르고 창가 자리에 앉는다 → 식당.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-A-31",
@@ -559,14 +559,14 @@
     "level": "중1",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n나는 아직 숙제를 끝내지 못했다.\nI _____ my homework yet.",
     "choices": [
+     "haven't finished",
      "hasn't finished",
      "didn't finished",
-     "haven't finish",
-     "haven't finished"
+     "haven't finish"
     ],
     "explain_ko": "현재완료 부정 have not + 과거분사. 주어 I 는 have, didn't 뒤는 동사원형.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-A-33",
@@ -578,14 +578,14 @@
     "passage": "In autumn, squirrels get very busy. They collect nuts and hide them in the ground for winter. One squirrel can bury thousands of nuts in a single season. When snow covers the ground, it digs them up again and eats them. But squirrels do not _____ every nut. Some nuts stay in the ground because the squirrel forgets about them. In spring, these lost nuts start to grow into young trees. In this way, squirrels plant new trees without knowing it. So the next time you see a squirrel, remember that it is planting a forest.",
     "question": "글의 주제로 가장 알맞은 것은?",
     "choices": [
-     "다람쥐가 잊어버린 견과가 새 나무로 자라나는 과정",
      "다람쥐가 겨울에 먹는 음식의 종류",
      "눈이 오면 다람쥐가 땅을 파는 방법",
+     "다람쥐가 잊어버린 견과가 새 나무로 자라나는 과정",
      "다람쥐가 가을에 바쁜 이유"
     ],
     "explain_ko": "다람쥐가 잊어버린 견과가 봄에 나무로 자라 숲을 만든다는 글. 나머지는 앞부분 세부만 잡았다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-A-34",
@@ -598,13 +598,13 @@
     "question": "빈칸에 들어갈 말로 가장 알맞은 것은?",
     "choices": [
      "hide",
+     "find",
      "collect",
-     "bury",
-     "find"
+     "bury"
     ],
     "explain_ko": "겨울에 다시 파내지만, 잊어버린 견과는 땅에 남는다 → 모든 견과를 '찾지는' 못한다. hide·collect·bury 는 앞 문장 낱말.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-A-35",
@@ -616,14 +616,14 @@
     "passage": "Every Wednesday, the sixth graders at our school visit the first graders. Each older student has a little buddy. They sit on the floor and read picture books together. At first, many sixth graders felt nervous because their buddies were very shy. But after a few weeks, the young children started to bring their favorite books. Now some of them even want to read aloud to their buddies. The teachers say that both groups enjoy this time a lot. The older students learn to be patient. The younger ones become braver at school.",
     "question": "글의 내용과 일치하지 않는 것은?",
     "choices": [
+     "1학년 학생들은 처음부터 좋아하는 책을 가져왔다.",
      "6학년 학생은 각자 짝이 되는 1학년 학생이 있다.",
      "처음에 많은 6학년 학생들은 긴장했다.",
-     "선생님들은 두 학년 모두 이 시간을 즐긴다고 말한다.",
-     "1학년 학생들은 처음부터 좋아하는 책을 가져왔다."
+     "선생님들은 두 학년 모두 이 시간을 즐긴다고 말한다."
     ],
     "explain_ko": "책을 가져오기 시작한 것은 몇 주가 지난 뒤(after a few weeks)다. 처음에는 수줍어했다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-A-36",
@@ -634,13 +634,13 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n우리 할아버지는 매일 아침 산책하는 것을 즐기신다.",
     "choices": [
      "My grandfather enjoys to take a walk every morning.",
+     "My grandfather enjoys taking a walk every morning.",
      "My grandfather enjoys take a walk every morning.",
-     "My grandfather enjoy taking a walk every morning.",
-     "My grandfather enjoys taking a walk every morning."
+     "My grandfather enjoy taking a walk every morning."
     ],
     "explain_ko": "enjoy 는 동명사를 목적어로 쓴다 → enjoys taking. 주어가 3인칭 단수라 enjoys.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-A-37",
@@ -651,14 +651,14 @@
     "question": "대화를 듣고, 남자가 할 일로 가장 알맞은 것을 고르시오.",
     "script": "W: Ben, have you finished your homework?\nM: Yes, Mom. I finished it an hour ago. Why?\nW: Your dad is cleaning the garage, and he needs some help.\nM: Sure. Should I carry the heavy boxes?\nW: No, Dad has already carried them out.\nM: Then what can I do for him?\nW: Please wash the two old bikes in the corner.\nM: Okay. After that, I'll sweep the floor, too.\nW: Thanks, but your sister will do that later.\nM: All right. I'll go to the garage now.",
     "choices": [
-     "자전거 닦기",
      "상자 옮기기",
      "바닥 쓸기",
-     "숙제하기"
+     "숙제하기",
+     "자전거 닦기"
     ],
     "explain_ko": "엄마가 낡은 자전거 두 대를 닦아 달라고 했다. 상자는 아빠가 이미 옮겼고, 바닥은 누나(여동생)가 쓴다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-38",
@@ -687,14 +687,14 @@
     "question": "대화를 듣고, 소방서 직업 체험 프로그램에 관해 언급되지 않은 것을 고르시오.",
     "script": "M: Jenny, did you see the notice about the fire station program?\nW: No, I didn't. What kind of program is it?\nM: Students can spend a day with real firefighters and learn what they do.\nW: That sounds exciting. When is the program going to be?\nM: It's on Saturday, November 8, from nine to three.\nW: Do we need to bring anything special with us?\nM: Just comfortable shoes and a water bottle. They'll give us lunch.\nW: How many students can join it, by the way?\nM: Only twenty, so we should sign up on the website by Friday.",
     "choices": [
-     "참가비",
      "날짜",
      "준비물",
-     "모집 인원"
+     "모집 인원",
+     "참가비"
     ],
     "explain_ko": "날짜(11월 8일), 준비물(편한 신발·물병), 인원(20명)은 나왔지만 참가비는 나오지 않았다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-A-40",
@@ -724,13 +724,13 @@
     "script": "M: Good afternoon, students. This is Mr. Harris from the school cafeteria.\nM: As you know, lunch lines have become very long, especially on Mondays and Fridays.\nM: One main reason is that empty trays pile up near the exit, blocking the way.\nM: So starting next Monday, we will try a new way of returning trays.\nM: When you finish eating, please take your tray to the new carts by the windows.\nM: Put the cups, spoons, and food waste in separate boxes on each cart.\nM: Student volunteers will stand by the carts during the first week to help you.\nM: With your cooperation, everyone will get lunch faster, so thank you in advance.",
     "choices": [
      "급식 메뉴가 바뀐 것을 알리려고",
-     "급식 도우미 학생을 모집하려고",
      "새로운 식판 반납 방법을 안내하려고",
+     "급식 도우미 학생을 모집하려고",
      "점심시간이 늘어난 것을 알리려고"
     ],
     "explain_ko": "다음 주 월요일부터 식판을 창가 카트에 반납하는 새 방법을 안내한다. 도우미 학생은 돕는다고만 했지 모집하지 않는다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-A-42",
@@ -742,13 +742,13 @@
     "script": "W: Excuse me. My bike makes a strange noise whenever I go up a hill.\nM: Let me take a look. Hmm, the chain is quite loose, and it's covered in dust.\nW: Can you fix it today? I ride it to work every morning.\nM: Sure. I'll tighten the chain and clean it. It'll take about thirty minutes.\nW: Great. Could you also check the brakes? They feel a little soft.\nM: You're right. The brake pads are almost worn out, so I'd recommend changing them.\nW: Okay. How much will that cost in total, including the chain?\nM: Twenty-five dollars for everything. If you leave it here, you can pick it up at five.\nW: Perfect. I'll do some shopping nearby and come back then.",
     "choices": [
      "자전거 판매원 – 구매자",
-     "자전거 수리공 – 손님",
      "사이클 코치 – 선수",
-     "쇼핑몰 직원 – 방문객"
+     "쇼핑몰 직원 – 방문객",
+     "자전거 수리공 – 손님"
     ],
     "explain_ko": "체인을 조이고 브레이크 패드를 갈아 주며 수리비를 말한다 → 수리공과 손님. 새 자전거를 사는 대화가 아니다.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-A-43",
@@ -757,14 +757,14 @@
     "level": "고2",
     "kind": "의견",
     "question": "대화를 듣고, 여자의 의견으로 가장 적절한 것을 고르시오.",
-    "script": "W: Honey, Tyler asked me again if he can quit the swimming team to join the soccer club.\nM: Hmm, but he's only been swimming for a year. Shouldn't he stick with one sport?\nW: Actually, I think it's better for kids his age to try several different sports.\nM: Why do you think so? He might become a really good swimmer someday.\nW: Each sport uses the body differently, so playing various ones builds balanced strength and skills.\nM: That makes sense. Doing only one thing could also make him tired of it.\nW: Exactly. Kids who focus on a single sport too early often get injured or lose interest.\nM: Still, I don't want him to give up every time something gets hard.\nW: Neither do I. Let's tell him he has to finish this swimming season first.\nM: Fair enough. After that, he can choose soccer or try something completely new.",
+    "script": "W: Honey, Tyler asked me again if he can quit the swimming team to join the soccer club.\nM: Hmm, but he's only been swimming for a year. Shouldn't he stick with one sport?\nW: When I was his age, I played basketball, tennis, and volleyball, and I loved every season.\nM: But he might become a really good swimmer if he keeps training hard.\nW: Maybe, but swimming and soccer use the body in very different ways. Each one builds new skills.\nM: That's true. Soccer would also teach him teamwork, which swimming doesn't really do.\nW: Right. And my coworker's son trained only in tennis from age seven and got hurt twice by twelve.\nM: Still, I don't want him to give up every time something gets hard.\nW: Neither do I. Let's tell him he has to finish this swimming season first.\nM: Fair enough. After that, he can choose soccer or try something completely new.",
     "choices": [
      "한 가지 운동에 집중해야 실력이 는다.",
      "아이의 운동 종목은 부모가 정해 주어야 한다.",
      "어린 나이에는 여러 운동을 경험해 보는 것이 좋다.",
      "부상을 막으려면 준비 운동을 충분히 해야 한다."
     ],
-    "explain_ko": "여자는 그 나이에는 여러 운동을 해 보는 것이 낫다고 거듭 말한다. 한 운동 집중은 남자가 처음에 한 말.",
+    "explain_ko": "여자는 어릴 때 여러 운동을 한 경험, 종목마다 다른 능력이 길러진다는 점, 한 종목만 한 아이가 다친 예를 들며 여러 운동을 해 보는 쪽을 지지한다. 한 운동 집중은 남자의 처음 생각이고, 부상 이야기는 준비 운동이 아니라 한 종목만 한 결과로 나왔다.",
     "status": "draft",
     "answer": 2
    },
@@ -777,14 +777,14 @@
     "question": "대화를 듣고, 여자가 지불할 금액을 고르시오.",
     "script": "M: Hello, welcome to Tony's Pizza. What can I get for you this afternoon?\nW: Hi. I'd like to order pizzas for my daughter's birthday party this evening.\nM: Sure. Our large pizzas are twenty dollars each, and mediums are fifteen dollars.\nW: There will be twelve kids, so I think three large pizzas will be enough.\nM: Good choice. Would you like any side dishes? Our chicken wings are eight dollars a box.\nW: Hmm, I'll take two boxes of wings. Do you have any discounts today?\nM: Yes. If you order three or more large pizzas, you get ten percent off the pizzas.\nW: Great. And can you deliver them to my house by six o'clock?\nM: Of course. Delivery is free for any order over fifty dollars, so that's no problem.\nW: Perfect. Then I'll pay for everything now with my credit card.",
     "choices": [
-     "$76",
      "$70",
+     "$76",
      "$54",
      "$62"
     ],
     "explain_ko": "라지 피자 3판 60달러에서 피자만 10% 할인 → 54달러, 날개 2상자 16달러, 배달 무료 → 70달러. 76달러는 할인 전 금액.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-A-45",
@@ -795,14 +795,14 @@
     "question": "Night Bug Walk에 관한 다음 내용을 듣고, 일치하지 않는 것을 고르시오.",
     "script": "W: Hello, nature lovers! I'm Megan Clark, a guide at Silver Creek Nature Park.\nW: I'm excited to introduce our new summer program, Night Bug Walk, which begins on July 18.\nW: During this ninety-minute walk, participants will explore the forest after dark and observe insects that are rarely seen during the day.\nW: Our guides will use special lights to attract moths, so you'll be able to see their wings up close.\nW: The walk starts at eight p.m. every Friday and Saturday, and each group is limited to fifteen people.\nW: Children under ten must be accompanied by an adult, and the fee is five dollars per person.\nW: Please wear long sleeves and closed shoes, but do not bring your own flashlight, since bright lights scare the insects away.\nW: Reservations can be made only through our website, and they open one week before each walk.\nW: We hope you'll join us and discover the hidden world under the summer stars.",
     "choices": [
-     "개인 손전등을 챙겨 와야 한다.",
      "7월 18일에 시작한다.",
+     "개인 손전등을 챙겨 와야 한다.",
      "금요일과 토요일 저녁 8시에 시작한다.",
      "참가비는 1인당 5달러이다."
     ],
     "explain_ko": "밝은 빛이 곤충을 쫓으므로 개인 손전등은 가져오지 말라고 했다. 불빛은 안내원이 준비한다.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-A-46",
@@ -832,13 +832,13 @@
     "question": "밑줄 친 부분의 소리가 다른 것은?",
     "choices": [
      "p__i__g",
-     "k__i__te",
      "s__i__t",
-     "f__i__sh"
+     "f__i__sh",
+     "k__i__te"
     ],
     "explain_ko": "kite 의 i 는 [아이], 나머지는 짧은 [이].",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-B-2",
@@ -850,14 +850,14 @@
     "passage": "I have a toy robot. His name is Zip. Zip is red and blue. He has two big eyes. He walks and talks. I play with Zip after school. My sister likes Zip, too. We love our robot.",
     "question": "What color is Zip?",
     "choices": [
+     "red and blue",
      "red and green",
      "black and blue",
-     "red and blue",
      "yellow and white"
     ],
     "explain_ko": "Zip is red and blue. 한 문장에 답이 있다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-3",
@@ -869,14 +869,14 @@
     "passage": "I have a toy robot. His name is Zip. Zip is red and blue. He has two big eyes. He walks and talks. I play with Zip after school. My sister likes Zip, too. We love our robot.",
     "question": "What is the story about?",
     "choices": [
-     "my sister",
      "a toy robot",
+     "my sister",
      "a red ball",
      "my school"
     ],
     "explain_ko": "글 전체가 장난감 로봇 Zip 이야기다. my sister·school 은 한 문장에만 나온다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-B-4",
@@ -888,14 +888,14 @@
     "passage": "We are at the beach. I see a little crab. The crab is orange. It has ten legs. It walks to the side, not forward. It hides under a rock. Dad and I watch the crab. It is fun!",
     "question": "How many legs does the crab have?",
     "choices": [
+     "ten",
      "eight",
      "six",
-     "ten",
      "four"
     ],
     "explain_ko": "It has ten legs. → 다리가 열 개.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-5",
@@ -908,13 +908,13 @@
     "question": "Choose the right words.\nThe crab walks _____.",
     "choices": [
      "forward",
-     "to Dad",
      "to the side",
+     "to Dad",
      "under the sand"
     ],
     "explain_ko": "It walks to the side, not forward. forward 는 not 앞의 반대말, to Dad 는 다른 문장의 Dad 로 만든 오답이다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-B-6",
@@ -923,14 +923,14 @@
     "level": "초4",
     "question": "밑줄 친 부분의 소리가 다른 것은?",
     "choices": [
-     "s__ch__ool",
      "__ch__ick",
      "bea__ch__",
+     "s__ch__ool",
      "lun__ch__"
     ],
     "explain_ko": "school 의 ch 는 [ㅋ], 나머지 ch 는 [취].",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-B-7",
@@ -940,13 +940,13 @@
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nEvery morning, my dad _____ the plants in the garden.",
     "choices": [
      "water",
+     "waters",
      "watering",
-     "are water",
-     "waters"
+     "are water"
     ],
     "explain_ko": "주어 my dad 는 3인칭 단수, 현재 → waters.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-B-8",
@@ -958,14 +958,14 @@
     "passage": "Mrs. Gray is my neighbor. She lives next to my house. She has a small shop in her garage. Kids in our town bring their broken bikes to her. She fixes them for free. Right now, she is fixing my bike. The chain is broken. Mrs. Gray is very kind. She always smiles at us. Everyone in our town loves her.",
     "question": "What is the story about?",
     "choices": [
-     "a kind neighbor",
      "a new bike",
+     "a kind neighbor",
      "a big garage",
      "a broken chain"
     ],
     "explain_ko": "글 전체가 동네 아이들 자전거를 고쳐 주는 이웃 Mrs. Gray 이야기다. bike·garage·chain 은 일부만 다룬다.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-B-9",
@@ -977,14 +977,14 @@
     "passage": "Mrs. Gray is my neighbor. She lives next to my house. She has a small shop in her garage. Kids in our town bring their broken bikes to her. She fixes them for free. Right now, she is fixing my bike. The chain is broken. Mrs. Gray is very kind. She always smiles at us. Everyone in our town loves her.",
     "question": "What is Mrs. Gray doing now?",
     "choices": [
-     "She is riding my bike.",
      "She is fixing my bike.",
+     "She is riding my bike.",
      "She is buying a chain.",
      "She is cleaning her garage."
     ],
     "explain_ko": "Right now, she is fixing my bike. 타기·체인 사기·차고 청소는 지문 낱말을 다른 행동에 붙인 오답이다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s1-B-10",
@@ -996,14 +996,14 @@
     "passage": "Today I am at Grandma's house. She has a small garden on her roof. There are strawberries, tomatoes, and carrots in it. The strawberries are red and sweet. Grandma and I are picking them now. I put them in a big basket. Grandma makes jam with strawberries every summer. My favorite food is her jam. I love her garden!",
     "question": "Where is Grandma's garden?",
     "choices": [
-     "on her roof",
      "next to the school",
      "in the park",
+     "on her roof",
      "behind the market"
     ],
     "explain_ko": "She has a small garden on her roof. → 지붕 위.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-B-11",
@@ -1016,13 +1016,13 @@
     "question": "What does __them__ mean?",
     "choices": [
      "the tomatoes",
-     "the strawberries",
      "the carrots",
+     "the strawberries",
      "the baskets"
     ],
     "explain_ko": "바로 앞 문장의 The strawberries 를 가리킨다. 토마토·당근은 같은 정원의 다른 채소다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-12",
@@ -1064,13 +1064,13 @@
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리는 어제 공원에서 연을 날리지 않았다.\nWe _____ fly a kite in the park yesterday.",
     "choices": [
      "don't",
+     "didn't",
      "doesn't",
-     "weren't",
-     "didn't"
+     "weren't"
     ],
     "explain_ko": "yesterday → 일반동사 과거 부정 didn't + 동사원형.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-B-15",
@@ -1117,17 +1117,17 @@
     "level": "초5",
     "kind": "이유",
     "passageId": "s1-B-p6",
-    "passage": "Last Sunday, Nora lost a library book. She looked under her bed and in her bag, but it was not there. Nora felt very worried. The next day, she told the librarian, Mr. Hill. He smiled and walked to a shelf. The book was there! Nora's little brother returned it on Saturday. He did not tell Nora about it. Nora thanked Mr. Hill. That night, she said to her brother, \"Please tell me next time!\"",
+    "passage": "Last Sunday, Nora's library book was missing. She looked under her bed and in her bag, but it was not there. Nora felt very worried. The next day, she told the librarian, Mr. Hill. He smiled and walked to a shelf. The book was there! Nora's little brother returned it on Saturday. He did not tell Nora about it. Nora thanked Mr. Hill. That night, she said to her brother, \"Please tell me next time!\"",
     "question": "Why was the book on the shelf?",
     "choices": [
      "Nora returned it on Monday.",
+     "Nora's brother returned it.",
      "Mr. Hill found it under the bed.",
-     "Nora's friend bought it.",
-     "Nora's brother returned it."
+     "Nora's friend bought it."
     ],
     "explain_ko": "Nora's little brother returned it on Saturday. 두 문장(책이 선반에 있었다 + 동생이 반납했다)을 이어야 한다.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s1-B-18",
@@ -1136,17 +1136,17 @@
     "level": "초5",
     "kind": "심정",
     "passageId": "s1-B-p6",
-    "passage": "Last Sunday, Nora lost a library book. She looked under her bed and in her bag, but it was not there. Nora felt very worried. The next day, she told the librarian, Mr. Hill. He smiled and walked to a shelf. The book was there! Nora's little brother returned it on Saturday. He did not tell Nora about it. Nora thanked Mr. Hill. That night, she said to her brother, \"Please tell me next time!\"",
-    "question": "How did Nora feel when she lost the book?",
+    "passage": "Last Sunday, Nora's library book was missing. She looked under her bed and in her bag, but it was not there. Nora felt very worried. The next day, she told the librarian, Mr. Hill. He smiled and walked to a shelf. The book was there! Nora's little brother returned it on Saturday. He did not tell Nora about it. Nora thanked Mr. Hill. That night, she said to her brother, \"Please tell me next time!\"",
+    "question": "How did Nora feel when the book was missing?",
     "choices": [
-     "worried",
      "happy",
      "sleepy",
-     "proud"
+     "proud",
+     "worried"
     ],
     "explain_ko": "Nora felt very worried. happy 는 사서가 웃은 장면에서 떠올리게 한 오답이다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s1-B-19",
@@ -1174,12 +1174,12 @@
     "choices": [
      "are going to",
      "going to",
-     "is go to",
-     "is going to"
+     "is going to",
+     "is go to"
     ],
     "explain_ko": "곧 일어날 일 → be going to + 동사원형, 주어 It 이므로 is going to.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s1-B-21",
@@ -1189,13 +1189,13 @@
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n할머니는 지금 정원에서 꽃을 심고 계신다.\nGrandma is _____ flowers in the garden now.",
     "choices": [
      "plant",
-     "planting",
      "planted",
+     "planting",
      "plantting"
     ],
     "explain_ko": "현재진행 be + -ing → is planting. plantting 은 자음을 겹친 철자 실수다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-22",
@@ -1205,13 +1205,13 @@
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n나는 지난여름 바닷가에서 예쁜 조개껍데기를 발견했다.\nI _____ a pretty shell at the beach last summer.",
     "choices": [
      "finded",
-     "found",
      "find",
+     "found",
      "finds"
     ],
     "explain_ko": "find 의 과거는 불규칙 found. finded 는 규칙 변화로 잘못 만든 형태다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-23",
@@ -1220,17 +1220,17 @@
     "level": "초6",
     "kind": "제목",
     "passageId": "s1-B-p7",
-    "passage": "About two hundred years ago, people rode the first bicycles. These bikes had no pedals. Riders pushed the ground with their feet. People built these bikes from wood, so they were very heavy. Today's bikes are much lighter and faster. They have pedals, chains, and brakes. The lightest bikes weigh less than seven kilograms. Also, old bikes had no rubber tires. Rides on stone roads were bumpy and hard. Now rubber tires make our rides smooth. In the future, bikes will change again. Some bikes will fold into a small bag. Maybe they will be the most useful bikes of all.",
+    "passage": "About two hundred years ago, people rode the first bicycles. These bikes had no pedals. Riders pushed the ground with their feet. People built these bikes from wood, so they were very heavy. Today's bikes are much lighter and faster. They have pedals, chains, and brakes. The lightest bikes weigh less than seven kilograms. Also, old bikes had no rubber tires. Rides on stone roads were bumpy and hard. Now rubber tires make our rides smooth. In the future, bikes will change again. Even now, some bikes can fold up and fit into a small bag. Maybe they will be the most useful bikes of all.",
     "question": "글의 제목으로 가장 알맞은 것은?",
     "choices": [
      "The Fastest Bike in the World",
-     "Bicycles: Then and Now",
      "How to Fix a Rubber Tire",
-     "Why People Love Stone Roads"
+     "Why People Love Stone Roads",
+     "Bicycles: Then and Now"
     ],
     "explain_ko": "옛날 자전거와 오늘날·미래의 자전거를 비교한다. 가장 빠른 자전거·타이어 고치기·돌길은 일부 낱말로 만든 오답이다.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-B-24",
@@ -1239,7 +1239,7 @@
     "level": "초6",
     "kind": "내용 일치",
     "passageId": "s1-B-p7",
-    "passage": "About two hundred years ago, people rode the first bicycles. These bikes had no pedals. Riders pushed the ground with their feet. People built these bikes from wood, so they were very heavy. Today's bikes are much lighter and faster. They have pedals, chains, and brakes. The lightest bikes weigh less than seven kilograms. Also, old bikes had no rubber tires. Rides on stone roads were bumpy and hard. Now rubber tires make our rides smooth. In the future, bikes will change again. Some bikes will fold into a small bag. Maybe they will be the most useful bikes of all.",
+    "passage": "About two hundred years ago, people rode the first bicycles. These bikes had no pedals. Riders pushed the ground with their feet. People built these bikes from wood, so they were very heavy. Today's bikes are much lighter and faster. They have pedals, chains, and brakes. The lightest bikes weigh less than seven kilograms. Also, old bikes had no rubber tires. Rides on stone roads were bumpy and hard. Now rubber tires make our rides smooth. In the future, bikes will change again. Even now, some bikes can fold up and fit into a small bag. Maybe they will be the most useful bikes of all.",
     "question": "글의 내용과 일치하는 것은?",
     "choices": [
      "처음 자전거에는 페달이 있었다.",
@@ -1262,14 +1262,14 @@
     "passage": "Many children wash their hands with only water. But soap works much better than water. Germs stick to the oil on our skin. Water alone cannot remove this oil well. Soap breaks the oil into tiny pieces. Then the water washes the germs away. The best way is simple. First, rub your hands with soap for twenty seconds. Don't forget your thumbs and nails. Next, wash the soap off with clean water. Finally, dry your hands with a clean towel. This habit will keep you _____ all year. It will also protect your family.\n* germ: 세균",
     "question": "빈칸에 들어갈 말로 가장 알맞은 것은?",
     "choices": [
+     "healthy",
      "hungry",
      "busy",
-     "healthy",
      "tired"
     ],
     "explain_ko": "세균을 없애는 손 씻기 습관은 우리를 건강하게 지켜 주고 가족도 지킨다. hungry·busy·tired 는 손 씻기와 관계없다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-26",
@@ -1281,14 +1281,14 @@
     "passage": "Many children wash their hands with only water. But soap works much better than water. Germs stick to the oil on our skin. Water alone cannot remove this oil well. Soap breaks the oil into tiny pieces. Then the water washes the germs away. The best way is simple. First, rub your hands with soap for twenty seconds. Don't forget your thumbs and nails. Next, wash the soap off with clean water. Finally, dry your hands with a clean towel. This habit will keep you _____ all year. It will also protect your family.\n* germ: 세균",
     "question": "글에서 비누에 대해 알 수 있는 것은?",
     "choices": [
+     "피부의 기름을 작은 조각으로 나눈다.",
      "물보다 효과가 약하다.",
      "손톱에는 쓰지 않는다.",
-     "피부의 기름을 작은 조각으로 나눈다.",
      "20분 동안 문질러야 한다."
     ],
     "explain_ko": "Soap breaks the oil into tiny pieces. 비누가 물보다 낫고, 손톱도 잊지 말라고 했으며, 20분이 아니라 20초다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-27",
@@ -1315,14 +1315,14 @@
     "point": "최상급",
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n흰긴수염고래는 가장 큰 바다 동물이다.",
     "choices": [
-     "The blue whale is the biggest sea animal.",
      "The blue whale is the bigger sea animal.",
+     "The blue whale is the biggest sea animal.",
      "The blue whale is the most big sea animal.",
      "The blue whale is biggest the sea animal."
     ],
     "explain_ko": "'가장 ~한' → the + 최상급, big → biggest.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-B-29",
@@ -1333,14 +1333,14 @@
     "question": "대화를 듣고, 두 사람이 만나기로 한 시각을 고르시오.",
     "script": "W: Jack, are you going to the Spring Flower Festival?\nM: Yes. It starts this Saturday at Riverside Park.\nW: Great. Let's go together. Can we meet at ten?\nM: Sorry, I have a piano lesson until eleven.\nW: Then how about eleven thirty?\nM: That's a little early. Let's meet at twelve.\nW: Okay. See you at the bus stop at twelve.",
     "choices": [
+     "12:00",
      "10:00",
      "11:00",
-     "11:30",
-     "12:00"
+     "11:30"
     ],
     "explain_ko": "10시는 피아노 수업, 11시 30분은 이르다고 해서 12시로 정했다. 10시·11시·11시 30분은 바뀌기 전 시각과 수업 끝나는 시각이다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s1-B-30",
@@ -1367,14 +1367,14 @@
     "level": "중1",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nA: Can we make pancakes for breakfast?\nB: Sorry, there is _____ flour left. We need to buy some.",
     "choices": [
-     "little",
      "few",
      "a few",
+     "little",
      "many"
     ],
     "explain_ko": "flour 는 셀 수 없는 명사, '거의 없다' → little. few·a few·many 는 셀 수 있는 명사에 쓴다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s1-B-32",
@@ -1384,13 +1384,13 @@
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n이 책은 저 책보다 훨씬 더 재미있다.\nThis book is much _____ than that one.",
     "choices": [
      "interestinger",
-     "more interesting",
      "most interesting",
+     "more interesting",
      "more interested"
     ],
     "explain_ko": "긴 형용사의 비교급 → more interesting. interested 는 사람이 흥미를 느낄 때 쓴다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-33",
@@ -1404,12 +1404,12 @@
     "choices": [
      "해달이 조개를 가장 좋아하는 이유",
      "바다 동물의 두꺼운 지방층이 하는 일",
-     "해달이 털을 관리하고 도구를 쓰는 방법",
-     "새끼 해달이 어미에게서 수영을 배우는 과정"
+     "새끼 해달이 어미에게서 수영을 배우는 과정",
+     "해달이 털을 관리하고 도구를 쓰는 방법"
     ],
     "explain_ko": "글은 해달의 털 관리와 돌 도구 사용 두 가지를 설명한다. 조개·지방층은 일부 낱말, 수영을 배운다는 말은 없다.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s1-B-34",
@@ -1441,14 +1441,14 @@
     "passage": "Before a long trip, many people put too many things in their suitcase. They are afraid of forgetting something important. However, a heavy bag can make your trip tiring. Here are a few tips for you. First, choose clothes in two or three colors, so you can wear them together easily. Second, roll your clothes instead of folding them. This saves space and keeps your clothes neat. Third, bring small bottles of shampoo, not big ones. Finally, leave some empty space in your bag. You may want to bring home some gifts from your trip.",
     "question": "글의 요지로 가장 알맞은 것은?",
     "choices": [
-     "여행 가방은 꼭 필요한 것만 담아 가볍게 싸는 것이 좋다.",
      "여행 선물은 출발 전에 미리 사 두는 것이 좋다.",
+     "여행 가방은 꼭 필요한 것만 담아 가볍게 싸는 것이 좋다.",
      "옷은 여러 가지 색으로 다양하게 챙기는 것이 좋다.",
      "여행에는 큰 샴푸 병을 가져가는 것이 경제적이다."
     ],
     "explain_ko": "무거운 가방은 여행을 지치게 하니 가볍게 싸는 요령을 알려 준다. 선물·옷 색·샴푸는 세부를 비틀거나 반대로 바꾼 오답이다.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-B-36",
@@ -1459,13 +1459,13 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n내 꿈은 세계를 여행하는 것이다.",
     "choices": [
      "My dream is travel around the world.",
-     "My dream is to travel around the world.",
      "My dream is to traveling around the world.",
-     "My dream to is travel around the world."
+     "My dream to is travel around the world.",
+     "My dream is to travel around the world."
     ],
     "explain_ko": "'~하는 것' 보어 → to + 동사원형 to travel.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s1-B-37",
@@ -1477,13 +1477,13 @@
     "script": "W: Excuse me. Can my son touch the animals in this pool?\nM: Yes, he can. But please use only two fingers.\nW: What kind of animals are these? They look like stones.\nM: They're sea cucumbers. And those pink ones are sea stars.\nW: Wow, I've never seen a real sea star before.\nM: Please don't lift them out of the water.\nW: Okay. And where can we watch the penguins?\nM: Go upstairs. Feeding time is at three.",
     "choices": [
      "해산물 시장",
-     "동물 병원",
      "수족관",
+     "동물 병원",
      "수영장"
     ],
     "explain_ko": "만지는 수조의 해삼·불가사리, 위층 펭귄 먹이 주기 시간으로 수족관임을 알 수 있다. 수영장은 pool, 해산물 시장은 sea cucumbers 에서 떠올리게 한 오답이다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s1-B-38",
@@ -1494,14 +1494,14 @@
     "question": "대화를 듣고, 남자가 동네 청소에 참여할 수 없는 이유로 가장 적절한 것을 고르시오.",
     "script": "W: Ben, are you joining the neighborhood cleanup this Sunday?\nM: I really wanted to, but I can't this time.\nW: Oh, do you have a soccer game again?\nM: No, the season is over. My grandma is moving this weekend.\nW: Really? Is she moving near your house?\nM: Yes, just two blocks away. I'm going to help carry boxes.\nW: That's nice. We'll miss you at the cleanup, though.\nM: Please tell me about the next one.",
     "choices": [
-     "할머니의 이사를 도와야 해서",
      "축구 경기가 있어서",
+     "할머니의 이사를 도와야 해서",
      "다른 동네로 이사를 가서",
      "할머니 댁에 놀러 가서"
     ],
     "explain_ko": "할머니가 이번 주말 이사하셔서 상자 나르는 것을 돕는다. 축구 시즌은 끝났고, 이사하는 사람은 남자가 아니라 할머니다.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-B-39",
@@ -1531,13 +1531,13 @@
     "script": "W: Hello, students. This is Ms. Carter from the Maple Street Library.\nW: Our Summer Reading Challenge starts on July first and ends on August tenth.\nW: Any student from grade one to grade nine can join for free.\nW: Read ten books during the summer and write a short note about each one.\nW: You can take home five books at a time with your library card.\nW: Everyone who finishes the challenge will get a free ticket to the water park.\nW: Please sign up at the front desk or on our website.",
     "choices": [
      "행사 기간",
-     "도서관 운영 시간",
      "참가 대상",
+     "도서관 운영 시간",
      "완주 상품"
     ],
     "explain_ko": "기간(7월 1일~8월 10일), 대상(1~9학년), 상품(워터파크 입장권)은 나오지만 도서관이 몇 시에 여는지는 말하지 않았다.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s1-B-41",
@@ -1548,14 +1548,14 @@
     "question": "다음을 듣고, 남자가 하는 말의 목적으로 가장 적절한 것을 고르시오.",
     "script": "M: Good evening, residents of Willow Creek. This is Tom Baker from the town gardening club.\nM: As you know, many of you grow vegetables and flowers in your yards every spring.\nM: This year, our club is opening a seed library in the community center lobby.\nM: It works just like a book library, but instead of books, you take home seeds.\nM: You can take up to three packets of seeds each month without paying anything.\nM: In the fall, we hope you will bring back some seeds from the plants you grew.\nM: That way, the library will stay full for next year's gardeners.\nM: The seed library opens on March fifth, so please stop by and pick your seeds.",
     "choices": [
-     "마을 씨앗 도서관의 개장을 알리려고",
      "정원 가꾸기 동아리 회원을 모집하려고",
+     "마을 씨앗 도서관의 개장을 알리려고",
      "주민 센터 로비 공사 일정을 안내하려고",
      "가을 채소 나눔 행사를 홍보하려고"
     ],
     "explain_ko": "주민 센터 로비에 씨앗을 빌려 가는 seed library 를 연다고 알리는 방송이다. 동아리·주민 센터·가을은 방송에 나온 낱말로 만든 오답이다.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s1-B-42",
@@ -1621,14 +1621,14 @@
     "question": "다음을 듣고, 여자가 하는 말의 요지로 가장 적절한 것을 고르시오.",
     "script": "W: Hello, listeners. This is Laura Finch with Travel Notes, your weekly guide to smarter trips.\nW: Many travelers try to visit as many cities as possible during a short vacation.\nW: They spend hours on trains and buses, and they return home more tired than when they left.\nW: Today, I'd like to suggest a different approach: staying in one place for a longer time.\nW: When you stay in a single town for a week, you start to notice things that quick visitors miss.\nW: You learn which bakery opens first, and the shop owners begin to greet you by name.\nW: These small moments often become the memories you treasure most after the trip.\nW: Of course, seeing famous sights is exciting, but rushing from one to another rarely lets you enjoy them.\nW: So on your next vacation, choose fewer places and give yourself time to really live there.",
     "choices": [
+     "여행할 때 한곳에 오래 머물면 더 깊은 경험을 할 수 있다.",
      "짧은 휴가에는 기차보다 버스로 이동하는 것이 낫다.",
      "유명한 관광지는 사람이 적은 이른 아침에 가야 한다.",
-     "여행할 때 한곳에 오래 머물면 더 깊은 경험을 할 수 있다.",
      "여행 전에 현지 가게 정보를 미리 알아 두어야 한다."
     ],
     "explain_ko": "여러 도시를 서둘러 도는 대신 한곳에 오래 머물라고 권한다. 기차·버스, 유명 관광지, 빵집은 말 속 세부를 엮은 오답이다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s1-B-46",
@@ -1639,14 +1639,14 @@
     "question": "다음 상황 설명을 듣고, Hannah 가 Leo 에게 할 말로 가장 적절한 것을 고르시오.",
     "script": "M: Hannah is volunteering at a beach cleanup on a sunny Saturday morning.\nM: Her job is to walk along the shore with a group of children and pick up trash.\nM: While they are working, a boy named Leo finds a pretty shell near the rocks and shows it to her.\nM: He says he wants to take it home and put it on the shelf in his room.\nM: Leo looks excited, and he is already holding the shell tightly in his hand.\nM: Hannah looks closely at the shell and notices that a small hermit crab is living inside it.\nM: The crab has pulled its legs inside, and it looks a little scared.\nM: She knows that the crab uses the shell as its home and needs it to protect its soft body.\nM: She also wants Leo to enjoy the beach without hurting any living things.\nM: In this situation, what would Hannah most likely say to Leo on the beach?",
     "choices": [
+     "Leo, please put it back. Someone is living in that shell.",
      "Leo, let's look for a bigger shell for your room.",
      "Great job! Put it in the trash bag, please.",
-     "Leo, please put it back. Someone is living in that shell.",
      "Be careful. The rocks are slippery near the water."
     ],
     "explain_ko": "껍데기 안에 소라게가 살고 있어 제자리에 돌려놓으라고 해야 한다. 더 큰 껍데기 찾기·쓰레기봉투·바위 조심은 상황 속 다른 낱말로 만든 오답이다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    }
   ]
  },
@@ -2228,14 +2228,14 @@
     "script": "W: Dad, the new aquarium opens this Saturday. Can we go?\nM: Sure. I heard it has a huge shark tank.\nW: Yes! And there's a sea lion show at two.\nM: Great. I'll buy the tickets online tonight. It's cheaper.\nW: Okay. Should I make sandwiches for lunch?\nM: No, there's a café. Can you check the bus times?\nW: Sure. I'll do it right now.",
     "choices": [
      "온라인으로 표 사기",
-     "버스 시간 확인하기",
      "점심 도시락 만들기",
      "바다사자 쇼 예약하기",
+     "버스 시간 확인하기",
      "카페 메뉴 찾아보기"
     ],
     "explain_ko": "아빠가 표는 자신이 사겠다며 여자에게 버스 시간을 확인해 달라고 했다. 표 사기는 아빠가 할 일, 샌드위치는 하지 않기로 했다.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s2-A-2",
@@ -2245,14 +2245,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __repair__",
     "choices": [
-     "수리하다",
      "준비하다",
+     "수리하다",
      "반복하다",
      "비교하다"
     ],
     "explain_ko": "repair는 '수리하다'. 준비하다(prepare)·반복하다(repeat)·비교하다(compare)는 철자가 닮은 낱말의 뜻.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s2-A-3",
@@ -2262,14 +2262,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __refuse__",
     "choices": [
+     "거절하다",
      "재사용하다",
      "환불하다",
-     "제거하다",
-     "거절하다"
+     "제거하다"
     ],
     "explain_ko": "refuse는 '거절하다'. 재사용하다(reuse)·환불하다(refund)·제거하다(remove)는 re-로 시작하는 닮은 낱말의 뜻.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s2-A-4",
@@ -2297,15 +2297,15 @@
     "question": "다음 빈칸에 들어갈 말로 알맞은 것은?",
     "passage": "There are _____ eggs in the fridge, so we need to buy more.",
     "choices": [
-     "little",
      "few",
+     "little",
      "much",
      "a little",
      "every"
     ],
     "explain_ko": "셀 수 있는 복수 명사 eggs 앞에서 '거의 없는'은 few. little·much·a little은 셀 수 없는 명사에 쓰고, every 뒤에는 단수 명사가 온다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s2-A-6",
@@ -2336,13 +2336,13 @@
     "choices": [
      "how to save water in the bathroom",
      "why cold juice tastes better in summer",
-     "why a bathroom mirror gets cloudy",
      "the best way to clean a glass mirror",
+     "why a bathroom mirror gets cloudy",
      "the dangers of taking very hot showers"
     ],
     "explain_ko": "따뜻한 수증기가 차가운 거울에 닿아 작은 물방울이 되어 거울이 뿌옇게 된다는 글. 주스·창문은 글에 나온 낱말을 쓴 다른 초점의 오답.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s2-A-8",
@@ -2353,15 +2353,15 @@
     "question": "hourglass에 관한 다음 글의 내용과 일치하지 __않는__ 것은?",
     "passage": "An hourglass is an old tool for measuring time. It has two glass bulbs with a narrow neck between them. Sand runs slowly from the top bulb into the bottom one. When all the sand is at the bottom, a set amount of time is over. Long ago, sailors used hourglasses on their ships. Clocks with moving parts did not work well on rough seas. But sand always fell at the same speed. Sailors turned the glass every thirty minutes and rang a bell each time. People also used hourglasses in churches and kitchens. Today, you can still find small ones in board games.\n* bulb: 둥근 부분",
     "choices": [
-     "선원들은 한 시간마다 모래시계를 뒤집었다.",
      "두 유리 부분 사이가 좁게 이어져 있다.",
+     "선원들은 한 시간마다 모래시계를 뒤집었다.",
      "거친 바다에서는 움직이는 부품이 있는 시계가 잘 작동하지 않았다.",
      "교회와 부엌에서도 쓰였다.",
      "오늘날 보드게임에서 작은 모래시계를 볼 수 있다."
     ],
     "explain_ko": "선원들은 30분마다 모래시계를 뒤집고 종을 쳤다고 했으므로 '한 시간마다'는 틀리다. 이름 hourglass에서 나온 함정.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s2-A-9",
@@ -2372,15 +2372,15 @@
     "question": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
     "passage": "In Spain, many families eat dinner at nine or ten o'clock at night. Visitors from other countries are often surprised by this. But there are good reasons for it. Lunch is the biggest meal of the day. It usually starts around two. In summer, the afternoons are very hot. So many people take a long rest after lunch. Then they go back to work and finish at seven or eight. After such a big lunch, nobody feels hungry early in the evening. So the evening meal comes _____, and it is usually light. For many families, it is a quiet time to relax and talk.",
     "choices": [
-     "late",
      "early",
      "quickly",
      "first",
+     "late",
      "alone"
     ],
     "explain_ko": "점심을 늦게 많이 먹고 일도 저녁 늦게 끝나므로 저녁 식사는 '늦게' 온다. early는 지문 낱말을 그대로 쓴 오답, first는 가장 큰 끼니가 점심이라는 말과 어긋난다.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s2-A-10",
@@ -2392,14 +2392,14 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 무척 피곤했기 때문에 일찍 잠자리에 들었다.",
     "choices": [
      "I went to bed early because of I was very tired.",
+     "I went to bed early because I was very tired.",
      "I went to bed early so I was very tired.",
      "Because I went to bed early, I was very tired.",
-     "I went to bed early because I am very tired.",
-     "I went to bed early because I was very tired."
+     "I went to bed early because I am very tired."
     ],
     "explain_ko": "이유를 나타내는 절은 접속사 because + 주어 + 동사. because of 뒤에는 명사가 오고, so·Because 위치를 바꾼 문장은 원인과 결과가 뒤바뀐다. 시제도 과거 was.",
     "status": "draft",
-    "answer": 4
+    "answer": 1
    },
    {
     "id": "s2-A-11",
@@ -2429,13 +2429,13 @@
     "question": "다음 단어의 뜻으로 알맞은 것은? __decrease__",
     "choices": [
      "증가하다",
-     "결정하다",
      "줄어들다",
+     "결정하다",
      "묘사하다"
     ],
     "explain_ko": "decrease는 '줄어들다, 감소하다'. 증가하다(increase)·결정하다(decide)·묘사하다(describe)는 닮은 철자의 낱말 뜻.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s2-A-13",
@@ -2445,14 +2445,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __improve__",
     "choices": [
-     "증명하다",
      "향상시키다",
+     "증명하다",
      "승인하다",
      "이동하다"
     ],
     "explain_ko": "improve는 '향상시키다'. 증명하다(prove)·승인하다(approve)는 -prove가 들어간 낱말, 이동하다는 move의 뜻.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s2-A-14",
@@ -2464,12 +2464,12 @@
     "choices": [
      "explore",
      "expect",
-     "explain",
-     "expand"
+     "expand",
+     "explain"
     ],
     "explain_ko": "설명하다는 explain. explore(탐험하다)·expect(기대하다)·expand(확장하다)는 ex-로 시작하는 닮은 동사.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s2-A-15",
@@ -2538,15 +2538,15 @@
     "question": "Tally에 관한 다음 글의 내용과 일치하지 __않는__ 것은?",
     "passage": "Every night after the Westbrook Public Library closes, a small robot named Tally goes to work. Tally was built by a team of engineers who wanted to help the librarians. The robot rolls slowly between the shelves. It reads the label on each book with its camera. If a book is in the wrong place, Tally marks it on a digital map. In the morning, the librarians check the map. Then they put the books back in the right places. Before Tally arrived, this job took three people a whole week. Now it is done in a single night. However, Tally cannot reach the top shelves, so people still check them by hand.",
     "choices": [
+     "잘못 꽂힌 책을 직접 제자리에 옮겨 놓는다.",
      "도서관이 문을 닫은 뒤 밤에 일한다.",
      "사서들을 돕고 싶었던 기술자들이 만들었다.",
      "카메라로 책의 라벨을 읽는다.",
-     "맨 위 칸에는 닿지 못한다.",
-     "잘못 꽂힌 책을 직접 제자리에 옮겨 놓는다."
+     "맨 위 칸에는 닿지 못한다."
     ],
     "explain_ko": "Tally는 잘못 꽂힌 책을 지도에 표시만 하고, 아침에 사서들이 책을 제자리에 꽂는다. 나머지는 글과 일치한다.",
     "status": "draft",
-    "answer": 4
+    "answer": 0
    },
    {
     "id": "s2-A-19",
@@ -2579,13 +2579,13 @@
     "choices": [
      "This is the watch which my grandmother gave it to me.",
      "This is the watch who my grandmother gave me.",
+     "This is the watch which my grandmother gave me.",
      "This is the watch my grandmother gave me it.",
-     "This is the watch which gave my grandmother to me.",
-     "This is the watch which my grandmother gave me."
+     "This is the watch which gave my grandmother to me."
     ],
     "explain_ko": "사물 선행사 the watch를 받는 목적격 관계대명사 which. 관계절 안에 목적어 it을 다시 쓰면 틀리고, who는 사람에게 쓴다. 마지막 문장은 '시계가 할머니를 주었다'는 뜻이 된다.",
     "status": "draft",
-    "answer": 4
+    "answer": 2
    },
    {
     "id": "s2-A-21",
@@ -2596,15 +2596,15 @@
     "question": "대화를 듣고, 여자가 지불할 금액을 고르시오.",
     "script": "W: Hi. Do you have any cooking classes on Mexican food?\nM: Yes. There's a tacos class on Friday and a soup class on Saturday.\nW: Great. How much does each class cost per person?\nM: They're both thirty dollars per person, including all the ingredients.\nW: My son and I would like to take the tacos class together.\nM: Sorry, the Friday class is full. But Saturday still has two spots.\nW: Then we'll take the Saturday class. Is there a discount for children?\nM: Yes. Kids under twelve get ten dollars off. How old is he?\nW: He's eleven. Oh, and I'd like one of these aprons, too.\nM: Sure. They're eight dollars each.",
     "choices": [
+     "$58",
      "$60",
      "$68",
      "$50",
-     "$66",
-     "$58"
+     "$66"
     ],
     "explain_ko": "수업료 30달러 + 아이 30달러에서 10달러 할인(20달러) + 앞치마 1개 8달러 = 58달러. 할인을 빼면 68달러, 앞치마를 빼면 50달러.",
     "status": "draft",
-    "answer": 4
+    "answer": 0
    },
    {
     "id": "s2-A-22",
@@ -2614,14 +2614,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __pressure__",
     "choices": [
-     "압력",
      "즐거움",
      "보물",
-     "치수"
+     "치수",
+     "압력"
     ],
     "explain_ko": "pressure는 '압력'. 즐거움(pleasure)·보물(treasure)·치수(measure)는 -sure로 끝나는 닮은 명사의 뜻.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s2-A-23",
@@ -2632,13 +2632,13 @@
     "question": "다음 단어의 뜻으로 알맞은 것은? __attitude__",
     "choices": [
      "감사",
-     "태도",
      "고도",
+     "태도",
      "위도"
     ],
     "explain_ko": "attitude는 '태도'. 감사(gratitude)·고도(altitude)·위도(latitude)는 -titude로 끝나는 닮은 명사의 뜻.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s2-A-24",
@@ -2667,14 +2667,14 @@
     "passage": "Excuse me, could you tell me where (A) _____?\nIf I (B) _____ a car, I would drive you to the airport.",
     "choices": [
      "is the bus stop – had",
-     "the bus stop is – had",
      "the bus stop is – have",
+     "the bus stop is – had",
      "is the bus stop – have",
      "the bus stop is – will have"
     ],
     "explain_ko": "(A) 간접의문문은 의문사 + 주어 + 동사 어순이므로 the bus stop is. (B) 주절이 would drive인 가정법 과거이므로 if절은 과거형 had.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s2-A-26",
@@ -2684,15 +2684,15 @@
     "kind": "틀린 것",
     "question": "다음 중 어법상 __틀린__ 것은?",
     "choices": [
-     "My mom made me to clean my room before dinner last night.",
      "Look at the boy sitting quietly under the old tree.",
+     "My mom made me to clean my room before dinner last night.",
      "I heard someone call my name in the dark hallway.",
      "This is the writer whose novels are popular in many countries.",
      "The broken window in the kitchen was fixed by my uncle."
     ],
     "explain_ko": "사역동사 make는 목적격 보어로 동사원형을 쓰므로 made me clean이 맞다. 나머지는 현재분사 수식·지각동사·소유격 관계대명사·과거분사 수식이 바르다.",
     "status": "draft",
-    "answer": 0
+    "answer": 1
    },
    {
     "id": "s2-A-27",
@@ -2705,13 +2705,13 @@
     "choices": [
      "study for many hours in a single night",
      "review everything on the morning of the test",
-     "spread your study time over several days",
      "take a long break after each lesson",
+     "spread your study time over several days",
      "choose words that are easy to remember"
     ],
     "explain_ko": "짧게 여러 날에 나누어 공부할 때 기억이 오래 간다는 글이므로 '여러 날에 걸쳐 나누어' 공부해야 한다. 하룻밤 몰아 공부·시험 당일 복습은 반대 내용, break는 지문 낱말을 쓴 오답.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s2-A-28",
@@ -2723,14 +2723,14 @@
     "passage": "When the tide goes out, small pools of seawater are left behind among the rocks along the shore. These tide pools may look quiet. However, they are home to many creatures, including crabs, sea stars, and tiny fish. But life there is far from easy. For several hours each day, the animals living in the pools are cut off from the open sea. On sunny days, the water becomes warmer and saltier as some of it dries up in the heat. Sea birds hunting along the rocks can also spot an easy meal. To survive, many animals hide under stones or in narrow cracks until the water returns. When the tide comes back in, fresh seawater fills the pools again. It also brings new food with it.\n* tide: 조수, 밀물과 썰물",
     "choices": [
      "썰물 때 바위 사이에 바닷물 웅덩이가 남는다.",
+     "맑은 날에는 물이 증발하면서 더 차갑고 덜 짜진다.",
      "게, 불가사리, 작은 물고기 등이 산다.",
      "바닷새가 웅덩이의 동물을 노리기도 한다.",
-     "밀물이 들어오면 새 먹이도 함께 들어온다.",
-     "맑은 날에는 물이 증발하면서 더 차갑고 덜 짜진다."
+     "밀물이 들어오면 새 먹이도 함께 들어온다."
     ],
     "explain_ko": "맑은 날에는 물이 일부 마르면서 더 따뜻하고 더 짜진다고 했으므로 '더 차갑고 덜 짜진다'는 틀리다.",
     "status": "draft",
-    "answer": 4
+    "answer": 1
    },
    {
     "id": "s2-A-29",
@@ -2762,15 +2762,15 @@
     "point": "관계대명사 what",
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n내가 지금 정말 원하는 것은 긴 휴가이다.",
     "choices": [
-     "What I really want now is a long vacation.",
      "That I really want now is a long vacation.",
      "Which I really want now is a long vacation.",
      "What do I really want now is a long vacation.",
-     "The thing what I really want now is a long vacation."
+     "The thing what I really want now is a long vacation.",
+     "What I really want now is a long vacation."
     ],
     "explain_ko": "'~하는 것'은 선행사를 품은 관계대명사 what. That·Which는 선행사 없이 이 자리에 쓸 수 없고, What do I는 의문문 어순, the thing what은 선행사를 겹쳐 쓴 오류.",
     "status": "draft",
-    "answer": 0
+    "answer": 4
    },
    {
     "id": "s2-A-31",
@@ -2779,17 +2779,17 @@
     "level": "고1",
     "kind": "언급하지 않은 것",
     "question": "다음을 듣고, Robot Rescue Challenge에 관해 언급되지 __않은__ 것을 고르시오.",
-    "script": "W: Hello, students. This is Ms. Carter, the advisor of the Robotics Club. I'm excited to announce our school's first Robot Rescue Challenge. Teams will build robots that can find a toy figure inside a collapsed model building. The robot must then carry the figure safely out. Each team can have up to four members. No experience is needed, because we'll hold two free coding workshops next week. The challenge will take place in the gym on Friday, November 14th. To join, fill out the form on the school website by this Wednesday. All robots must be built from the kits we provide. So you don't need to buy any parts. We hope to see many creative teams there.",
+    "script": "W: Hello, students. This is Ms. Carter, the advisor of the Robotics Club. I'm excited to announce our school's first Robot Rescue Challenge. Teams will build robots that can find a toy figure inside a collapsed model building. The robot must then carry the figure safely out. Each team can have up to four members. No experience is needed, because we'll hold two free coding workshops next week. The challenge will take place in the gym on Saturday, November 14th. To join, fill out the form on the school website by this Wednesday. All robots must be built from the kits we provide. So you don't need to buy any parts. We hope to see many creative teams there.",
     "choices": [
-     "우승 상품",
      "팀 구성 인원",
      "개최 장소",
      "신청 마감일",
-     "로봇 부품 준비 방법"
+     "로봇 부품 준비 방법",
+     "우승 상품"
     ],
     "explain_ko": "팀은 최대 4명, 장소는 체육관, 신청은 이번 수요일까지, 부품은 학교가 주는 키트로 만든다고 했지만 상품은 말하지 않았다.",
     "status": "draft",
-    "answer": 0
+    "answer": 4
    },
    {
     "id": "s2-A-32",
@@ -2800,13 +2800,13 @@
     "question": "다음 단어의 뜻으로 알맞은 것은? __contribute__",
     "choices": [
      "분배하다",
-     "기여하다",
      "구성하다",
-     "대체하다"
+     "대체하다",
+     "기여하다"
     ],
     "explain_ko": "contribute는 '기여하다'. 분배하다(distribute)·구성하다(constitute)·대체하다(substitute)는 어미가 닮은 동사의 뜻.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s2-A-33",
@@ -2834,13 +2834,13 @@
     "question": "다음 뜻을 가진 영어 단어는? __효율적인__",
     "choices": [
      "sufficient",
+     "efficient",
      "deficient",
-     "magnificent",
-     "efficient"
+     "magnificent"
     ],
     "explain_ko": "효율적인은 efficient. sufficient(충분한)·deficient(부족한)·magnificent(웅장한)는 -ficient/-ficent로 끝나는 닮은 형용사.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s2-A-35",
@@ -2890,15 +2890,15 @@
     "question": "다음 글의 주제로 가장 적절한 것은?",
     "passage": "Many dishes that are now proudly served in restaurants were born not from luxury but from the need to waste nothing. Fried rice, for example, began as a way to use rice left over from the day before. That rice had often become too dry to enjoy on its own. Bread pudding turned stale loaves into a sweet dessert. Likewise, countless soups were created by simmering bones and vegetable scraps that would otherwise have been thrown away. Cooks working with limited ingredients had to experiment, combining flavors in ways that wealthier kitchens never needed to try. Over generations, these thrifty solutions were refined until they became beloved parts of national cuisines. In this sense, scarcity has often acted less as a limit on cooking than as a source of creativity.\n* stale: (빵이) 딱딱하게 굳은\n* simmer: 뭉근히 끓이다",
     "choices": [
+     "how the need to save food gave birth to creative dishes",
      "the health benefits of eating leftover food",
      "why restaurant meals cost more than home cooking",
      "the history of rice in traditional cooking",
-     "how the need to save food gave birth to creative dishes",
      "ways to reduce food waste in modern kitchens"
     ],
     "explain_ko": "남은 재료를 버리지 않으려던 필요가 볶음밥·빵 푸딩·수프 같은 요리를 낳았다는, 부족함이 창의성의 원천이었다는 글. 음식물 쓰레기 줄이기·쌀의 역사는 지문 낱말을 쓴 다른 초점.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s2-A-38",
@@ -2931,13 +2931,13 @@
     "choices": [
      "the appearance of their users",
      "the shape of the human body",
-     "the job they need to do",
      "the newest computer software",
-     "the size of a typical home"
+     "the size of a typical home",
+     "the job they need to do"
     ],
     "explain_ko": "사람 몸을 본뜨기보다 창고 선반 옮기기·소파 밑 청소처럼 할 일에 맞춘 모양이 성공한다는 글이므로 '해야 할 일'이 들어간다. 사람 몸 모양은 반대 내용.",
     "status": "draft",
-    "answer": 2
+    "answer": 4
    },
    {
     "id": "s2-A-40",
@@ -2950,13 +2950,13 @@
     "choices": [
      "If we brought a map then, we would not get lost.",
      "If we have brought a map then, we would not have gotten lost.",
-     "If we had brought a map then, we will not have gotten lost.",
      "If we had brought a map then, we would not have gotten lost.",
+     "If we had brought a map then, we will not have gotten lost.",
      "If we had bring a map then, we would not have gotten lost."
     ],
     "explain_ko": "과거 사실의 반대는 If + had p.p., 주어 + would have p.p. 둘째 문장은 가정법 과거라 현재 사실의 반대가 되고, 나머지는 have·will·bring 형태가 틀렸다.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s2-A-41",
@@ -2968,14 +2968,14 @@
     "script": "M: Jessica, I've gone to the gym every day for a month, but my arms aren't any bigger.\nW: Every single day? Are you working on the same muscles each time, Kevin?\nM: Yeah, I do the same arm exercises daily. I thought more training would bring faster results.\nW: Actually, that might be the problem. Muscles don't grow during lifting. They grow while you rest afterward.\nM: Really? I always thought the workout itself made them stronger.\nW: No. The workout causes tiny damage, and your body rebuilds the muscle thicker during recovery.\nM: So training every day doesn't give it time to recover?\nW: Exactly. Without a break, your body can't finish that process.\nM: So how much rest does a muscle need?\nW: Usually about two days. You could train your legs while your arms recover.\nM: That makes sense. I'll make a new schedule this week.",
     "choices": [
      "근력 운동은 매일 같은 부위를 반복할수록 효과가 크다.",
-     "근육이 자라려면 같은 부위 운동 사이에 충분히 쉬어야 한다.",
      "운동 전후에는 반드시 스트레칭을 해야 한다.",
+     "근육이 자라려면 같은 부위 운동 사이에 충분히 쉬어야 한다.",
      "팔 운동보다 다리 운동을 먼저 해야 한다.",
      "운동 일정은 전문 트레이너와 함께 짜야 한다."
     ],
     "explain_ko": "여자는 근육은 쉬는 동안 자라므로 같은 부위는 이틀쯤 쉬어야 한다고 말한다. 매일 반복은 남자의 처음 생각, 다리 운동은 쉬는 동안의 예로 나온 말.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s2-A-42",
@@ -3021,12 +3021,12 @@
     "choices": [
      "variable",
      "venerable",
-     "available",
-     "vulnerable"
+     "vulnerable",
+     "available"
     ],
     "explain_ko": "취약한은 vulnerable. variable(변하기 쉬운)·venerable(존경할 만한)·available(이용할 수 있는)은 -able로 끝나는 닮은 형용사.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s2-A-45",
@@ -3039,12 +3039,12 @@
      "The number of students who walk to school has dropped sharply over the past decade.",
      "Rarely does the committee change its decision once a final vote has been taken.",
      "She spent the weekend reading novels, baking bread, and walking her neighbor's dog.",
-     "The books that my grandfather left on the top shelf of his study is worth a fortune.",
-     "The fact that he had never left his hometown surprised everyone at the reunion."
+     "The fact that he had never left his hometown surprised everyone at the reunion.",
+     "The books that my grandfather left on the top shelf of his study is worth a fortune."
     ],
     "explain_ko": "주어의 핵심은 복수 The books이고 관계절은 수식어일 뿐이므로 is가 아니라 are. 나머지는 the number of + 단수 동사·부정어 도치·병렬·동격 that이 바르다.",
     "status": "draft",
-    "answer": 3
+    "answer": 4
    },
    {
     "id": "s2-A-46",
@@ -3055,15 +3055,15 @@
     "question": "다음 빈칸에 들어갈 말로 알맞은 것은?",
     "passage": "Tom insists that Jenny was at yesterday's meeting, but she _____ it: this morning she asked me what had been decided about the budget, even though the budget was the only topic discussed.",
     "choices": [
+     "can't have attended",
      "must have attended",
      "should have attended",
-     "can't have attended",
      "needn't have attended",
      "can't attend"
     ],
     "explain_ko": "오늘 아침 회의의 유일한 안건을 물었다는 근거로 '참석했을 리가 없다'는 과거 추측 can't have p.p. must have p.p.는 Tom의 주장 쪽(근거와 반대), should have p.p.는 추측이 아닌 '했어야 했는데'라는 비난, needn't have p.p.는 참석은 했다는 뜻, can't attend는 시제가 맞지 않는다.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s2-A-47",
@@ -3076,13 +3076,13 @@
     "choices": [
      "Why Rereading Is the Key to Long-Term Memory",
      "How Volcanoes Form and Why They Erupt",
-     "Talking to an Empty Chair: A Simple Path to Deeper Learning",
      "Group Study: Learning Better with Classmates",
-     "The Hidden Costs of Expensive Study Tools"
+     "The Hidden Costs of Expensive Study Tools",
+     "Talking to an Empty Chair: A Simple Path to Deeper Learning"
     ],
     "explain_ko": "빈 의자에게 소리 내어 설명한 학생들이 더 많이, 더 깊이 기억했다는 지어낸 연구의 글. 다시 읽기는 덜 효과적이었고, 화산은 공부 재료일 뿐, 짝이 필요 없다고 했으므로 그룹 공부도 오답.",
     "status": "draft",
-    "answer": 2
+    "answer": 4
    },
    {
     "id": "s2-A-48",
@@ -3093,15 +3093,15 @@
     "question": "the bone needle study에 관한 다음 글의 내용과 일치하지 __않는__ 것은?",
     "passage": "For decades, archaeologists assumed that the bone needles found at prehistoric sites were used mainly to sew warm clothing. A team at the Cardwell Museum of Natural History, however, has proposed a broader picture. After examining the wear patterns on sixty-three needles under a microscope, the team found that only about half showed the smooth polish typical of repeatedly passing through animal hide. The rest bore fine scratches more consistent with plant fibers, suggesting that they were used to make nets, baskets, or decorated items. Notably, several of the smallest needles had eyes so narrow that only a very thin thread could have passed through them. The researchers interpret this as evidence of detailed decorative work rather than survival needs alone. The team cautions, though, that their sample came from a single region and may not reflect practices elsewhere.\n* hide: (동물의) 가죽",
     "choices": [
+     "대부분의 바늘에서 동물 가죽을 통과하며 생긴 매끈한 광택이 나타났다.",
      "고고학자들은 오랫동안 뼈바늘이 주로 옷을 꿰매는 데 쓰였다고 여겼다.",
      "연구팀은 현미경으로 바늘 63개의 마모 흔적을 살폈다.",
      "가장 작은 바늘 몇 개는 바늘귀가 매우 좁았다.",
-     "대부분의 바늘에서 동물 가죽을 통과하며 생긴 매끈한 광택이 나타났다.",
      "연구팀은 표본이 한 지역에서만 나왔다는 한계를 밝혔다."
     ],
     "explain_ko": "가죽을 통과하며 생긴 광택은 '약 절반'에서만 보였고 나머지는 식물 섬유 자국이었으므로 '대부분'은 틀리다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s2-A-49",
@@ -3133,15 +3133,15 @@
     "point": "강조 it~that·분사 수식",
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n그 도시를 세계에 알린 것은 바로 10년 전 시장이 복원한 오래된 다리들이었다.",
     "choices": [
-     "It was the old bridges restored by the mayor ten years ago that made the city known to the world.",
      "It was the old bridges restoring by the mayor ten years ago that made the city known to the world.",
      "It was the old bridges restored by the mayor ten years ago that makes the city known to the world.",
+     "It was the old bridges restored by the mayor ten years ago that made the city known to the world.",
      "It was the old bridges that restored by the mayor ten years ago made the city known to the world.",
      "It was the old bridges restored by the mayor ten years ago that the city was made known to the world."
     ],
     "explain_ko": "It was + 강조할 말(the old bridges restored by ~: 복원'된' 다리라 과거분사) + that + 나머지(made the city known). restoring은 능동, makes는 '알렸다'와 시제가 어긋나고, that을 분사 앞에 두면 어순이 깨지며, 마지막 문장은 that 뒤 절이 다리와 이어지지 않는다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    }
   ],
   "B": [
@@ -3154,15 +3154,15 @@
     "question": "대화를 듣고, 두 사람이 대화하는 장소로 가장 적절한 것을 고르시오.",
     "script": "W: Wow, this room is so dark and round.\nM: Look up. The ceiling is like a big night sky.\nW: Can we lean back in these seats?\nM: Yes. The show about the planets starts soon.\nW: Will we see Saturn's rings?\nM: Sure. And a guide will tell us about the stars.\nW: Great. I'll turn off my phone now.",
     "choices": [
-     "영화관",
      "천체 투영관",
+     "영화관",
      "과학실",
      "놀이공원",
      "사진관"
     ],
     "explain_ko": "둥근 천장이 밤하늘 같고, 행성 쇼·토성의 고리·별 안내가 나오므로 천체 투영관이다. 영화관은 어두운 방·좌석·휴대전화 끄기만 맞는 오답.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s2-B-2",
@@ -3174,12 +3174,12 @@
     "choices": [
      "소리치다",
      "대답하다",
-     "노래하다",
-     "속삭이다"
+     "속삭이다",
+     "노래하다"
     ],
     "explain_ko": "whisper는 '속삭이다'. 소리치다=shout, 대답하다=answer, 노래하다=sing.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s2-B-3",
@@ -3189,14 +3189,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __polite__",
     "choices": [
+     "예의 바른",
      "인기 있는",
      "정직한",
-     "예의 바른",
      "게으른"
     ],
     "explain_ko": "polite는 '예의 바른'. 인기 있는=popular(철자가 닮음), 정직한=honest, 게으른=lazy.",
     "status": "draft",
-    "answer": 2
+    "answer": 0
    },
    {
     "id": "s2-B-4",
@@ -3207,13 +3207,13 @@
     "question": "다음 뜻을 가진 영어 단어는? __껍질을 벗기다__",
     "choices": [
      "pour",
-     "pull",
      "peel",
+     "pull",
      "fill"
     ],
     "explain_ko": "peel은 '껍질을 벗기다'. pour=붓다, pull=당기다, fill=채우다(모두 짧은 요리·동작 동사).",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s2-B-5",
@@ -3243,14 +3243,14 @@
     "question": "다음 중 어법상 __틀린__ 것은?",
     "choices": [
      "I have a few friends in my new class.",
-     "There are a little cookies left in the jar.",
      "We had little rain last summer.",
      "She drinks a lot of water every day.",
+     "There are a little cookies left in the jar.",
      "Few people came to the meeting because of the snow."
     ],
     "explain_ko": "cookies는 셀 수 있는 명사라 a little이 아니라 a few를 써야 한다. 나머지는 셀 수 있는 명사에 a few·few, 셀 수 없는 명사에 little, 둘 다에 a lot of를 바르게 썼다.",
     "status": "draft",
-    "answer": 1
+    "answer": 3
    },
    {
     "id": "s2-B-7",
@@ -3261,15 +3261,15 @@
     "question": "다음 글의 주제로 가장 적절한 것은?",
     "passage": "Do you often feel sleepy after lunch? Many people do, and a short nap can help. A nap of about twenty minutes gives your brain a quick rest. After it, you can think more clearly and remember new words better. You may also feel less tired and more cheerful. But be careful about the length. If you sleep for more than thirty minutes, you can fall into deep sleep. Then it is hard to wake up, and you may feel even more tired. Also, try not to nap late in the afternoon. It can keep you awake at night. So keep your nap short and early.",
     "choices": [
-     "the good points of a short nap and how to take one",
      "why people feel sleepy after lunch",
      "the dangers of deep sleep at night",
      "ways to remember new words better",
-     "the best time to go to bed at night"
+     "the best time to go to bed at night",
+     "the good points of a short nap and how to take one"
     ],
     "explain_ko": "짧은 낮잠의 좋은 점(머리가 맑아짐)과 길이·시간을 지키는 법을 함께 말한다. 점심 뒤 졸림·단어 기억은 일부 내용, 깊은 잠의 위험·잠자리 시간은 초점이 다르다.",
     "status": "draft",
-    "answer": 0
+    "answer": 4
    },
    {
     "id": "s2-B-8",
@@ -3281,14 +3281,14 @@
     "passage": "Do you have old, broken crayons at home? Don't throw them in the trash. Bring them to the Crayon Rescue Box in the lobby of Oakdale Library. You can drop them off from March 2 to March 20. Volunteers will sort the crayons by color and melt them down. Then they will pour the wax into star and heart shapes. In April, the library will give the new crayons to children's hospitals in the area. Please remove the paper wrappers first if you can. Do not bring markers or colored pencils. Last year, people brought about 40 kilograms of crayons. Let's give old crayons a second life!",
     "choices": [
      "도서관 로비에 수거함이 있다.",
-     "3월 2일부터 3월 20일까지 크레용을 가져올 수 있다.",
      "사인펜과 색연필도 함께 받는다.",
+     "3월 2일부터 3월 20일까지 크레용을 가져올 수 있다.",
      "새 크레용은 4월에 지역 어린이 병원에 전달된다.",
      "작년에 약 40킬로그램의 크레용이 모였다."
     ],
     "explain_ko": "'Do not bring markers or colored pencils.'에서 사인펜과 색연필은 가져오지 말라고 했다. 나머지는 지문 순서대로 일치한다.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s2-B-9",
@@ -3301,13 +3301,13 @@
     "choices": [
      "deeper",
      "richer",
-     "louder",
      "higher",
+     "louder",
      "slower"
     ],
     "explain_ko": "뼈가 깊고 풍부한 소리를 더해 주는데 녹음에는 공기 소리만 담기므로, 녹음된 목소리는 더 높고 가늘게 들린다. deeper·richer는 지문 낱말을 쓴 반대 오답, louder·slower는 근거가 없다.",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s2-B-10",
@@ -3319,14 +3319,14 @@
     "point": "접속사 if(조건)",
     "choices": [
      "If it will rain tomorrow, I will stay home.",
+     "If it rains tomorrow, I will stay home.",
      "If it rains tomorrow, I will staying home.",
      "If it raining tomorrow, I will stay home.",
-     "If it rains tomorrow, I will stay home.",
      "It rains tomorrow if I will stay home."
     ],
     "explain_ko": "조건의 if절은 미래 일도 현재 시제(rains)로 쓰고, 주절은 will + 동사원형. will rain·will staying·raining은 형태 오류, 마지막은 뜻이 뒤바뀌었다.",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s2-B-11",
@@ -3338,14 +3338,14 @@
     "script": "M: Hi, Ms. Carter. I'm calling about my visit to your animal hospital.\nW: Oh, hi, Leo. You're coming on Friday at 3, right?\nM: Yes, but my class ends late that day. Can I come at 4?\nW: Hmm, I have a surgery at 4. How about 4:30?\nM: That's fine with me. How long can I stay there?\nW: About an hour. You can watch while I check a puppy.\nM: Great. I'll bring my notebook for my job report.\nW: Good. Don't be late, and see you then.",
     "choices": [
      "3:00",
-     "4:00",
      "4:30",
+     "4:00",
      "5:00",
      "5:30"
     ],
     "explain_ko": "처음 약속은 3시, 남자가 4시를 제안했지만 여자가 4시에 수술이 있어 4시 30분으로 정했다. 5:30은 한 시간 머문 뒤 끝나는 시각.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s2-B-12",
@@ -3389,14 +3389,14 @@
     "kind": "한→영",
     "question": "다음 뜻을 가진 영어 단어는? __대신하다, 교체하다__",
     "choices": [
-     "repeat",
      "replace",
+     "repeat",
      "remove",
      "reply"
     ],
     "explain_ko": "replace는 '대신하다, 교체하다'. repeat=반복하다, remove=없애다, reply=대답하다(모두 re-로 시작).",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s2-B-15",
@@ -3408,14 +3408,14 @@
     "passage": "My aunt has worked as a nurse (A) _____ ten years.\nThis hospital (B) _____ by her grandfather in 1975.",
     "choices": [
      "since – was built",
-     "for – built",
      "for – was built",
+     "for – built",
      "since – built",
      "during – was built"
     ],
     "explain_ko": "(A) 현재완료와 기간(ten years)에는 for. since는 시작 시점, during은 현재완료의 기간 표현으로 쓰지 않는다. (B) 병원이 '지어진' 것이고 1975년이므로 과거 수동태 was built.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s2-B-16",
@@ -3447,14 +3447,14 @@
     "passage": "A large white cloud may look as light as a feather, but it is actually very heavy. Scientists say that an average cloud holds about 500 tons of water. That is as heavy as about 100 elephants! So why doesn't it fall? The answer is that the water in a cloud is spread out into billions of tiny drops. Each drop is so small and light that it falls very slowly. At the same time, warm air that rises from the ground keeps pushing the drops up. When the drops join together and become too heavy, they can no longer stay up. Then they fall to the ground as rain.",
     "choices": [
      "Why Are Clouds White?",
-     "How Can Heavy Clouds Stay in the Sky?",
      "How Much Do Elephants Weigh?",
+     "How Can Heavy Clouds Stay in the Sky?",
      "Rain: The Best Gift from the Sky",
      "Warm Air Makes the Weather Hot"
     ],
     "explain_ko": "무거운 구름이 떨어지지 않는 까닭(작은 물방울, 올라오는 따뜻한 공기)을 설명한다. 코끼리·흰색·비·따뜻한 공기는 지문 낱말만 빌린 오답.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s2-B-18",
@@ -3465,15 +3465,15 @@
     "question": "the Fern에 관한 다음 글의 내용과 일치하지 __않는__ 것은?",
     "passage": "In the small town of Fernwick, people can pay with two kinds of money. One is the national dollar. The other is the \"Fern,\" a paper note for use only in Fernwick. The Fern was created in 2019 by a group of local shop owners. They wanted people to spend their money in town instead of at big online stores. One Fern has the same value as one dollar. About 120 shops accept it. Each note shows a plant or animal that lives in the nearby forest. Visitors can change their dollars into Ferns at the town bank. However, Ferns cannot be changed back into dollars.",
     "choices": [
-     "Fernwick 안에서만 쓰는 지폐이다.",
      "은행에서 다시 달러로 바꿀 수 있다.",
+     "Fernwick 안에서만 쓰는 지폐이다.",
      "2019년에 지역 가게 주인들이 만들었다.",
      "1 Fern은 1달러와 가치가 같다.",
      "지폐에는 근처 숲에 사는 동식물이 그려져 있다."
     ],
     "explain_ko": "마지막 문장에서 Fern은 다시 달러로 바꿀 수 없다고 했다. 달러를 Fern으로 바꾸는 것만 은행에서 된다.",
     "status": "draft",
-    "answer": 1
+    "answer": 0
    },
    {
     "id": "s2-B-19",
@@ -3504,15 +3504,15 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n나는 그 소식을 듣게 되어 기뻤다.",
     "point": "to부정사 부사적 용법(감정의 원인)",
     "choices": [
-     "I was glad to hear the news.",
      "I was glad hear the news.",
      "I was glad to hearing the news.",
      "I glad to hear the news.",
+     "I was glad to hear the news.",
      "I was glad to heard the news."
     ],
     "explain_ko": "감정 형용사 glad 뒤에 감정의 원인을 나타내는 to + 동사원형(to hear). to 빠짐, to hearing·to heard, be동사 빠짐은 오류.",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s2-B-21",
@@ -3525,13 +3525,13 @@
     "choices": [
      "날짜",
      "참가 대상",
+     "소요 시간",
      "참가비",
-     "장소",
-     "소요 시간"
+     "장소"
     ],
     "explain_ko": "날짜(10월 18일 토요일), 참가 대상(12세 넘는 누구나), 참가비(5달러), 장소(2층 교육실)는 나왔지만 행사가 얼마나 걸리는지는 말하지 않았다.",
     "status": "draft",
-    "answer": 4
+    "answer": 2
    },
    {
     "id": "s2-B-22",
@@ -3541,14 +3541,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __convenience__",
     "choices": [
-     "편리함",
      "관습",
      "대화",
-     "확신"
+     "확신",
+     "편리함"
     ],
     "explain_ko": "convenience는 '편리함'. 관습=convention, 대화=conversation, 확신=conviction(모두 con-으로 시작하는 추상 명사).",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s2-B-23",
@@ -3559,13 +3559,13 @@
     "question": "다음 단어의 뜻으로 알맞은 것은? __ancestor__",
     "choices": [
      "후손",
-     "조상",
      "이웃",
+     "조상",
      "동료"
     ],
     "explain_ko": "ancestor는 '조상'. 후손=descendant(반대말), 이웃=neighbor, 동료=colleague(모두 사람을 가리키는 명사).",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s2-B-24",
@@ -3594,14 +3594,14 @@
     "passage": "(A) _____ made me laugh was the puppy's tiny hat.\nCan you tell me (B) _____?",
     "choices": [
      "That – when the library opens",
-     "What – when does the library open",
      "What – when the library opens",
+     "What – when does the library open",
      "Which – when the library opens",
      "That – when does the library open"
     ],
     "explain_ko": "(A) 선행사 없이 '~하는 것'이 주어가 되므로 관계대명사 What. That·Which는 선행사 없이 이 자리에 올 수 없다. (B) 간접의문문은 '의문사 + 주어 + 동사' 순서라 when the library opens.",
     "status": "draft",
-    "answer": 2
+    "answer": 1
    },
    {
     "id": "s2-B-26",
@@ -3612,14 +3612,14 @@
     "question": "다음 중 어법상 __틀린__ 것은?",
     "choices": [
      "The boy sitting next to me in class is from Canada.",
+     "The letter writing in French was hard for me to read.",
      "I found a wallet lost by a tourist near the station.",
      "Look at the yellow leaves falling from the old tree.",
-     "We visited a castle built about five hundred years ago.",
-     "The letter writing in French was hard for me to read."
+     "We visited a castle built about five hundred years ago."
     ],
     "explain_ko": "편지는 '쓰인' 것이므로 과거분사 written을 써야 한다. 나머지는 능동(sitting·falling)과 수동(lost·built)의 분사를 바르게 썼다.",
     "status": "draft",
-    "answer": 4
+    "answer": 1
    },
    {
     "id": "s2-B-27",
@@ -3649,15 +3649,15 @@
     "question": "wax tablets에 관한 다음 글의 내용과 일치하지 __않는__ 것은?",
     "passage": "Long before paper became cheap, students in ancient Rome did their writing homework on wax tablets. A wax tablet was a flat piece of wood. A thin layer of dark wax was spread across it. Students wrote by scratching letters into the wax with a stylus. This was a pen-like tool made of metal or bone. One end of the stylus was sharp for writing, and the other end was flat. If students made a mistake, they used the flat end to smooth the wax and erase the letters. Two or more tablets were often tied together with string, so they looked like a small book. Tablets could be used again and again. However, they had one weakness: on a hot day, the soft wax could melt.\n* stylus: 철필",
     "choices": [
+     "틀린 글자는 철필의 뾰족한 끝으로 지웠다.",
      "종이가 값싸지기 전에 학생들이 숙제에 썼다.",
      "나무판 위에 얇은 밀랍 층을 입혀 만들었다.",
      "철필은 금속이나 뼈로 만들었다.",
-     "더운 날에는 밀랍이 녹을 수 있었다.",
-     "틀린 글자는 철필의 뾰족한 끝으로 지웠다."
+     "더운 날에는 밀랍이 녹을 수 있었다."
     ],
     "explain_ko": "뾰족한 끝은 쓰는 데, 평평한 끝은 밀랍을 문질러 지우는 데 썼다. 두 끝의 쓰임을 바꾼 것이 오답.",
     "status": "draft",
-    "answer": 4
+    "answer": 0
    },
    {
     "id": "s2-B-29",
@@ -3691,13 +3691,13 @@
     "choices": [
      "If I am you, I would take the job.",
      "If I were you, I will take the job.",
-     "If I were you, I would take the job.",
      "If I were you, I would took the job.",
+     "If I were you, I would take the job.",
      "If I be you, I would take the job."
     ],
     "explain_ko": "현재 사실과 반대되는 가정은 If + 주어 + were, 주어 + would + 동사원형. am·be·will·would took은 형태 오류.",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s2-B-31",
@@ -3709,14 +3709,14 @@
     "script": "W: Good morning, students. This is Ms. Rivera, your school nurse, with a short message.\nW: Lately, many of you have visited my office complaining of sore shoulders and backs.\nW: In many cases, the cause is quite simple: your backpacks are far too heavy.\nW: Experts say a backpack should weigh no more than ten percent of your body weight.\nW: So next Monday and Tuesday, I'll be weighing backpacks at the main entrance before classes.\nW: It only takes a few seconds, and I'll show you how to pack more wisely.\nW: You can also leave unneeded books in your classroom lockers during the day.\nW: Please stop by on your way in, and protect your back for years to come.",
     "choices": [
      "보건실 운영 시간 변경을 알리려고",
-     "책가방 무게 점검 행사를 안내하려고",
      "교실 사물함 사용 규칙을 설명하려고",
      "올바르게 앉는 자세를 교육하려고",
-     "새 책가방 구입을 권하려고"
+     "새 책가방 구입을 권하려고",
+     "책가방 무게 점검 행사를 안내하려고"
     ],
     "explain_ko": "어깨·허리 통증의 원인이 무거운 책가방이라며, 다음 주 월·화요일에 정문에서 책가방 무게를 재 준다고 알린다. 보건실·사물함은 말 속에 나온 낱말을 쓴 오답.",
     "status": "draft",
-    "answer": 1
+    "answer": 4
    },
    {
     "id": "s2-B-32",
@@ -3728,12 +3728,12 @@
     "choices": [
      "요구하다",
      "문의하다",
-     "얻다, 습득하다",
-     "감탄하다"
+     "감탄하다",
+     "얻다, 습득하다"
     ],
     "explain_ko": "acquire는 '얻다, 습득하다'. 요구하다=require, 문의하다=inquire, 감탄하다=admire(끝 철자가 닮은 동사).",
     "status": "draft",
-    "answer": 2
+    "answer": 3
    },
    {
     "id": "s2-B-33",
@@ -3743,14 +3743,14 @@
     "kind": "영→한",
     "question": "다음 단어의 뜻으로 알맞은 것은? __reluctant__",
     "choices": [
-     "꺼리는, 마지못한",
      "관련 있는",
      "믿을 만한",
-     "남아 있는"
+     "남아 있는",
+     "꺼리는, 마지못한"
     ],
     "explain_ko": "reluctant는 '꺼리는, 마지못한'. 관련 있는=relevant, 믿을 만한=reliable, 남아 있는=remaining(re-로 시작하는 형용사).",
     "status": "draft",
-    "answer": 0
+    "answer": 3
    },
    {
     "id": "s2-B-34",
@@ -3761,13 +3761,13 @@
     "question": "다음 뜻을 가진 영어 단어는? __견디다, 참다__",
     "choices": [
      "ensure",
+     "endure",
      "enable",
-     "enclose",
-     "endure"
+     "enclose"
     ],
     "explain_ko": "endure는 '견디다, 참다'. ensure=보장하다, enable=가능하게 하다, enclose=둘러싸다·동봉하다(모두 en-으로 시작하는 동사).",
     "status": "draft",
-    "answer": 3
+    "answer": 1
    },
    {
     "id": "s2-B-35",
@@ -3819,13 +3819,13 @@
     "choices": [
      "the importance of fair pay in keeping workers motivated",
      "the daily routine of bakers who start work before sunrise",
-     "meaning at work coming from seeing how one's work affects others",
      "why workers should change jobs to find more meaning",
-     "ways for managers to reduce the number of daily tasks"
+     "ways for managers to reduce the number of daily tasks",
+     "meaning at work coming from seeing how one's work affects others"
     ],
     "explain_ko": "일의 의미는 일 자체가 아니라 그 일이 다른 사람의 삶에 닿는 것을 볼 때 생긴다는 글이다. 보상(급여)은 오히려 덜 중요하다고 했고, 제빵사는 예시일 뿐, 이직·업무 줄이기는 근거가 없다.",
     "status": "draft",
-    "answer": 2
+    "answer": 4
    },
    {
     "id": "s2-B-38",
@@ -3856,15 +3856,15 @@
     "question": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
     "passage": "We usually treat pain as an enemy, something to be removed as quickly as possible. Yet pain plays a role that is easy to overlook. Imagine touching a hot pan without feeling anything: you would keep holding it until your skin was badly burned. People born without the ability to feel pain face exactly this danger, often hurting themselves seriously without noticing. Pain also continues after an injury for a good reason. A sore ankle makes you walk carefully, giving the damaged tissue time to heal. In this sense, pain is less a measure of damage than _____. Of course, pain that lasts long after healing is a different matter and needs treatment. But in most everyday cases, the ache we dislike is the body's way of looking after itself.",
     "choices": [
+     "a warning that protects the body from further harm",
      "a sign that the body has stopped healing",
      "a feeling that people should simply ignore",
      "an exact record of how serious an injury is",
-     "a warning that protects the body from further harm",
      "a problem that always needs medical treatment"
     ],
     "explain_ko": "뜨거운 팬을 놓게 하고, 다친 발목을 조심히 쓰게 해 회복할 시간을 주므로 통증은 '더 큰 해를 막는 경고'다. '손상의 정확한 기록'은 less a measure of damage와 반대, 나머지는 글과 어긋난다.",
     "status": "draft",
-    "answer": 3
+    "answer": 0
    },
    {
     "id": "s2-B-40",
@@ -3948,12 +3948,12 @@
     "choices": [
      "transparent",
      "tranquil",
-     "trivial",
-     "transient"
+     "transient",
+     "trivial"
     ],
     "explain_ko": "transient는 '일시적인, 덧없는'. transparent=투명한, tranquil=고요한, trivial=사소한(모두 tr-로 시작하는 형용사).",
     "status": "draft",
-    "answer": 3
+    "answer": 2
    },
    {
     "id": "s2-B-45",
@@ -3982,15 +3982,15 @@
     "question": "빈칸에 들어갈 말로 알맞은 것은?",
     "passage": "Little _____ the young clerk know in 1985 that the old coin in his drawer would one day be worth a fortune.",
     "choices": [
-     "did",
      "does",
      "had",
+     "did",
      "was",
      "has"
     ],
     "explain_ko": "부정어 Little이 앞에 나와 주어와 조동사가 도치되고, 뒤에 동사원형 know, 때는 1985년(과거)이므로 did. does는 시제가 맞지 않고, had·was·has 뒤에는 원형 know가 올 수 없다.",
     "status": "draft",
-    "answer": 0
+    "answer": 2
    },
    {
     "id": "s2-B-47",
@@ -4003,13 +4003,13 @@
     "choices": [
      "Why Strangers on Buses Rarely Smile at Each Other",
      "Why Four Hours of Sleep Is Enough for Adults",
+     "How Lost Sleep Makes Strangers Seem Less Friendly",
      "How Reading Faces Improves with Practice and Age",
-     "How Tired People Learn to Hide Their Emotions",
-     "How Lost Sleep Makes Strangers Seem Less Friendly"
+     "How Tired People Learn to Hide Their Emotions"
     ],
     "explain_ko": "잠이 모자라면 똑같은 무표정 얼굴도 덜 친근하고 위협적으로 보이며, 본인은 그 변화를 모른다는 연구다. 버스·4시간·얼굴 읽기·실험실은 지문 낱말만 빌린 오답.",
     "status": "draft",
-    "answer": 4
+    "answer": 2
    },
    {
     "id": "s2-B-48",
@@ -4020,15 +4020,15 @@
     "question": "the Halvern University study에 관한 다음 글의 내용과 일치하지 __않는__ 것은?",
     "passage": "Recycling programs often fail not because people refuse to recycle but because they recycle the wrong things. A single greasy pizza box tossed into a paper bin can spoil an entire load, sending tons of usable material to a landfill. To see whether the shape of a bin could reduce such mistakes, researchers at Halvern University replaced the open-top bins in twelve office buildings. The new bins had openings shaped for the items they were meant to receive: a narrow slot for paper and a small round hole for cans. The results were striking. Over the next three months, wrongly sorted waste fell by nearly a third, while the total amount collected stayed about the same. Interestingly, signs explaining what belonged in each bin, tested earlier in the same buildings, had produced almost no change. So simple was the redesign that the university has since adopted it on its own campus.",
     "choices": [
-     "잘못 버린 물건 하나가 한 묶음 전체를 못 쓰게 만들 수 있다.",
-     "3개월 동안 수거된 재활용품의 전체 양이 크게 줄었다.",
+     "연구진은 쓰레기통의 모양이 분류 실수를 줄일 수 있는지 알아보려 했다.",
      "연구진은 열두 개 사무실 건물의 쓰레기통을 바꾸었다.",
+     "3개월 동안 수거된 재활용품의 전체 양이 크게 줄었다.",
      "새 쓰레기통에는 넣을 물건에 맞춘 모양의 구멍이 있었다.",
      "분류 방법을 설명하는 안내문은 효과가 거의 없었다."
     ],
     "explain_ko": "잘못 분류된 쓰레기는 3분의 1 가까이 줄었지만 수거된 전체 양은 거의 그대로였다(stayed about the same). 줄어든 대상을 바꾼 오답.",
     "status": "draft",
-    "answer": 1
+    "answer": 2
    },
    {
     "id": "s2-B-49",
@@ -4060,15 +4060,15 @@
     "question": "다음 우리말을 영어로 바르게 옮긴 것은?\n모든 아이가 같은 속도로 배운다는 믿음은 많은 교사들에 의해 의문시되어 왔다.",
     "point": "동격 that",
     "choices": [
-     "The belief that every child learns at the same pace has been questioned by many teachers.",
      "The belief which every child learns at the same pace has been questioned by many teachers.",
      "The belief that every child learn at the same pace has been questioned by many teachers.",
      "The belief that every child learns at the same pace have been questioned by many teachers.",
-     "The belief that every child learns at the same pace has questioned by many teachers."
+     "The belief that every child learns at the same pace has questioned by many teachers.",
+     "The belief that every child learns at the same pace has been questioned by many teachers."
     ],
     "explain_ko": "the belief의 내용을 설명하는 동격 that절(완전한 절)을 쓰고, that절 안 every child는 단수(learns), 문장 주어 The belief도 단수(has), '의문시되어 왔다'는 현재완료 수동(has been questioned). which는 동격절에 못 쓰고, learn·have·has questioned는 수 일치·태가 틀렸다.",
     "status": "draft",
-    "answer": 0
+    "answer": 4
    }
   ]
  }
