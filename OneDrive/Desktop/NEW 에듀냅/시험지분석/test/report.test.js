@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle } from '../public/report.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages } from '../public/report.js';
 import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
@@ -143,4 +143,28 @@ test('우리 학원 대비는 원장님이 적어 둔 것만 싣는다 (AI 가 �
   assert.doesNotMatch(html, /<script>/);
   // 다음 시험 전략보다 앞에 온다 (받은 자료의 3부 순서)
   assert.ok(html.indexOf('이렇게 대비했습니다') < html.indexOf('다음 시험 이렇게 준비합니다'));
+});
+
+test('문항 해설은 학원용 종이로만 나오고 카드·학부모 리포트로 새지 않는다', () => {
+  const 풀이 = items.map((it) => ({ ...it, answer: '③', teach: `${it.no}번풀이ABC` }));
+  const c = { ...ctx, items: 풀이, stats: examStats(풀이) };
+  const html = explainPages(c);
+  assert.match(html, /문항 해설/);
+  assert.match(html, /학원 안에서만/); // 외부 배포 금지 경고
+  풀이.forEach((it) => assert.match(html, new RegExp(`${it.no}번풀이ABC`)));
+  // 정답도 학원용에만 들어간다
+  assert.match(html, /③/);
+
+  // 학부모가 받는 종이에는 풀이도 정답도 없다
+  const 학교 = schoolPage(c, school);
+  assert.doesNotMatch(학교, /번풀이ABC/);
+  const 학생 = studentPage(c, { label: '김OO', wrong: [] }, studentStats(풀이, []), { label: '김OO', summary: 's', causes: [], directions: [] });
+  assert.doesNotMatch(학생, /번풀이ABC/);
+});
+
+test('문항 해설은 문항이 많으면 여러 장으로 나뉜다', () => {
+  const many = Array.from({ length: 30 }, (_, i) => ({ ...items[i % 3], no: i + 1, teach: '풀이' }));
+  const html = explainPages({ ...ctx, items: many, stats: examStats(many) });
+  assert.ok(html.match(/class="page"/g).length > 1);
+  assert.match(html, /1 \/ /);
 });

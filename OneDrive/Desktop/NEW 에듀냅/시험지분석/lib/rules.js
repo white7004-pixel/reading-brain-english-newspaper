@@ -132,7 +132,7 @@ export const EXTRACT_SCHEMA = obj({
   meta: obj({ subject: oneOf(SUBJECT_NAMES), school: str, grade: str, term: str, exam: str, date: str, minutes: int, range: str }),
   items: arr(obj({
     no: int, kind: oneOf(KINDS), points: { type: 'number' }, unit: str, area: oneOf(AREAS), subtype: str,
-    difficulty: oneOf(DIFF5), source: oneOf([...SOURCES, '']), answer: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
+    difficulty: oneOf(DIFF5), source: oneOf([...SOURCES, '']), answer: str, teach: str, reason: str, unsure: arr(oneOf(UNSURE_FIELDS)),
   })),
   notes: str,
 });
@@ -188,6 +188,10 @@ const EXTRACT_SYSTEM = `당신은 한국 중·고등학교 내신 시험지를 �
 - answer: 정답지는 받지 않습니다. 문항을 직접 풀어서 적습니다. 객관식은 ①~⑤ 기호, 서술형은 모범답안 요지.
   풀어도 확신이 서지 않으면 그 자리를 비우지 말고 가장 그럴듯한 답을 적은 뒤 unsure 에 answer 를 넣습니다.
   지문이 잘려 보이거나 그림·표가 있어야 풀 수 있는 문항도 unsure 에 answer 를 넣습니다.
+- teach: 이 문항의 짧은 풀이. 두 문장, 120자 이내. **학원 안에서만 보는 해설 자료에 쓰입니다** (학부모에게 가지 않습니다).
+  ① 무엇을 알아야 풀리는가 ② 학생이 어디서 틀리는가(함정이 된 선택지나 빠뜨리기 쉬운 조건).
+  방금 직접 푼 근거를 그대로 적습니다. 모르면 빈 문자열로 두고 지어내지 않습니다.
+  **지문·선택지 문장을 옮겨 적지 않습니다.** 시험지는 학교 저작물입니다. 문법 포인트·단어·조건만 말로 적습니다.
 - reason: 난이도 판단 근거 한 줄(60자 이내). 지문 문장을 옮겨 적지 않습니다.
 - unsure: 확신이 없는 칸 이름. 흐려서 읽기 어려움, 배점이 안 보임, 정답이 둘로 갈림, 유형이 둘에 걸침 등. 확신하면 빈 배열.
 - notes: 읽지 못한 쪽, 잘린 문항, 시험지가 아닌 사진처럼 원장님이 알아야 할 것. 없으면 빈 문자열.

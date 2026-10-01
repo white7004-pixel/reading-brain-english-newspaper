@@ -1,6 +1,6 @@
 import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents, esc } from './lib.js';
 import { unitsFor, GRADES } from './curriculum.js';
-import { schoolPage, studentPage } from './report.js';
+import { schoolPage, studentPage, explainPages } from './report.js';
 import { shareCards } from './share.js';
 
 export const $ = (sel) => document.querySelector(sel);
@@ -319,7 +319,8 @@ $('#make-report').addEventListener('click', async (e) => {
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
     $('#pages').style.setProperty('--brand', state.academy.color);
     $('#pages').innerHTML = shareCards(ctx, school) + schoolPage(ctx, school)
-      + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('');
+      + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('')
+      + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
     setStatus('#report-status', '');
     show('#step-result');
     fitAll();

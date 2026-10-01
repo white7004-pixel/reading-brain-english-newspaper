@@ -161,6 +161,33 @@ export function schoolPage({ academy, meta, items, stats }, school) {
     ${footer(academy, '문항 난이도·단원·출처는 시험지를 바탕으로 학원에서 분류한 것입니다.')}`);
 }
 
+// ── 문항 해설 (학원용) ─────────────────────────────────────────────
+// 학원 안에서만 보는 자료다. 정답과 풀이가 들어가므로 학부모 리포트·공개 카드와 절대 섞지 않는다.
+// 풀이(teach)는 추출 때 AI 가 문항을 직접 풀며 적어 둔 것이다.
+// 지문·선택지 원문은 싣지 않는다 — 시험지는 학교 저작물이다.
+const EXPLAIN_PER_PAGE = 16; // 한 장에 열여섯 문항. 풀이 120자(세 줄)로 꽉 채워 재어 보고 정했다
+
+const explainRow = (it) => `<tr>
+  <td class="num">${esc(it.difficulty === '상' ? '★' : '')}${esc(it.no)}</td>
+  <td class="c">${esc(it.kind === '서술형' ? '서' : '객')}</td>
+  <td>${esc([it.area, it.subtype].filter(Boolean).join(' - '))}</td>
+  <td class="num">${esc(it.points ?? '')}</td>
+  <td class="c">${badge(it.difficulty)}</td>
+  <td class="pt"><b>${esc(it.answer || '—')}</b></td>
+  <td contenteditable>${esc(it.teach || '')}</td></tr>`;
+
+export function explainPages({ academy, meta, items }) {
+  const 장수 = Math.max(1, Math.ceil(items.length / EXPLAIN_PER_PAGE));
+  const 경고 = '학원 안에서만 보는 자료입니다 — 학부모·학생에게 그대로 주지 마세요';
+  return Array.from({ length: 장수 }, (_, i) => sheet(
+    `${meta.school}-${meta.grade}-${meta.subject}-문항해설(학원용)${장수 > 1 ? `-${i + 1}` : ''}`, `
+    ${header(academy, `${examName(meta)} ${meta.subject} 문항 해설`, `학원용 자료 · ${i + 1} / ${장수}`)}
+    <p class="r-warn">${esc(경고)}</p>
+    <section class="r-explain">${table(['#번호', '유형', '영역 - 세부 포인트', '#배점', '난이도', '정답', '풀이 · 어디서 틀리나'],
+      items.slice(i * EXPLAIN_PER_PAGE, (i + 1) * EXPLAIN_PER_PAGE).map(explainRow), 't-explain')}</section>
+    ${footer(academy, esc(경고))}`)).join('');
+}
+
 // 학생 리포트도 학교 분석지와 같은 표로 (영역별 결과 / 오답 분석)
 const studentAreaTable = (stats) => table(['영역', '#문항', '#맞힘', '틀린 번호', '#정답률'],
   stats.byArea.map((r) => `<tr><td>${esc(r.label)}</td>${num(r.count)}${num(r.correct)}<td class="pt">${esc(nosText(r.nos)) || '—'}</td>${barCell(r.pct, `${r.pct}%`)}</tr>`));

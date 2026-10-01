@@ -318,3 +318,23 @@ button.ghost:hover:not(:disabled) { background: rgba(245,194,76,.12); }
   .page { box-shadow: none; break-after: page; }
   .page [contenteditable]:hover { outline: none; }
 }
+
+/* 학원용 문항 해설 경고 띠 — 학부모 종이와 한눈에 구분되게 */
+.page .r-warn {
+  margin: .5em 0 .8em; padding: .45em .8em; border-radius: .25em;
+  background: #fdecea; color: #8a1c13; border: 1px solid #f0b8b2;
+  font-weight: 700; font-size: .8em; letter-spacing: -.01em;
+}
+
+/* 문항 해설(학원용): 풀이 칸이 절반 가까이 되어야 읽힌다.
+   전 문항 표(.r-items)와 칸 구성이 달라 규칙을 따로 둔다 */
+.r-explain .t { table-layout: fixed; }
+.r-explain .t th:nth-child(1) { width: 7%; }
+.r-explain .t th:nth-child(2) { width: 5%; }
+.r-explain .t th:nth-child(3) { width: 20%; }
+.r-explain .t th:nth-child(4) { width: 6%; }
+.r-explain .t th:nth-child(5) { width: 8%; }
+.r-explain .t th:nth-child(6) { width: 9%; }
+.r-explain .t th:nth-child(7) { width: 45%; }
+.r-explain .t td { vertical-align: top; }
+.r-explain .t td.c { white-space: nowrap; }

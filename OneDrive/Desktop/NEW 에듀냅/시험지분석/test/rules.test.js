@@ -189,3 +189,13 @@ test('영어 서답형은 묻는 내용의 영역으로 분류한다 (서술형�
   assert.match(GUIDE.영어.classify, /서답형|서술형 문항도/);
   assert.match(GUIDE.영어.classify, /kind/);
 });
+
+test('AI 가 문항을 풀면서 짧은 풀이(teach)도 함께 적는다', () => {
+  // 풀이는 추출 때 받는다. 그때가 AI 가 시험지를 보고 있는 유일한 순간이다
+  assert.ok(EXTRACT_SCHEMA.properties.items.items.properties.teach, 'teach 칸이 있어야 한다');
+  const 계약 = extractRequest({ pages: [img] }).system;
+  assert.match(계약, /teach:/);
+  assert.match(계약, /학원 안에서만/);
+  // 지문을 옮겨 적지 말라고 못 박는다 (학교 저작물)
+  assert.match(계약, /지문|본문 문장/);
+});
