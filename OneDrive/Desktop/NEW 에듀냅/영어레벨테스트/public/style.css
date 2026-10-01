@@ -3,7 +3,7 @@
   --navy: #0b2c46; --navy-2: #173c5c; --ink: #15202c; --muted: #646c78; --faint: #9aa0a8;
   --wine: #7d1d1e; --wine-soft: #f6ecea; --champagne: #e7d6bc;
   --paper: #f7f5f0; --card: #fff; --line: #e4dfd5; --line-2: #cfc8bb; --pane: #f2efe8; --tint: #eaeff4;
-  --serif: 'MaruBuri', 'Nanum Myeongjo', 'AppleMyungjo', serif; /* 원장 선택 10/1: 마루부리 */
+  --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; /* 제목 글씨 — 원장 선택 10/1: 프리텐다드 굵게 (변수 이름은 예전 명조 그대로) */
   --wordmark: 'Montserrat', 'Pretendard', sans-serif;
   --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --en: 'Literata', Georgia, 'Pretendard', serif;
@@ -30,7 +30,7 @@ a { color: var(--navy); }
 .eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--wine); }
 .eyebrow span { font: 500 12.5px/1 var(--sans); letter-spacing: .02em; color: var(--muted); }
 .eyebrow span::before { content: '·'; margin-right: 12px; color: var(--line-2); }
-.hero h1 { margin: 0; font: 600 clamp(40px, 7vw, 60px)/1.2 var(--serif); letter-spacing: -.04em; color: var(--navy); }
+.hero h1 { margin: 0; font: 700 clamp(40px, 7vw, 60px)/1.2 var(--serif); letter-spacing: -.035em; color: var(--navy); }
 .lede { margin: 18px 0 0; max-width: 38em; color: var(--muted); font-size: 16px; line-height: 1.75; }
 
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 30px 32px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(11,44,70,.04), 0 14px 36px -22px rgba(11,44,70,.22); }

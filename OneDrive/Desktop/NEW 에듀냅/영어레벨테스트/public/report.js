@@ -112,7 +112,7 @@ function gauge(sc) {
   return `<svg viewBox="0 0 176 176" aria-label="환산 점수 ${sc ?? '-'}점">
     <circle cx="88" cy="88" r="74" fill="none" stroke="rgba(247,243,235,.14)" stroke-width="5"/>${arc}
     <circle cx="88" cy="88" r="62" fill="none" stroke="rgba(247,243,235,.1)" stroke-width="1"/>
-    <text x="88" y="92" text-anchor="middle" font-family="MaruBuri" font-size="50" font-weight="600" fill="#f7f3eb">${sc ?? '-'}</text>
+    <text x="88" y="92" text-anchor="middle" font-family="Pretendard" font-size="50" font-weight="600" fill="#f7f3eb">${sc ?? '-'}</text>
     <text x="88" y="114" text-anchor="middle" font-family="Pretendard" font-size="10.5" fill="rgba(247,243,235,.6)" letter-spacing="2">/ 100</text>
     <text x="88" y="130" text-anchor="middle" font-family="Pretendard" font-size="9.5" fill="rgba(231,214,188,.85)">환산 점수</text></svg>`;
 }
