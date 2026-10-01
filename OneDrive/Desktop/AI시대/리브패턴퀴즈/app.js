@@ -48,11 +48,14 @@ function scheduleCardPronunciation({ section, stage, item, round }) {
   if (!pronunciationViewVisible(section)) return false;
   const token = autoPronunciation.createToken?.({ section, stage, itemId: item?.id, round });
   if (!cardPronunciationGuard?.shouldPlay(token, navigator.onLine !== false)) return false;
-  queueMicrotask(() => {
-    const play = section === "bookquiz" ? speakBookquizItem(item) : speakExpression(item, 1);
-    Promise.resolve(play).catch(() => {});
+  const startedAt = Date.now();
+  const sound = new Promise((resolve) => {
+    queueMicrotask(() => {
+      const play = section === "bookquiz" ? speakBookquizItem(item) : speakExpression(item, 1);
+      Promise.resolve(play).catch(() => {}).then(() => resolve(Date.now() - startedAt));
+    });
   });
-  return true;
+  return sound;
 }
 
 function scheduleVerbFormsPronunciation(verb) {
@@ -681,7 +684,12 @@ function openDailyCourse(course) {
     if (elements.categorySelect) elements.categorySelect.value = firstItem.category;
   }
   if (course.stage === "interpret") setMode("interpret");
-  else setMode(course.stage === "quiz" || course.stage === "review" ? "quiz" : "study");
+  else {
+    // 이어서 할 카드부터 보여 준다 — 지난 화면의 카드 번호가 남아 엉뚱한 카드가 뜨면 안 된다
+    const total = Array.isArray(course.itemIds) ? course.itemIds.length : 0;
+    if (total) state.index = (Number(course.itemIndex) || 0) % total;
+    setMode(course.stage === "quiz" || course.stage === "review" ? "quiz" : "study");
+  }
 }
 
 function startDailyCourse(section = "pattern") {
@@ -1699,37 +1707,56 @@ function renderStudy() {
   renderNewWords(item);
   elements.cardEnglish.textContent = item.english;
   elements.cardKorean.textContent = item.korean;
-  scheduleCardPronunciation({ section: "pattern", stage: "study", item });
+  const sound = scheduleCardPronunciation({ section: "pattern", stage: "study", item });
   saveLastPosition();
   updateStats();
-  scheduleStudyCardAdvance();
+  scheduleStudyCardAdvance(sound);
 }
 
 const STUDY_CARD_AUTO_ADVANCE_DELAY = 3200;
+const STUDY_CARD_SOUND_WAIT_CAP = 8000;
 let studyCardAdvanceTimer = null;
+let studyCardAdvanceTicket = 0;
 
 function cancelStudyCardAdvance() {
+  studyCardAdvanceTicket += 1;
   if (studyCardAdvanceTimer !== null) window.clearTimeout(studyCardAdvanceTimer);
   studyCardAdvanceTimer = null;
 }
 
 // 발음을 듣고 읽을 시간을 준 뒤, 학생이 직접 "다음"을 누르지 않아도 다음 카드로 넘어간다.
+// 원어민 소리가 끝나기를 기다렸다가 따라 읽을 틈을 주고 넘긴다 — 말하는 중에 카드가 바뀌면 안 된다.
 // 마지막 카드에서도 그대로 예약하면 moveCard(1)이 알아서 퀴즈로 넘겨준다.
-function scheduleStudyCardAdvance() {
+function scheduleStudyCardAdvance(sound) {
   cancelStudyCardAdvance();
   const cards = currentStudyCards();
   if (!cards.length) return;
-  studyCardAdvanceTimer = window.setTimeout(() => {
-    studyCardAdvanceTimer = null;
-    if (state.mode === "study") moveCard(1);
-  }, STUDY_CARD_AUTO_ADVANCE_DELAY);
+  const ticket = studyCardAdvanceTicket;
+  const armTimer = (soundElapsedMs) => {
+    if (ticket !== studyCardAdvanceTicket) return;
+    const delay = autoPronunciation.studyAdvanceDelay?.(soundElapsedMs) ?? STUDY_CARD_AUTO_ADVANCE_DELAY;
+    studyCardAdvanceTimer = window.setTimeout(() => {
+      studyCardAdvanceTimer = null;
+      if (state.mode === "study" && ticket === studyCardAdvanceTicket) moveCard(1);
+    }, delay);
+  };
+  if (!sound || typeof sound.then !== "function") {
+    armTimer(0);
+    return;
+  }
+  // 소리가 끝나지 않거나 파일이 없어도 카드가 멈춰 서지 않게 한다
+  const giveUp = new Promise((resolve) => window.setTimeout(() => resolve(STUDY_CARD_SOUND_WAIT_CAP), STUDY_CARD_SOUND_WAIT_CAP));
+  Promise.race([sound, giveUp]).then(armTimer, () => armTimer(0));
 }
 
 function moveCard(step = 1) {
   const cards = currentStudyCards();
+  // 오늘의 학습으로 넘긴 카드도 '카드 넘기기' 목표에 세어야 한다
+  if (step > 0) bumpDaily("cards");
   const dailyCourse = activeDailyCourse("pattern");
   if (dailyCourse && step > 0) {
-    const item = cards[dailyCourse.itemIndex % cards.length];
+    // 화면에 떠 있던 카드를 그대로 기록한다 — 보지 않은 카드가 배운 것으로 세어지면 안 된다
+    const item = currentItem() || cards[dailyCourse.itemIndex % cards.length];
     const progress = progressDailyAnswer("pattern", {
       token: `pattern:${dailyCourse.stage}:${item.id}`,
       correct: true,
@@ -1745,7 +1772,6 @@ function moveCard(step = 1) {
   }
   const newIndex = state.index + step;
   if (newIndex < 0) return;
-  if (step > 0) bumpDaily("cards");
   // 마지막 카드에서 "다음"을 누르면 바로 퀴즈로 이어간다.
   if (step > 0 && newIndex >= cards.length) {
     state.index = cards.length - 1;

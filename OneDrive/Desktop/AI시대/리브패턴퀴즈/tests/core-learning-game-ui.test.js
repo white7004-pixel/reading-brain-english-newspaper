@@ -108,7 +108,7 @@ assert.match(app, /return gameItems\(\)\.slice\(0, PATTERN_SESSION_SIZE\)\.map/,
 assert.match(app, /const SECTION_QUIZ_TARGET = PATTERN_SESSION_SIZE;/, "the free pattern quiz must end after the same three items");
 
 const moveCard = functionSlice("function moveCard(step = 1)", "function markKnown(known)");
-assert.match(moveCard, /if \(step > 0\) bumpDaily\("cards"\);/, "forward navigation must retain daily card progress");
+assert.match(moveCard, /currentStudyCards\(\);[\s\S]{0,120}?if \(step > 0\) bumpDaily\("cards"\);[\s\S]{0,80}?activeDailyCourse/, "오늘의 학습으로 넘긴 카드도 하루 목표에 세어야 한다");
 assert.match(moveCard, /newIndex >= cards\.length[\s\S]*?setMode\("quiz"\)/, "reaching the last card and pressing next must lead straight into the quiz");
 
 const markKnown = functionSlice("function markKnown(known)", "async function speakCurrent");

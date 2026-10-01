@@ -26,5 +26,16 @@
     };
   }
 
-  return { createToken, createPronunciationGuard };
+  // 카드가 저절로 넘어가기까지 기다릴 시간.
+  // 원어민 소리가 끝난 뒤 따라 읽을 틈(1.2초)을 주고, 카드는 최소 3.2초 머문다.
+  const STUDY_MIN_TOTAL_MS = 3200;
+  const STUDY_READ_PAUSE_MS = 1200;
+
+  function studyAdvanceDelay(soundElapsedMs) {
+    const elapsed = Number(soundElapsedMs);
+    if (!Number.isFinite(elapsed) || elapsed < 0) return STUDY_MIN_TOTAL_MS;
+    return Math.max(STUDY_READ_PAUSE_MS, STUDY_MIN_TOTAL_MS - elapsed);
+  }
+
+  return { createToken, createPronunciationGuard, studyAdvanceDelay, STUDY_MIN_TOTAL_MS, STUDY_READ_PAUSE_MS };
 });
