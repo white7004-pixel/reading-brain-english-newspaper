@@ -318,3 +318,23 @@ test('stage2Est: 초등 수준·수준 아래는 중1 시작 전(step 9), 중1 �
   assert.deepEqual(stage2Est('초3 수준 아래'), { step: 9, unit: 0 });
   assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
 });
+
+test('한 시험 문제지(실제): A·B 각 90문항, 단계마다 10, 순서·검사 통과', () => {
+  const forms = JSON.parse(readFileSync(new URL('../public/data/forms.json', import.meta.url), 'utf8'));
+  for (const set of ['A', 'B']) {
+    const list = forms.test[set];
+    assert.equal(list.length, 90, set);
+    for (const lv of TEST_STAGES) assert.equal(list.filter((x) => x.level === lv).length, 10, `${set} ${lv}`);
+    assert.deepEqual(checkOrder(list), [], set);
+    assert.deepEqual([...list].sort((a, b) => a.no - b.no).map((x) => x.no), list.map((_, i) => i + 1));
+    for (const it of list) assert.deepEqual(validateTest(it), [], it.id);
+    assert.equal(new Set(list.map((x) => x.id)).size, 90);
+  }
+});
+
+test('한 시험 샘플: test.A 가 있고 순서·검사 통과, 모두 ok', () => {
+  const s = JSON.parse(readFileSync(new URL('../public/data/forms.sample.json', import.meta.url), 'utf8'));
+  assert.ok(s.test.A.length >= 5);
+  assert.deepEqual(checkOrder(s.test.A), []);
+  for (const it of s.test.A) { assert.deepEqual(validateTest(it), [], it.id); assert.equal(it.status, 'ok'); }
+});
