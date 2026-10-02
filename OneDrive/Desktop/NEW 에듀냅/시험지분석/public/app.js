@@ -4,6 +4,7 @@ import { subtypesFor, sourcesFor } from './subtypes.js';
 import { schoolPage, explainPages } from './report.js';
 import { draftSchool } from './draft.js';
 import { cardDeck } from './cards.js';
+import { SKINS, COLORS, 기본모양, 기본색 } from './cardstyle.js';
 import { slideDeck } from './slides.js';
 import { pickBrandColor, PALETTE } from './color.js';
 
@@ -256,10 +257,26 @@ $('#swatches').addEventListener('click', (e) => {
 });
 academyForm.elements.color.addEventListener('input', (e) => markSwatch(e.target.value));
 
+// 카드 모양·색 고르는 칸 (2026-10-03 원장 요청). 목록은 cardstyle.js 에 있다.
+function drawCardPick() {
+  const f = academyForm.elements;
+  f.deckSkin.innerHTML = SKINS.map((x) => `<option value="${esc(x.키)}">${esc(x.이름)}</option>`).join('');
+  f.deckColor.innerHTML = COLORS.map((x) => `<option value="${esc(x.키)}">${esc(x.이름)}</option>`).join('');
+  f.deckSkin.value = state.academy?.deckSkin ?? 기본모양;
+  f.deckColor.value = state.academy?.deckColor ?? 기본색;
+  showSkinNote();
+}
+const showSkinNote = () => {
+  $('#skin-note').textContent = SKINS.find((x) => x.키 === academyForm.elements.deckSkin.value)?.설명 ?? '';
+};
+const showCardPick = () => { $('#card-pick').hidden = !academyForm.elements.cards.checked; };
+academyForm.elements.cards.addEventListener('change', showCardPick);
+academyForm.elements.deckSkin.addEventListener('change', showSkinNote);
+
 academyForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const f = academyForm.elements;
-  state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src, prep: f.prep.value.trim(), slogan: f.slogan.value.trim(), cover: f.cover.checked, a4: f.a4.checked, cards: f.cards.checked };
+  state.academy = { name: f.academyName.value.trim(), phone: f.phone.value.trim(), color: f.color.value, logo: $('#logo-preview').hidden ? '' : $('#logo-preview').src, prep: f.prep.value.trim(), slogan: f.slogan.value.trim(), cover: f.cover.checked, a4: f.a4.checked, cards: f.cards.checked, deckSkin: f.deckSkin.value, deckColor: f.deckColor.value };
   store.set('academy', state.academy);
   // 이미 만들어 둔 결과에도 바로 비친다 — 색을 보려고 다시 돌리지 않으셔도 된다
   $('#pages').style.setProperty('--brand', state.academy.color);
@@ -646,7 +663,7 @@ $('#make-report').addEventListener('click', async (e) => {
     // 학교 분석은 발표 슬라이드 한 벌이 기본이다 (원장님 결정 2026-10-01 — 여러 형태를 한꺼번에 쏟지 않는다).
     // A4 종이와 정사각 카드는 원장님이 켜실 때만 뒤에 붙는다.
     $('#pages').innerHTML = slideDeck(ctx, school)
-      + (state.academy.cards ? cardDeck(ctx, school, { 적중: state.적중 }) : '')
+      + (state.academy.cards ? cardDeck(ctx, school, { 적중: state.적중, 모양: state.academy.deckSkin, 색: state.academy.deckColor }) : '')
       + (state.academy.a4 ? schoolPage(ctx, school) : '')
       + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
     // 버튼은 이번에 실제로 나온 것만 보여 준다 — 눌러도 아무 일 없는 버튼을 두지 않는다
@@ -773,6 +790,8 @@ if (saved) {
   if (saved.logo) { $('#logo-preview').src = saved.logo; $('#logo-preview').hidden = false; }
   markSwatch(f.color.value);
 }
+drawCardPick();
+showCardPick();
 showAcademy();
 setTheme(store.get('theme')); // 기억해 둔 디자인을 처음부터 입힌다
 

@@ -6,8 +6,9 @@
 // 04 기출 적중은 **원장님이 학원 교재 사진을 올리셨을 때만** 만든다 (2026-10-02 원장 결정).
 import { to3, nosText, noText, esc } from './lib.js';
 import { sheet } from './report.js';
+import { deckCls } from './cardstyle.js';
 
-const CLS = 'card-news deck';
+
 const 글자 = (s) => String(s ?? '').trim();
 const 점 = (n) => `${Math.round(n * 10) / 10}점`;
 const 색3 = { 하: 'var(--d-low)', 중: 'var(--d-mid)', 상: 'var(--d-high)' };
@@ -106,9 +107,9 @@ function donut(rows, 가운데, 위) {
     at += len; return el;
   }).join('');
   return `<svg viewBox="0 0 150 150" width="118" height="118" aria-hidden="true">
-    <circle cx="75" cy="75" r="${r}" fill="none" stroke="rgba(14,27,41,.09)" stroke-width="${w}"/>${호}
-    <text x="75" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="rgba(14,27,41,.5)">${esc(위)}</text>
-    <text x="75" y="93" text-anchor="middle" font-size="27" font-weight="900" fill="#0e1b29">${esc(가운데)}</text></svg>`;
+    <circle cx="75" cy="75" r="${r}" fill="none" stroke="var(--k-track)" stroke-width="${w}"/>${호}
+    <text x="75" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--k-chart-dim)">${esc(위)}</text>
+    <text x="75" y="93" text-anchor="middle" font-size="27" font-weight="900" fill="var(--k-chart-ink)">${esc(가운데)}</text></svg>`;
 }
 
 // 출처별 세로막대
@@ -120,9 +121,9 @@ function vbars(rows) {
     const 높 = Math.max(12, (x.비율 / 최대) * (바닥 - 38)), cx = 칸 * i + 칸 / 2;
     return `<rect x="${(cx - 폭 / 2).toFixed(1)}" y="${(바닥 - 높).toFixed(1)}" width="${폭.toFixed(1)}"
         height="${높.toFixed(1)}" rx="7" fill="${톤[i] || '#e0c2c2'}"/>
-      <text x="${cx.toFixed(1)}" y="${(바닥 - 높 - 11).toFixed(1)}" text-anchor="middle" font-size="20" font-weight="800" fill="#0e1b29">${x.비율}%</text>
-      <text x="${cx.toFixed(1)}" y="${바닥 + 22}" text-anchor="middle" font-size="16.5" font-weight="700" fill="#0e1b29">${esc(x.이름)}</text>
-      <text x="${cx.toFixed(1)}" y="${바닥 + 41}" text-anchor="middle" font-size="14" fill="#6b6557">${x.수}문항</text>`;
+      <text x="${cx.toFixed(1)}" y="${(바닥 - 높 - 11).toFixed(1)}" text-anchor="middle" font-size="20" font-weight="800" fill="var(--k-chart-ink)">${x.비율}%</text>
+      <text x="${cx.toFixed(1)}" y="${바닥 + 22}" text-anchor="middle" font-size="16.5" font-weight="700" fill="var(--k-chart-ink)">${esc(x.이름)}</text>
+      <text x="${cx.toFixed(1)}" y="${바닥 + 41}" text-anchor="middle" font-size="14" fill="var(--k-chart-dim)">${x.수}문항</text>`;
   }).join('')}</svg>`;
 }
 
@@ -132,28 +133,29 @@ function bars(d) {
   const n = Math.max(d.흐름.length, 1), 칸 = (오 - 왼) / n, 폭 = Math.min(30, 칸 * 0.62);
   const y = (v) => 아래 - ((v + 1) / 3) * (아래 - 위);
   const 눈 = ['하', '중', '상'].map((나, i) =>
-    `<line x1="${왼 - 6}" y1="${y(i)}" x2="${오}" y2="${y(i)}" stroke="#ddd3bf" stroke-dasharray="4 5"/>
-     <text x="${왼 - 14}" y="${y(i) + 6}" text-anchor="end" font-size="15" fill="#7b7467" font-weight="700">${나}</text>`).join('');
+    `<line x1="${왼 - 6}" y1="${y(i)}" x2="${오}" y2="${y(i)}" stroke="var(--k-chart-grid)" stroke-dasharray="4 5"/>
+     <text x="${왼 - 14}" y="${y(i) + 6}" text-anchor="end" font-size="15" fill="var(--k-chart-dim)" font-weight="700">${나}</text>`).join('');
   const 띄우기 = n > 18 ? 2 : 1;
   const 막 = d.흐름.map((v, i) => {
     const cx = 왼 + 칸 * i + 칸 / 2, 변 = d.변별.includes(d.흐름번호[i]);
     const 이름 = (i % 띄우기 === 0 || 변) ? `<text x="${cx.toFixed(1)}" y="${아래 + 23}" text-anchor="middle" font-size="13"
-        font-weight="${변 ? 800 : 600}" fill="${변 ? '#9b2c2c' : '#7b7467'}">${esc(짧게(d.흐름번호[i]))}</text>` : '';
+        font-weight="${변 ? 800 : 600}" fill="${변 ? 'var(--k-wine)' : 'var(--k-chart-dim)'}">${esc(짧게(d.흐름번호[i]))}</text>` : '';
     return `<rect x="${(cx - 폭 / 2).toFixed(1)}" y="${y(v).toFixed(1)}" width="${폭.toFixed(1)}"
       height="${(아래 - y(v)).toFixed(1)}" rx="5" fill="${점색[v]}"
-      ${변 ? 'stroke="#9b2c2c" stroke-width="3.5"' : ''}/>${이름}`;
+      ${변 ? 'stroke="var(--k-edge)" stroke-width="3.5"' : ''}/>${이름}`;
   }).join('');
   return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${눈}${막}</svg>`;
 }
 
 /* ── 틀 ── */
-const 머리 = (d) => `<div class="kt">
-  <span class="eye">${esc(d.과목)} 내신 분석</span><span class="ln"></span><span class="who">${esc(d.학원)}</span></div>`;
-
-const 제목 = (d, 큰) => `<div class="kh">
-  <div><div class="sub">${esc([d.학교, d.학년].filter(Boolean).join(' '))}</div>
-    <h1 contenteditable>${esc(큰)}</h1></div>
-  <div class="rt">${esc(d.날짜)}${d.범위 ? `<br>${esc(d.범위)}` : ''}</div></div>`;
+const 머리 = (d, 큰) => `<header class="kband">
+  <div class="kt"><span class="eye">${esc(d.과목)} 내신 분석</span>
+    <span class="ln"></span><span class="who">${esc(d.학원)}</span></div>
+  <div class="kh">
+    <div><div class="sub">${esc([d.학교, d.학년].filter(Boolean).join(' '))}</div>
+      <h1 contenteditable>${esc(큰)}</h1></div>
+    <div class="rt">${esc(d.날짜)}${d.범위 ? `<br>${esc(d.범위)}` : ''}</div>
+  </div></header>`;
 
 // 패널 머리 — 번호 · 이름 · 오른쪽에 한 줄 설명
 const 패 = (no, 이름, 작게 = '') =>
@@ -173,14 +175,14 @@ const 파일 = (d, 꼬리) => `${d.학교}-${d.학년}-${d.과목}-${꼬리}`;
 /* ── 다섯 장 ── */
 export function cardDeck(ctx, school, opts = {}) {
   const d = deckData(ctx, school, opts);
+  const CLS = deckCls(opts.모양, opts.색);
   if (!d.문항) return '';
   const 다 = d.적중 ? 5 : 4;
   const 장 = [];
 
   // 01 시험 한눈에
   장.push(sheet(파일(d, '카드1-한눈에'), `
-    ${머리(d)}
-    ${제목(d, [d.학기, d.시험].filter(Boolean).join(' '))}
+    ${머리(d, [d.학기, d.시험].filter(Boolean).join(' '))}
     <div class="kp big">
       ${패(1, '문항 지도', `${d.문항}문항을 번호 차례로 폈습니다`)}
       ${번호판(d)}
@@ -211,8 +213,7 @@ export function cardDeck(ctx, school, opts = {}) {
 
   // 02 출제 구조
   장.push(sheet(파일(d, '카드2-출제구조'), `
-    ${머리(d)}
-    ${제목(d, '출제 구조')}
+    ${머리(d, '출제 구조')}
     <div class="kp big">
       ${패(1, '영역별 출제', '큰 숫자는 문항 수입니다')}
       <div class="areas">${d.영역.slice(0, 4).map((a) => `<div class="ac">
@@ -238,8 +239,7 @@ export function cardDeck(ctx, school, opts = {}) {
 
   // 03 갈린 구간
   장.push(sheet(파일(d, '카드3-갈린구간'), `
-    ${머리(d)}
-    ${제목(d, '갈린 구간')}
+    ${머리(d, '갈린 구간')}
     <div class="kp big fill">
       ${패(1, '문항별 난이도', '테두리가 진한 칸이 점수가 갈린 문항입니다')}
       <div class="plot">${bars(d)}</div>
@@ -261,8 +261,7 @@ export function cardDeck(ctx, school, opts = {}) {
   // 04 기출 적중 — 학원 교재 사진을 올리셨을 때만
   if (d.적중) {
     장.push(sheet(파일(d, '카드4-기출적중'), `
-      ${머리(d)}
-      ${제목(d, '기출 적중 확인')}
+      ${머리(d, '기출 적중 확인')}
       <div class="kp big">
         ${패(1, '시험 전에 다룬 문항')}
         <div class="hit"><span class="bg num">${d.적중.맞힌}<u> / ${d.적중.전체}</u></span>
@@ -280,8 +279,7 @@ export function cardDeck(ctx, school, opts = {}) {
 
   // 05 다음 준비
   장.push(sheet(파일(d, `카드${다}-다음준비`), `
-    ${머리(d)}
-    ${제목(d, '다음 준비')}
+    ${머리(d, '다음 준비')}
     <div class="kp big fill">
       ${패(1, '영역별로 할 일')}
       <div class="ways">${d.방향.map((w, i) => `<div class="way">

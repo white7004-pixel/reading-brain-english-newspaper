@@ -2,9 +2,23 @@
    여기 규칙은 .page.card-news.deck 안에서만 돈다. A4·슬라이드는 건드리지 않는다. */
 
 .page.card-news.deck {
+  /* 색은 .c-○○ 가 바꾼다. 여기 값은 못 고를 때를 위한 바닥이다 */
   --k-ink: #0e1b29;
+  --b-navy: #082d49;
+  --b-beige: #f3ede1;
+  --b-wine: #7d1d1d;
+  --k-bg1: #13263a;
+  --k-bg2: #0b1724;
+  --k-bg3: #0e1b29;
+  --k-glow1: rgba(155, 44, 44, .34);
+  --k-glow2: rgba(40, 78, 124, .4);
   --k-cream: #f6f1e7;
   --k-cream2: #efe8da;
+  --k-track: rgba(14, 27, 41, .09);
+  --k-chart-ink: #0e1b29;
+  --k-chart-dim: #6b6557;
+  --k-chart-grid: #ddd3bf;
+  --k-edge: var(--k-wine);
   --k-line: rgba(14, 27, 41, .13);
   --k-dim: rgba(14, 27, 41, .5);
   --k-wine: #9b2c2c;
@@ -19,9 +33,9 @@
   color: #fff; isolation: isolate; overflow: hidden;
   font-family: var(--sans);
   background:
-    radial-gradient(820px 620px at 6% -6%, rgba(155, 44, 44, .34), transparent 62%),
-    radial-gradient(760px 600px at 104% 104%, rgba(40, 78, 124, .4), transparent 60%),
-    linear-gradient(165deg, #13263a 0%, #0b1724 55%, #0e1b29 100%);
+    radial-gradient(820px 620px at 6% -6%, var(--k-glow1), transparent 62%),
+    radial-gradient(760px 600px at 104% 104%, var(--k-glow2), transparent 60%),
+    linear-gradient(165deg, var(--k-bg1) 0%, var(--k-bg2) 55%, var(--k-bg3) 100%);
 }
 /* 결 — 사진처럼 입자를 깔아 납작함을 없앤다 */
 .page.card-news.deck::after {
@@ -95,7 +109,7 @@
 .deck .row + .row { border-top: 1px solid rgba(14, 27, 41, .1); }
 .deck .row .nm { width: 68px; font-size: 17px; font-weight: 800; }
 .deck .row .bar { flex: 1; height: 11px; border-radius: 6px; background: rgba(14, 27, 41, .1); overflow: hidden; }
-.deck .row .bar s { display: block; height: 100%; border-radius: 6px; text-decoration: none; background: linear-gradient(90deg, #b43b3b, var(--k-wine)); }
+.deck .row .bar s { display: block; height: 100%; border-radius: 6px; text-decoration: none; background: linear-gradient(90deg, color-mix(in srgb, var(--k-wine) 78%, #fff), var(--k-wine)); }
 .deck .row .n { width: 116px; text-align: right; font-size: 16px; font-weight: 800; }
 .deck .row .n u { text-decoration: none; margin-left: 5px; font-size: 14px; font-weight: 600; color: rgba(14, 27, 41, .5); }
 
@@ -202,3 +216,164 @@
 .deck .kf s { width: 8px; height: 8px; border-radius: 50%; background: var(--k-gold); text-decoration: none; box-shadow: 0 0 12px rgba(201, 162, 39, .85); }
 .deck .kf p { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
 .deck .kf .pg { margin-left: auto; font-size: 14px; font-weight: 800; letter-spacing: .16em; color: rgba(255, 255, 255, .38); }
+
+/* ──────────── 색 다섯 벌 (cardstyle.js 의 COLORS 와 짝이다) ──────────── */
+.page.card-news.deck.c-navy { --k-ink:#0e1b29; --k-wine:#9b2c2c; --k-gold:#c9a227;
+                 --k-bg1:#13263a; --k-bg2:#0b1724; --k-bg3:#0e1b29;
+                 --k-glow1:rgba(155,44,44,.34); --k-glow2:rgba(40,78,124,.4);
+                 --b-navy:#082d49; --b-beige:#f3ede1; --b-wine:#7d1d1d;
+                 --m1:#3b5bdb; --m2:#9b2c2c; --m3:#28406e; --s-bg:#eef2f7; }
+.page.card-news.deck.c-ink2 { --k-ink:#17150f; --k-wine:#8a6a1f; --k-gold:#d9b45a;
+                 --k-bg1:#201d16; --k-bg2:#0e0d09; --k-bg3:#15130e;
+                 --k-glow1:rgba(201,164,76,.26); --k-glow2:rgba(90,78,52,.42);
+                 --b-navy:#17150f; --b-beige:#f1e9d6; --b-wine:#8a6a1f;
+                 --m1:#8a6a1f; --m2:#d9b45a; --m3:#3a3426; --s-bg:#f7f2e6; }
+.page.card-news.deck.c-forest { --k-ink:#0f2420; --k-wine:#2f6b4f; --k-gold:#c9a227;
+                 --k-bg1:#153229; --k-bg2:#0a1a16; --k-bg3:#0f2420;
+                 --k-glow1:rgba(47,107,79,.4); --k-glow2:rgba(30,86,96,.36);
+                 --b-navy:#11302a; --b-beige:#e9f0e6; --b-wine:#2f6b4f;
+                 --m1:#2f6b4f; --m2:#1f6b78; --m3:#4a7d33; --s-bg:#eef4ef; }
+.page.card-news.deck.c-plum { --k-ink:#241424; --k-wine:#8e2f5e; --k-gold:#e0a06a;
+                 --k-bg1:#2f1733; --k-bg2:#160a1a; --k-bg3:#241424;
+                 --k-glow1:rgba(142,47,94,.42); --k-glow2:rgba(96,52,130,.38);
+                 --b-navy:#3a1836; --b-beige:#f7ece7; --b-wine:#8e2f5e;
+                 --m1:#7b3bd1; --m2:#8e2f5e; --m3:#2b5bd1; --s-bg:#f7eff6; }
+.page.card-news.deck.c-teal { --k-ink:#10212b; --k-wine:#1f6b78; --k-gold:#c9a227;
+                 --k-bg1:#16323e; --k-bg2:#091920; --k-bg3:#10212b;
+                 --k-glow1:rgba(31,107,120,.4); --k-glow2:rgba(38,78,100,.4);
+                 --b-navy:#12303c; --b-beige:#e6f0f0; --b-wine:#1f6b78;
+                 --m1:#1f6b78; --m2:#2a6ad1; --m3:#16a07a; --s-bg:#ecf3f4; }
+
+/* ──────────── 밝은 띠 — 같은 글을 가로 띠로 나눠 놓는다 ──────────── */
+.page.card-news.deck.band { padding: 0; gap: 0; background: #fff; color: var(--k-ink); }
+.page.card-news.deck.band::after { opacity: .028; }
+
+.deck.band .kband { background: var(--b-navy); color: #fff; padding: 52px 60px 46px; flex: 0 0 auto; }
+.deck.band .kh { padding-bottom: 0; }
+.deck.band .kh h1 { font-size: 66px; }
+.deck.band .kh .sub { font-size: 23px; }
+.deck.band .kh .rt { font-size: 17px; }
+.deck.band .kt .ln { background: linear-gradient(90deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .06)); }
+.deck.band .kt .eye { color: #fff; opacity: .72; }
+
+/* 패널은 상자를 벗고 띠가 된다 */
+.deck.band .kp { border-radius: 0; box-shadow: none; background: none; padding: 30px 60px 28px; }
+.deck.band .big { background: var(--b-beige); }
+.deck.band .low { padding: 0 60px 10px; gap: 40px; }
+.deck.band .low .kp { padding: 28px 0 0; }
+.deck.band .low.one { padding-bottom: 24px; }
+.deck.band .kp .lab { border-bottom: 1px solid rgba(14, 27, 41, .16); }
+.deck.band .kp .lab b { background: var(--b-wine); color: #fff; }
+
+/* 안쪽 상자들도 선으로만 — 띠 위에 상자가 또 뜨면 어지럽다 */
+.deck.band .ac, .deck.band .way { background: none; border: 0; border-left: 3px solid var(--k-wine);
+  border-radius: 0; padding: 4px 0 4px 16px; }
+.deck.band .chip { background: rgba(14, 27, 41, .06); }
+
+.deck.band .kf { background: var(--b-wine); color: #fff; border-top: 0; padding: 30px 60px 34px; }
+.deck.band .kf s { background: #fff; box-shadow: none; }
+.deck.band .kf p { font-size: 23px; }
+.deck.band .kf .pg { color: rgba(255, 255, 255, .62); }
+
+/* ──────────── 번지는 색 — 같은 글을 유리 패널에 올린다 ──────────── */
+.page.card-news.deck.mesh {
+  color: #fff;
+  --k-track: rgba(255, 255, 255, .16);
+  --k-chart-ink: #fff;
+  --k-chart-dim: rgba(255, 255, 255, .66);
+  --k-chart-grid: rgba(255, 255, 255, .22);
+  --k-edge: #fff;
+  background:
+    radial-gradient(760px 620px at 8% -4%, var(--m1), transparent 62%),
+    radial-gradient(700px 600px at 98% 16%, var(--m3), transparent 60%),
+    radial-gradient(820px 700px at 58% 108%, var(--m2), transparent 62%),
+    linear-gradient(160deg, #1b1340, #0b0a1f);
+}
+.deck.mesh .kt .eye { color: rgba(255, 255, 255, .78); }
+
+.deck.mesh .kp {
+  color: #fff; border: 1px solid rgba(255, 255, 255, .26);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .055));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(255, 255, 255, .34);
+  backdrop-filter: blur(12px); border-radius: 24px;
+}
+.deck.mesh .kp .lab { border-bottom-color: rgba(255, 255, 255, .22); }
+.deck.mesh .kp .lab b { background: rgba(255, 255, 255, .92); color: #1a1030; }
+.deck.mesh .kp .lab i,
+.deck.mesh .tip, .deck.mesh .none,
+.deck.mesh .row .n u, .deck.mesh .st span, .deck.mesh .ring .lg em,
+.deck.mesh .ac .big2 span, .deck.mesh .ac .fin, .deck.mesh .kkey .t small,
+.deck.mesh .row2 .no, .deck.mesh .shots figcaption, .deck.mesh .way .memo,
+.deck.mesh .lv3 s, .deck.mesh .mix .t, .deck.mesh .mix .c2, .deck.mesh .key,
+.deck.mesh .hit .r .s { color: rgba(255, 255, 255, .66); }
+
+.deck.mesh .row + .row, .deck.mesh .row2 + .row2, .deck.mesh .kkey + .kkey,
+.deck.mesh .lv3 div + div, .deck.mesh .st div + div, .deck.mesh .ring .lg i + i {
+  border-top-color: rgba(255, 255, 255, .18);
+}
+.deck.mesh .row .bar, .deck.mesh .ac .bar { background: rgba(255, 255, 255, .18); }
+.deck.mesh .ac, .deck.mesh .way { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .18); }
+.deck.mesh .ac li { color: rgba(255, 255, 255, .82); }
+.deck.mesh .ac li::before, .deck.mesh .way li::before { background: #fff; opacity: .7; }
+.deck.mesh .ac .big2 b, .deck.mesh .st b.g, .deck.mesh .hit .bg { color: #fff; }
+.deck.mesh .hit .bg u { color: rgba(255, 255, 255, .48); }
+.deck.mesh .chip, .deck.mesh .kkey .dg { background: rgba(255, 255, 255, .16); }
+.deck.mesh .map .q.key { box-shadow: 0 0 0 3px #fff, inset 0 1px 0 rgba(255, 255, 255, .35); }
+.deck.mesh .key .ring s { box-shadow: 0 0 0 2.5px #fff; }
+.deck.mesh .shots img { background: rgba(255, 255, 255, .12); }
+.deck.mesh .kkey .no, .deck.mesh .way .h b { background: rgba(255, 255, 255, .9); color: #1a1030; }
+.deck.mesh .row .bar s, .deck.mesh .ac .bar s { background: #fff; }
+.deck.mesh .kf { border-top-color: rgba(255, 255, 255, .22); }
+.deck.mesh .kf s { background: #fff; box-shadow: 0 0 12px rgba(255, 255, 255, .7); }
+
+/* ──────────── 종이 — 흰 바탕에 가는 선만 ──────────── */
+.page.card-news.deck.paper {
+  background: #fbfaf7; color: #1a1d21;
+  --k-track: rgba(26, 29, 33, .1);
+  --k-chart-ink: #1a1d21; --k-chart-dim: #7c7a73; --k-chart-grid: #e3dfd6;
+}
+.page.card-news.deck.paper::after { opacity: 0; }
+.deck.paper .kt .eye { color: var(--k-wine); }
+.deck.paper .kt .ln { background: linear-gradient(90deg, rgba(26, 29, 33, .28), rgba(26, 29, 33, .05)); }
+.deck.paper .kt .who { color: #6c6a64; }
+.deck.paper .kh .sub, .deck.paper .kh .rt { color: #807e77; }
+.deck.paper .kp {
+  background: #fff; color: #1a1d21; border: 1px solid #e6e2d9;
+  border-radius: 14px; box-shadow: none;
+}
+.deck.paper .ac, .deck.paper .way { background: #fbfaf7; border-color: #ece8de; }
+.deck.paper .chip, .deck.paper .kkey .dg { background: #f2efe7; }
+.deck.paper .map .q.key { box-shadow: 0 0 0 3px #1a1d21, inset 0 1px 0 rgba(255, 255, 255, .3); }
+.deck.paper .key .ring s { box-shadow: 0 0 0 2.5px #1a1d21; }
+.deck.paper .kf { border-top: 1px solid #e0dbd0; }
+.deck.paper .kf p { color: #1a1d21; }
+.deck.paper .kf s { background: var(--k-wine); box-shadow: none; }
+.deck.paper .kf .pg { color: #a3a09a; }
+
+/* ──────────── 연한 카드 — 옅은 바탕에 흰 카드 ──────────── */
+.page.card-news.deck.soft {
+  background: var(--s-bg); color: #1b2430;
+  --k-track: rgba(27, 36, 48, .09);
+  --k-chart-ink: #1b2430; --k-chart-dim: #78828f; --k-chart-grid: #dfe4ea;
+}
+.page.card-news.deck.soft::after { opacity: 0; }
+.deck.soft .kt .eye { color: var(--k-wine); }
+.deck.soft .kt .ln { background: linear-gradient(90deg, rgba(27, 36, 48, .2), rgba(27, 36, 48, .04)); }
+.deck.soft .kt .who { color: #6d7684; }
+.deck.soft .kh .sub, .deck.soft .kh .rt { color: #7b8492; }
+.deck.soft .kp {
+  background: #fff; color: #1b2430; border: 0;
+  border-radius: 26px; box-shadow: 0 10px 30px rgba(20, 30, 50, .07);
+  padding: 26px 30px 28px;
+}
+.deck.soft .kp .lab { border-bottom-color: rgba(27, 36, 48, .1); }
+.deck.soft .kp .lab b { background: var(--k-wine); color: #fff; }
+.deck.soft .ac, .deck.soft .way { background: var(--s-bg); border: 0; border-radius: 16px; }
+.deck.soft .chip, .deck.soft .kkey .dg { background: var(--s-bg); }
+.deck.soft .map .q { border-radius: 11px; }
+.deck.soft .map .q.key { box-shadow: 0 0 0 3px #1b2430, inset 0 1px 0 rgba(255, 255, 255, .3); }
+.deck.soft .key .ring s { box-shadow: 0 0 0 2.5px #1b2430; }
+.deck.soft .kf { border-top: 0; }
+.deck.soft .kf p { color: #1b2430; }
+.deck.soft .kf s { background: var(--k-wine); box-shadow: none; }
+.deck.soft .kf .pg { color: #9aa3b0; }

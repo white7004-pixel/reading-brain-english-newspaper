@@ -90,7 +90,13 @@
         <label class="wide check"><input name="a4" type="checkbox"> 학교 분석 A4 종이도 만들기
           <small>인쇄해서 나눠 줄 종이. 슬라이드와 같은 내용을 A4 두 장에 담습니다</small></label>
         <label class="wide check"><input name="cards" type="checkbox"> 카톡·블로그용 정사각 카드도 만들기
-          <small>1080×1080 카드 여섯 장. 학생 이름·점수는 들어가지 않습니다</small></label>
+          <small>1080×1080 카드 넉~다섯 장. 학생 이름·점수는 들어가지 않습니다</small></label>
+        <div class="wide cardpick" id="card-pick" hidden>
+          <label>카드 모양<select name="deckSkin"></select>
+            <small id="skin-note"></small></label>
+          <label>카드 색<select name="deckColor"></select>
+            <small>어느 모양이든 같은 색을 고르실 수 있습니다</small></label>
+        </div>
         <label class="wide check"><input name="cover" type="checkbox"> A4 에 표지·뒷표지 넣기
           <small>A4 를 켰을 때만 씁니다. 켜면 네 장(표지 · 분석 · 전 문항표 · 뒷표지)이 됩니다</small></label>
         <button id="save-academy" class="wide">저장</button>
