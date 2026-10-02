@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText, TEST_STAGES, testStage, validateTest, usableTest, testReady, stopAfter, testLevels } from '../public/core/forms.js';
+import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText, TEST_STAGES, testStage, validateTest, usableTest, testReady, stopAfter, testLevels, AREA_BLOCKS, byArea, areaStops, nextIndex, areaRail } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -346,4 +346,62 @@ test('한 시험 샘플: test.A 가 있고 순서·검사 통과, 모두 ok', ()
   assert.ok(s.test.A.length >= 5);
   assert.deepEqual(checkOrder(s.test.A), []);
   for (const it of s.test.A) { assert.deepEqual(validateTest(it), [], it.id); assert.equal(it.status, 'ok'); }
+});
+
+// ── 영역별로 묶어 풀기 (원장 결정 10/2): 듣기 → 어휘 → 문법(어형 포함) → 독해 → 영작, 영역 안은 초5 → 고2~3 ──
+const A = (no, level, area) => ({ id: `${area}${no}`, no, level, area });
+const mixed = [
+  A(1, '초5', 'vocab'), A(2, '초5', 'grammar'), A(3, '초5', 'form'), A(4, '초5', 'reading'), A(5, '초5', 'sentence'),
+  A(6, '중1', 'listening'), A(7, '중1', 'vocab'), A(8, '중1', 'grammar'), A(9, '중1', 'reading'), A(10, '중1', 'sentence'),
+  A(11, '중2', 'listening'), A(12, '중2', 'vocab'), A(13, '중2', 'grammar'), A(14, '중2', 'reading'), A(15, '중2', 'sentence'),
+];
+
+test('AREA_BLOCKS: 듣기·어휘·문법(어형)·독해·영작 차례', () => {
+  assert.deepEqual(AREA_BLOCKS.map((b) => b.label), ['듣기', '어휘', '문법', '독해', '영작']);
+  assert.deepEqual(AREA_BLOCKS.find((b) => b.key === 'grammar').areas, ['grammar', 'form']);
+});
+
+test('byArea: 영역 묶음 차례, 묶음 안은 단계 → 번호', () => {
+  assert.deepEqual(byArea(mixed).map((x) => x.no), [6, 11, 1, 7, 12, 2, 3, 8, 13, 4, 9, 14, 5, 10, 15]);
+  assert.notEqual(byArea(mixed), mixed, '원본을 바꾸지 않는다');
+});
+
+test('areaStops·nextIndex: 그 영역만 두 단계 연속 절반 미만이면 남은 문항을 건너뛴다', () => {
+  const list = byArea(mixed);
+  const ans = (no, correct) => ({ ...mixed.find((x) => x.no === no), correct });
+  // 듣기 중1·중2 모두 틀림 → 듣기는 끝(남은 듣기 없음), 어휘 초5 맞힘
+  let log = [ans(6, false), ans(11, false)];
+  assert.deepEqual(areaStops(list, log), { listening: '중2' });
+  assert.equal(nextIndex(list, log, 2), 2, '어휘 첫 문항으로');
+  // 어휘 초5·중1 틀림 → 어휘 중2 는 건너뛰고 문법 첫 문항(초5 grammar)으로
+  log = [...log, ans(1, false), ans(7, false)];
+  assert.deepEqual(areaStops(list, log), { listening: '중2', vocab: '중1' });
+  assert.equal(list[nextIndex(list, log, 4)].no, 2);
+  // 문법: 초5 는 grammar+form 두 문항 중 하나 맞힘(절반 이상) → 계속
+  log = [...log, ans(2, true), ans(3, false)];
+  assert.deepEqual(areaStops(list, log), { listening: '중2', vocab: '중1' });
+  assert.equal(list[nextIndex(list, log, 7)].no, 8);
+  // 마지막까지 건너뛰면 list.length
+  const allWrong = list.map((x) => ({ ...x, correct: false }));
+  assert.equal(nextIndex(list, allWrong, list.length), list.length);
+});
+
+test('areaRail: 영역 칸마다 푼 수, 지금 칸, 멈춘 영역은 다 채움', () => {
+  const list = byArea(mixed);
+  const rail = areaRail(list, 5, { vocab: '중1' }); // 듣기 2 + 어휘 3 지나 문법 첫 문항
+  assert.deepEqual(rail.map((c) => [c.label, c.done, c.total, c.current]), [['듣기', 2, 2, false], ['어휘', 3, 3, false], ['문법', 0, 4, true], ['독해', 0, 3, false], ['영작', 0, 3, false]]);
+  assert.equal(areaRail(list, 3, { vocab: '초5' })[1].done, 3, '멈춘 영역은 다 채움');
+  assert.equal(areaRail(list.filter((x) => x.area !== 'listening'), 0, {}).length, 4, '문항 없는 영역 칸은 없다');
+});
+
+test('byArea(실제 문제지): 듣기 5 → 어휘 → 문법 → 독해 → 영작, 같은 지문은 붙어 있다', () => {
+  const forms = JSON.parse(readFileSync(new URL('../public/data/forms.json', import.meta.url), 'utf8'));
+  for (const set of ['A', 'B']) {
+    const list = byArea(forms.test[set]);
+    assert.deepEqual(list.slice(0, 5).map((x) => x.area), Array(5).fill('listening'));
+    const blocks = list.map((x) => AREA_BLOCKS.findIndex((b) => b.areas.includes(x.area)));
+    assert.deepEqual(blocks, [...blocks].sort((a, b) => a - b), `${set} 영역 차례`);
+    const seen = new Set();
+    list.forEach((x, i) => { if (x.passageId && seen.has(x.passageId)) assert.equal(list[i - 1].passageId, x.passageId, `${set} ${x.id} 지문 떨어짐`); if (x.passageId) seen.add(x.passageId); });
+  }
 });

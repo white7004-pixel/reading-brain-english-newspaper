@@ -4,7 +4,7 @@ import { ACADEMY } from './core/academy.js';
 import { SECTIONS, SECTION_KO, SECTION_TOPIC, MIN_STEP, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, ym, track, earlyText, END } from './core/progress.js';
 import { commentFacts, templateComment, shaky, nextLabel, estLabel, nextUnits } from './core/summary.js';
-import { areaLevels, phonicsNote, writeSummary, stage2Sections, stageText, kindTally, AREA_KO, STAGE_KO } from './core/forms.js';
+import { areaLevels, phonicsNote, writeSummary, stage2Sections, stageText, kindTally, AREA_KO, STAGE_KO, AREA_BLOCKS } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -30,7 +30,6 @@ if (!result) {
   result.academy = ACADEMY; // 학원 정보·로고는 리딩브레인으로 고정 (예전 결과도)
   document.documentElement.style.setProperty('--brand', ACADEMY.color);
   $('#print').onclick = () => window.print();
-  $('#png').onclick = png;
   const log = logOf(result);
   if (log.length) result.sections = stage2Sections(log);
   const start = result.start || result.date;
@@ -88,11 +87,12 @@ function sec(n, label, cls, body, style = '') {
   return `<section class="sec"${style ? ` style="${style}"` : ''}><div class="lbl"><b>${n}</b><span>${label}</span></div><div class="body ${cls}">${body}</div></section>`;
 }
 
-// 한 시험: 멈춘 단계와 쓰기(영작) 한 줄. 예전 결과는 쓰기만.
+// 한 시험: 멈춘 영역(영역별로 묶어 푼 결과) 또는 멈춘 단계(예전 결과)와 쓰기(영작) 한 줄.
 function stageLine(r) {
   const log = logOf(r);
   const w = writeSummary(log.filter((x) => x.area === 'sentence'));
-  const stop = r.test ? (r.test.stopped ? `${esc(STAGE_KO[r.test.stopped] ?? r.test.stopped)} 단계까지 풀고 끝났습니다` : '모든 단계를 풀었습니다') : '';
+  const stops = Object.entries(r.test?.stops ?? {}).map(([k, lv]) => `${AREA_BLOCKS.find((b) => b.key === k)?.label ?? esc(k)} ${esc(STAGE_KO[lv] ?? lv)}`);
+  const stop = !r.test ? '' : r.test.order === 'area' ? (stops.length ? `두 단계 연속 절반 미만으로 멈춘 영역: ${stops.join(' · ')}` : '모든 영역을 끝까지 풀었습니다') : r.test.stopped ? `${esc(STAGE_KO[r.test.stopped] ?? r.test.stopped)} 단계까지 풀고 끝났습니다` : '모든 단계를 풀었습니다';
   const wtext = w.total ? `쓰기 ${w.correct}/${w.total} (${w.missed.length ? `다시 볼 문법: ${esc(w.missed.join(', '))}` : '모두 맞힘'})` : '';
   const line = [stop, wtext].filter(Boolean).join(' · ');
   return `${line ? `<p class="fine">${line}</p>` : ''}`;
@@ -279,7 +279,7 @@ function tally(log, area) { return kindTally(log, area).map((t) => `${t.kind ? `
 
 function formLog(title, log) {
   return `<div><h2>${esc(title)}</h2><table><thead><tr><th>번호</th><th>영역</th><th>수준</th><th>정오</th><th>쓴 답</th><th>초</th></tr></thead><tbody>
-    ${log.map((x) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${x.no}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : typeof x.given === 'number' ? '①②③④⑤'[x.given] : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
+    ${log.map((x, k) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${k + 1}</td><td>${AREA_KO[x.area] ?? esc(x.area)}</td><td>${esc(x.level)}</td><td>${mark(x)}</td><td>${Array.isArray(x.given) ? esc(x.given.join(' / ')) : typeof x.given === 'number' ? '①②③④⑤'[x.given] : ''}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
     </tbody></table></div>`;
 }
 
@@ -329,16 +329,4 @@ async function fillComment(facts) {
     status(`${e.message || '기본 총평을 넣었습니다'} · 글자는 눌러서 고칠 수 있습니다`, 'warn');
   }
   fitCover(); // AI 총평이 들어간 뒤 다시 잰다
-}
-
-async function png() {
-  try {
-    const url = await window.htmlToImage.toPng($('#report .sheet'), { pixelRatio: 2, backgroundColor: '#fcfbf8' });
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${result.name}-레벨테스트-표지.png`;
-    a.click();
-  } catch {
-    status('그림으로 저장하지 못했습니다. 인쇄 / PDF 를 써 주세요.', 'error');
-  }
 }

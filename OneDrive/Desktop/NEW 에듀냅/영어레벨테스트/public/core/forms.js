@@ -25,6 +25,43 @@ export function stopAfter(list, log) {
   return b && weak(a) && weak(b) ? b : null;
 }
 
+// 영역별로 묶어 풀기 (원장 결정 10/2): 듣기 → 어휘 → 문법(어형 포함) → 독해 → 영작, 영역 안은 초5 → 고2~3.
+// 영역마다 따로 멈춘다 — 그 영역에서 두 단계 연속 절반 미만이면 그 영역의 남은 문항은 건너뛴다.
+export const AREA_BLOCKS = [
+  { key: 'listening', label: '듣기', areas: ['listening'] },
+  { key: 'vocab', label: '어휘', areas: ['vocab'] },
+  { key: 'grammar', label: '문법', areas: ['grammar', 'form'] },
+  { key: 'reading', label: '독해', areas: ['reading'] },
+  { key: 'sentence', label: '영작', areas: ['sentence'] },
+];
+const blockAt = (area) => AREA_BLOCKS.findIndex((b) => b.areas.includes(area));
+export const byArea = (list) => [...list].sort((a, b) => (blockAt(a.area) - blockAt(b.area)) || (LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)) || (a.no - b.no));
+// 멈춘 영역: { 영역 key: 멈춘 단계 }
+export function areaStops(list, log) {
+  const out = {};
+  for (const b of AREA_BLOCKS) {
+    const inB = (x) => b.areas.includes(x.area);
+    const s = stopAfter(list.filter(inB), log.filter(inB));
+    if (s) out[b.key] = s;
+  }
+  return out;
+}
+// i 번째부터 멈추지 않은 영역의 첫 문항 자리 (없으면 list.length)
+export function nextIndex(list, log, i) {
+  const stops = areaStops(list, log);
+  let j = i;
+  while (j < list.length && stops[AREA_BLOCKS[blockAt(list[j].area)]?.key]) j += 1;
+  return j;
+}
+// 위 띠 영역 칸: 푼 수(i 앞 문항), 지금 칸, 멈춘 영역은 다 채운다. 문항 없는 영역은 칸이 없다
+export function areaRail(list, i, stops = {}) {
+  return AREA_BLOCKS.map((b) => {
+    const idx = list.flatMap((x, n) => (b.areas.includes(x.area) ? [n] : []));
+    const total = idx.length;
+    return { key: b.key, label: b.label, total, done: stops[b.key] ? total : idx.filter((n) => n < i).length, current: idx.includes(i) && !stops[b.key] };
+  }).filter((c) => c.total);
+}
+
 // 문장 틀(template)이 있으면 직접 쓰기. 어형·영작도 선택지로 내면 객관식 (원장 결정 10/1: 시험에서 직접 쓰기는 뺀다)
 export const isWrite = (it) => WRITE_AREAS.includes(it?.area) && it?.template != null;
 export const blanks = (template) => (String(template ?? '').match(/\{\}/g) || []).length;

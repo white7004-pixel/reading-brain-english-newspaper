@@ -1,7 +1,8 @@
-// 시험 화면: 한 시험(초5~고2~3, 50문항 — 초5 8 · 나머지 단계 7) — 두 단계 연속 절반 미만이면 끝 → 결과리포트.
+// 시험 화면: 한 시험(초5~고2~3, 50문항) — 영역별로 묶어 듣기 → 어휘 → 문법 → 독해 → 영작(원장 결정 10/2).
+// 영역마다 두 단계 연속 절반 미만이면 그 영역만 끝내고 다음 영역으로 → 다 풀면 결과리포트.
 // 진행은 localStorage(elt:session)에 두어 새로고침해도 이어진다. 문항마다 제한 시간(secondsFor), 모름 칸은 없다(10/2).
 import { stepData } from './core/scale.js';
-import { usableTest, testReady, stopAfter, railFor, secondsFor, levelStep, checkWrite, isWrite } from './core/forms.js';
+import { usableTest, testReady, byArea, areaStops, nextIndex, areaRail, secondsFor, levelStep, checkWrite, isWrite } from './core/forms.js';
 import { showMC, showWrite, startTimer, stopTimer, picking } from './form-ui.js';
 
 const $ = (s) => document.querySelector(s);
@@ -24,9 +25,9 @@ if (!session) {
   const set = session.set || 'A';
   const { list: all, sample } = await loadForms(set);
   const voices = await englishVoices();
-  const list = voices ? all : all.filter((i) => i.area !== 'listening'); // 영어 음성이 없으면 듣기는 빼고 센다
-  // 예전 세션(1차·2차)은 새 시험으로 시작한다
-  if ((session.stage !== 'test' && session.stage !== 'end') || !session.t) { session.stage = 'test'; session.t = { i: 0, log: [], started: false, stopped: null }; session.shownAt = null; session.current = null; keep(); }
+  const list = byArea(voices ? all : all.filter((i) => i.area !== 'listening')); // 영어 음성이 없으면 듣기는 빼고 센다
+  // 예전 세션(1차·2차, 단계 차례로 풀던 것)은 새 시험으로 시작한다
+  if ((session.stage !== 'test' && session.stage !== 'end') || !session.t || session.t.order !== 'area') { session.stage = 'test'; session.t = { i: 0, log: [], started: false, stops: {}, order: 'area' }; session.shownAt = null; session.current = null; keep(); }
   route();
 
   function route() {
@@ -54,17 +55,16 @@ if (!session) {
     if (!list.length) { show(''); return status('문제지가 없습니다. 문제지 검수에서 문항을 통과시켜 주세요.', 'error'); }
     const it = list[session.t.i];
     if (!it) { session.stage = 'end'; keep(); return route(); }
-    top(`레벨테스트 ${set}`, railFor(list, session.t.i, 2), session.t.i + 1, list.length);
+    top(`레벨테스트 ${set}`, areaRail(list, session.t.i, session.t.stops), session.t.log.length + 1, list.length);
     if (!session.t.started) {
-      const n = new Set(list.map((i) => i.level)).size;
+      const order = areaRail(list, 0).map((c) => c.label).join(' → ');
       const listen = list.some((i) => i.area === 'listening') ? ` ${LISTEN_INTRO}` : '';
-      return intro(`영어 레벨테스트 (${n}단계)`, `초5부터 한 단계씩 올라가며 풉니다. 어려워져서 두 단계 연속으로 절반 넘게 틀리면 그 자리에서 끝납니다. 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다.${listen}`, () => { session.t.started = true; keep(); route(); });
+      return intro('영어 레벨테스트', `${order} 차례로 풉니다. 영역마다 초5 수준부터 한 단계씩 어려워지고, 한 영역에서 두 단계 연속으로 절반 넘게 틀리면 그 영역은 끝내고 다음 영역으로 넘어갑니다. 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다.${listen}`, () => { session.t.started = true; keep(); route(); });
     }
     ask(it, (rec) => {
       session.t.log.push({ ...rec, kind: it.kind || '' });
-      session.t.i += 1;
-      const s = stopAfter(list, session.t.log);
-      if (s) { session.t.stopped = s; session.stage = 'end'; }
+      session.t.stops = areaStops(list, session.t.log);
+      session.t.i = nextIndex(list, session.t.log, session.t.i + 1);
     });
   }
 
@@ -100,15 +100,15 @@ if (!session) {
     if (session.shownAt) startTimer(session.shownAt, () => done({ timeout: true }), seconds);
   }
 
-  // 위 띠: 학년·단계와 단계 진행 막대(칸 너비는 문항 수 비례). n 이 있으면 큰 문항 번호와 아래 띠 "n / of"
+  // 위 띠: 학년·세트와 영역 진행 막대(칸 너비는 문항 수 비례). n 이 있으면 큰 문항 번호와 아래 띠 "n / of"
   function top(label, rail, n, of) {
     $('#section-name').textContent = `${session.grade} · ${label}`;
     const now = (c) => `${c.label} ${Math.min(c.done + 1, c.total)}/${c.total}`;
     const cur = rail.find((c) => c.current);
-    $('#dots').setAttribute('aria-label', cur ? `단계 진행: ${now(cur)}` : '단계 진행');
+    $('#dots').setAttribute('aria-label', cur ? `영역 진행: ${now(cur)}` : '영역 진행');
     $('#dots').replaceChildren(...rail.map((c) => {
       const d = document.createElement('div');
-      d.className = c.current ? 'cur' : c.skipped ? 'off' : '';
+      d.className = c.current ? 'cur' : '';
       d.style.flexGrow = c.total || 1;
       const bar = document.createElement('i');
       const fill = document.createElement('b');
@@ -168,7 +168,7 @@ if (!session) {
   function finishTest() {
     const result = {
       id: session.id, name: session.name, school: session.school || '', grade: session.grade, date: session.date, start: session.start || session.date, academy: { ...session.academy, logo: undefined },
-      test: { set, log: session.t.log, stopped: session.t.stopped ?? null },
+      test: { set, log: session.t.log, stopped: null, stops: session.t.stops ?? {}, order: 'area' },
       sections: {}, // 결과리포트가 test.log 로 채운다
     };
     if (!save(`elt:result:${result.id}`, result)) return status('결과를 이 브라우저에 저장하지 못했습니다. 저장 공간을 비운 뒤 이 화면을 새로고침해 주세요.', 'error');
