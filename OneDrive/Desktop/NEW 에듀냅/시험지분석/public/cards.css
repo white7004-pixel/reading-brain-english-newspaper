@@ -326,54 +326,82 @@
 .deck.mesh .kf { border-top-color: rgba(255, 255, 255, .22); }
 .deck.mesh .kf s { background: #fff; box-shadow: 0 0 12px rgba(255, 255, 255, .7); }
 
-/* ──────────── 종이 — 흰 바탕에 가는 선만 ──────────── */
-.page.card-news.deck.paper {
-  background: #fbfaf7; color: #1a1d21;
+/* ──────────── 세로 분할 — 왼쪽 기둥에 제목, 오른쪽에 내용 ──────────── */
+.page.card-news.deck.split {
+  background: #fbfaf7; color: #1a1d21; padding: 0; gap: 0;
+  display: grid; grid-template-columns: 338px 1fr; grid-template-rows: minmax(0, .8fr) minmax(0, 1fr) auto;
   --k-track: rgba(26, 29, 33, .1);
   --k-chart-ink: #1a1d21; --k-chart-dim: #7c7a73; --k-chart-grid: #e3dfd6;
 }
-.page.card-news.deck.paper::after { opacity: 0; }
-.deck.paper .kt .eye { color: var(--k-wine); }
-.deck.paper .kt .ln { background: linear-gradient(90deg, rgba(26, 29, 33, .28), rgba(26, 29, 33, .05)); }
-.deck.paper .kt .who { color: #6c6a64; }
-.deck.paper .kh .sub, .deck.paper .kh .rt { color: #807e77; }
-.deck.paper .kp {
-  background: #fff; color: #1a1d21; border: 1px solid #e6e2d9;
-  border-radius: 14px; box-shadow: none;
-}
-.deck.paper .ac, .deck.paper .way { background: #fbfaf7; border-color: #ece8de; }
-.deck.paper .chip, .deck.paper .kkey .dg { background: #f2efe7; }
-.deck.paper .map .q.key { box-shadow: 0 0 0 3px #1a1d21, inset 0 1px 0 rgba(255, 255, 255, .3); }
-.deck.paper .key .ring s { box-shadow: 0 0 0 2.5px #1a1d21; }
-.deck.paper .kf { border-top: 1px solid #e0dbd0; }
-.deck.paper .kf p { color: #1a1d21; }
-.deck.paper .kf s { background: var(--k-wine); box-shadow: none; }
-.deck.paper .kf .pg { color: #a3a09a; }
+.page.card-news.deck.split::after { opacity: 0; }
 
-/* ──────────── 연한 카드 — 옅은 바탕에 흰 카드 ──────────── */
-.page.card-news.deck.soft {
-  background: var(--s-bg); color: #1b2430;
-  --k-track: rgba(27, 36, 48, .09);
-  --k-chart-ink: #1b2430; --k-chart-dim: #78828f; --k-chart-grid: #dfe4ea;
+.deck.split .kband {
+  grid-column: 1; grid-row: 1 / -1; background: var(--b-navy); color: #fff;
+  padding: 50px 34px 44px; display: flex; flex-direction: column;
 }
-.page.card-news.deck.soft::after { opacity: 0; }
-.deck.soft .kt .eye { color: var(--k-wine); }
-.deck.soft .kt .ln { background: linear-gradient(90deg, rgba(27, 36, 48, .2), rgba(27, 36, 48, .04)); }
-.deck.soft .kt .who { color: #6d7684; }
-.deck.soft .kh .sub, .deck.soft .kh .rt { color: #7b8492; }
-.deck.soft .kp {
-  background: #fff; color: #1b2430; border: 0;
-  border-radius: 26px; box-shadow: 0 10px 30px rgba(20, 30, 50, .07);
-  padding: 26px 30px 28px;
+.deck.split .kband .kt { flex-direction: column; align-items: flex-start; gap: 12px; }
+.deck.split .kband .kt .ln { width: 56px; flex: 0 0 auto; height: 2px; background: var(--k-gold); }
+.deck.split .kband .kt .eye { color: var(--k-gold); }
+.deck.split .kband .kt .who { color: rgba(255, 255, 255, .7); }
+.deck.split .kband .kh { margin-top: auto; flex-direction: column; align-items: flex-start; gap: 0; }
+.deck.split .kband .kh h1 { font-size: 46px; line-height: 1.12; }
+.deck.split .kband .kh .rt { margin: 22px 0 0; text-align: left; }
+
+.deck.split .big { grid-column: 2; grid-row: 1; margin: 26px 28px 0; }
+.deck.split .low { grid-column: 2; grid-row: 2; margin: 16px 28px 0; padding: 0; grid-template-columns: 1fr 292px; }
+.deck.split .low.fix, .deck.split .low.fix2 { flex: 0 0 auto; }
+.deck.split .kf { grid-column: 2; grid-row: 3; margin: 0 28px; border-top-color: rgba(26, 29, 33, .16); }
+.deck.split .kf .pg { white-space: nowrap; }
+.deck.split .kf p { color: #1a1d21; }
+.deck.split .kf s { background: var(--k-wine); box-shadow: none; }
+.deck.split .kf .pg { color: #a3a09a; }
+.deck.split .kp { background: #fff; border: 1px solid #e8e4db; box-shadow: none; border-radius: 14px; }
+.deck.split .ac, .deck.split .way { background: #fbfaf7; border-color: #ece8de; }
+.deck.split .chip, .deck.split .kkey .dg { background: #f2efe7; }
+.deck.split .map .q.key { box-shadow: 0 0 0 3px #1a1d21, inset 0 1px 0 rgba(255, 255, 255, .3); }
+.deck.split .key .ring s { box-shadow: 0 0 0 2.5px #1a1d21; }
+
+/* ──────────── 편집 — 선으로만 나누고 꼭지를 왼쪽에 세운다 ──────────── */
+.page.card-news.deck.poster {
+  background: #fff; color: #17202a; gap: 0; padding: 48px 60px 42px;
+  --k-track: rgba(23, 32, 42, .1);
+  --k-chart-ink: #17202a; --k-chart-dim: #7b8691; --k-chart-grid: #e4e7ea;
 }
-.deck.soft .kp .lab { border-bottom-color: rgba(27, 36, 48, .1); }
-.deck.soft .kp .lab b { background: var(--k-wine); color: #fff; }
-.deck.soft .ac, .deck.soft .way { background: var(--s-bg); border: 0; border-radius: 16px; }
-.deck.soft .chip, .deck.soft .kkey .dg { background: var(--s-bg); }
-.deck.soft .map .q { border-radius: 11px; }
-.deck.soft .map .q.key { box-shadow: 0 0 0 3px #1b2430, inset 0 1px 0 rgba(255, 255, 255, .3); }
-.deck.soft .key .ring s { box-shadow: 0 0 0 2.5px #1b2430; }
-.deck.soft .kf { border-top: 0; }
-.deck.soft .kf p { color: #1b2430; }
-.deck.soft .kf s { background: var(--k-wine); box-shadow: none; }
-.deck.soft .kf .pg { color: #9aa3b0; }
+.page.card-news.deck.poster::after { opacity: 0; }
+.deck.poster .kband { padding-bottom: 20px; border-bottom: 3px solid #17202a; }
+.deck.poster .kt .eye { color: var(--k-wine); }
+.deck.poster .kt .ln { background: linear-gradient(90deg, rgba(23, 32, 42, .3), rgba(23, 32, 42, .05)); }
+.deck.poster .kt .who { color: #6f7883; }
+.deck.poster .kh .sub, .deck.poster .kh .rt { color: #7b8691; }
+
+/* 꼭지가 위가 아니라 왼쪽에 선다 — 신문 조판의 핵심 */
+.deck.poster .kp {
+  background: none; border-radius: 0; box-shadow: none; padding: 22px 0 20px;
+  border-bottom: 1px solid #e0e4e8;
+  display: grid; grid-template-columns: 188px 1fr; column-gap: 28px; align-items: start;
+}
+.deck.poster .kp > *:not(.lab) { grid-column: 2; }
+.deck.poster .kp .lab {
+  grid-column: 1; grid-row: 1 / span 99; display: flex; flex-direction: column;
+  align-items: flex-start; gap: 9px; margin: 0; padding: 0; border-bottom: 0;
+}
+.deck.poster .kp .lab b { background: var(--k-wine); color: #fff; }
+.deck.poster .kp .lab span { font-size: 19px; }
+.deck.poster .kp .lab i { margin-left: 0; line-height: 1.6; }
+.deck.poster .low { grid-template-columns: 1fr; gap: 0; }
+.deck.poster .tip { margin-top: 12px; padding-top: 0; }
+.deck.poster .mix, .deck.poster .ring { margin-top: 18px; }
+/* grid 칸에서는 .plot 의 flex 가 죽어 svg 가 제 비율만큼 늘어난다 — 높이를 못 박는다 */
+.deck.poster .plot { height: 228px; }
+.deck.poster .st { flex-direction: row; gap: 0; }
+.deck.poster .st div { flex: 1; flex-direction: column; align-items: flex-start; gap: 7px; }
+.deck.poster .st div + div { margin: 0; padding: 0 0 0 22px; border-top: 0; border-left: 1px solid #e0e4e8; }
+.deck.poster .st span { margin-left: 0; }
+.deck.poster .ac, .deck.poster .way { background: #f7f9fa; border-color: #e4e8ec; }
+.deck.poster .chip, .deck.poster .kkey .dg { background: #f0f3f5; }
+.deck.poster .map .q.key { box-shadow: 0 0 0 3px #17202a, inset 0 1px 0 rgba(255, 255, 255, .3); }
+.deck.poster .key .ring s { box-shadow: 0 0 0 2.5px #17202a; }
+.deck.poster .kf { border-top: 3px solid #17202a; }
+.deck.poster .kf p { color: #17202a; }
+.deck.poster .kf s { background: var(--k-wine); box-shadow: none; }
+.deck.poster .kf .pg { color: #9aa3ab; }
