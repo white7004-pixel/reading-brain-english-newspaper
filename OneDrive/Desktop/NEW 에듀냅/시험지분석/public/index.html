@@ -21,7 +21,6 @@
   <ul class="side-menu">
     <li><a href="#step-upload" data-nav="step-upload">시험 정보<small>EXAM SETUP</small></a></li>
     <li><a href="#step-confirm" data-nav="step-confirm">문항별 설정<small>ITEM TABLE</small></a></li>
-    <li><a href="#step-students" data-nav="step-students">학생 오답<small>WRONG ANSWERS</small></a></li>
     <li><a href="#step-result" data-nav="step-result">분석 자료<small>REPORT</small></a></li>
   </ul>
   <div class="side-foot">
@@ -138,15 +137,10 @@
       <button id="renumber" type="button" class="ghost" title="선택형은 1부터, 서답형은 '서답형 1' 부터 다시 매깁니다">번호 다시 매기기</button>
     </div>
     <p id="confirm-total" class="status"></p>
-  </section>
-
-  <section id="step-students" class="card" hidden>
-    <h2><span class="step">STEP 03</span>학생 오답 입력 <small>비워 두면 학교 분석만 만듭니다</small></h2>
-    <p class="hint">한 줄에 한 명, <b>틀린 번호만</b> 적습니다 — 이름은 받지 않습니다. 예) <code>4, 9, 25</code> · 고른 답까지 <code>4(③), 9(②)</code> · 다 맞으면 <code>0</code><br>리포트 종이에는 학생 칸이 비워져 나오니, 받는 아이 이름은 손으로 적으시면 됩니다. 적어 넣은 순서대로 1, 2, 3… 으로 저장됩니다.</p>
-    <textarea id="students" rows="6" placeholder="4, 9, 25" aria-label="학생별 틀린 문항"></textarea>
-    <p id="students-problems" class="problems" role="alert"></p>
-    <button id="make-report" type="button">분석 자료 만들기</button>
-    <p id="report-status" class="status" role="status"></p>
+    <div class="make">
+      <button id="make-report" type="button" class="wide">분석 자료 만들기</button>
+      <p id="report-status" class="status" role="status"></p>
+    </div>
   </section>
 
   <section id="step-result" hidden>

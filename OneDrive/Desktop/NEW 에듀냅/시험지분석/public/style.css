@@ -776,3 +776,7 @@ input[type=file]::file-selector-button { border-color: var(--dark); color: var(-
   .app { padding: 0 20px 40px; }
   .hero-date { position: static; text-align: left; margin-top: 18px; }
 }
+
+/* 분석 자료 만들기 — 문항표 아래 (STEP 03 을 없앴다, 2026-10-02 원장 결정) */
+.make { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.make button { width: 100%; padding: 15px 20px; font-size: 15.5px; }

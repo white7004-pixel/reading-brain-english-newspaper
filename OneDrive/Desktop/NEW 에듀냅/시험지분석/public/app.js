@@ -1,6 +1,6 @@
-import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, studentStats, parseStudents, esc, noText, noNum, byNoOrder } from './lib.js';
+import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, esc, noText, noNum, byNoOrder } from './lib.js';
 import { unitsFor, GRADES } from './curriculum.js';
-import { schoolPage, studentPage, explainPages } from './report.js';
+import { schoolPage, explainPages } from './report.js';
 import { shareCards } from './share.js';
 import { slideDeck } from './slides.js';
 import { pickBrandColor, PALETTE } from './color.js';
@@ -291,7 +291,6 @@ $('#start-form').addEventListener('submit', (e) => {
   renderItems();
   setStatus('#upload-status', '');
   show('#step-confirm');
-  $('#step-students').hidden = false;
   $('#step-confirm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
@@ -314,8 +313,7 @@ $('#upload-form').addEventListener('submit', async (e) => {
     renderItems();
     setStatus('#upload-status', '');
     show('#step-confirm');
-    $('#step-students').hidden = false;
-    // 원장님이 더 누르지 않아도 되게 바로 분석까지 간다. 고칠 곳이 있으면 문항표에서 고치고
+      // 원장님이 더 누르지 않아도 되게 바로 분석까지 간다. 고칠 곳이 있으면 문항표에서 고치고
     // '리포트 만들기' 를 다시 누르면 새로 만들어진다. 학원 정보가 없는 등 못 가는 경우는
     // make-report 가 그 자리에서 이유를 알려 준다.
     $('#make-report').click();
@@ -428,7 +426,6 @@ function updateTotal() {
   $('#confirm-total').textContent = notes.length ? notes.join(' · ') : `${count}문항 · 배점 합계 ${total}점 — 다 채우셨습니다`;
   $('#confirm-total').classList.toggle('warn', notes.length > 0);
   drawTally();
-  checkStudents(); // 학생 번호 확인도 지금 번호로
 }
 
 $('#items').addEventListener('input', (e) => {
@@ -554,32 +551,8 @@ $('#pick-all').addEventListener('change', (e) => {
   drawBulk();
 });
 
-// ---------- 4. 학생 입력 ----------
-function checkStudents() {
-  const result = parseStudents($('#students').value, state.items.map((it) => it.no));
-  $('#students-problems').textContent = result.problems.join('\n');
-  return result;
-}
-$('#students').addEventListener('input', checkStudents);
-
-// ---------- 5. 리포트 만들기 ----------
-// 최대 limit 개만 동시에 부른다. 결과는 넣은 순서대로. 하나가 실패하면 남은 호출은 시작하지 않는다.
-async function runLimited(tasks, limit) {
-  const out = [];
-  let next = 0;
-  const worker = async () => {
-    while (next < tasks.length) {
-      const i = next++;
-      try { out[i] = await tasks[i](); } catch (err) { next = tasks.length; throw err; }
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
-  return out;
-}
-
-const GROUP = 5; // 학생 5명씩 한 번
-const IN_FLIGHT = 3; // 동시에 3개까지 (학교 분석 포함)
-
+// ---------- 4. 분석 자료 만들기 ----------
+// 학교 시험지 분석이므로 학생별 리포트는 만들지 않는다 (2026-10-02 원장 결정 — "step3는 없애줘").
 $('#make-report').addEventListener('click', async (e) => {
   const itemIssue = itemProblem();
   if (itemIssue) return setStatus('#report-status', `${itemIssue} — 문항표에서 번호를 고쳐 주세요`, true);
@@ -588,20 +561,12 @@ $('#make-report').addEventListener('click', async (e) => {
     academyForm.closest('details').open = true;
     return setStatus('#report-status', '리포트에 들어갈 학원 정보를 한 번 저장해 주세요 (STEP 01 아래)', true);
   }
-  const { students, problems } = checkStudents();
-  if (problems.length) return;
   const button = e.currentTarget;
   button.disabled = true;
   const items = [...state.items].sort(byNoOrder).map(({ unsure, ...it }) => it);
-  const groups = [];
-  for (let i = 0; i < students.length; i += GROUP) groups.push(students.slice(i, i + GROUP));
   try {
-    setStatus('#report-status', `분석 글을 쓰는 중입니다${students.length ? ` (학생 ${students.length}명)` : ''}. 1~3분 걸립니다…`);
-    const [school, ...parts] = await runLimited([
-      () => api('/api/report', { mode: 'school', meta: state.meta, items }),
-      ...groups.map((group) => () => api('/api/report', { mode: 'students', meta: state.meta, items, students: group })),
-    ], IN_FLIGHT);
-    const written = parts.flatMap((p) => p.students); // 서버가 학생 수·순서를 맞춰 돌려준다
+    setStatus('#report-status', '분석 글을 쓰는 중입니다. 1~3분 걸립니다…');
+    const school = await api('/api/report', { mode: 'school', meta: state.meta, items });
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
     $('#pages').style.setProperty('--brand', state.academy.color);
     // 학교 분석은 발표 슬라이드 한 벌이 기본이다 (원장님 결정 2026-10-01 — 여러 형태를 한꺼번에 쏟지 않는다).
@@ -609,7 +574,6 @@ $('#make-report').addEventListener('click', async (e) => {
     $('#pages').innerHTML = slideDeck(ctx, school)
       + (state.academy.cards ? shareCards(ctx, school) : '')
       + (state.academy.a4 ? schoolPage(ctx, school) : '')
-      + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i], i + 1)).join('')
       + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
     // 버튼은 이번에 실제로 나온 것만 보여 준다 — 눌러도 아무 일 없는 버튼을 두지 않는다
     const 카드 = document.querySelectorAll('#pages .sheet.card-news').length;
