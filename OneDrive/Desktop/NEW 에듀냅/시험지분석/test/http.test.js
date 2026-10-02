@@ -2,9 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { makeHandler, UserError } from '../lib/http.js';
 
-// 암호가 없는 자리(이 PC, npm run local)가 기본이다. 암호를 보는 일은 맨 아래에서 따로 본다.
-delete process.env.APP_PASSWORD;
-
 async function call(run, { method = 'POST', body = { a: 1 }, req } = {}) {
   const res = { statusCode: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(s) { this.body = JSON.parse(s); } };
   await makeHandler(run)(req || { method, headers: {}, body }, res);
@@ -31,24 +28,10 @@ test('UserError 는 400 과 메시지, 나머지는 502 와 일반 문구', asyn
   assert.deepEqual([boom.statusCode, boom.body.error], [502, '잠시 후 다시 시도해 주세요']);
 });
 
-test('암호를 정해 두면 맞는 사람만 들어온다', async () => {
-  process.env.APP_PASSWORD = '리딩브레인1234';
-  try {
-    const 없이 = await call(async () => ({ ok: 1 }));
-    assert.deepEqual([없이.statusCode, 없이.body.error], [401, '암호가 맞지 않습니다']);
-
-    const 틀림 = await call(async () => ({ ok: 1 }), { req: { method: 'POST', headers: { authorization: 'Bearer 아무거나' }, body: {} } });
-    assert.equal(틀림.statusCode, 401);
-
-    const 맞음 = await call(async () => ({ ok: 1 }), { req: { method: 'POST', headers: { authorization: 'Bearer 리딩브레인1234' }, body: {} } });
-    assert.deepEqual([맞음.statusCode, 맞음.body], [200, { ok: 1 }]);
-  } finally { delete process.env.APP_PASSWORD; }
-});
-
-test('인터넷에 올렸는데 암호가 없으면 열지 않는다', async () => {
+// 암호는 두지 않는다 (2026-10-02 원장 결정). 들어오는 사람을 가리지 않고, 그냥 열린다.
+test('암호 없이 그냥 열린다 — 인터넷에 올라가 있어도', async () => {
   process.env.VERCEL = '1';
   try {
-    const res = await call(async () => ({ ok: 1 }));
-    assert.deepEqual([res.statusCode, res.body.error], [500, '서버에 암호가 설정되지 않았습니다']);
+    assert.deepEqual((await call(async () => ({ ok: 1 }))).body, { ok: 1 });
   } finally { delete process.env.VERCEL; }
 });

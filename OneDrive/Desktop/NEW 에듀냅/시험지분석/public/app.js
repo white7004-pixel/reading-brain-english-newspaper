@@ -24,37 +24,16 @@ export function setStatus(sel, text, isError = false) {
   $(sel).classList.toggle('error', isError);
 }
 
-// 리딩브레인 선생님들만 쓰는 화면이다. 원장님이 정한 암호 하나로 연다.
-// 한 번 넣으면 이 기기에 적어 두고, 틀리면 다시 묻는다.
-const PW_KEY = 'rb-exam-pw';
-let PW = (() => { try { return localStorage.getItem(PW_KEY) || ''; } catch { return ''; } })();
-
-function askPassword() {
-  const p = prompt('리딩브레인 시험지분석 — 암호를 넣어 주세요');
-  if (!p) return false;
-  PW = p;
-  try { localStorage.setItem(PW_KEY, p); } catch { /* 시크릿 창이면 이번만 쓴다 */ }
-  return true;
-}
-
+// 암호 없이 그냥 연다 (2026-10-02 원장 결정).
 export async function api(path, body) {
-  for (let 번째 = 0; 번째 < 2; 번째 += 1) {
-    const res = await fetch(path, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', ...(PW ? { authorization: `Bearer ${PW}` } : {}) },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) return data;
-    // 암호가 틀렸으면 한 번만 다시 묻고 그대로 보낸다 (사진을 다시 고르게 하지 않는다)
-    if (res.status === 401 && 번째 === 0) {
-      PW = '';
-      try { localStorage.removeItem(PW_KEY); } catch { /* 시크릿 창 */ }
-      if (askPassword()) continue;
-    }
-    throw new Error(data.error || '잠시 후 다시 시도해 주세요');
-  }
-  throw new Error('암호가 맞지 않습니다');
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || '잠시 후 다시 시도해 주세요');
+  return data;
 }
 
 // ---------- 사진 줄이기 ----------
