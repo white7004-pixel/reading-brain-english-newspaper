@@ -340,7 +340,7 @@
 }
 .deck.mesh .row .bar, .deck.mesh .ac .bar { background: rgba(255, 255, 255, .18); }
 .deck.mesh .ac, .deck.mesh .way { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .18); }
-.deck.mesh .ac li { color: rgba(255, 255, 255, .82); }
+.deck.mesh .ac li, .deck.mesh .way p { color: rgba(255, 255, 255, .82); }
 .deck.mesh .ac li::before, .deck.mesh .way li::before { background: #fff; opacity: .7; }
 .deck.mesh .ac .big2 b, .deck.mesh .st b.g, .deck.mesh .hit .bg { color: #fff; }
 .deck.mesh .hit .bg u { color: rgba(255, 255, 255, .48); }
@@ -356,7 +356,7 @@
 /* ──────────── 세로 분할 — 왼쪽 기둥에 제목, 오른쪽에 내용 ──────────── */
 .page.card-news.deck.split {
   background: #fbfaf7; color: #1a1d21; padding: 0; gap: 0;
-  display: grid; grid-template-columns: 338px 1fr; grid-template-rows: minmax(0, .8fr) minmax(0, 1fr) auto;
+  display: grid; grid-template-columns: 338px 1fr; grid-template-rows: auto minmax(0, 1fr) auto;
   --k-track: rgba(26, 29, 33, .1);
   --k-chart-ink: #1a1d21; --k-chart-dim: #7c7a73; --k-chart-grid: #e3dfd6;
 }
@@ -375,6 +375,12 @@
 .deck.split .kband .kh .rt { margin: 22px 0 0; text-align: left; }
 
 .deck.split .big { grid-column: 2; grid-row: 1; margin: 26px 28px 0; }
+/* 첫 칸은 내용만큼 차지한다 — 그래프만은 제 높이가 없어 따로 잡아 준다 */
+.deck.split .big.fill { min-height: 372px; }
+/* 좁은 칸에서 세로로 늘어나면 그래프가 비율에 맞춰 작아진다 — 높이를 잡고 가운데 둔다 */
+.deck.split .plot { flex: 0 0 auto; height: 236px; margin: auto 0; }
+/* 좁은 칸에 그래프를 넣으면 비율에 눌려 작아진다 — 그래프가 있는 줄만 한 칸으로 편다 */
+.deck.split .low:has(.plot) { grid-template-columns: 1fr; }
 .deck.split .low { grid-column: 2; grid-row: 2; margin: 16px 28px 0; padding: 0; grid-template-columns: 1fr 292px; }
 .deck.split .low.fix, .deck.split .low.fix2 { flex: 0 0 auto; }
 .deck.split .kf { grid-column: 2; grid-row: 3; margin: 0 28px; border-top-color: rgba(26, 29, 33, .16); }
