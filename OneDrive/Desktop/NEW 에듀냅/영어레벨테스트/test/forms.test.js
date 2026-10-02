@@ -262,25 +262,27 @@ test('문제지(실제·샘플)의 1차·2차에는 직접 쓰는 문항이 없�
 const T = (level, area, correct = true, o = {}) => ({ id: `${level}-${area}-${Math.random()}`, level, area, correct, kind: '', ...o });
 const stageItems = (level, n = 10) => Array.from({ length: n }, (_, k) => ({ id: `${level}${k}`, level, area: 'reading' }));
 
-test('TEST_STAGES 는 초3~고2 9단계, testStage 는 초등 1·중고 2', () => {
-  assert.deepEqual(TEST_STAGES, ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2']);
+test('TEST_STAGES 는 초5~고2 7단계(원장 결정 10/2: 초3·초4·파닉스 뺌), testStage 는 초등 1·중고 2', () => {
+  assert.deepEqual(TEST_STAGES, ['초5', '초6', '중1', '중2', '중3', '고1', '고2']);
   assert.equal(testStage({ level: '초6' }), 1);
   assert.equal(testStage({ level: '중1' }), 2);
 });
 
 test('validateTest: 초등 어휘 4지 허용, 중고는 2차 규칙', () => {
-  const v = { id: 't1', no: 1, area: 'vocab', level: '초3', kind: '영→한', question: '다음 단어의 뜻으로 알맞은 것은? __cat__', choices: ['고양이', '개', '새', '말'], answer: 0, status: 'ok' };
+  const v = { id: 't1', no: 1, area: 'vocab', level: '초5', kind: '영→한', question: '다음 단어의 뜻으로 알맞은 것은? __cat__', choices: ['고양이', '개', '새', '말'], answer: 0, status: 'ok' };
   assert.deepEqual(validateTest(v), []);
   assert.deepEqual(validateTest({ ...v, level: '중1' }), []);
   assert.deepEqual(validateTest({ ...v, level: '중1', area: 'reading', passage: 'p' }), ['선택지 5개']);
   assert.deepEqual(validateTest({ ...v, level: '고3' }), ['수준']);
+  assert.deepEqual(validateTest({ ...v, level: '초3' }), ['수준'], '초3·초4 는 시험에서 뺐다');
+  assert.deepEqual(validateTest({ ...v, level: '초4' }), ['수준']);
 });
 
-test('usableTest·testReady: 통과 문항만, 9단계 모두 6개 이상이어야 열림', () => {
+test('usableTest·testReady: 통과 문항만, 7단계 모두 6개 이상이어야 열림', () => {
   const mk = (level, k, status = 'ok') => ({ id: `${level}${k}`, no: 0, area: 'vocab', level, kind: '영→한', question: 'q', choices: ['a', 'b', 'c', 'd'], answer: 0, status });
   let no = 0;
   const full = TEST_STAGES.flatMap((lv) => Array.from({ length: 6 }, (_, k) => ({ ...mk(lv, k), no: ++no })));
-  assert.equal(usableTest(full).length, 54);
+  assert.equal(usableTest(full).length, 42);
   assert.ok(testReady(usableTest(full)));
   const short = full.filter((x) => !(x.level === '고2' && x.id.endsWith('5')));
   assert.equal(testReady(usableTest(short)), false);
@@ -288,12 +290,12 @@ test('usableTest·testReady: 통과 문항만, 9단계 모두 6개 이상이어�
 });
 
 test('stopAfter: 마친 단계 중 마지막 두 단계가 모두 절반 미만이면 그 단계', () => {
-  const list = [...stageItems('초3'), ...stageItems('초4'), ...stageItems('초5')];
+  const list = [...stageItems('초5'), ...stageItems('초6'), ...stageItems('중1')];
   const answers = (level, right, n = 10) => Array.from({ length: n }, (_, k) => T(level, 'reading', k < right));
-  assert.equal(stopAfter(list, [...answers('초3', 4), ...answers('초4', 4)]), '초4');
-  assert.equal(stopAfter(list, [...answers('초3', 5), ...answers('초4', 4)]), null, '5/10 은 절반 미만이 아님');
-  assert.equal(stopAfter(list, [...answers('초3', 3), ...answers('초4', 9), ...answers('초5', 2)]), null, '연속이 아님');
-  assert.equal(stopAfter(list, [...answers('초3', 2), ...answers('초4', 2, 6)]), null, '초4 를 다 풀지 않았으면 세지 않음');
+  assert.equal(stopAfter(list, [...answers('초5', 4), ...answers('초6', 4)]), '초6');
+  assert.equal(stopAfter(list, [...answers('초5', 5), ...answers('초6', 4)]), null, '5/10 은 절반 미만이 아님');
+  assert.equal(stopAfter(list, [...answers('초5', 3), ...answers('초6', 9), ...answers('중1', 2)]), null, '연속이 아님');
+  assert.equal(stopAfter(list, [...answers('초5', 2), ...answers('초6', 2, 6)]), null, '초6 을 다 풀지 않았으면 세지 않음');
   const nine = [...stageItems('중1', 9), ...stageItems('중2', 9)];
   assert.equal(stopAfter(nine, [...answers('중1', 4, 9), ...answers('중2', 4, 9)]), '중2', '듣기를 뺀 9문항 단계: 4/9 는 절반 미만');
 });
@@ -320,16 +322,17 @@ test('stage2Est: 통과한 단계의 다음 학년 1학기(초등도 실제 자�
   assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
 });
 
-test('한 시험 문제지(실제): A·B 각 90문항, 단계마다 10, 순서·검사 통과', () => {
+test('한 시험 문제지(실제): A·B 각 70문항, 단계마다 10, 파닉스 없음, 순서·검사 통과', () => {
   const forms = JSON.parse(readFileSync(new URL('../public/data/forms.json', import.meta.url), 'utf8'));
   for (const set of ['A', 'B']) {
     const list = forms.test[set];
-    assert.equal(list.length, 90, set);
+    assert.equal(list.length, 70, set);
+    assert.equal(list.filter((x) => x.area === 'phonics').length, 0, `${set} 파닉스`);
     for (const lv of TEST_STAGES) assert.equal(list.filter((x) => x.level === lv).length, 10, `${set} ${lv}`);
     assert.deepEqual(checkOrder(list), [], set);
     assert.deepEqual([...list].sort((a, b) => a.no - b.no).map((x) => x.no), list.map((_, i) => i + 1));
     for (const it of list) assert.deepEqual(validateTest(it), [], it.id);
-    assert.equal(new Set(list.map((x) => x.id)).size, 90);
+    assert.equal(new Set(list.map((x) => x.id)).size, 70);
   }
 });
 

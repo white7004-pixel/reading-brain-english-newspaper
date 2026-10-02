@@ -4075,358 +4075,6 @@
  "test": {
   "A": [
    {
-    "id": "t-A-1",
-    "no": 1,
-    "area": "phonics",
-    "level": "초3",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "c__u__p",
-     "c__u__te",
-     "s__u__n",
-     "b__u__s"
-    ],
-    "explain_ko": "cute 의 u 는 [유:], cup·sun·bus 의 u 는 짧은 [어].",
-    "status": "ok",
-    "answer": 1
-   },
-   {
-    "level": "초3",
-    "area": "phonics",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "h__a__t",
-     "b__a__g",
-     "m__a__ke",
-     "c__a__p"
-    ],
-    "explain_ko": "make의 a는 이름 소리(장모음)이고, hat·bag·cap의 a는 짧은 '애' 소리다.",
-    "answer": 2,
-    "id": "t-A-2",
-    "no": 2,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __rabbit__",
-    "choices": [
-     "토끼",
-     "거북",
-     "오리",
-     "여우"
-    ],
-    "explain_ko": "rabbit은 토끼다. 거북은 turtle, 오리는 duck, 여우는 fox.",
-    "answer": 0,
-    "id": "t-A-3",
-    "no": 3,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __desk__",
-    "choices": [
-     "의자",
-     "창문",
-     "칠판",
-     "책상"
-    ],
-    "explain_ko": "desk는 책상이다. 의자는 chair, 창문은 window, 칠판은 board.",
-    "answer": 3,
-    "id": "t-A-4",
-    "no": 4,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __carrot__",
-    "choices": [
-     "당근",
-     "양파",
-     "감자",
-     "오이"
-    ],
-    "explain_ko": "carrot은 당근이다. 양파·감자·오이는 같은 채소라 헷갈리게 넣은 오답.",
-    "answer": 0,
-    "id": "t-A-5",
-    "no": 5,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "한→영",
-    "question": "다음 뜻을 가진 영어 단어는? __침대__",
-    "choices": [
-     "bell",
-     "bee",
-     "bed",
-     "ball"
-    ],
-    "explain_ko": "침대는 bed다. bell(종)·bee(벌)·ball(공)은 b로 시작해 철자가 닮은 오답.",
-    "answer": 2,
-    "id": "t-A-6",
-    "no": 6,
-    "status": "ok"
-   },
-   {
-    "id": "t-A-7",
-    "no": 7,
-    "area": "reading",
-    "level": "초3",
-    "kind": "주제",
-    "passageId": "t-A-p1",
-    "passage": "I have a fish tank. It is in my room. I have three fish. One fish is red. One fish is yellow. One fish is blue and small. The red fish is fast. The blue fish is slow. I feed them every morning. I love my fish.",
-    "question": "What is the story about?",
-    "choices": [
-     "the writer's fish",
-     "the writer's room",
-     "a pet shop",
-     "the writer's morning"
-    ],
-    "explain_ko": "물고기 세 마리의 색과 빠르기, 먹이 주기 이야기. room·morning 은 지문에 한 번 나온 세부.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-A-8",
-    "no": 8,
-    "area": "reading",
-    "level": "초3",
-    "kind": "세부 내용",
-    "passageId": "t-A-p1",
-    "passage": "I have a fish tank. It is in my room. I have three fish. One fish is red. One fish is yellow. One fish is blue and small. The red fish is fast. The blue fish is slow. I feed them every morning. I love my fish.",
-    "question": "Which fish is slow?",
-    "choices": [
-     "the red fish",
-     "the yellow fish",
-     "all the fish",
-     "the blue fish"
-    ],
-    "explain_ko": "The blue fish is slow. 빨간 물고기는 fast.",
-    "status": "ok",
-    "answer": 3
-   },
-   {
-    "id": "t-A-9",
-    "no": 9,
-    "area": "reading",
-    "level": "초3",
-    "kind": "세부 내용",
-    "passageId": "t-A-p2",
-    "passage": "It is Sunday. My family cleans the house. Dad washes the windows. Mom washes the car. My sister cleans the bathroom. I clean my desk. Our dog sleeps on the sofa. __He__ does not clean! Then we eat lunch together.",
-    "question": "Who washes the car?",
-    "choices": [
-     "Dad",
-     "My sister",
-     "Our dog",
-     "Mom"
-    ],
-    "explain_ko": "Mom washes the car. 아빠는 창문, 언니(누나)는 욕실을 청소한다.",
-    "status": "ok",
-    "answer": 3
-   },
-   {
-    "id": "t-A-10",
-    "no": 10,
-    "area": "reading",
-    "level": "초3",
-    "kind": "지칭",
-    "passageId": "t-A-p2",
-    "passage": "It is Sunday. My family cleans the house. Dad washes the windows. Mom washes the car. My sister cleans the bathroom. I clean my desk. Our dog sleeps on the sofa. __He__ does not clean! Then we eat lunch together.",
-    "question": "Who is __He__ in the story?",
-    "choices": [
-     "our dog",
-     "Dad",
-     "the writer",
-     "Mom"
-    ],
-    "explain_ko": "바로 앞 문장의 소파에서 자는 개. 아빠와 글쓴이는 청소를 한다.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-A-11",
-    "no": 11,
-    "area": "phonics",
-    "level": "초4",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "__th__ink",
-     "__th__ree",
-     "__th__is",
-     "ba__th__"
-    ],
-    "explain_ko": "this 의 th 는 목소리를 내는 [ð], think·three·bath 의 th 는 바람 소리 [θ].",
-    "status": "ok",
-    "answer": 2
-   },
-   {
-    "level": "초4",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __kitchen__",
-    "choices": [
-     "부엌",
-     "거실",
-     "욕실",
-     "마당"
-    ],
-    "explain_ko": "kitchen은 부엌이다. 거실·욕실·마당은 같은 집 안팎 장소라 넣은 오답.",
-    "answer": 0,
-    "id": "t-A-12",
-    "no": 12,
-    "status": "ok"
-   },
-   {
-    "level": "초4",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __catch__",
-    "choices": [
-     "던지다",
-     "차다",
-     "잡다",
-     "밀다"
-    ],
-    "explain_ko": "catch는 잡다이다. 던지다는 throw, 차다는 kick, 밀다는 push.",
-    "answer": 2,
-    "id": "t-A-13",
-    "no": 13,
-    "status": "ok"
-   },
-   {
-    "level": "초4",
-    "area": "vocab",
-    "kind": "한→영",
-    "question": "다음 뜻을 가진 영어 단어는? __농부__",
-    "choices": [
-     "farmer",
-     "father",
-     "finger",
-     "flower"
-    ],
-    "explain_ko": "농부는 farmer다. father(아버지)·finger(손가락)·flower(꽃)는 f로 시작해 닮은 오답.",
-    "answer": 0,
-    "id": "t-A-14",
-    "no": 14,
-    "status": "ok"
-   },
-   {
-    "id": "t-A-15",
-    "no": 15,
-    "area": "grammar",
-    "level": "초4",
-    "question": "빈칸에 들어갈 말로 알맞은 것은?\nBen and his dog _____ in the garden.",
-    "choices": [
-     "is",
-     "are",
-     "am",
-     "be"
-    ],
-    "explain_ko": "주어가 Ben and his dog(둘)이므로 be동사는 are.",
-    "status": "ok",
-    "answer": 1
-   },
-   {
-    "level": "초4",
-    "area": "grammar",
-    "point": "명사 복수형",
-    "question": "빈칸에 들어갈 말로 알맞은 것은?\nMom bought three _____ at the market.",
-    "choices": [
-     "peaches",
-     "peachs",
-     "peach",
-     "a peach"
-    ],
-    "explain_ko": "three 뒤에는 복수형이 오고, ch로 끝나는 명사는 -es를 붙여 peaches가 된다.",
-    "answer": 0,
-    "id": "t-A-16",
-    "no": 16,
-    "status": "ok"
-   },
-   {
-    "id": "t-A-17",
-    "no": 17,
-    "area": "reading",
-    "level": "초4",
-    "kind": "세부 내용",
-    "passageId": "t-A-p3",
-    "passage": "My name is Jake. I am nine years old. I love my jump rope very much. I jump rope in the park every day. Today my friend Sam is with me. We are counting our jumps. Sam jumps forty times. I jump fifty times! Now we are drinking cold water under a big tree. Jump rope is fun and easy.",
-    "question": "How many times does Jake jump?",
-    "choices": [
-     "forty times",
-     "nine times",
-     "fifty times",
-     "five times"
-    ],
-    "explain_ko": "I jump fifty times! forty 는 Sam, nine 은 Jake 의 나이.",
-    "status": "ok",
-    "answer": 2
-   },
-   {
-    "id": "t-A-18",
-    "no": 18,
-    "area": "reading",
-    "level": "초4",
-    "kind": "주제",
-    "passageId": "t-A-p3",
-    "passage": "My name is Jake. I am nine years old. I love my jump rope very much. I jump rope in the park every day. Today my friend Sam is with me. We are counting our jumps. Sam jumps forty times. I jump fifty times! Now we are drinking cold water under a big tree. Jump rope is fun and easy.",
-    "question": "What is the story mainly about?",
-    "choices": [
-     "Jake's jump rope time with his friend",
-     "a big tree in the park",
-     "Sam's favorite drink",
-     "how to count to fifty"
-    ],
-    "explain_ko": "Jake 가 친구 Sam 과 줄넘기를 하는 이야기. 나무·물·숫자는 일부 세부.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-A-19",
-    "no": 19,
-    "area": "reading",
-    "level": "초4",
-    "kind": "세부 내용",
-    "passageId": "t-A-p4",
-    "passage": "Today is Saturday. It is snowing a lot. The trees are white. The roads are white, too. There are no cars on my street. My brother and I are making a snowman in the yard. We call him Snowy. He has a carrot nose and two stone eyes. Mom is taking pictures of us. My hands are cold, but I am very happy.",
-    "question": "What is Mom doing?",
-    "choices": [
-     "She is taking pictures.",
-     "She is making a snowman.",
-     "She is driving a car.",
-     "She is cleaning the yard."
-    ],
-    "explain_ko": "Mom is taking pictures of us. 눈사람은 글쓴이와 남동생(형)이 만든다.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-A-20",
-    "no": 20,
-    "area": "reading",
-    "level": "초4",
-    "kind": "일치",
-    "passageId": "t-A-p4",
-    "passage": "Today is Saturday. It is snowing a lot. The trees are white. The roads are white, too. There are no cars on my street. My brother and I are making a snowman in the yard. We call him Snowy. He has a carrot nose and two stone eyes. Mom is taking pictures of us. My hands are cold, but I am very happy.",
-    "question": "Which is true about the story?",
-    "choices": [
-     "It is Sunday today.",
-     "Snowy has a stone nose.",
-     "There are no cars on the street.",
-     "The writer's hands are warm."
-    ],
-    "explain_ko": "There are no cars on my street. 오늘은 토요일, 코는 당근, 손은 차갑다.",
-    "status": "ok",
-    "answer": 2
-   },
-   {
     "level": "초5",
     "area": "vocab",
     "kind": "영→한",
@@ -4440,7 +4088,7 @@
     "explain_ko": "shout는 소리치다이다. 울다는 cry, 웃다는 laugh, 숨다는 hide.",
     "answer": 0,
     "id": "t-A-21",
-    "no": 21,
+    "no": 1,
     "status": "ok"
    },
    {
@@ -4457,12 +4105,12 @@
     "explain_ko": "afraid는 무서워하는이다. 화난은 angry, 슬픈은 sad, 궁금한은 curious.",
     "answer": 1,
     "id": "t-A-22",
-    "no": 22,
+    "no": 2,
     "status": "ok"
    },
    {
     "id": "t-A-23",
-    "no": 23,
+    "no": 3,
     "area": "grammar",
     "level": "초5",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nThis watermelon is _____ than that one.",
@@ -4478,7 +4126,7 @@
    },
    {
     "id": "t-A-24",
-    "no": 24,
+    "no": 4,
     "area": "form",
     "level": "초5",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n내 남동생은 학교에 노란 우산을 가지고 다닌다.\nMy little brother _____ a yellow umbrella to school.",
@@ -4494,7 +4142,7 @@
    },
    {
     "id": "t-A-25",
-    "no": 25,
+    "no": 5,
     "area": "form",
     "level": "초5",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리 개는 어젯밤에 저녁을 먹지 않았다.\nOur dog _____ its dinner last night.",
@@ -4510,7 +4158,7 @@
    },
    {
     "id": "t-A-26",
-    "no": 26,
+    "no": 6,
     "area": "reading",
     "level": "초5",
     "kind": "주제",
@@ -4529,7 +4177,7 @@
    },
    {
     "id": "t-A-27",
-    "no": 27,
+    "no": 7,
     "area": "reading",
     "level": "초5",
     "kind": "세부 내용",
@@ -4548,7 +4196,7 @@
    },
    {
     "id": "t-A-28",
-    "no": 28,
+    "no": 8,
     "area": "reading",
     "level": "초5",
     "kind": "목적",
@@ -4567,7 +4215,7 @@
    },
    {
     "id": "t-A-29",
-    "no": 29,
+    "no": 9,
     "area": "reading",
     "level": "초5",
     "kind": "세부 내용",
@@ -4586,7 +4234,7 @@
    },
    {
     "id": "t-A-30",
-    "no": 30,
+    "no": 10,
     "area": "sentence",
     "level": "초5",
     "point": "일반동사 과거",
@@ -4615,12 +4263,12 @@
     "explain_ko": "surprised는 놀란이다. 실망한은 disappointed, 걱정하는은 worried, 신이 난은 excited.",
     "answer": 2,
     "id": "t-A-31",
-    "no": 31,
+    "no": 11,
     "status": "ok"
    },
    {
     "id": "t-A-32",
-    "no": 32,
+    "no": 12,
     "area": "grammar",
     "level": "초6",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nLook at those dark clouds. It _____ rain soon.",
@@ -4636,7 +4284,7 @@
    },
    {
     "id": "t-A-33",
-    "no": 33,
+    "no": 13,
     "area": "form",
     "level": "초6",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n아빠가 지금 부엌에서 감자를 자르고 계신다.\nDad _____ potatoes in the kitchen now.",
@@ -4652,7 +4300,7 @@
    },
    {
     "id": "t-A-34",
-    "no": 34,
+    "no": 14,
     "area": "form",
     "level": "초6",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n나는 어제 공원에서 새 둥지를 발견했다.\nI _____ a bird's nest in the park yesterday.",
@@ -4668,7 +4316,7 @@
    },
    {
     "id": "t-A-35",
-    "no": 35,
+    "no": 15,
     "area": "reading",
     "level": "초6",
     "kind": "내용 불일치",
@@ -4687,7 +4335,7 @@
    },
    {
     "id": "t-A-36",
-    "no": 36,
+    "no": 16,
     "area": "reading",
     "level": "초6",
     "kind": "세부 내용",
@@ -4706,7 +4354,7 @@
    },
    {
     "id": "t-A-37",
-    "no": 37,
+    "no": 17,
     "area": "reading",
     "level": "초6",
     "kind": "내용 일치",
@@ -4725,7 +4373,7 @@
    },
    {
     "id": "t-A-38",
-    "no": 38,
+    "no": 18,
     "area": "reading",
     "level": "초6",
     "kind": "빈칸",
@@ -4744,7 +4392,7 @@
    },
    {
     "id": "t-A-39",
-    "no": 39,
+    "no": 19,
     "area": "sentence",
     "level": "초6",
     "point": "will + 동사원형",
@@ -4761,7 +4409,7 @@
    },
    {
     "id": "t-A-40",
-    "no": 40,
+    "no": 20,
     "area": "sentence",
     "level": "초6",
     "point": "must not + 동사원형",
@@ -4778,7 +4426,7 @@
    },
    {
     "id": "t-A-41",
-    "no": 41,
+    "no": 21,
     "area": "listening",
     "level": "중1",
     "kind": "할 일",
@@ -4797,7 +4445,7 @@
    },
    {
     "id": "t-A-42",
-    "no": 42,
+    "no": 22,
     "area": "vocab",
     "level": "중1",
     "kind": "영→한",
@@ -4814,7 +4462,7 @@
    },
    {
     "id": "t-A-43",
-    "no": 43,
+    "no": 23,
     "area": "vocab",
     "level": "중1",
     "kind": "영→한",
@@ -4831,7 +4479,7 @@
    },
    {
     "id": "t-A-44",
-    "no": 44,
+    "no": 24,
     "area": "vocab",
     "level": "중1",
     "kind": "한→영",
@@ -4848,7 +4496,7 @@
    },
    {
     "id": "t-A-45",
-    "no": 45,
+    "no": 25,
     "area": "grammar",
     "level": "중1",
     "kind": "빈칸 어법",
@@ -4867,7 +4515,7 @@
    },
    {
     "id": "t-A-46",
-    "no": 46,
+    "no": 26,
     "area": "grammar",
     "level": "중1",
     "kind": "틀린 것",
@@ -4885,7 +4533,7 @@
    },
    {
     "id": "t-A-47",
-    "no": 47,
+    "no": 27,
     "area": "reading",
     "level": "중1",
     "kind": "주제",
@@ -4904,7 +4552,7 @@
    },
    {
     "id": "t-A-48",
-    "no": 48,
+    "no": 28,
     "area": "reading",
     "level": "중1",
     "kind": "내용 불일치",
@@ -4923,7 +4571,7 @@
    },
    {
     "id": "t-A-49",
-    "no": 49,
+    "no": 29,
     "area": "reading",
     "level": "중1",
     "kind": "빈칸",
@@ -4942,7 +4590,7 @@
    },
    {
     "id": "t-A-50",
-    "no": 50,
+    "no": 30,
     "area": "sentence",
     "level": "중1",
     "kind": "영작",
@@ -4961,7 +4609,7 @@
    },
    {
     "id": "t-A-51",
-    "no": 51,
+    "no": 31,
     "area": "listening",
     "level": "중2",
     "kind": "이유",
@@ -4980,7 +4628,7 @@
    },
    {
     "id": "t-A-52",
-    "no": 52,
+    "no": 32,
     "area": "vocab",
     "level": "중2",
     "kind": "영→한",
@@ -4997,7 +4645,7 @@
    },
    {
     "id": "t-A-53",
-    "no": 53,
+    "no": 33,
     "area": "vocab",
     "level": "중2",
     "kind": "영→한",
@@ -5014,7 +4662,7 @@
    },
    {
     "id": "t-A-54",
-    "no": 54,
+    "no": 34,
     "area": "vocab",
     "level": "중2",
     "kind": "한→영",
@@ -5031,7 +4679,7 @@
    },
    {
     "id": "t-A-55",
-    "no": 55,
+    "no": 35,
     "area": "grammar",
     "level": "중2",
     "kind": "빈칸 짝",
@@ -5050,7 +4698,7 @@
    },
    {
     "id": "t-A-56",
-    "no": 56,
+    "no": 36,
     "area": "grammar",
     "level": "중2",
     "kind": "맞는 문장 개수",
@@ -5070,7 +4718,7 @@
    },
    {
     "id": "t-A-57",
-    "no": 57,
+    "no": 37,
     "area": "reading",
     "level": "중2",
     "kind": "제목",
@@ -5089,7 +4737,7 @@
    },
    {
     "id": "t-A-58",
-    "no": 58,
+    "no": 38,
     "area": "reading",
     "level": "중2",
     "kind": "내용 불일치",
@@ -5108,7 +4756,7 @@
    },
    {
     "id": "t-A-59",
-    "no": 59,
+    "no": 39,
     "area": "reading",
     "level": "중2",
     "kind": "무관한 문장",
@@ -5128,7 +4776,7 @@
    },
    {
     "id": "t-A-60",
-    "no": 60,
+    "no": 40,
     "area": "sentence",
     "level": "중2",
     "kind": "영작",
@@ -5147,7 +4795,7 @@
    },
    {
     "id": "t-A-61",
-    "no": 61,
+    "no": 41,
     "area": "listening",
     "level": "중3",
     "kind": "금액",
@@ -5166,7 +4814,7 @@
    },
    {
     "id": "t-A-62",
-    "no": 62,
+    "no": 42,
     "area": "vocab",
     "level": "중3",
     "kind": "영→한",
@@ -5183,7 +4831,7 @@
    },
    {
     "id": "t-A-63",
-    "no": 63,
+    "no": 43,
     "area": "vocab",
     "level": "중3",
     "kind": "영→한",
@@ -5200,7 +4848,7 @@
    },
    {
     "id": "t-A-64",
-    "no": 64,
+    "no": 44,
     "area": "vocab",
     "level": "중3",
     "kind": "한→영",
@@ -5217,7 +4865,7 @@
    },
    {
     "id": "t-A-65",
-    "no": 65,
+    "no": 45,
     "area": "grammar",
     "level": "중3",
     "kind": "빈칸 짝",
@@ -5236,7 +4884,7 @@
    },
    {
     "id": "t-A-66",
-    "no": 66,
+    "no": 46,
     "area": "grammar",
     "level": "중3",
     "kind": "틀린 것",
@@ -5254,7 +4902,7 @@
    },
    {
     "id": "t-A-67",
-    "no": 67,
+    "no": 47,
     "area": "reading",
     "level": "중3",
     "kind": "빈칸",
@@ -5273,7 +4921,7 @@
    },
    {
     "id": "t-A-68",
-    "no": 68,
+    "no": 48,
     "area": "reading",
     "level": "중3",
     "kind": "내용 불일치",
@@ -5292,7 +4940,7 @@
    },
    {
     "id": "t-A-69",
-    "no": 69,
+    "no": 49,
     "area": "reading",
     "level": "중3",
     "kind": "문장 삽입",
@@ -5313,7 +4961,7 @@
    },
    {
     "id": "t-A-70",
-    "no": 70,
+    "no": 50,
     "area": "sentence",
     "level": "중3",
     "kind": "영작",
@@ -5332,7 +4980,7 @@
    },
    {
     "id": "t-A-71",
-    "no": 71,
+    "no": 51,
     "area": "listening",
     "level": "고1",
     "kind": "언급하지 않은 것",
@@ -5351,7 +4999,7 @@
    },
    {
     "id": "t-A-72",
-    "no": 72,
+    "no": 52,
     "area": "vocab",
     "level": "고1",
     "kind": "영→한",
@@ -5368,7 +5016,7 @@
    },
    {
     "id": "t-A-73",
-    "no": 73,
+    "no": 53,
     "area": "vocab",
     "level": "고1",
     "kind": "영→한",
@@ -5385,7 +5033,7 @@
    },
    {
     "id": "t-A-74",
-    "no": 74,
+    "no": 54,
     "area": "vocab",
     "level": "고1",
     "kind": "한→영",
@@ -5402,7 +5050,7 @@
    },
    {
     "id": "t-A-75",
-    "no": 75,
+    "no": 55,
     "area": "grammar",
     "level": "고1",
     "kind": "맞는 문장 개수",
@@ -5422,7 +5070,7 @@
    },
    {
     "id": "t-A-76",
-    "no": 76,
+    "no": 56,
     "area": "grammar",
     "level": "고1",
     "kind": "빈칸 짝",
@@ -5441,7 +5089,7 @@
    },
    {
     "id": "t-A-77",
-    "no": 77,
+    "no": 57,
     "area": "reading",
     "level": "고1",
     "kind": "주제",
@@ -5460,7 +5108,7 @@
    },
    {
     "id": "t-A-78",
-    "no": 78,
+    "no": 58,
     "area": "reading",
     "level": "고1",
     "kind": "무관한 문장",
@@ -5480,7 +5128,7 @@
    },
    {
     "id": "t-A-79",
-    "no": 79,
+    "no": 59,
     "area": "reading",
     "level": "고1",
     "kind": "빈칸",
@@ -5499,7 +5147,7 @@
    },
    {
     "id": "t-A-80",
-    "no": 80,
+    "no": 60,
     "area": "sentence",
     "level": "고1",
     "kind": "영작",
@@ -5518,7 +5166,7 @@
    },
    {
     "id": "t-A-81",
-    "no": 81,
+    "no": 61,
     "area": "listening",
     "level": "고2",
     "kind": "의견",
@@ -5537,7 +5185,7 @@
    },
    {
     "id": "t-A-82",
-    "no": 82,
+    "no": 62,
     "area": "vocab",
     "level": "고2",
     "kind": "영→한",
@@ -5554,7 +5202,7 @@
    },
    {
     "id": "t-A-83",
-    "no": 83,
+    "no": 63,
     "area": "vocab",
     "level": "고2",
     "kind": "영→한",
@@ -5571,7 +5219,7 @@
    },
    {
     "id": "t-A-84",
-    "no": 84,
+    "no": 64,
     "area": "vocab",
     "level": "고2",
     "kind": "한→영",
@@ -5588,7 +5236,7 @@
    },
    {
     "id": "t-A-85",
-    "no": 85,
+    "no": 65,
     "area": "grammar",
     "level": "고2",
     "kind": "틀린 것",
@@ -5606,7 +5254,7 @@
    },
    {
     "id": "t-A-86",
-    "no": 86,
+    "no": 66,
     "area": "grammar",
     "level": "고2",
     "kind": "빈칸 어법",
@@ -5625,7 +5273,7 @@
    },
    {
     "id": "t-A-87",
-    "no": 87,
+    "no": 67,
     "area": "reading",
     "level": "고2",
     "kind": "제목",
@@ -5644,7 +5292,7 @@
    },
    {
     "id": "t-A-88",
-    "no": 88,
+    "no": 68,
     "area": "reading",
     "level": "고2",
     "kind": "내용 불일치",
@@ -5663,7 +5311,7 @@
    },
    {
     "id": "t-A-89",
-    "no": 89,
+    "no": 69,
     "area": "reading",
     "level": "고2",
     "kind": "문장 삽입",
@@ -5684,7 +5332,7 @@
    },
    {
     "id": "t-A-90",
-    "no": 90,
+    "no": 70,
     "area": "sentence",
     "level": "고2",
     "kind": "영작",
@@ -5704,358 +5352,6 @@
   ],
   "B": [
    {
-    "id": "t-B-1",
-    "no": 1,
-    "area": "phonics",
-    "level": "초3",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "p__i__g",
-     "s__i__t",
-     "f__i__sh",
-     "k__i__te"
-    ],
-    "explain_ko": "kite 의 i 는 [아이], 나머지는 짧은 [이].",
-    "status": "ok",
-    "answer": 3
-   },
-   {
-    "level": "초3",
-    "area": "phonics",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "h__o__t",
-     "b__o__x",
-     "t__o__p",
-     "r__o__se"
-    ],
-    "explain_ko": "rose의 o는 이름 소리(장모음)이고, hot·box·top의 o는 짧은 '아' 소리다.",
-    "answer": 3,
-    "id": "t-B-2",
-    "no": 2,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __doll__",
-    "choices": [
-     "풍선",
-     "팽이",
-     "공",
-     "인형"
-    ],
-    "explain_ko": "doll은 인형이다. 풍선은 balloon, 팽이는 top, 공은 ball.",
-    "answer": 3,
-    "id": "t-B-3",
-    "no": 3,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __tree__",
-    "choices": [
-     "꽃",
-     "풀",
-     "나무",
-     "돌"
-    ],
-    "explain_ko": "tree는 나무다. 꽃은 flower, 풀은 grass, 돌은 stone.",
-    "answer": 2,
-    "id": "t-B-4",
-    "no": 4,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __book__",
-    "choices": [
-     "공책",
-     "가방",
-     "연필",
-     "책"
-    ],
-    "explain_ko": "book은 책이다. 공책은 notebook, 가방은 bag, 연필은 pencil.",
-    "answer": 3,
-    "id": "t-B-5",
-    "no": 5,
-    "status": "ok"
-   },
-   {
-    "level": "초3",
-    "area": "vocab",
-    "kind": "한→영",
-    "question": "다음 뜻을 가진 영어 단어는? __발__",
-    "choices": [
-     "foot",
-     "food",
-     "fork",
-     "fox"
-    ],
-    "explain_ko": "발은 foot이다. food(음식)·fork(포크)·fox(여우)는 fo로 시작해 닮은 오답.",
-    "answer": 0,
-    "id": "t-B-6",
-    "no": 6,
-    "status": "ok"
-   },
-   {
-    "id": "t-B-7",
-    "no": 7,
-    "area": "reading",
-    "level": "초3",
-    "kind": "세부 내용",
-    "passageId": "t-B-p1",
-    "passage": "I have a toy robot. His name is Zip. Zip is red and blue. He has two big eyes. He walks and talks. I play with Zip after school. My sister likes Zip, too. We love our robot.",
-    "question": "What color is Zip?",
-    "choices": [
-     "red and blue",
-     "red and green",
-     "black and blue",
-     "yellow and white"
-    ],
-    "explain_ko": "Zip is red and blue. 한 문장에 답이 있다.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-B-8",
-    "no": 8,
-    "area": "reading",
-    "level": "초3",
-    "kind": "주제",
-    "passageId": "t-B-p1",
-    "passage": "I have a toy robot. His name is Zip. Zip is red and blue. He has two big eyes. He walks and talks. I play with Zip after school. My sister likes Zip, too. We love our robot.",
-    "question": "What is the story about?",
-    "choices": [
-     "a toy robot",
-     "my sister",
-     "a red ball",
-     "my school"
-    ],
-    "explain_ko": "글 전체가 장난감 로봇 Zip 이야기다. my sister·school 은 한 문장에만 나온다.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-B-9",
-    "no": 9,
-    "area": "reading",
-    "level": "초3",
-    "kind": "세부 내용",
-    "passageId": "t-B-p2",
-    "passage": "We are at the beach. I see a little crab. The crab is orange. It has ten legs. It walks to the side, not forward. It hides under a rock. Dad and I watch the crab. It is fun!",
-    "question": "How many legs does the crab have?",
-    "choices": [
-     "ten",
-     "eight",
-     "six",
-     "four"
-    ],
-    "explain_ko": "It has ten legs. → 다리가 열 개.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-B-10",
-    "no": 10,
-    "area": "reading",
-    "level": "초3",
-    "kind": "빈칸",
-    "passageId": "t-B-p2",
-    "passage": "We are at the beach. I see a little crab. The crab is orange. It has ten legs. It walks to the side, not forward. It hides under a rock. Dad and I watch the crab. It is fun!",
-    "question": "Choose the right words.\nThe crab walks _____.",
-    "choices": [
-     "forward",
-     "to the side",
-     "to Dad",
-     "under the sand"
-    ],
-    "explain_ko": "It walks to the side, not forward. forward 는 not 앞의 반대말, to Dad 는 다른 문장의 Dad 로 만든 오답이다.",
-    "status": "ok",
-    "answer": 1
-   },
-   {
-    "id": "t-B-11",
-    "no": 11,
-    "area": "phonics",
-    "level": "초4",
-    "question": "밑줄 친 부분의 소리가 다른 것은?",
-    "choices": [
-     "__ch__ick",
-     "bea__ch__",
-     "s__ch__ool",
-     "lun__ch__"
-    ],
-    "explain_ko": "school 의 ch 는 [ㅋ], 나머지 ch 는 [취].",
-    "status": "ok",
-    "answer": 2
-   },
-   {
-    "level": "초4",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __library__",
-    "choices": [
-     "박물관",
-     "도서관",
-     "병원",
-     "시장"
-    ],
-    "explain_ko": "library는 도서관이다. 박물관은 museum, 병원은 hospital, 시장은 market.",
-    "answer": 1,
-    "id": "t-B-12",
-    "no": 12,
-    "status": "ok"
-   },
-   {
-    "level": "초4",
-    "area": "vocab",
-    "kind": "영→한",
-    "question": "다음 단어의 뜻으로 알맞은 것은? __climb__",
-    "choices": [
-     "달리다",
-     "날다",
-     "걷다",
-     "오르다"
-    ],
-    "explain_ko": "climb은 오르다이다. 달리다는 run, 날다는 fly, 걷다는 walk.",
-    "answer": 3,
-    "id": "t-B-13",
-    "no": 13,
-    "status": "ok"
-   },
-   {
-    "level": "초4",
-    "area": "vocab",
-    "kind": "한→영",
-    "question": "다음 뜻을 가진 영어 단어는? __가게__",
-    "choices": [
-     "stone",
-     "store",
-     "story",
-     "star"
-    ],
-    "explain_ko": "가게는 store다. stone(돌)·story(이야기)·star(별)는 st로 시작해 닮은 오답.",
-    "answer": 1,
-    "id": "t-B-14",
-    "no": 14,
-    "status": "ok"
-   },
-   {
-    "id": "t-B-15",
-    "no": 15,
-    "area": "grammar",
-    "level": "초4",
-    "question": "빈칸에 들어갈 말로 알맞은 것은?\nEvery morning, my dad _____ the plants in the garden.",
-    "choices": [
-     "water",
-     "waters",
-     "watering",
-     "are water"
-    ],
-    "explain_ko": "주어 my dad 는 3인칭 단수, 현재 → waters.",
-    "status": "ok",
-    "answer": 1
-   },
-   {
-    "level": "초4",
-    "area": "grammar",
-    "point": "there is/are",
-    "question": "빈칸에 들어갈 말로 알맞은 것은?\nThere is _____ next to the door.",
-    "choices": [
-     "cats",
-     "two cats",
-     "many cats",
-     "a cat"
-    ],
-    "explain_ko": "There is 뒤에는 하나인 명사가 오므로 a cat이 맞고, 나머지는 여럿이라 There are가 필요하다.",
-    "answer": 3,
-    "id": "t-B-16",
-    "no": 16,
-    "status": "ok"
-   },
-   {
-    "id": "t-B-17",
-    "no": 17,
-    "area": "reading",
-    "level": "초4",
-    "kind": "주제",
-    "passageId": "t-B-p3",
-    "passage": "Mrs. Gray is my neighbor. She lives next to my house. She has a small shop in her garage. Kids in our town bring their broken bikes to her. She fixes them for free. Right now, she is fixing my bike. The chain is broken. Mrs. Gray is very kind. She always smiles at us. Everyone in our town loves her.",
-    "question": "What is the story about?",
-    "choices": [
-     "a new bike",
-     "a kind neighbor",
-     "a big garage",
-     "a broken chain"
-    ],
-    "explain_ko": "글 전체가 동네 아이들 자전거를 고쳐 주는 이웃 Mrs. Gray 이야기다. bike·garage·chain 은 일부만 다룬다.",
-    "status": "ok",
-    "answer": 1
-   },
-   {
-    "id": "t-B-18",
-    "no": 18,
-    "area": "reading",
-    "level": "초4",
-    "kind": "세부 내용",
-    "passageId": "t-B-p3",
-    "passage": "Mrs. Gray is my neighbor. She lives next to my house. She has a small shop in her garage. Kids in our town bring their broken bikes to her. She fixes them for free. Right now, she is fixing my bike. The chain is broken. Mrs. Gray is very kind. She always smiles at us. Everyone in our town loves her.",
-    "question": "What is Mrs. Gray doing now?",
-    "choices": [
-     "She is fixing my bike.",
-     "She is riding my bike.",
-     "She is buying a chain.",
-     "She is cleaning her garage."
-    ],
-    "explain_ko": "Right now, she is fixing my bike. 타기·체인 사기·차고 청소는 지문 낱말을 다른 행동에 붙인 오답이다.",
-    "status": "ok",
-    "answer": 0
-   },
-   {
-    "id": "t-B-19",
-    "no": 19,
-    "area": "reading",
-    "level": "초4",
-    "kind": "세부 내용",
-    "passageId": "t-B-p4",
-    "passage": "Today I am at Grandma's house. She has a small garden on her roof. There are strawberries, tomatoes, and carrots in it. The strawberries are red and sweet. Grandma and I are picking them now. I put them in a big basket. Grandma makes jam with strawberries every summer. My favorite food is her jam. I love her garden!",
-    "question": "Where is Grandma's garden?",
-    "choices": [
-     "next to the school",
-     "in the park",
-     "on her roof",
-     "behind the market"
-    ],
-    "explain_ko": "She has a small garden on her roof. → 지붕 위.",
-    "status": "ok",
-    "answer": 2
-   },
-   {
-    "id": "t-B-20",
-    "no": 20,
-    "area": "reading",
-    "level": "초4",
-    "kind": "지칭",
-    "passageId": "t-B-p4",
-    "passage": "Today I am at Grandma's house. She has a small garden on her roof. There are strawberries, tomatoes, and carrots in it. The strawberries are red and sweet. Grandma and I are picking __them__ now. I put them in a big basket. Grandma makes jam with strawberries every summer. My favorite food is her jam. I love her garden!",
-    "question": "What does __them__ mean?",
-    "choices": [
-     "the tomatoes",
-     "the carrots",
-     "the strawberries",
-     "the baskets"
-    ],
-    "explain_ko": "바로 앞 문장의 The strawberries 를 가리킨다. 토마토·당근은 같은 정원의 다른 채소다.",
-    "status": "ok",
-    "answer": 2
-   },
-   {
     "level": "초5",
     "area": "vocab",
     "kind": "영→한",
@@ -6069,7 +5365,7 @@
     "explain_ko": "breathe 는 '숨을 쉬다'. 맛보다(taste)·만지다(touch)·듣다(hear)는 몸으로 하는 다른 동작이다.",
     "answer": 3,
     "id": "t-B-21",
-    "no": 21,
+    "no": 1,
     "status": "ok"
    },
    {
@@ -6086,12 +5382,12 @@
     "explain_ko": "lonely는 외로운이다. 시끄러운은 noisy, 배고픈은 hungry, 용감한은 brave.",
     "answer": 2,
     "id": "t-B-22",
-    "no": 22,
+    "no": 2,
     "status": "ok"
    },
    {
     "id": "t-B-23",
-    "no": 23,
+    "no": 3,
     "area": "grammar",
     "level": "초5",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nThis toy car is _____ than that one.",
@@ -6107,7 +5403,7 @@
    },
    {
     "id": "t-B-24",
-    "no": 24,
+    "no": 4,
     "area": "form",
     "level": "초5",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n내 여동생은 저녁 먹기 전에 손을 씻는다.\nMy sister _____ her hands before dinner.",
@@ -6123,7 +5419,7 @@
    },
    {
     "id": "t-B-25",
-    "no": 25,
+    "no": 5,
     "area": "form",
     "level": "초5",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n우리는 어제 공원에서 연을 날리지 않았다.\nWe _____ fly a kite in the park yesterday.",
@@ -6139,7 +5435,7 @@
    },
    {
     "id": "t-B-26",
-    "no": 26,
+    "no": 6,
     "area": "reading",
     "level": "초5",
     "kind": "주제",
@@ -6158,7 +5454,7 @@
    },
    {
     "id": "t-B-27",
-    "no": 27,
+    "no": 7,
     "area": "reading",
     "level": "초5",
     "kind": "세부 내용",
@@ -6177,7 +5473,7 @@
    },
    {
     "id": "t-B-28",
-    "no": 28,
+    "no": 8,
     "area": "reading",
     "level": "초5",
     "kind": "이유",
@@ -6196,7 +5492,7 @@
    },
    {
     "id": "t-B-29",
-    "no": 29,
+    "no": 9,
     "area": "reading",
     "level": "초5",
     "kind": "심정",
@@ -6215,7 +5511,7 @@
    },
    {
     "id": "t-B-30",
-    "no": 30,
+    "no": 10,
     "area": "sentence",
     "level": "초5",
     "point": "일반동사 과거",
@@ -6244,12 +5540,12 @@
     "explain_ko": "borrow는 빌리다이다. 돌려주다는 return, 고르다는 choose, 찾다는 find.",
     "answer": 0,
     "id": "t-B-31",
-    "no": 31,
+    "no": 11,
     "status": "ok"
    },
    {
     "id": "t-B-32",
-    "no": 32,
+    "no": 12,
     "area": "grammar",
     "level": "초6",
     "question": "빈칸에 들어갈 말로 알맞은 것은?\nLook at those dark clouds. It _____ rain soon.",
@@ -6265,7 +5561,7 @@
    },
    {
     "id": "t-B-33",
-    "no": 33,
+    "no": 13,
     "area": "form",
     "level": "초6",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n할머니는 지금 정원에서 꽃을 심고 계신다.\nGrandma is _____ flowers in the garden now.",
@@ -6281,7 +5577,7 @@
    },
    {
     "id": "t-B-34",
-    "no": 34,
+    "no": 14,
     "area": "form",
     "level": "초6",
     "question": "우리말에 맞게 빈칸에 들어갈 말로 알맞은 것은?\n나는 지난여름 바닷가에서 예쁜 조개껍데기를 발견했다.\nI _____ a pretty shell at the beach last summer.",
@@ -6297,7 +5593,7 @@
    },
    {
     "id": "t-B-35",
-    "no": 35,
+    "no": 15,
     "area": "reading",
     "level": "초6",
     "kind": "제목",
@@ -6316,7 +5612,7 @@
    },
    {
     "id": "t-B-36",
-    "no": 36,
+    "no": 16,
     "area": "reading",
     "level": "초6",
     "kind": "내용 일치",
@@ -6336,7 +5632,7 @@
    },
    {
     "id": "t-B-37",
-    "no": 37,
+    "no": 17,
     "area": "reading",
     "level": "초6",
     "kind": "빈칸",
@@ -6355,7 +5651,7 @@
    },
    {
     "id": "t-B-38",
-    "no": 38,
+    "no": 18,
     "area": "reading",
     "level": "초6",
     "kind": "세부 내용",
@@ -6374,7 +5670,7 @@
    },
    {
     "id": "t-B-39",
-    "no": 39,
+    "no": 19,
     "area": "sentence",
     "level": "초6",
     "point": "조동사 will + 동사원형",
@@ -6391,7 +5687,7 @@
    },
    {
     "id": "t-B-40",
-    "no": 40,
+    "no": 20,
     "area": "sentence",
     "level": "초6",
     "point": "최상급",
@@ -6408,7 +5704,7 @@
    },
    {
     "id": "t-B-41",
-    "no": 41,
+    "no": 21,
     "area": "listening",
     "level": "중1",
     "kind": "장소",
@@ -6427,7 +5723,7 @@
    },
    {
     "id": "t-B-42",
-    "no": 42,
+    "no": 22,
     "area": "vocab",
     "level": "중1",
     "kind": "영→한",
@@ -6444,7 +5740,7 @@
    },
    {
     "id": "t-B-43",
-    "no": 43,
+    "no": 23,
     "area": "vocab",
     "level": "중1",
     "kind": "영→한",
@@ -6461,7 +5757,7 @@
    },
    {
     "id": "t-B-44",
-    "no": 44,
+    "no": 24,
     "area": "vocab",
     "level": "중1",
     "kind": "한→영",
@@ -6478,7 +5774,7 @@
    },
    {
     "id": "t-B-45",
-    "no": 45,
+    "no": 25,
     "area": "grammar",
     "level": "중1",
     "kind": "빈칸 어법",
@@ -6497,7 +5793,7 @@
    },
    {
     "id": "t-B-46",
-    "no": 46,
+    "no": 26,
     "area": "grammar",
     "level": "중1",
     "kind": "틀린 것",
@@ -6515,7 +5811,7 @@
    },
    {
     "id": "t-B-47",
-    "no": 47,
+    "no": 27,
     "area": "reading",
     "level": "중1",
     "kind": "주제",
@@ -6534,7 +5830,7 @@
    },
    {
     "id": "t-B-48",
-    "no": 48,
+    "no": 28,
     "area": "reading",
     "level": "중1",
     "kind": "내용 불일치",
@@ -6553,7 +5849,7 @@
    },
    {
     "id": "t-B-49",
-    "no": 49,
+    "no": 29,
     "area": "reading",
     "level": "중1",
     "kind": "빈칸",
@@ -6572,7 +5868,7 @@
    },
    {
     "id": "t-B-50",
-    "no": 50,
+    "no": 30,
     "area": "sentence",
     "level": "중1",
     "kind": "영작",
@@ -6591,7 +5887,7 @@
    },
    {
     "id": "t-B-51",
-    "no": 51,
+    "no": 31,
     "area": "listening",
     "level": "중2",
     "kind": "시각",
@@ -6610,7 +5906,7 @@
    },
    {
     "id": "t-B-52",
-    "no": 52,
+    "no": 32,
     "area": "vocab",
     "level": "중2",
     "kind": "영→한",
@@ -6627,7 +5923,7 @@
    },
    {
     "id": "t-B-53",
-    "no": 53,
+    "no": 33,
     "area": "vocab",
     "level": "중2",
     "kind": "영→한",
@@ -6644,7 +5940,7 @@
    },
    {
     "id": "t-B-54",
-    "no": 54,
+    "no": 34,
     "area": "vocab",
     "level": "중2",
     "kind": "한→영",
@@ -6661,7 +5957,7 @@
    },
    {
     "id": "t-B-55",
-    "no": 55,
+    "no": 35,
     "area": "grammar",
     "level": "중2",
     "kind": "빈칸 짝",
@@ -6680,7 +5976,7 @@
    },
    {
     "id": "t-B-56",
-    "no": 56,
+    "no": 36,
     "area": "grammar",
     "level": "중2",
     "kind": "맞는 문장 개수",
@@ -6700,7 +5996,7 @@
    },
    {
     "id": "t-B-57",
-    "no": 57,
+    "no": 37,
     "area": "reading",
     "level": "중2",
     "kind": "제목",
@@ -6719,7 +6015,7 @@
    },
    {
     "id": "t-B-58",
-    "no": 58,
+    "no": 38,
     "area": "reading",
     "level": "중2",
     "kind": "내용 불일치",
@@ -6738,7 +6034,7 @@
    },
    {
     "id": "t-B-59",
-    "no": 59,
+    "no": 39,
     "area": "reading",
     "level": "중2",
     "kind": "무관한 문장",
@@ -6758,7 +6054,7 @@
    },
    {
     "id": "t-B-60",
-    "no": 60,
+    "no": 40,
     "area": "sentence",
     "level": "중2",
     "kind": "영작",
@@ -6777,7 +6073,7 @@
    },
    {
     "id": "t-B-61",
-    "no": 61,
+    "no": 41,
     "area": "listening",
     "level": "중3",
     "kind": "언급하지 않은 것",
@@ -6796,7 +6092,7 @@
    },
    {
     "id": "t-B-62",
-    "no": 62,
+    "no": 42,
     "area": "vocab",
     "level": "중3",
     "kind": "영→한",
@@ -6813,7 +6109,7 @@
    },
    {
     "id": "t-B-63",
-    "no": 63,
+    "no": 43,
     "area": "vocab",
     "level": "중3",
     "kind": "영→한",
@@ -6830,7 +6126,7 @@
    },
    {
     "id": "t-B-64",
-    "no": 64,
+    "no": 44,
     "area": "vocab",
     "level": "중3",
     "kind": "한→영",
@@ -6847,7 +6143,7 @@
    },
    {
     "id": "t-B-65",
-    "no": 65,
+    "no": 45,
     "area": "grammar",
     "level": "중3",
     "kind": "빈칸 짝",
@@ -6866,7 +6162,7 @@
    },
    {
     "id": "t-B-66",
-    "no": 66,
+    "no": 46,
     "area": "grammar",
     "level": "중3",
     "kind": "틀린 것",
@@ -6884,7 +6180,7 @@
    },
    {
     "id": "t-B-67",
-    "no": 67,
+    "no": 47,
     "area": "reading",
     "level": "중3",
     "kind": "빈칸",
@@ -6903,7 +6199,7 @@
    },
    {
     "id": "t-B-68",
-    "no": 68,
+    "no": 48,
     "area": "reading",
     "level": "중3",
     "kind": "내용 불일치",
@@ -6922,7 +6218,7 @@
    },
    {
     "id": "t-B-69",
-    "no": 69,
+    "no": 49,
     "area": "reading",
     "level": "중3",
     "kind": "문장 삽입",
@@ -6943,7 +6239,7 @@
    },
    {
     "id": "t-B-70",
-    "no": 70,
+    "no": 50,
     "area": "sentence",
     "level": "중3",
     "kind": "영작",
@@ -6962,7 +6258,7 @@
    },
    {
     "id": "t-B-71",
-    "no": 71,
+    "no": 51,
     "area": "listening",
     "level": "고1",
     "kind": "목적",
@@ -6981,7 +6277,7 @@
    },
    {
     "id": "t-B-72",
-    "no": 72,
+    "no": 52,
     "area": "vocab",
     "level": "고1",
     "kind": "영→한",
@@ -6998,7 +6294,7 @@
    },
    {
     "id": "t-B-73",
-    "no": 73,
+    "no": 53,
     "area": "vocab",
     "level": "고1",
     "kind": "영→한",
@@ -7015,7 +6311,7 @@
    },
    {
     "id": "t-B-74",
-    "no": 74,
+    "no": 54,
     "area": "vocab",
     "level": "고1",
     "kind": "한→영",
@@ -7032,7 +6328,7 @@
    },
    {
     "id": "t-B-75",
-    "no": 75,
+    "no": 55,
     "area": "grammar",
     "level": "고1",
     "kind": "맞는 문장 개수",
@@ -7052,7 +6348,7 @@
    },
    {
     "id": "t-B-76",
-    "no": 76,
+    "no": 56,
     "area": "grammar",
     "level": "고1",
     "kind": "빈칸 짝",
@@ -7071,7 +6367,7 @@
    },
    {
     "id": "t-B-77",
-    "no": 77,
+    "no": 57,
     "area": "reading",
     "level": "고1",
     "kind": "주제",
@@ -7090,7 +6386,7 @@
    },
    {
     "id": "t-B-78",
-    "no": 78,
+    "no": 58,
     "area": "reading",
     "level": "고1",
     "kind": "무관한 문장",
@@ -7110,7 +6406,7 @@
    },
    {
     "id": "t-B-79",
-    "no": 79,
+    "no": 59,
     "area": "reading",
     "level": "고1",
     "kind": "빈칸",
@@ -7129,7 +6425,7 @@
    },
    {
     "id": "t-B-80",
-    "no": 80,
+    "no": 60,
     "area": "sentence",
     "level": "고1",
     "kind": "영작",
@@ -7148,7 +6444,7 @@
    },
    {
     "id": "t-B-81",
-    "no": 81,
+    "no": 61,
     "area": "listening",
     "level": "고2",
     "kind": "상황에 맞는 말",
@@ -7167,7 +6463,7 @@
    },
    {
     "id": "t-B-82",
-    "no": 82,
+    "no": 62,
     "area": "vocab",
     "level": "고2",
     "kind": "영→한",
@@ -7184,7 +6480,7 @@
    },
    {
     "id": "t-B-83",
-    "no": 83,
+    "no": 63,
     "area": "vocab",
     "level": "고2",
     "kind": "영→한",
@@ -7201,7 +6497,7 @@
    },
    {
     "id": "t-B-84",
-    "no": 84,
+    "no": 64,
     "area": "vocab",
     "level": "고2",
     "kind": "한→영",
@@ -7218,7 +6514,7 @@
    },
    {
     "id": "t-B-85",
-    "no": 85,
+    "no": 65,
     "area": "grammar",
     "level": "고2",
     "kind": "틀린 것",
@@ -7236,7 +6532,7 @@
    },
    {
     "id": "t-B-86",
-    "no": 86,
+    "no": 66,
     "area": "grammar",
     "level": "고2",
     "kind": "빈칸 어법",
@@ -7255,7 +6551,7 @@
    },
    {
     "id": "t-B-87",
-    "no": 87,
+    "no": 67,
     "area": "reading",
     "level": "고2",
     "kind": "제목",
@@ -7274,7 +6570,7 @@
    },
    {
     "id": "t-B-88",
-    "no": 88,
+    "no": 68,
     "area": "reading",
     "level": "고2",
     "kind": "내용 불일치",
@@ -7293,7 +6589,7 @@
    },
    {
     "id": "t-B-89",
-    "no": 89,
+    "no": 69,
     "area": "reading",
     "level": "고2",
     "kind": "문장 삽입",
@@ -7314,7 +6610,7 @@
    },
    {
     "id": "t-B-90",
-    "no": 90,
+    "no": 70,
     "area": "sentence",
     "level": "고2",
     "kind": "영작",

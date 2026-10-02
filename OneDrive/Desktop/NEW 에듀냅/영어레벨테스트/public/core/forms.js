@@ -10,8 +10,8 @@ export const S2_AREAS = ['vocab', 'grammar', 'reading', 'listening', 'sentence']
 export const PASS = 80;
 export const MIN_STAGE1 = 20;
 export const SECONDS = 90;
-// 한 시험 (설계 10/2): 초3~고2(=고2~3) 9단계, 단계마다 10문항
-export const TEST_STAGES = LEVELS.filter((l) => l !== '고3');
+// 한 시험 (설계 10/2): 초5~고2(=고2~3) 7단계, 단계마다 10문항 — 원장 결정 10/2: 초3·초4(파닉스 포함)는 너무 쉬워 뺐다
+export const TEST_STAGES = LEVELS.slice(LEVELS.indexOf('초5'), LEVELS.indexOf('고3'));
 export const MIN_PER_STAGE = 6;
 export const testStage = (it) => (LEVELS.indexOf(it?.level) <= LEVELS.indexOf('초6') ? 1 : 2);
 export const validateTest = (it) => (TEST_STAGES.includes(it?.level) ? validateForm(it, testStage(it)) : ['수준']);
