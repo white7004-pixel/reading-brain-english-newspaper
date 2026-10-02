@@ -273,6 +273,33 @@
 .deck.band .kf { background: var(--b-wine); color: #fff; border-top: 0; padding: 30px 60px 34px; }
 .deck.band .kf s { background: #fff; box-shadow: none; }
 .deck.band .kf p { font-size: 23px; }
+
+/* 띠 판은 글씨를 한 단계 키운다 (2026-10-03 원장 결정 — 머리글만이 아니라 본문까지) */
+.deck.band .lab span { font-size: 19px; }
+.deck.band .lab i { font-size: 15.5px; }
+.deck.band .map .q { font-size: 18.5px; }
+.deck.band .key { font-size: 16px; }
+.deck.band .row .nm { width: 76px; font-size: 19px; }
+.deck.band .row .n { width: 128px; font-size: 18px; }
+.deck.band .row .n u { font-size: 15.5px; }
+.deck.band .ring .lg b { font-size: 18.5px; }
+.deck.band .ring .lg u { font-size: 18px; }
+.deck.band .ring .lg em { font-size: 16px; }
+.deck.band .st b { font-size: 45px; }
+.deck.band .st b u { font-size: 19px; }
+.deck.band .st span { font-size: 17.5px; }
+.deck.band .ac .nm { font-size: 19.5px; }
+.deck.band .ac .big2 b { font-size: 42px; }
+.deck.band .ac .big2 span { font-size: 15px; }
+.deck.band .ac li { font-size: 15.5px; }
+.deck.band .ac .fin { font-size: 14.5px; }
+.deck.band .mix .t, .deck.band .mix .c2 { font-size: 15.5px; }
+.deck.band .mix .b i { font-size: 16px; }
+.deck.band .tip { font-size: 16px; }
+/* 글씨를 키운 만큼 줄 간격을 줄여야 한 장에 들어간다 */
+.deck.band .row { padding: 6px 0; }
+.deck.band .ring { padding-top: 12px; gap: 18px; }
+.deck.band .ring .lg i { padding: 5px 0; }
 .deck.band .kf .pg { color: rgba(255, 255, 255, .62); }
 
 /* ──────────── 번지는 색 — 같은 글을 유리 패널에 올린다 ──────────── */
