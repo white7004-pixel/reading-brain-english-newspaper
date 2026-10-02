@@ -14,7 +14,9 @@ export const DIFF5 = ['하', '중하', '중', '중상', '상'];
 export const KINDS = ['객관식', '단답형', '서술형'];
 export const WRITTEN = ['단답형', '서술형']; // 둘을 합쳐 "서답형"
 // 학원 분석 글이 늘 따지는 출처. 시험지만 보고 알기 어려우면 AI 가 확인 칸(unsure)으로 표시한다.
-export const SOURCES = ['교과서', '부교재', '외부', '기출변형'];
+// 고등 내신은 학평·모평과 EBS 연계 지문에서 많이 낸다 (2026-10-02 원장 결정).
+// 여기는 모든 학교급을 합친 차례고, 화면에 무엇을 보일지는 subtypes.js 의 SOURCES_BY_LEVEL 이 고른다.
+export const SOURCES = ['교과서', '부교재', '모의고사', 'EBS', '외부', '기출변형'];
 
 const TO3 = { 하: '하', 중하: '하', 중: '중', 중상: '상', 상: '상' };
 export const to3 = (d) => TO3[d] || d;

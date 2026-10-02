@@ -1,5 +1,6 @@
 import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, esc, noText, noNum, byNoOrder } from './lib.js';
 import { unitsFor, GRADES } from './curriculum.js';
+import { subtypesFor, sourcesFor } from './subtypes.js';
 import { schoolPage, explainPages } from './report.js';
 import { draftSchool } from './draft.js';
 import { shareCards } from './share.js';
@@ -328,6 +329,7 @@ $('#upload-form').addEventListener('submit', async (e) => {
 // ---------- 2. 확인 표 ----------
 const options = (list, value) => list.map((o) => `<option${o === value ? ' selected' : ''}>${esc(o)}</option>`).join('');
 const areasNow = () => SUBJECTS[state.meta.subject];
+const sourcesNow = () => sourcesFor(state.meta.grade); // 고등은 모의고사·EBS 가 더 보인다
 
 // 시험 정보: AI 가 머리글에서 읽은 값. 못 읽어 빈 학교·학년은 금색으로 표시한다.
 function renderMeta() {
@@ -344,7 +346,7 @@ $('#meta-form').addEventListener('input', (e) => {
   const { name, value } = e.target;
   state.meta[name] = name === 'minutes' ? Number(value) || 0 : value.trim();
   e.target.classList.remove('unsure');
-  if (name === 'grade') drawUnitList();
+  if (name === 'grade') { drawUnitList(); return renderItems(); } // 중등↔고등이면 세부유형·출처가 통째로 바뀐다
   if (name !== 'subject') return;
   // 과목을 바꾸면 그 과목에 없는 영역은 첫 영역으로 두고 다시 확인하게 한다
   state.items.forEach((it) => {
@@ -355,6 +357,15 @@ $('#meta-form').addEventListener('input', (e) => {
 
 // 단원 칸에서 고를 수 있는 목록. 교과서 목차(있으면)와 이 시험지에 이미 적은 단원을 모은다.
 // 같은 단원을 '5과'·'Lesson 5'·'5단원'으로 갈라 적지 않게 하는 것이 목적이다. 자유 입력은 그대로 된다.
+// 세부유형 고르기 목록. 영역마다 하나씩 만들고 줄은 제 영역 것을 가리킨다.
+// 중등·고등이 다른 유형을 쓰므로 학년을 바꾸면 목록도 바뀐다 (subtypes.js).
+const stId = (i) => `st-${i}`;
+function drawSubtypeLists() {
+  $('#subtype-lists').innerHTML = areasNow().map((area, i) =>
+    `<datalist id="${stId(i)}">${subtypesFor(state.meta.subject, state.meta.grade, area)
+      .map((t) => `<option value="${esc(t)}"></option>`).join('')}</datalist>`).join('');
+}
+
 function drawUnitList() {
   const 이미쓴것 = state.items.map((it) => (it.unit ?? '').trim()).filter(Boolean);
   const 목록 = [...new Set([...unitsFor(state.meta.subject, state.meta.grade), ...이미쓴것])];
@@ -372,9 +383,9 @@ function renderItems(keepPicked = null) {
       ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
       ${cell('unit', `<input list="unit-list" value="${esc(it.unit ?? '')}" aria-label="${no}번 단원" placeholder="5과">`)}
       ${cell('area', `<select aria-label="${no}번 영역">${options(areasNow(), it.area)}</select>`)}
-      ${cell('subtype', `<input value="${esc(it.subtype)}" aria-label="${no}번 세부유형">`)}
+      ${cell('subtype', `<input list="${stId(areasNow().indexOf(it.area))}" value="${esc(it.subtype)}" aria-label="${no}번 세부유형" placeholder="고르거나 적기">`)}
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
-      ${cell('source', `<select aria-label="${no}번 출처"><option value=""${it.source ? '' : ' selected'}>— 모름</option>${options(SOURCES, it.source)}</select>`)}
+      ${cell('source', `<select aria-label="${no}번 출처"><option value=""${it.source ? '' : ' selected'}>— 모름</option>${options(sourcesNow(), it.source)}</select>`)}
       ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${no}번 정답">`)}
       ${cell('note', `<input value="${esc(it.note ?? '')}" aria-label="${no}번 한 줄 설명" placeholder="무엇을 물었고 왜 갈렸나">`)}
       <td class="c"><input type="checkbox" data-key${it.key ? ' checked' : ''} aria-label="${no}번 대표 문항"></td>
@@ -388,6 +399,7 @@ function renderItems(keepPicked = null) {
     $$('#items tbody [data-pick]').forEach((c, i) => { c.checked = 그대로.has(i); });
   }
   마지막선택 = -1; // 줄이 지워지거나 늘어났으니 Shift 범위의 기준을 버린다
+  drawSubtypeLists();
   fillBulkPickers();
   drawBulk();
   drawUnitList();
@@ -439,6 +451,10 @@ $('#items').addEventListener('input', (e) => {
   it.unsure = it.unsure.filter((name) => name !== field);
   td.classList.remove('unsure');
   if (field === 'unit') drawUnitList();
+  if (field === 'area') { // 영역이 바뀌면 그 줄이 가리키는 세부유형 목록도 바뀐다
+    const 칸 = td.parentElement.querySelector('[data-field=subtype] input');
+    if (칸) 칸.setAttribute('list', stId(areasNow().indexOf(it.area)));
+  }
   if (field === 'points' || field === 'no') updateTotal();
 });
 
@@ -515,7 +531,7 @@ function fillBulkPickers() {
   $('[data-bulk=kind]').innerHTML = 비움 + options(KINDS, null);
   $('[data-bulk=difficulty]').innerHTML = 비움 + options(DIFF5, null);
   $('[data-bulk=area]').innerHTML = 비움 + options(areasNow(), null);
-  $('[data-bulk=source]').innerHTML = 비움 + options(SOURCES, null);
+  $('[data-bulk=source]').innerHTML = 비움 + options(sourcesNow(), null);
 }
 
 $('#bulk-apply').addEventListener('click', () => {
