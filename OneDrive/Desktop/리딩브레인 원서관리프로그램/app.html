@@ -1502,15 +1502,24 @@ const dbLive = () => String(DB.text || "").slice(dbMark()).trim();
 const dbAns  = i => i < DB.said.length ? DB.said[i] : "";
 const dbDeb  = () => DB.dtext !== undefined ? DB.dtext : dbLive();
 // 다음 질문으로 넘어갈 때 그 자리의 말을 글자로 굳힌다
-function dbFreeze(){ DB.said.push(dbLive()); DB.marks.push(String(DB.text || "").length); }
+function dbFreeze(){
+  const el = document.getElementById("btSaid");
+  DB.said.push(el ? String(el.value || "").trim() : dbLive());
+  DB.marks.push(String(DB.text || "").length);
+  DB.ttyped = false;                               // 다음 질문은 다시 음성이 받아쓴다
+}
 // 녹음하는 동안 화면 전체를 다시 그리지 않는다 — 지금 칸 하나만 고쳐 쓴다
 function dbPaint(){
   if (!DB) return;
-  if (DB.phase === "talk"){ const el = document.getElementById("btSaid"); if (el) el.textContent = dbLive() || "…"; return; }
+  if (DB.phase === "talk"){
+    const el = document.getElementById("btSaid");
+    if (el && !DB.ttyped) el.value = dbLive();      // 손으로 고치는 중이면 건드리지 않는다
+    return;
+  }
   const ta = document.getElementById("dbText");
   if (ta && DB.dtext === undefined) ta.value = dbLive();
 }
-const dbFresh = () => ({ q: ((B.ib && B.ib.debatable) || [])[0] || "", stance: "", said: [], marks: [],
+const dbFresh = () => ({ q: ((B.ib && B.ib.debatable) || [])[0] || "", stance: "", said: [], marks: [], ttyped: false,
                          phase: ((B.ib && B.ib.factual) || []).length ? "talk" : "debate" });
 
 function drawDebate(){
@@ -1546,7 +1555,9 @@ function drawDebate(){
         const cur = talking && i === ti, a = dbAns(i);
         return `<li style="${CARD}; ${cur ? "border-color:#2563eb; background:rgba(37,99,235,.06)" : a ? "" : "opacity:.55"}">
           <b>${esc(q)}</b>
-          <div ${cur ? "id=\"btSaid\"" : ""} style="margin-top:6px; color:#444; min-height:1.2em">${esc(a) || (cur ? "…" : "")}</div>
+          ${cur
+            ? `<textarea id="btSaid" rows="2" placeholder="영어로 말하거나 여기에 써 보세요" style="margin-top:6px; width:100%; box-sizing:border-box">${esc(a)}</textarea>`
+            : `<div style="margin-top:6px; color:#444; min-height:1.2em">${esc(a)}</div>`}
         </li>`;
       }).join("")}</ol>
       ${talking
@@ -1619,10 +1630,11 @@ function drawDebate(){
     drawDebate();
   };
   if ($("#btRedo")) $("#btRedo").onclick = () => {
-    DB.said = []; DB.marks = []; DB.dtext = undefined; DB.text = ""; DB.phase = "talk"; drawDebate();
+    DB.said = []; DB.marks = []; DB.dtext = undefined; DB.text = ""; DB.ttyped = false; DB.phase = "talk"; drawDebate();
   };
   P.querySelectorAll(".dq").forEach(b => b.onclick = () => { DB.q = b.dataset.q; drawDebate(); });
   P.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { DB.stance = b.dataset.s; drawDebate(); });
+  if ($("#btSaid")) $("#btSaid").oninput = () => DB.ttyped = true;
   if ($("#dbText")) $("#dbText").oninput = e => DB.dtext = e.target.value;
   if ($("#dbGo")) $("#dbGo").onclick = analyze;
 }
