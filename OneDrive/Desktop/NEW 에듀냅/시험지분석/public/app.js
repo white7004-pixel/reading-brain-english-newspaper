@@ -205,7 +205,10 @@ async function encodeAll(files) {
 
 // ---------- 학원 정보 (한 번 적으면 이 브라우저에 기억한다) ----------
 const academyForm = $('#academy-form');
-const showAcademy = () => { $('#academy-now').textContent = state.academy ? `· ${state.academy.name}` : '· 아직 없음'; };
+const showAcademy = () => {
+  $('#academy-now').textContent = state.academy ? `· ${state.academy.name}` : '· 아직 없음';
+  $('#side-academy').textContent = state.academy?.name || '아직 적지 않았습니다';
+};
 
 $('#academy-form').elements.logo.addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -744,3 +747,22 @@ uploadPick.grade.insertAdjacentHTML('beforeend', options(GRADES, ''));
 const startPick = $('#start-form').elements;
 startPick.subject.innerHTML = options(Object.keys(SUBJECTS), '영어');
 startPick.grade.innerHTML = options(GRADES, '중2');
+
+// ---------- 왼쪽 차림표 ----------
+// 아직 안 열린 단계는 눌러도 갈 데가 없으니 흐리게 두고, 보고 있는 단계에 표시를 옮긴다.
+const 오늘 = new Date();
+$('#today').textContent = `${오늘.getFullYear()}. ${String(오늘.getMonth() + 1).padStart(2, '0')}. ${String(오늘.getDate()).padStart(2, '0')}`;
+$('#today-dow').textContent = `${'일월화수목금토'[오늘.getDay()]}요일`;
+
+function drawNav() {
+  const 보임 = $$('[data-nav]').filter((a) => !$(`#${a.dataset.nav}`).hidden);
+  $$('[data-nav]').forEach((a) => a.setAttribute('aria-disabled', String($(`#${a.dataset.nav}`).hidden)));
+  // 화면 위쪽(1/3 지점)을 지난 것 중 마지막 것이 지금 보고 있는 단계다
+  const 기준 = window.innerHeight / 3;
+  const 지금 = 보임.filter((a) => $(`#${a.dataset.nav}`).getBoundingClientRect().top <= 기준).at(-1) || 보임[0];
+  $$('[data-nav]').forEach((a) => a.setAttribute('aria-current', String(a === 지금)));
+}
+addEventListener('scroll', drawNav, { passive: true });
+addEventListener('resize', drawNav);
+new MutationObserver(drawNav).observe(document.querySelector('.app'), { attributes: true, attributeFilter: ['hidden'], subtree: true });
+drawNav();

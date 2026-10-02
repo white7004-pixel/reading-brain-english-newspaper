@@ -668,3 +668,111 @@ label.check small { flex-basis: 100%; }
    PNG 는 원래 크기 그대로 나간다 — zoom 은 바깥 틀에만 걸고 .page 자체는 건드리지 않는다. */
 .sheet.slide { zoom: var(--slide-zoom, 1); }
 @media print { .sheet.slide { zoom: 1; } }
+
+/* ── 화면 디자인: 어두운 왼쪽 차림표 + 금색 포인트 (2026-10-02 원장 요청 — E 알리미 교육뉴스 화면식)
+   바탕색은 그대로 둔다 (원장님 말씀). 글씨는 Pretendard 로 통일하고 제목은 굵은 고딕으로 간다.
+   분석지(.page)는 손대지 않는다 — 거기는 명조가 그대로다. ─────────────── */
+:root {
+  --dark: #1b1a16;          /* 차림표 바탕 — 따뜻한 먹색 */
+  --dark-2: #26241c;        /* 고른 칸 */
+  --dark-line: #332f24;
+  --gold: #e3b341;          /* 금색 포인트 */
+  --gold-dim: #a98c45;
+  --on-dark: #f2ece0;
+  --on-dark-mute: #9a9383;
+}
+
+.shell { display: grid; grid-template-columns: 268px minmax(0, 1fr); min-height: 100vh; }
+
+/* ── 왼쪽 차림표 ── */
+.side { position: sticky; top: 0; align-self: start; height: 100vh; display: flex; flex-direction: column;
+  padding: 26px 20px 22px; background: var(--dark); border-right: 3px solid var(--gold); overflow-y: auto; }
+.side-logo { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 34px; text-decoration: none; color: var(--on-dark); }
+.side-logo img { height: 28px; width: 28px; object-fit: contain; flex: none; padding: 5px; border-radius: 6px; background: #fff; }
+.side-logo span { font: 700 15.5px/1.35 var(--sans); letter-spacing: -.02em; }
+.side-logo small { display: block; margin-top: 5px; font: 400 11px/1.5 var(--sans); letter-spacing: .01em; color: var(--on-dark-mute); }
+.side-label { margin: 0 0 10px; font: 600 10px/1 var(--wordmark); letter-spacing: .28em; color: var(--on-dark-mute); }
+.side-menu { flex: 1; margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; align-content: start; }
+.side-menu a { display: block; padding: 12px 14px; border-radius: 4px; text-decoration: none;
+  font: 600 14.5px/1.3 var(--sans); letter-spacing: -.01em; color: var(--on-dark); transition: background .15s, color .15s; }
+.side-menu small { display: block; margin-top: 4px; font: 600 9.5px/1 var(--wordmark); letter-spacing: .2em; color: var(--on-dark-mute); }
+.side-menu a:hover { background: rgba(255,255,255,.055); }
+.side-menu a[aria-current=true] { background: var(--dark-2); box-shadow: inset 2px 0 0 var(--gold); }
+.side-menu a[aria-current=true] small { color: var(--gold); }
+.side-menu a[aria-disabled=true] { color: var(--on-dark-mute); pointer-events: none; }
+.side-menu a[aria-disabled=true] small { color: var(--dark-line); }
+.side-foot { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--dark-line); }
+.side-me { padding: 13px 15px; border: 1px solid var(--dark-line); border-radius: 5px; background: rgba(255,255,255,.03); }
+.side-me .side-label { margin-bottom: 7px; color: var(--gold-dim); }
+.side-me b { font: 700 13.5px/1.4 var(--sans); color: var(--on-dark); }
+.side-note { margin: 14px 0 0; font: 400 11.5px/1.7 var(--sans); color: var(--on-dark-mute); }
+
+/* ── 머리말: 금색 눈썹 · 굵은 고딕 제목 · 오른쪽에 날짜 ── */
+.app { max-width: 1120px; margin: 0; padding: 0 40px 56px; }
+.hero { position: relative; padding: 46px 0 30px; }
+.eyebrow { display: block; margin: 0 0 16px; font: 700 11px/1 var(--wordmark); letter-spacing: .3em; color: var(--gold-dim); }
+.eyebrow::before { content: none; }
+.hero h1 { margin: 0; font: 800 clamp(32px, 4.4vw, 44px)/1.25 var(--sans); letter-spacing: -.045em; color: var(--ink); }
+.lede { margin: 14px 0 0; max-width: 40em; color: var(--muted); font-size: 14.5px; line-height: 1.8; }
+.hero-date { position: absolute; top: 46px; right: 0; margin: 0; text-align: right; }
+.hero-date b { display: block; font: 700 19px/1.2 var(--sans); letter-spacing: -.02em; color: var(--ink); }
+.hero-date span { display: block; margin-top: 5px; font-size: 12.5px; color: var(--muted); }
+.hero-rule { display: flex; align-items: center; gap: 14px; margin: 26px 0 0; padding-top: 18px;
+  border-top: 2px solid var(--gold); font-size: 13px; color: var(--muted); }
+.hero-rule::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex: none; }
+
+/* ── 카드: 더 얇은 테두리, 더 옅은 그림자 ── */
+.card { border-radius: 6px; padding: 26px 28px; margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(27,26,22,.04), 0 10px 28px -20px rgba(27,26,22,.26); }
+.card h2 { margin: 0 0 20px; font: 800 20px/1.4 var(--sans); letter-spacing: -.035em; }
+.step { font: 700 10px/1.4 var(--wordmark); letter-spacing: .26em; color: var(--gold-dim); }
+.card h2 small { font-size: 12.5px; line-height: 1.7; }
+
+/* 단추도 먹색으로 — 차림표와 같은 색 */
+button { border-radius: 5px; background: var(--dark); letter-spacing: -.01em; }
+button:hover:not(:disabled) { background: #302d24; }
+.ghost, button.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
+.ghost:hover:not(:disabled), button.ghost:hover:not(:disabled) { background: var(--pane); }
+input:focus, select:focus, textarea:focus { border-color: var(--dark); box-shadow: 0 0 0 3px rgba(227,179,65,.3); }
+input[type=file]::file-selector-button { border-color: var(--dark); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--gold); }
+
+/* ── 요약을 네 칸 숫자 카드로 — 보내 주신 화면의 맨 윗줄 모양 ── */
+.tally { margin: 2px 0 18px; }
+.tally-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); gap: 10px; }
+.tally-row span { display: block; padding: 16px 18px; border-radius: 6px; background: var(--card);
+  border: 1px solid var(--line); border-left: 3px solid var(--line-2); white-space: normal;
+  font: 500 12px/1.4 var(--sans); color: var(--muted); box-shadow: 0 1px 2px rgba(27,26,22,.04); }
+.tally-row b { display: block; margin: 2px 0 7px; font: 800 26px/1 var(--sans); letter-spacing: -.045em; color: var(--ink); }
+.tally-row span:nth-child(1) { border-left-color: var(--gold); }
+.tally-row span:nth-child(3) { border-left-color: #4f6fd0; }
+.tally-row span:nth-child(4) { border-left-color: var(--champagne); }
+.tally-row span:nth-child(5) { border-left-color: var(--wine); }
+.tally-row span:nth-child(6) { border-left-color: #2f7d62; }
+.tally-row .ok { border-left-color: #2f7d62; }
+.tally-row .ok b { color: #216047; }
+.tally-row .warn { border-left-color: var(--wine); background: var(--wine-soft); }
+.tally-row .warn b { color: var(--wine); }
+.tally-bar { height: 10px; border-radius: 99px; margin-top: 12px; }
+.tally-bar b { display: none; }
+
+/* ── 일괄 지정 바도 먹색 ── */
+.bulk { background: var(--dark); border-radius: 6px; }
+.bulk .bulk-n { color: var(--gold); }
+.bulk label { color: var(--on-dark-mute); }
+
+/* ── 결과 줄: 알약 꼴 ── */
+#step-result .card.row { border-radius: 6px; padding: 16px 20px; }
+
+@media (max-width: 920px) {
+  .shell { grid-template-columns: 1fr; }
+  .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 14px;
+    border-right: 0; border-bottom: 3px solid var(--gold); padding: 16px 20px; }
+  .side-logo, .side-foot { margin: 0; }
+  .side-foot { border: 0; padding: 0; }
+  .side-me, .side-note, .side .side-label { display: none; }
+  .side-menu { flex: 1; grid-auto-flow: column; grid-auto-columns: max-content; gap: 4px; }
+  .side-menu small { display: none; }
+  .app { padding: 0 20px 40px; }
+  .hero-date { position: static; text-align: left; margin-top: 18px; }
+}
