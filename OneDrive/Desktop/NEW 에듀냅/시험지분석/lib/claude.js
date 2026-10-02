@@ -17,6 +17,10 @@ export function readJson(msg) {
 }
 
 export async function askJson({ system, content, schema, maxTokens }) {
+  // 키가 없으면 기다려도 저절로 되지 않는다 → "잠시 후 다시" 로 넘기지 않고 그대로 알린다.
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new UserError('서버에 클로드 키(ANTHROPIC_API_KEY)가 없습니다. 넣고 다시 올려 주세요');
+  }
   client ||= new Anthropic({ maxRetries: 2 });
   const stream = client.beta.messages.stream({
     model: process.env.CLAUDE_MODEL || 'claude-opus-5',
