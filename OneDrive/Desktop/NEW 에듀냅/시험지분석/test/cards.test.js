@@ -46,6 +46,14 @@ test('난이도는 하·중·상 셋으로 묶고 문항 번호를 함께 적는
   assert.match(d.난이도[2].번호, /5/);
 });
 
+test('카드에 보이는 난이도 이름은 학부모 말로 바꿔 쓴다', () => {
+  const d = 짓기();
+  assert.deepEqual(d.난이도.map((x) => x.보임), ['쉬움', '보통', '어려움']);
+  const c = ctx();
+  const html = cardDeck(c, draftSchool(c));
+  assert.ok(html.includes('어려움 10문항') || html.includes('어려움 3문항'), '카드에는 풀어 쓴 이름이 나온다');
+});
+
 test('영역은 문항 수가 많은 차례로, 그 영역에 실제로 나온 세부유형만 적는다', () => {
   const d = 짓기();
   assert.equal(d.영역[0].이름, '어법'); // 4문항으로 가장 많다

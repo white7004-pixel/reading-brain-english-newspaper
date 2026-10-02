@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>표지 열 가지</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Batang:wght@400;700&family=Playfair+Display:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--sans:'Pretendard Variable','Pretendard',system-ui,sans-serif;
+  --myeong:'Nanum Myeongjo',serif; --gowun:'Gowun Batang',serif;
+  --play:'Playfair Display',serif; --mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box} body{margin:0;background:#1a1d21;font-family:var(--sans);color:#e8ecf1}
+main{max-width:980px;margin:0 auto;padding:24px 20px 90px;display:flex;flex-direction:column;gap:34px}
+h2{display:flex;align-items:center;gap:12px;margin:0 0 12px;font-size:19px;font-weight:800}
+h2 b{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#2f3942;font-size:15px}
+h2 small{font-weight:500;color:#8b97a3;font-size:14.5px}
+.hold{border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.scale{width:100%;aspect-ratio:1;position:relative;overflow:hidden}
+.c{width:1080px;height:1080px;position:absolute;inset:0;transform-origin:0 0;overflow:hidden;display:flex;flex-direction:column}
+.num{font-variant-numeric:tabular-nums}
+
+/* 공통 · 문항 번호판 */
+.pan{display:grid;grid-template-columns:repeat(13,1fr);gap:8px}
+.pan i{aspect-ratio:1;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:16px}
+.pancap{font-size:13.5px;font-weight:800;letter-spacing:.2em;margin-bottom:12px}
+
+.d1 .pan{grid-template-columns:repeat(9,1fr);gap:12px}
+.d1 .pan i{border:1px solid rgba(255,255,255,.3);color:rgba(234,243,251,.88);font-family:var(--mono);font-size:20px;font-weight:400}
+.d1 .pan i.q0{background:rgba(63,130,240,.24);border-color:#3f82f0}
+.d1 .pan i.q1{background:rgba(229,147,36,.24);border-color:#e59324}
+.d1 .pan i.q2{background:rgba(217,63,59,.3);border-color:#d93f3b}
+.d1 .pancap{font-family:var(--mono);font-weight:400;color:rgba(234,243,251,.55)}
+
+.d2 .pan i{border-radius:3px;color:#fff;font-family:var(--myeong)}
+.d2 .pan i.q0{background:#4a7fd0}.d2 .pan i.q1{background:#c9872a}.d2 .pan i.q2{background:#9d2a26}
+.d2 .pancap{color:#8a8275}
+
+.d4 .pan i{color:#fff;font-size:17px}
+.d4 .pan i.q0{background:#1f55d6}.d4 .pan i.q1{background:#e08a14}.d4 .pan i.q2{background:#e02b20}
+.d4 .pancap{color:#777}
+
+.d6 .pan{gap:9px}
+.d6 .pan i{border:1px solid rgba(201,164,76,.32);color:rgba(240,236,227,.72);font-family:var(--myeong);font-size:15px;font-weight:400}
+.d6 .pan i.q1{border-color:rgba(201,164,76,.62)}
+.d6 .pan i.q2{background:linear-gradient(180deg,#e6cd8c,#a9842f);color:#1a150a;border-color:#d8ba63}
+.d6 .pancap{color:#c9a44c;font-weight:400}
+
+.d7 .pan{gap:6px}
+.d7 .pan i{border-radius:4px;color:#fff;font-size:13.5px}
+.d7 .pan i.q0{background:#4a7fd0}.d7 .pan i.q1{background:#c9872a}.d7 .pan i.q2{background:#8d1f22}
+.d7 .pancap{color:#9aa0a6}
+
+/* ───── 1 · 청사진 ───── */
+.d1{background:#082b48;color:#eaf3fb;padding:0;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:160px 160px,160px 160px,32px 32px,32px 32px}
+.d1 .fr{position:absolute;inset:30px;border:1px solid rgba(255,255,255,.28)}
+.d1 .in{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:62px 66px 54px}
+.d1 .tag{display:flex;justify-content:space-between;font-family:var(--mono);font-size:14.5px;letter-spacing:.14em;color:rgba(234,243,251,.62)}
+.d1 h1{margin:40px 0 0;font-size:60px;font-weight:300;letter-spacing:-.03em;line-height:1.12;font-family:var(--gowun)}
+.d1 h1 b{font-weight:700}
+.d1 .meta{margin-top:16px;font-family:var(--mono);font-size:15px;letter-spacing:.06em;color:rgba(234,243,251,.55)}
+.d1 .pan,.d1 .pancap{margin-top:0}
+.d1 .panwrap{margin:52px 0 auto}
+.d1 .dim{margin-top:0;display:flex;align-items:flex-end;gap:0}
+.d1 .dim div{flex:1;padding:0 0 18px;border-bottom:1px solid rgba(255,255,255,.3);position:relative}
+.d1 .dim div::after{content:'';position:absolute;right:0;bottom:0;width:1px;height:16px;background:rgba(255,255,255,.3)}
+.d1 .dim div:first-child::before{content:'';position:absolute;left:0;bottom:0;width:1px;height:16px;background:rgba(255,255,255,.3)}
+.d1 .dim b{display:block;font-size:68px;font-weight:300;font-family:var(--gowun);line-height:1}
+.d1 .dim b u{text-decoration:none;font-size:22px;margin-left:3px}
+.d1 .dim span{display:block;margin-top:12px;font-family:var(--mono);font-size:13.5px;letter-spacing:.12em;color:rgba(234,243,251,.55)}
+.d1 .lv{margin-top:34px;display:flex;height:8px}
+.d1 .lv i{height:100%}
+.d1 .lvk{margin-top:14px;display:flex;gap:26px;font-family:var(--mono);font-size:14px;color:rgba(234,243,251,.7)}
+.d1 .foot{margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,.22);display:flex;font-size:19px;font-family:var(--gowun)}
+.d1 .foot span{margin-left:auto;font-family:var(--mono);font-size:13.5px;letter-spacing:.14em;color:rgba(234,243,251,.5)}
+
+/* ───── 2 · 매거진 ───── */
+.d2{background:#f7f3ea;color:#16181b;padding:58px 64px 50px}
+.d2 .top{display:flex;align-items:center;padding-bottom:18px;border-bottom:3px solid #16181b;font-size:15px;font-weight:800;letter-spacing:.22em}
+.d2 .top span{margin-left:auto;font-weight:600;letter-spacing:.08em}
+.d2 .hero{margin-top:36px;display:flex;align-items:flex-start;gap:34px}
+.d2 .hero .big{font-family:var(--play);font-size:238px;font-weight:900;line-height:.76;letter-spacing:-.05em;color:#8d1f22}
+.d2 .hero .rt{padding-top:14px}
+.d2 .hero .rt .k{font-family:var(--myeong);font-size:19px;font-weight:700;letter-spacing:.2em;color:#8d1f22}
+.d2 .hero .rt h1{margin:14px 0 0;font-family:var(--myeong);font-size:46px;font-weight:800;line-height:1.3;letter-spacing:-.03em}
+.d2 .hero .rt p{margin:16px 0 0;font-size:17px;color:#5d646c;line-height:1.7}
+.d2 .panwrap{margin-top:34px;flex:1}
+.d2 .cols{margin-top:36px;display:grid;grid-template-columns:1fr 1px 1fr;gap:34px}
+.d2 .vr{background:#cfc6b4}
+.d2 .lab{font-size:13.5px;font-weight:800;letter-spacing:.2em;color:#8a8275;padding-bottom:10px;border-bottom:1px solid #cfc6b4}
+.d2 .row{display:flex;align-items:baseline;gap:12px;padding:14px 0;border-bottom:1px solid #e4ddd0;font-family:var(--myeong)}
+.d2 .row b{font-size:21px;font-weight:800;width:92px}
+.d2 .row i{flex:1;height:6px;border-radius:3px;background:#e4ddd0;overflow:hidden;font-style:normal}
+.d2 .row i s{display:block;height:100%;background:#8d1f22;text-decoration:none}
+.d2 .row u{text-decoration:none;font-size:18px;font-weight:700;width:96px;text-align:right}
+.d2 .end{margin-top:30px;padding-top:20px;border-top:3px solid #16181b;font-family:var(--myeong);font-size:23px;font-weight:800}
+
+/* ───── 3 · 버건디 모노크롬 ───── */
+.d3{background:radial-gradient(900px 700px at 50% 0%,#7e1d1f,#3a0d0e 70%),#360c0d;color:#f6e9dd;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.d3 .fr{position:absolute;inset:40px;border:1px solid rgba(233,196,118,.45)}
+.d3 .fr2{position:absolute;inset:48px;border:1px solid rgba(233,196,118,.2)}
+.d3 .in{position:relative;z-index:1;width:100%;padding:0 96px;display:flex;flex-direction:column;align-items:center}
+.d3 .k{font-family:var(--myeong);font-size:16px;letter-spacing:.42em;color:#e9c476}
+.d3 h1{margin:24px 0 0;font-family:var(--myeong);font-size:56px;font-weight:800;letter-spacing:-.02em;line-height:1.3}
+.d3 .rule{margin:28px 0;width:90px;height:1px;background:linear-gradient(90deg,transparent,#e9c476,transparent)}
+.d3 .big{display:flex;align-items:center;justify-content:center;gap:34px;font-family:var(--play);font-size:160px;font-weight:700;line-height:.9;color:#e9c476;letter-spacing:-.04em}
+.d3 .big u{text-decoration:none;font-family:var(--myeong);font-size:30px;margin-left:8px;color:#f6e9dd}
+.d3 .sub{margin-top:14px;font-family:var(--myeong);font-size:19px;color:rgba(246,233,221,.72)}
+.d3 .list{margin-top:44px;width:100%;max-width:640px}
+.d3 .li{display:flex;align-items:baseline;gap:12px;padding:13px 0;font-family:var(--myeong);font-size:20px}
+.d3 .li i{flex:1;border-bottom:1px dotted rgba(246,233,221,.35);font-style:normal}
+.d3 .li b{font-weight:700;color:#e9c476}
+.d3 .end{margin-top:46px;font-family:var(--myeong);font-size:21px;letter-spacing:.02em}
+.d3 .who{position:absolute;bottom:72px;left:0;right:0;text-align:center;font-size:14px;letter-spacing:.3em;color:rgba(233,196,118,.75)}
+
+/* ───── 4 · 스위스 ───── */
+.d4{background:#fff;color:#111;padding:70px 70px 58px}
+.d4 .hd{display:flex;align-items:flex-start;gap:20px;padding-bottom:16px;border-bottom:4px solid #111}
+.d4 .hd b{font-size:17px;font-weight:900;letter-spacing:-.01em}
+.d4 .hd span{margin-left:auto;font-size:16px;font-weight:700;color:#777}
+.d4 h1{margin:42px 0 0;font-size:104px;font-weight:900;letter-spacing:-.065em;line-height:1.02}
+.d4 h1 em{font-style:normal;color:#e02b20}
+.d4 .meta{margin-top:26px;font-size:19px;font-weight:600;color:#666;max-width:560px;line-height:1.6}
+.d4 .panwrap{margin:46px 0 auto}
+.d4 .grid{margin-top:0;display:grid;grid-template-columns:repeat(12,1fr);gap:0 18px;align-items:end}
+.d4 .g3{grid-column:span 3}
+.d4 .g3 b{display:block;font-size:72px;font-weight:900;letter-spacing:-.06em;line-height:1}
+.d4 .g3 b u{text-decoration:none;font-size:24px}
+.d4 .g3 span{display:block;margin-top:10px;font-size:15px;font-weight:800;letter-spacing:.04em;color:#777;
+  padding-top:10px;border-top:2px solid #111}
+.d4 .bar{margin-top:40px;display:flex;height:34px}
+.d4 .bar i{height:100%;display:flex;align-items:center;padding-left:14px;font-size:16px;font-weight:900;color:#fff}
+.d4 .end{margin-top:26px;display:flex;align-items:baseline;font-size:22px;font-weight:800}
+.d4 .end span{margin-left:auto;font-size:15px;font-weight:700;color:#999}
+
+/* ───── 5 · 메시 그라데이션 ───── */
+.d5{color:#fff;padding:60px 62px 52px;
+  background:radial-gradient(760px 620px at 10% 0%,#7b4bff,transparent 62%),
+    radial-gradient(700px 600px at 95% 18%,#2bb8ff,transparent 60%),
+    radial-gradient(820px 700px at 60% 108%,#ff4d7d,transparent 62%),
+    linear-gradient(160deg,#1b1340,#0b0a1f)}
+.d5 .hd{display:flex;align-items:center;font-size:15.5px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.72)}
+.d5 .hd span{margin-left:auto;letter-spacing:0;font-weight:800}
+.d5 h1{margin:46px 0 0;font-size:84px;font-weight:800;letter-spacing:-.055em;line-height:1.06}
+.d5 .meta{margin-top:18px;font-size:19px;font-weight:600;color:rgba(255,255,255,.66)}
+.d5 .pills{margin-top:46px;display:flex;flex-wrap:wrap;gap:14px}
+.d5 .p{padding:16px 26px;border-radius:999px;backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:baseline;gap:10px}
+.d5 .p b{font-size:34px;font-weight:900;letter-spacing:-.04em}
+.d5 .p span{font-size:17px;font-weight:700;color:rgba(255,255,255,.8)}
+.d5 .ring{margin-top:auto;display:flex;align-items:center;gap:40px}
+.d5 .ring .leg{display:flex;flex-direction:column;gap:16px}
+.d5 .ring .leg i{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;font-style:normal}
+.d5 .ring .leg s{width:16px;height:16px;border-radius:5px;text-decoration:none}
+.d5 .end{margin-top:40px;padding-top:22px;border-top:1px solid rgba(255,255,255,.22);font-size:23px;font-weight:800}
+
+/* ───── 6 · 먹지 + 금박 ───── */
+.d6{background:radial-gradient(800px 700px at 50% 30%,#1a1a1d,#0a0a0b 70%),#09090a;color:#f0ece3;
+  padding:90px 90px 74px}
+.d6 .k{font-size:14px;letter-spacing:.46em;color:#c9a44c}
+.d6 h1{margin:34px 0 0;font-family:var(--myeong);font-size:62px;font-weight:400;letter-spacing:-.02em;line-height:1.26}
+.d6 h1 b{font-weight:800;
+  background:linear-gradient(100deg,#8d6b24,#f3dc9a 40%,#c9a44c 60%,#f7e9bd 80%,#9a7528);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.d6 .meta{margin-top:22px;font-family:var(--myeong);font-size:18px;color:rgba(240,236,227,.5)}
+.d6 .gold{margin:52px 0;height:1px;background:linear-gradient(90deg,transparent,#c9a44c 20%,#f3dc9a 50%,#c9a44c 80%,transparent)}
+.d6 .four{display:grid;grid-template-columns:repeat(2,1fr);gap:46px 60px}
+.d6 .four div{display:flex;align-items:baseline;gap:16px;padding-bottom:18px;border-bottom:1px solid rgba(201,164,76,.26)}
+.d6 .four b{font-family:var(--play);font-size:62px;font-weight:700;line-height:1;letter-spacing:-.03em;
+  background:linear-gradient(100deg,#8d6b24,#f3dc9a 45%,#c9a44c 75%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.d6 .four b u{text-decoration:none;font-family:var(--myeong);font-size:22px}
+.d6 .four span{margin-left:auto;font-family:var(--myeong);font-size:18px;color:rgba(240,236,227,.62)}
+.d6 .panwrap{margin:46px 0 auto}
+.d6 .end{margin-top:0;font-family:var(--myeong);font-size:21px;display:flex;align-items:baseline}
+.d6 .end span{margin-left:auto;font-size:13.5px;letter-spacing:.3em;color:#c9a44c}
+
+/* ───── 7 · 세로 분할 ───── */
+.d7{flex-direction:row}
+.d7 .side{width:300px;background:linear-gradient(170deg,#8d1f22,#55090c);color:#fff;
+  display:flex;flex-direction:column;align-items:center;padding:56px 0 46px;position:relative}
+.d7 .side::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;background:#e9c476}
+.d7 .side .v{writing-mode:vertical-rl;font-family:var(--myeong);font-size:58px;font-weight:800;letter-spacing:.06em;
+  margin-top:10px;line-height:1.3}
+.d7 .side .who{margin-top:auto;writing-mode:vertical-rl;font-size:15px;letter-spacing:.3em;color:rgba(255,255,255,.72)}
+.d7 .body{flex:1;background:#faf7f0;color:#1b1f23;padding:56px 56px 46px;display:flex;flex-direction:column}
+.d7 .body .k{font-size:14px;font-weight:800;letter-spacing:.24em;color:#8d1f22}
+.d7 .body h1{margin:16px 0 0;font-family:var(--myeong);font-size:44px;font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.d7 .body .meta{margin-top:14px;font-size:16.5px;color:#6b7278}
+.d7 .st{margin-top:38px;display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+.d7 .st div{padding:22px 0;border-top:1px solid #ddd4c4}
+.d7 .st b{display:block;font-family:var(--play);font-size:56px;font-weight:700;line-height:1;color:#8d1f22}
+.d7 .st b u{text-decoration:none;font-family:var(--sans);font-size:19px;font-weight:800;margin-left:4px}
+.d7 .st span{display:block;margin-top:8px;font-size:15.5px;font-weight:700;color:#6b7278}
+.d7 .ar{margin-top:30px}
+.d7 .ar .lab{font-size:13.5px;font-weight:800;letter-spacing:.2em;color:#9aa0a6}
+.d7 .ar .r{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #eae2d4;font-size:18px;font-weight:700}
+.d7 .ar .r i{flex:1;height:6px;background:#eae2d4;border-radius:3px;overflow:hidden;font-style:normal}
+.d7 .ar .r i s{display:block;height:100%;background:#8d1f22;text-decoration:none}
+.d7 .panwrap{margin:28px 0 auto}
+.d7 .end{margin-top:0;padding-top:22px;border-top:2px solid #1b1f23;font-size:21px;font-weight:800}
+
+/* ───── 8 · 원형 ───── */
+.d8{background:radial-gradient(760px 760px at 50% 48%,#123b5e,#061626 72%),#05111d;color:#eaf2fa;
+  padding:56px 60px 48px;align-items:center;text-align:center}
+.d8 .k{font-size:14.5px;font-weight:800;letter-spacing:.34em;color:#6fb3ff}
+.d8 h1{margin:18px 0 0;font-size:48px;font-weight:800;letter-spacing:-.03em;line-height:1.26}
+.d8 .wrap{margin-top:auto;margin-bottom:auto;position:relative;width:540px;height:540px;display:grid;place-items:center}
+.d8 .mid{position:absolute;text-align:center}
+.d8 .mid b{display:block;font-size:118px;font-weight:900;letter-spacing:-.06em;line-height:1}
+.d8 .mid span{display:block;margin-top:8px;font-size:19px;font-weight:700;color:rgba(234,242,250,.62)}
+.d8 .sat{position:absolute;width:168px;text-align:center}
+.d8 .sat b{display:block;font-size:40px;font-weight:900;letter-spacing:-.04em}
+.d8 .sat span{display:block;margin-top:5px;font-size:16px;font-weight:700;color:rgba(234,242,250,.6)}
+.d8 .end{display:flex;align-items:center;gap:16px;font-size:20px;font-weight:700;color:rgba(234,242,250,.8)}
+.d8 .end s{display:inline-block;width:12px;height:12px;border-radius:50%;text-decoration:none}
+.d8 .who{margin-top:22px;font-size:14px;letter-spacing:.3em;color:rgba(234,242,250,.45)}
+
+/* ───── 9 · 지형 ───── */
+.d9{background:linear-gradient(175deg,#0d1b2a,#132c45 55%,#0a1624);color:#eef4fa;padding:58px 60px 46px}
+.d9 .hd{display:flex;align-items:center;font-size:15px;font-weight:800;letter-spacing:.24em;color:rgba(238,244,250,.6)}
+.d9 .hd span{margin-left:auto;letter-spacing:0;color:#fff}
+.d9 h1{margin:34px 0 0;font-size:72px;font-weight:900;letter-spacing:-.055em;line-height:1.05}
+.d9 .meta{margin-top:16px;font-size:18px;font-weight:600;color:rgba(238,244,250,.58)}
+.d9 .chart{margin-top:auto;width:100%}
+.d9 .axis{display:flex;margin-top:10px}
+.d9 .axis i{flex:1;text-align:center;font-size:12.5px;font-weight:700;color:rgba(238,244,250,.45);font-style:normal}
+.d9 .st{margin-top:38px;display:flex;gap:0;border-top:1px solid rgba(255,255,255,.16)}
+.d9 .st div{flex:1;padding:22px 0 0}
+.d9 .st b{display:block;font-size:50px;font-weight:900;letter-spacing:-.05em;line-height:1}
+.d9 .st b u{text-decoration:none;font-size:20px}
+.d9 .st span{display:block;margin-top:8px;font-size:15px;font-weight:700;color:rgba(238,244,250,.55)}
+.d9 .end{margin-top:30px;font-size:22px;font-weight:800}
+
+/* ───── 10 · 두꺼운 테두리 ───── */
+.d10{background:#f3e7cf;color:#111;padding:48px 50px 44px;gap:18px}
+.d10 .box{border:4px solid #111;border-radius:0;box-shadow:8px 8px 0 #111;background:#fff}
+.d10 .top{padding:26px 28px;display:flex;align-items:center;background:#1d4ed8;color:#fff}
+.d10 .top b{font-size:19px;font-weight:900;letter-spacing:-.01em}
+.d10 .top span{margin-left:auto;font-size:16px;font-weight:800}
+.d10 .hero{padding:34px 30px 32px}
+.d10 .hero h1{margin:0;font-size:82px;font-weight:900;letter-spacing:-.06em;line-height:.98}
+.d10 .hero p{margin:18px 0 0;font-size:18px;font-weight:700;color:#4b5159}
+.d10 .four{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.d10 .four div{padding:22px 20px;text-align:left}
+.d10 .four div:nth-child(1){background:#fde047}
+.d10 .four div:nth-child(2){background:#86efac}
+.d10 .four div:nth-child(3){background:#fda4af}
+.d10 .four div:nth-child(4){background:#1d4ed8;color:#fff}
+.d10 .four b{display:block;font-size:50px;font-weight:900;letter-spacing:-.055em;line-height:1}
+.d10 .four b u{text-decoration:none;font-size:19px}
+.d10 .four span{display:block;margin-top:10px;font-size:15px;font-weight:800}
+.d10 .bars{flex:1;padding:24px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.d10 .bars .r{display:flex;align-items:center;gap:14px;font-size:19px;font-weight:900}
+.d10 .bars .r i{flex:1;height:22px;border:3px solid #111;font-style:normal}
+.d10 .bars .r i s{display:block;height:100%;text-decoration:none}
+.d10 .bars .r u{text-decoration:none;width:124px;text-align:right;font-size:17px;font-weight:800}
+.d10 .end{padding:22px 28px;background:#111;color:#f3e7cf;font-size:21px;font-weight:900;display:flex}
+.d10 .end span{margin-left:auto;font-weight:700;color:#b9ae97}
+</style></head><body><main id="m"></main>
+<script type="module">
+const D = {
+  학원:'리딩브레인영어학원', 학교:'빛가온중학교', 학년:'중2', 학기:'1학기', 시험:'중간고사', 과목:'영어',
+  날짜:'2026. 4. 28.', 범위:'영어2 능률(김) 5~6과',
+  문항:25, 배점:105, 서답형:24, 상:10,
+  난이도:[{이름:'쉬움',수:5,비율:20,색:'#3f82f0'},{이름:'보통',수:10,비율:40,색:'#e59324'},{이름:'어려움',수:10,비율:40,색:'#d93f3b'}],
+  영역:[{이름:'독해',수:7,점:30,비율:28},{이름:'어휘',수:6,점:25,비율:24},
+        {이름:'어법',수:6,점:25,비율:24},{이름:'대화문',수:6,점:25,비율:24}],
+  문항들:[...Array(20)].map((_,i)=>({no:String(i+1),lv:[0,1,1,2,2][i%5]}))
+    .concat([1,2,3,4,5].map(n=>({no:'서'+n,lv:[0,1,2,2,1][n-1]}))),
+  한줄:'열 문항이 등수를 갈랐습니다',
+};
+const E=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const 판 = () => D.문항들.map((q)=>`<i class="q${q.lv}">${E(q.no)}</i>`).join('');
+const 판덩이 = (cap) => `<div class="panwrap"><div class="pancap">${cap}</div><div class="pan num">${판()}</div></div>`;
+const 학교줄 = `${D.학교} ${D.학년} · ${D.학기} ${D.시험}`;
+const 최대영역 = Math.max(...D.영역.map(a=>a.비율));
+
+/* 1 · 청사진 */
+const d1 = ()=>`<div class="c d1"><div class="fr"></div><div class="in">
+  <div class="tag"><span>${E(D.학원)}</span><span>EX-2026-04-28 / ENG</span></div>
+  <h1>${E(D.학교)} ${E(D.학년)}<br><b>${E(D.학기)} ${E(D.시험)}</b> 설계</h1>
+  <div class="meta">${E(D.날짜)}  ·  ${E(D.범위)}</div>
+  ${판덩이('몇 번이 어려웠나')}
+  <div class="dim num">
+    <div><b>${D.문항}</b><span>ITEMS / 문항</span></div>
+    <div><b>${D.배점}<u>점</u></b><span>TOTAL / 만점</span></div>
+    <div><b>${D.서답형}<u>%</u></b><span>WRITTEN / 서답형</span></div>
+    <div><b>${D.상}</b><span>HARD / 어려움</span></div>
+  </div>
+  <div class="lv">${D.난이도.map(x=>`<i style="width:${x.비율}%;background:${x.색}"></i>`).join('')}</div>
+  <div class="lvk num">${D.난이도.map(x=>`<span>${E(x.이름)} ${x.수}</span>`).join('')}</div>
+  <div class="foot">${E(D.한줄)}<span>SHEET 01 / 05</span></div>
+</div></div>`;
+
+/* 2 · 매거진 */
+const d2 = ()=>`<div class="c d2">
+  <div class="top">리딩브레인 시험 분석<span>${E(D.날짜)}</span></div>
+  <div class="hero">
+    <div class="big num">${D.문항}</div>
+    <div class="rt"><div class="k">문항을 모두 뜯어보다</div>
+      <h1>${E(D.학교)} ${E(D.학년)}<br>${E(D.학기)} ${E(D.시험)}</h1>
+      <p>${E(D.범위)}<br>만점 ${D.배점}점 · 서답형이 ${D.서답형}%를 가져갔다</p></div>
+  </div>
+  ${판덩이('몇 번이 어려웠나')}
+  <div class="cols">
+    <div><div class="lab">어려움 정도</div>
+      ${D.난이도.map(x=>`<div class="row"><b>${E(x.이름)}</b><i><s style="width:${x.비율*2.5}%"></s></i><u>${x.수}문항</u></div>`).join('')}
+    </div><div class="vr"></div>
+    <div><div class="lab">어디서 물었나</div>
+      ${D.영역.map(a=>`<div class="row"><b>${E(a.이름)}</b><i><s style="width:${a.비율*100/최대영역}%"></s></i><u>${a.수}문항</u></div>`).join('')}
+    </div>
+  </div>
+  <div class="end">${E(D.한줄)}</div>
+</div>`;
+
+/* 3 · 버건디 모노크롬 */
+const d3 = ()=>`<div class="c d3"><div class="fr"></div><div class="fr2"></div><div class="in">
+  <div class="k">${E(D.과목)} 내신</div>
+  <h1>${E(학교줄)}</h1>
+  <div class="rule"></div>
+  <div class="big num">${D.문항}<u>문항</u></div>
+  <div class="sub">만점 ${D.배점}점 · ${E(D.날짜)} · ${E(D.범위)}</div>
+  <div class="list">${D.영역.map(a=>`<div class="li"><span>${E(a.이름)}</span><i></i><b>${a.수}문항 ${a.점}점</b></div>`).join('')}</div>
+  <div class="end">${E(D.한줄)}</div>
+</div><div class="who">${E(D.학원)}</div></div>`;
+
+/* 4 · 스위스 */
+const d4 = ()=>`<div class="c d4">
+  <div class="hd"><b>${E(D.학원)}</b><span>${E(D.날짜)}</span></div>
+  <h1>${E(D.학교)} ${E(D.학년)}<br>${E(D.학기)} ${E(D.시험)}<br><em>${D.문항}문항 분석</em></h1>
+  <div class="meta">${E(D.범위)} · 만점 ${D.배점}점 · ${E(D.한줄)}</div>
+  ${판덩이('몇 번이 어려웠나')}
+  <div class="grid num">
+    <div class="g3"><b>${D.문항}</b><span>문항 수</span></div>
+    <div class="g3"><b>${D.배점}<u>점</u></b><span>만점</span></div>
+    <div class="g3"><b>${D.서답형}<u>%</u></b><span>서답형 몫</span></div>
+    <div class="g3"><b>${D.상}</b><span>어려운 문항</span></div>
+  </div>
+  <div class="bar num">${D.난이도.map(x=>`<i style="width:${x.비율}%;background:${x.색}">${E(x.이름)} ${x.수}</i>`).join('')}</div>
+  <div class="end">${D.영역.map(a=>`${E(a.이름)} ${a.수}`).join(' / ')}<span>01</span></div>
+</div>`;
+
+/* 5 · 메시 */
+const d5 = ()=>{
+  const r=170, c=2*Math.PI*r; let off=0;
+  const arcs=D.난이도.map(x=>{const len=c*x.비율/100; const s=`<circle r="${r}" cx="200" cy="200" fill="none"
+    stroke="${x.색}" stroke-width="30" stroke-linecap="butt"
+    stroke-dasharray="${len-6} ${c-len+6}" stroke-dashoffset="${-off}" transform="rotate(-90 200 200)"/>`; off+=len; return s;}).join('');
+  return `<div class="c d5">
+  <div class="hd">${E(D.과목)} 내신 분석<span>${E(D.학원)}</span></div>
+  <h1>${E(D.학교)} ${E(D.학년)}<br>${E(D.학기)} ${E(D.시험)}</h1>
+  <div class="meta">${E(D.날짜)} · ${E(D.범위)}</div>
+  <div class="pills num">
+    <div class="p"><b>${D.문항}</b><span>문항</span></div>
+    <div class="p"><b>${D.배점}</b><span>만점</span></div>
+    <div class="p"><b>${D.서답형}%</b><span>서답형</span></div>
+    <div class="p"><b>${D.상}</b><span>어려운 문항</span></div>
+  </div>
+  <div class="ring"><svg width="300" height="300" viewBox="0 0 400 400">${arcs}</svg>
+    <div class="leg num">${D.난이도.map(x=>`<i><s style="background:${x.색}"></s>${E(x.이름)} ${x.수}문항 · ${x.비율}%</i>`).join('')}</div></div>
+  <div class="end">${E(D.한줄)}</div>
+</div>`;};
+
+/* 6 · 먹지 + 금박 */
+const d6 = ()=>`<div class="c d6">
+  <div class="k">READING BRAIN</div>
+  <h1>${E(D.학교)} ${E(D.학년)}<br><b>${E(D.학기)} ${E(D.시험)}</b></h1>
+  <div class="meta">${E(D.날짜)} · ${E(D.범위)}</div>
+  <div class="gold"></div>
+  <div class="four num">
+    <div><b>${D.문항}</b><span>문항 수</span></div>
+    <div><b>${D.배점}<u>점</u></b><span>만점</span></div>
+    <div><b>${D.서답형}<u>%</u></b><span>서답형 몫</span></div>
+    <div><b>${D.상}</b><span>어려운 문항</span></div>
+  </div>
+  ${판덩이('몇 번이 어려웠나')}
+  <div class="end">${E(D.한줄)}<span>01</span></div>
+</div>`;
+
+/* 7 · 세로 분할 */
+const d7 = ()=>`<div class="c d7">
+  <div class="side"><div class="v">${E(D.학기)} ${E(D.시험)}</div><div class="who">${E(D.학원)}</div></div>
+  <div class="body">
+    <div class="k">${E(D.과목)} 내신 분석</div>
+    <h1>${E(D.학교)} ${E(D.학년)}</h1>
+    <div class="meta">${E(D.날짜)} · ${E(D.범위)}</div>
+    <div class="st num">
+      <div><b>${D.문항}<u>문항</u></b><span>이번에 나온 문항</span></div>
+      <div><b>${D.배점}<u>점</u></b><span>만점</span></div>
+      <div><b>${D.서답형}<u>%</u></b><span>서답형이 가진 몫</span></div>
+      <div><b>${D.상}<u>문항</u></b><span>어려웠던 문항</span></div>
+    </div>
+    <div class="ar"><div class="lab">어디서 많이 물었나</div>
+      ${D.영역.map(a=>`<div class="r"><span style="width:76px">${E(a.이름)}</span>
+        <i><s style="width:${a.비율*100/최대영역}%"></s></i><span>${a.수}문항</span></div>`).join('')}
+    </div>
+    ${판덩이('몇 번이 어려웠나')}
+    <div class="end">${E(D.한줄)}</div>
+  </div></div>`;
+
+/* 8 · 원형 */
+const d8 = ()=>{
+  const r=190, c=2*Math.PI*r; let off=0;
+  const arcs=D.난이도.map(x=>{const len=c*x.비율/100; const s=`<circle r="${r}" cx="270" cy="270" fill="none"
+    stroke="${x.색}" stroke-width="26" stroke-dasharray="${len-8} ${c-len+8}" stroke-dashoffset="${-off}"
+    transform="rotate(-90 270 270)"/>`; off+=len; return s;}).join('');
+  const pos=[['left:0;top:6px'],['right:0;top:6px'],['left:0;bottom:6px'],['right:0;bottom:6px']];
+  const sats=[[D.배점+'점','만점'],[D.서답형+'%','서답형 몫'],[D.상,'어려운 문항'],[D.영역[0].수+'문항',D.영역[0].이름+' 비중이 가장 크다']];
+  return `<div class="c d8">
+  <div class="k">${E(D.과목)} 내신 분석</div>
+  <h1>${E(학교줄)}</h1>
+  <div class="wrap">
+    <svg width="540" height="540" viewBox="0 0 540 540">${arcs}</svg>
+    <div class="mid num"><b>${D.문항}</b><span>문항</span></div>
+    ${sats.map((s,i)=>`<div class="sat num" style="${pos[i]}"><b>${E(s[0])}</b><span>${E(s[1])}</span></div>`).join('')}
+  </div>
+  <div class="end num">${D.난이도.map(x=>`<span><s style="background:${x.색}"></s> ${E(x.이름)} ${x.수}</span>`).join('')}</div>
+  <div class="who">${E(D.학원)} · ${E(D.날짜)}</div>
+</div>`;};
+
+/* 9 · 지형 */
+const d9 = ()=>{
+  const n=D.문항들.length, W=960, H=260;
+  const y=(lv)=>H-28-lv*((H-56)/2);
+  const pts=D.문항들.map((q,i)=>[(i+.5)*W/n, y(q.lv)]);
+  const path=pts.map((p,i)=>i?`L${p[0].toFixed(1)} ${p[1].toFixed(1)}`:`M${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+  const area=`${path} L${W} ${H} L0 ${H} Z`;
+  const dots=pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="5"
+    fill="${D.난이도[D.문항들[i].lv].색}" stroke="#0a1624" stroke-width="2"/>`).join('');
+  return `<div class="c d9">
+  <div class="hd">${E(D.과목)} 내신 분석<span>${E(D.학원)}</span></div>
+  <h1>${E(D.학교)} ${E(D.학년)}<br>${E(D.학기)} ${E(D.시험)}</h1>
+  <div class="meta">${E(D.날짜)} · ${E(D.범위)} · 만점 ${D.배점}점</div>
+  <div class="chart">
+    <svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="display:block;height:260px">
+      <defs><linearGradient id="g9" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#d93f3b" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#3f82f0" stop-opacity=".05"/></linearGradient></defs>
+      <path d="${area}" fill="url(#g9)"/>
+      <path d="${path}" fill="none" stroke="#ffd37a" stroke-width="2.5" stroke-linejoin="round"/>
+      ${dots}
+    </svg>
+    <div class="axis">${D.문항들.map(q=>`<i>${E(q.no.replace('서','서'))}</i>`).join('')}</div>
+  </div>
+  <div class="st num">
+    <div><b>${D.문항}</b><span>문항 수</span></div>
+    <div><b>${D.배점}<u>점</u></b><span>만점</span></div>
+    <div><b>${D.서답형}<u>%</u></b><span>서답형 몫</span></div>
+    <div><b>${D.상}</b><span>어려운 문항</span></div>
+  </div>
+  <div class="end">${E(D.한줄)}</div>
+</div>`;};
+
+/* 10 · 두꺼운 테두리 */
+const d10 = ()=>`<div class="c d10">
+  <div class="box top"><b>${E(D.학원)} 시험 분석</b><span>${E(D.날짜)}</span></div>
+  <div class="box hero"><h1>${E(D.학교)} ${E(D.학년)}<br>${E(D.학기)} ${E(D.시험)}</h1>
+    <p>${E(D.범위)}</p></div>
+  <div class="four num">
+    <div class="box"><b>${D.문항}</b><span>문항 수</span></div>
+    <div class="box"><b>${D.배점}<u>점</u></b><span>만점</span></div>
+    <div class="box"><b>${D.서답형}<u>%</u></b><span>서답형 몫</span></div>
+    <div class="box"><b>${D.상}</b><span>어려운 문항</span></div>
+  </div>
+  <div class="box bars num">${D.영역.map(a=>`<div class="r"><span style="width:88px">${E(a.이름)}</span>
+    <i><s style="width:${a.비율*100/최대영역}%;background:#1d4ed8"></s></i><u>${a.수}문항 ${a.점}점</u></div>`).join('')}</div>
+  <div class="box end">${E(D.한줄)}<span>01</span></div>
+</div>`;
+
+const 목록=[
+  ['청사진','설계 도면처럼 · 모눈 바탕에 치수선',d1],
+  ['매거진','종이 잡지 표지 · 세리프와 거대한 숫자',d2],
+  ['버건디','와인 한 색으로만 · 금선 액자',d3],
+  ['스위스','흰 바탕 · 거대한 글씨 · 빨강 한 점',d4],
+  ['메시','번지는 색 · 둥근 유리 알약',d5],
+  ['먹지와 금박','거의 검정 · 금박 숫자 · 초대장 결',d6],
+  ['세로 분할','왼쪽 기둥에 세로쓰기 제목',d7],
+  ['원형','가운데 큰 고리 · 둘레에 숫자',d8],
+  ['지형','25문항 난이도를 산등성이로',d9],
+  ['굵은 테두리','두꺼운 검정 선 · 색면 · 그림자',d10],
+];
+document.getElementById('m').innerHTML = 목록.map(([n,d,f],i)=>
+  `<section><h2><b>${i+1}</b>${n}<small>${d}</small></h2><div class="hold"><div class="scale">${f()}</div></div></section>`).join('');
+const fit=()=>document.querySelectorAll('.scale').forEach(b=>{const c=b.firstElementChild; if(c)c.style.transform=`scale(${b.clientWidth/1080})`;});
+fit(); addEventListener('resize',fit); document.fonts?.ready.then(fit);
+</script></body></html>
