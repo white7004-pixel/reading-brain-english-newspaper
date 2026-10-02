@@ -7,7 +7,7 @@ let pending = false; // 고른 줄을 칠해 두고 넘어가기를 기다리는
 export const picking = () => pending;
 const GUARD_MS = 300; // 문항이 뜬 직후의 누름·Enter 는 앞 문항에서 넘어온 것으로 보고 무시
 const PICK_MS = 180; // 고른 줄이 칠해진 것을 잠깐 보여 준 뒤 넘어간다
-const en = (s) => !/[ㄱ-ㅎ가-힣]/.test(s); // 한글이 없으면 영어 글꼴(Literata)
+const en = (s) => !/[ㄱ-ㅎ가-힣]/.test(s); // 한글이 없으면 영어 글씨 칸(.en)
 
 const CIRCLED = '①②③④⑤';
 
