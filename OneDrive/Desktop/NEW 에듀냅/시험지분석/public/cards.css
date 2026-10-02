@@ -388,7 +388,11 @@
 .deck.poster .kp .lab b { background: var(--k-wine); color: #fff; }
 .deck.poster .kp .lab span { font-size: 19px; }
 .deck.poster .kp .lab i { margin-left: 0; line-height: 1.6; }
-.deck.poster .low { grid-template-columns: 1fr; gap: 0; }
+/* 선으로만 나눈 판에서는 패널을 늘리지 않는다 — 남는 자리는 맨 아래로 모아야 여백으로 읽힌다 */
+.deck.poster .big, .deck.poster .big.fill { flex: 0 0 auto; }
+.deck.poster .low { grid-template-columns: 1fr; gap: 0; align-content: start; }
+/* 두 칸을 위아래로 세웠으니 옆으로 놓였을 때의 고정 높이는 더 이상 맞지 않는다 */
+.deck.poster .low.fix, .deck.poster .low.fix2 { flex: 0 0 auto; }
 .deck.poster .tip { margin-top: 12px; padding-top: 0; }
 .deck.poster .mix, .deck.poster .ring { margin-top: 18px; }
 /* grid 칸에서는 .plot 의 flex 가 죽어 svg 가 제 비율만큼 늘어난다 — 높이를 못 박는다 */
@@ -401,7 +405,7 @@
 .deck.poster .chip, .deck.poster .kkey .dg { background: #f0f3f5; }
 .deck.poster .map .q.key { box-shadow: 0 0 0 3px #17202a, inset 0 1px 0 rgba(255, 255, 255, .3); }
 .deck.poster .key .ring s { box-shadow: 0 0 0 2.5px #17202a; }
-.deck.poster .kf { border-top: 3px solid #17202a; }
+.deck.poster .kf { margin-top: auto; border-top: 3px solid #17202a; }
 .deck.poster .kf p { color: #17202a; }
 .deck.poster .kf s { background: var(--k-wine); box-shadow: none; }
 .deck.poster .kf .pg { color: #9aa3ab; }
