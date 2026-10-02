@@ -1,6 +1,6 @@
 // 1차 문제지·2차 쓰기 블록 (설계서 2026-09-30). 순수 함수 — 채점, 검사, 수준 판정. 브라우저·Node 공용.
 export const LEVELS = ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'];
-export const MC_AREAS = ['listening', 'reading', 'phonics', 'grammar'];
+export const MC_AREAS = ['listening', 'reading', 'phonics', 'grammar', 'vocab'];
 export const WRITE_AREAS = ['form', 'sentence'];
 export const AREA_KO = { listening: '듣기', reading: '독해', phonics: '파닉스', grammar: '문법', form: '어형', sentence: '영작', vocab: '어휘' };
 // 2차 넬트식 문제지 (A/B). '고2' 단계는 고2~3.
@@ -10,6 +10,20 @@ export const S2_AREAS = ['vocab', 'grammar', 'reading', 'listening', 'sentence']
 export const PASS = 80;
 export const MIN_STAGE1 = 20;
 export const SECONDS = 90;
+// 한 시험 (설계 10/2): 초3~고2(=고2~3) 9단계, 단계마다 10문항
+export const TEST_STAGES = LEVELS.filter((l) => l !== '고3');
+export const MIN_PER_STAGE = 6;
+export const testStage = (it) => (LEVELS.indexOf(it?.level) <= LEVELS.indexOf('초6') ? 1 : 2);
+export const validateTest = (it) => (TEST_STAGES.includes(it?.level) ? validateForm(it, testStage(it)) : ['수준']);
+export const usableTest = (list) => (Array.isArray(list) ? list : []).filter((i) => i?.status === 'ok' && !validateTest(i).length).sort((a, b) => a.no - b.no);
+export const testReady = (list) => TEST_STAGES.every((lv) => list.filter((i) => i.level === lv).length >= MIN_PER_STAGE);
+// 마친 단계(그 단계 문항을 모두 풂) 가운데 마지막 두 단계가 모두 절반 미만이면 그 단계 이름
+export function stopAfter(list, log) {
+  const done = TEST_STAGES.filter((lv) => { const n = list.filter((i) => i.level === lv).length; return n && log.filter((x) => x.level === lv).length >= n; });
+  const weak = (lv) => { const at = log.filter((x) => x.level === lv); return at.filter((x) => x.correct).length * 2 < at.length; };
+  const [a, b] = done.slice(-2);
+  return b && weak(a) && weak(b) ? b : null;
+}
 
 // 문장 틀(template)이 있으면 직접 쓰기. 어형·영작도 선택지로 내면 객관식 (원장 결정 10/1: 시험에서 직접 쓰기는 뺀다)
 export const isWrite = (it) => WRITE_AREAS.includes(it?.area) && it?.template != null;
@@ -141,17 +155,17 @@ export function checkOrder(list) {
 }
 
 // ── 2차 영역별 수준 (단계마다 3분의 2) ──
-const S2_GROUP = { vocab: 'vocab', grammar: 'grammar', reading: 'reading', listening: 'listening', sentence: 'writing' };
+const S2_GROUP = { vocab: 'vocab', grammar: 'grammar', form: 'grammar', reading: 'reading', listening: 'listening', sentence: 'writing' };
 
-// 중1부터 올라가며 그 단계 문항을 3분의 2 이상 맞혀야 다음 단계. 처음 못 넘은 단계에서 멈추되 정답률은 모든 단계에서 낸다.
-export function stage2Levels(log) {
+// 초3부터 올라가며 그 단계 문항을 3분의 2 이상 맞혀야 다음 단계. 처음 못 넘은 단계에서 멈추되 정답률은 모든 단계에서 낸다.
+export function testLevels(log) {
   const out = {};
   for (const g of ['vocab', 'grammar', 'reading', 'listening', 'writing']) {
     const mine = log.filter((x) => S2_GROUP[x.area] === g);
     const steps = [];
     let level = null;
     let stopped = false;
-    for (const lv of STAGES2) {
+    for (const lv of LEVELS) {
       const at = mine.filter((x) => x.level === lv);
       if (!at.length) continue;
       const correct = at.filter((x) => x.correct).length;
@@ -164,6 +178,8 @@ export function stage2Levels(log) {
   }
   return out;
 }
+
+export const stage2Levels = testLevels; // 옛 2차 log 도 같은 답
 
 // 문제지 순서(처음 나온 순서)대로 유형별 정답 수
 export function kindTally(log, area) {
@@ -181,13 +197,14 @@ export function kindTally(log, area) {
 // 영역 수준 → 리포트 est (통과한 단계의 다음 학기 앞)
 export function stage2Est(level) {
   if (!level) return null;
-  if (/ 수준 아래$/.test(level)) return { step: 9, unit: 0 };
+  const m = /^(.+) 수준 아래$/.exec(level);
+  if (m || LEVELS.indexOf(level) < LEVELS.indexOf('중1')) return { step: 9, unit: 0 }; // 중1 과정 시작 전
   return { step: levelStep(level) + 2, unit: 0 };
 }
 
 // 2차 결과 → 결과지 sections (단어·문법·독해·듣기). log 는 비운다 — 원장용 적응형 표는 2차 문제지 표로 대신한다.
 export function stage2Sections(log) {
-  const lv = stage2Levels(log);
+  const lv = testLevels(log);
   return Object.fromEntries(['vocab', 'grammar', 'reading', 'listening'].map((k) => {
     const { level } = lv[k];
     return [k, { est: stage2Est(level), level, log: [], skipped: level ? '' : '응시하지 않음' }];

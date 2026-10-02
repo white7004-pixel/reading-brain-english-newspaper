@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText } from '../public/core/forms.js';
+import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText, TEST_STAGES, testStage, validateTest, usableTest, testReady, stopAfter, testLevels } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -257,4 +257,64 @@ test('문제지(실제·샘플)의 1차·2차에는 직접 쓰는 문항이 없�
       }
     }
   }
+});
+
+const T = (level, area, correct = true, o = {}) => ({ id: `${level}-${area}-${Math.random()}`, level, area, correct, kind: '', ...o });
+const stageItems = (level, n = 10) => Array.from({ length: n }, (_, k) => ({ id: `${level}${k}`, level, area: 'reading' }));
+
+test('TEST_STAGES 는 초3~고2 9단계, testStage 는 초등 1·중고 2', () => {
+  assert.deepEqual(TEST_STAGES, ['초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2']);
+  assert.equal(testStage({ level: '초6' }), 1);
+  assert.equal(testStage({ level: '중1' }), 2);
+});
+
+test('validateTest: 초등 어휘 4지 허용, 중고는 2차 규칙', () => {
+  const v = { id: 't1', no: 1, area: 'vocab', level: '초3', kind: '영→한', question: '다음 단어의 뜻으로 알맞은 것은? __cat__', choices: ['고양이', '개', '새', '말'], answer: 0, status: 'ok' };
+  assert.deepEqual(validateTest(v), []);
+  assert.deepEqual(validateTest({ ...v, level: '중1' }), []);
+  assert.deepEqual(validateTest({ ...v, level: '중1', area: 'reading', passage: 'p' }), ['선택지 5개']);
+  assert.deepEqual(validateTest({ ...v, level: '고3' }), ['수준']);
+});
+
+test('usableTest·testReady: 통과 문항만, 9단계 모두 6개 이상이어야 열림', () => {
+  const mk = (level, k, status = 'ok') => ({ id: `${level}${k}`, no: 0, area: 'vocab', level, kind: '영→한', question: 'q', choices: ['a', 'b', 'c', 'd'], answer: 0, status });
+  let no = 0;
+  const full = TEST_STAGES.flatMap((lv) => Array.from({ length: 6 }, (_, k) => ({ ...mk(lv, k), no: ++no })));
+  assert.equal(usableTest(full).length, 54);
+  assert.ok(testReady(usableTest(full)));
+  const short = full.filter((x) => !(x.level === '고2' && x.id.endsWith('5')));
+  assert.equal(testReady(usableTest(short)), false);
+  assert.equal(usableTest([{ ...full[0], status: 'draft' }]).length, 0);
+});
+
+test('stopAfter: 마친 단계 중 마지막 두 단계가 모두 절반 미만이면 그 단계', () => {
+  const list = [...stageItems('초3'), ...stageItems('초4'), ...stageItems('초5')];
+  const answers = (level, right, n = 10) => Array.from({ length: n }, (_, k) => T(level, 'reading', k < right));
+  assert.equal(stopAfter(list, [...answers('초3', 4), ...answers('초4', 4)]), '초4');
+  assert.equal(stopAfter(list, [...answers('초3', 5), ...answers('초4', 4)]), null, '5/10 은 절반 미만이 아님');
+  assert.equal(stopAfter(list, [...answers('초3', 3), ...answers('초4', 9), ...answers('초5', 2)]), null, '연속이 아님');
+  assert.equal(stopAfter(list, [...answers('초3', 2), ...answers('초4', 2, 6)]), null, '초4 를 다 풀지 않았으면 세지 않음');
+  const nine = [...stageItems('중1', 9), ...stageItems('중2', 9)];
+  assert.equal(stopAfter(nine, [...answers('중1', 4, 9), ...answers('중2', 4, 9)]), '중2', '듣기를 뺀 9문항 단계: 4/9 는 절반 미만');
+});
+
+test('testLevels: 초3부터 영역마다 3분의 2, 어형은 문법, 없는 단계는 건너뜀', () => {
+  const log = [
+    T('초3', 'vocab'), T('초3', 'vocab'), T('초3', 'vocab', false),
+    T('초4', 'vocab', false), T('초4', 'vocab', false), T('초4', 'vocab'),
+    T('초4', 'grammar'), T('초4', 'grammar'), T('초5', 'form', false), T('초5', 'grammar', false),
+    T('초3', 'reading'), T('초4', 'reading'),
+  ];
+  const lv = testLevels(log);
+  assert.equal(lv.vocab.level, '초3');
+  assert.equal(lv.grammar.level, '초4');
+  assert.equal(lv.reading.level, '초4');
+  assert.equal(lv.listening.level, null);
+  assert.equal(testLevels([T('초3', 'vocab', false), T('초3', 'vocab', false)]).vocab.level, '초3 수준 아래');
+});
+
+test('stage2Est: 초등 수준·수준 아래는 중1 시작 전(step 9), 중1 이상은 다음 학기', () => {
+  assert.deepEqual(stage2Est('초5'), { step: 9, unit: 0 });
+  assert.deepEqual(stage2Est('초3 수준 아래'), { step: 9, unit: 0 });
+  assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
 });
