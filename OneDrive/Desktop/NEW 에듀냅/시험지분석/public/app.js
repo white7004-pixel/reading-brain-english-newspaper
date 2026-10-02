@@ -384,6 +384,7 @@ function renderItems(keepPicked = null) {
     const 그대로 = new Set(keepPicked);
     $$('#items tbody [data-pick]').forEach((c, i) => { c.checked = 그대로.has(i); });
   }
+  마지막선택 = -1; // 줄이 지워지거나 늘어났으니 Shift 범위의 기준을 버린다
   fillBulkPickers();
   drawBulk();
   drawUnitList();
