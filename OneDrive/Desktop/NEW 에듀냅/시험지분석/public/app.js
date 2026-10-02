@@ -1,6 +1,7 @@
 import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, esc, noText, noNum, byNoOrder } from './lib.js';
 import { unitsFor, GRADES } from './curriculum.js';
 import { schoolPage, explainPages } from './report.js';
+import { draftSchool } from './draft.js';
 import { shareCards } from './share.js';
 import { slideDeck } from './slides.js';
 import { pickBrandColor, PALETTE } from './color.js';
@@ -375,6 +376,7 @@ function renderItems(keepPicked = null) {
       ${cell('difficulty', `<select aria-label="${no}번 난이도">${options(DIFF5, it.difficulty)}</select>`)}
       ${cell('source', `<select aria-label="${no}번 출처"><option value=""${it.source ? '' : ' selected'}>— 모름</option>${options(SOURCES, it.source)}</select>`)}
       ${cell('answer', `<input value="${esc(it.answer)}" aria-label="${no}번 정답">`)}
+      ${cell('note', `<input value="${esc(it.note ?? '')}" aria-label="${no}번 한 줄 설명" placeholder="무엇을 물었고 왜 갈렸나">`)}
       <td class="c"><input type="checkbox" data-key${it.key ? ' checked' : ''} aria-label="${no}번 대표 문항"></td>
       <td class="reason">${esc(it.reason)}</td>
       <td><button type="button" class="ghost" data-del aria-label="${no}번 삭제">삭제</button></td>
@@ -470,7 +472,7 @@ $('#items').addEventListener('click', (e) => {
 // 빈 문항 한 줄. 원장님이 직접 적는 길에서도, 줄 추가에서도 이것 하나를 쓴다.
 const blankItem = (no, kind = '객관식') => ({
   no, key: false, kind, points: 0, unit: '', area: areasNow()[0],
-  subtype: '', difficulty: '중', source: '', answer: '', reason: '', unsure: [],
+  subtype: '', difficulty: '중', source: '', answer: '', note: '', reason: '', unsure: [],
 });
 
 // 숫자 번호 중 가장 큰 것 다음. 글자 번호(논술형2-1)는 세지 않는다
@@ -565,9 +567,19 @@ $('#make-report').addEventListener('click', async (e) => {
   button.disabled = true;
   const items = [...state.items].sort(byNoOrder).map(({ unsure, ...it }) => it);
   try {
-    setStatus('#report-status', '분석 글을 쓰는 중입니다. 1~3분 걸립니다…');
-    const school = await api('/api/report', { mode: 'school', meta: state.meta, items });
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
+    // 분석지 글은 문항표에서 짓는다 — 문항마다 적어 두신 한 줄과 숫자가 재료다.
+    // AI 는 원장님이 켜실 때만 부르고, 실패해도 지어 둔 글로 그대로 낸다.
+    let 말 = '';
+    let school = draftSchool(ctx);
+    if ($('#use-ai').checked) {
+      setStatus('#report-status', 'AI 가 글을 다듬는 중입니다. 1~3분 걸립니다…');
+      try {
+        school = await api('/api/report', { mode: 'school', meta: state.meta, items });
+      } catch (err) {
+        말 = `AI 글은 받지 못했습니다 (${err.message}) — 문항표로 지은 글로 만들었습니다`;
+      }
+    }
     $('#pages').style.setProperty('--brand', state.academy.color);
     // 학교 분석은 발표 슬라이드 한 벌이 기본이다 (원장님 결정 2026-10-01 — 여러 형태를 한꺼번에 쏟지 않는다).
     // A4 종이와 정사각 카드는 원장님이 켜실 때만 뒤에 붙는다.
@@ -580,7 +592,7 @@ $('#make-report').addEventListener('click', async (e) => {
     $('#save-cards').hidden = !카드;
     $('#save-cards').textContent = `카드 ${카드}장 한 번에 받기`;
     $('#print-slides').textContent = `슬라이드 ${document.querySelectorAll('#pages .sheet.slide').length}장 PDF 저장 (가로)`;
-    setStatus('#report-status', '');
+    setStatus('#report-status', 말, !!말);
     show('#step-result');
     fitAll();
     fitSlides();

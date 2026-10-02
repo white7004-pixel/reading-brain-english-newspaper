@@ -821,3 +821,7 @@ input[type=file]::file-selector-button { border-color: var(--wine); color: var(-
 /* 분석 자료 만들기 — 문항표 아래 (STEP 03 을 없앴다, 2026-10-02 원장 결정) */
 .make { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 .make button { width: 100%; padding: 15px 20px; font-size: 15.5px; }
+
+/* 한 줄 설명 칸 — 분석지의 글이 여기서 나오므로 넉넉히 둔다 */
+#items td[data-field=note] input { min-width: 240px; }
+#items th:nth-child(11) { min-width: 240px; }

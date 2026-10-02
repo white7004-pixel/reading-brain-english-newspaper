@@ -249,7 +249,7 @@ const explainRow = (it) => `<tr>
   <td class="num">${esc(it.points ?? '')}</td>
   <td class="c">${badge(it.difficulty)}</td>
   <td class="pt"><b>${esc(it.answer || '—')}</b></td>
-  <td contenteditable>${esc(it.teach || '')}</td></tr>`;
+  <td contenteditable>${esc(it.teach || it.note || '')}</td></tr>`;
 
 export function explainPages({ academy, meta, items }) {
   const 장수 = Math.max(1, Math.ceil(items.length / EXPLAIN_PER_PAGE));

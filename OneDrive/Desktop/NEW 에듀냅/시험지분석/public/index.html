@@ -127,7 +127,7 @@
 
     <div class="table-wrap">
       <table id="items">
-        <thead><tr><th class="c"><input id="pick-all" type="checkbox" aria-label="전체 선택"></th><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th title="리포트에 카드로 실을 문항. 1~3개를 고르면 AI 가 그 문항만 씁니다">대표</th><th>판단 근거</th><th></th></tr></thead>
+        <thead><tr><th class="c"><input id="pick-all" type="checkbox" aria-label="전체 선택"></th><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th title="이 문항이 무엇을 물었고 왜 갈렸는지 한 줄. 분석지의 글이 여기서 나옵니다">한 줄 설명</th><th title="분석지에 카드로 실을 문항. 1~3개를 고르면 그 문항만 실립니다">대표</th><th>판단 근거</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -138,6 +138,9 @@
     </div>
     <p id="confirm-total" class="status"></p>
     <div class="make">
+      <p class="hint">문항마다 <b>한 줄 설명</b>을 적어 두시면 그 줄들로 총평·변별 문항·학습 방향 장이 지어집니다.
+        비워 두면 그 문항의 영역·배점·난이도로 사실만 적습니다. <b>AI 를 부르지 않으니 바로 나옵니다.</b></p>
+      <label class="check"><input id="use-ai" type="checkbox"> AI 에게 글을 다듬게 하기 <small>클로드 키가 있을 때만. 1~3분 걸립니다</small></label>
       <button id="make-report" type="button" class="wide">분석 자료 만들기</button>
       <p id="report-status" class="status" role="status"></p>
     </div>
