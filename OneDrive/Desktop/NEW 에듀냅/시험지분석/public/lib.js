@@ -242,3 +242,16 @@ export function parseStudents(text, itemNos) {
   });
   return { students, problems };
 }
+
+// 기출 적중 입력 — 원장님이 적으신 값을 카드가 쓰는 모양으로 다듬는다.
+// 맞힌 수는 전체 문항을 넘을 수 없다. 적중률을 분모 없이 쓰지 않으려면 여기서 막아야 한다.
+// 사진은 학원 교재 사진이고 이 브라우저 밖으로 나가지 않는다 (2026-10-03 원장 결정).
+export function hitInput({ 켬, 맞힌, 자료, 사진 } = {}, 문항수 = 0) {
+  if (!켬) return null;
+  const n = Math.trunc(Number(맞힌));
+  return {
+    맞힌: Math.max(0, Math.min(문항수, Number.isFinite(n) ? n : 0)),
+    자료: String(자료 ?? '').split(/[,，\n]/).map((t) => t.trim()).filter(Boolean).slice(0, 6),
+    사진: (Array.isArray(사진) ? 사진 : []).slice(0, 4),
+  };
+}

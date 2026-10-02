@@ -1,4 +1,4 @@
-import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, esc, noText, noNum, byNoOrder } from './lib.js';
+import { SUBJECTS, DIFF5, KINDS, SOURCES, examStats, esc, noText, noNum, byNoOrder, hitInput } from './lib.js';
 import { unitsFor, GRADES } from './curriculum.js';
 import { subtypesFor, sourcesFor } from './subtypes.js';
 import { schoolPage, explainPages } from './report.js';
@@ -569,6 +569,48 @@ $('#pick-all').addEventListener('change', (e) => {
   drawBulk();
 });
 
+// ---------- 기출 적중 (선택) ----------
+// 올리는 사진은 학원 교재 사진이다 (2026-10-02 원장 확인). 시험지 사진이 아니다.
+// 사진은 이 브라우저 안에만 둔다 — 서버로 보내지 않는다.
+const 교재사진 = [];
+
+$('#hit-on').addEventListener('change', (e) => {
+  $('#hit-fields').hidden = !e.target.checked;
+});
+
+$('#hit-photos').addEventListener('change', async (e) => {
+  const 고른것 = [...e.target.files];
+  e.target.value = ''; // 같은 파일을 다시 골라도 change 가 또 오게
+  if (!고른것.length) return;
+  const 남은자리 = 4 - 교재사진.length;
+  if (남은자리 <= 0) return setStatus('#hit-status', '사진은 넉 장까지입니다. 지우고 다시 올려 주세요', true);
+  try {
+    for (const f of 고른것.slice(0, 남은자리)) 교재사진.push(await shrink(f, 1000));
+    const 넘침 = 고른것.length - 남은자리;
+    setStatus('#hit-status', 넘침 > 0
+      ? `${남은자리}장만 넣었습니다. 사진은 넉 장까지입니다`
+      : `${교재사진.length}장 올렸습니다`, 넘침 > 0);
+  } catch (err) {
+    setStatus('#hit-status', `사진을 읽지 못했습니다 (${err.message})`, true);
+  }
+  drawShots();
+});
+
+function drawShots() {
+  $('#hit-shots').innerHTML = 교재사진.map((src, i) => `<figure>
+    <img src="${esc(src)}" alt="">
+    <button type="button" data-shot="${i}" aria-label="${i + 1}번째 사진 빼기">빼기</button>
+  </figure>`).join('');
+}
+
+$('#hit-shots').addEventListener('click', (e) => {
+  const i = e.target.dataset.shot;
+  if (i === undefined) return;
+  교재사진.splice(Number(i), 1);
+  drawShots();
+  setStatus('#hit-status', 교재사진.length ? `${교재사진.length}장 남았습니다` : '');
+});
+
 // ---------- 4. 분석 자료 만들기 ----------
 // 학교 시험지 분석이므로 학생별 리포트는 만들지 않는다 (2026-10-02 원장 결정 — "step3는 없애줘").
 $('#make-report').addEventListener('click', async (e) => {
@@ -584,6 +626,10 @@ $('#make-report').addEventListener('click', async (e) => {
   const items = [...state.items].sort(byNoOrder).map(({ unsure, ...it }) => it);
   try {
     const ctx = { academy: state.academy, meta: state.meta, items, stats: examStats(items) };
+    // 기출 적중은 켜셨을 때만. 맞힌 수는 hitInput 이 전체 문항 안으로 깎는다.
+    state.적중 = hitInput({
+      켬: $('#hit-on').checked, 맞힌: $('#hit-n').value, 자료: $('#hit-src').value, 사진: 교재사진,
+    }, items.length);
     // 분석지 글은 문항표에서 짓는다 — 문항마다 적어 두신 한 줄과 숫자가 재료다.
     // AI 는 원장님이 켜실 때만 부르고, 실패해도 지어 둔 글로 그대로 낸다.
     let 말 = '';

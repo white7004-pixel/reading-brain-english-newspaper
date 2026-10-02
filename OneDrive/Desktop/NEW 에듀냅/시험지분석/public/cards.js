@@ -271,7 +271,7 @@ export function cardDeck(ctx, school, opts = {}) {
       </div>
       <div class="low one fill">
         <div class="kp">${패(2, '학원 교재 사진')}
-          <div class="shots">${d.적중.사진.slice(0, 4).map((src, i) => `<figure>
+          <div class="shots" style="grid-template-columns:repeat(${Math.max(2, Math.min(d.적중.사진.length, 4))},minmax(0,1fr))">${d.적중.사진.slice(0, 4).map((src, i) => `<figure>
             <img src="${esc(src)}" alt=""><figcaption>${esc(d.적중.자료[i] ?? `자료 ${i + 1}`)}</figcaption></figure>`).join('')}</div>
         </div>
       </div>

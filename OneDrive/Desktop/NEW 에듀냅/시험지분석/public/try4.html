@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>띠 · 글씨 키운 판</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--sans:'Pretendard Variable','Pretendard',system-ui,sans-serif;
+  --navy:#082d49; --wine:#7d1d1d; --wine2:#a8383a; --beige:#f3ede1;
+  --ink:#1b232c; --mute:#6f7a85;
+  --low:#2f6fe0; --mid:#e08b22; --high:#c4322f}
+*{box-sizing:border-box} body{margin:0;background:#e9ecf0;font-family:var(--sans);color:var(--ink)}
+main{max-width:1000px;margin:0 auto;padding:26px 22px 80px;display:flex;flex-direction:column;gap:30px}
+h2{display:flex;align-items:center;gap:11px;margin:0 0 10px;font-size:18px;font-weight:800}
+h2 b{display:grid;place-items:center;height:30px;padding:0 11px;border-radius:9px;background:var(--navy);color:#fff;font-size:14px}
+h2 small{font-weight:500;color:#687480;font-size:14.5px}
+.hold{border-radius:18px;overflow:hidden;box-shadow:0 20px 50px rgba(8,25,43,.2)}
+.scale{width:100%;aspect-ratio:1;position:relative;overflow:hidden}
+.c{width:1080px;height:1080px;position:absolute;inset:0;transform-origin:0 0;overflow:hidden;
+  display:flex;flex-direction:column;background:#fff}
+.num{font-variant-numeric:tabular-nums}
+
+.r{padding:0 64px;display:flex;align-items:center;gap:28px}
+
+/* 1 · 남색 머리띠 */
+.r1{background:var(--navy);color:#fff;flex-direction:column;align-items:flex-start;gap:0;
+  padding-top:52px;padding-bottom:46px}
+.r1 .eye{font-size:var(--eye);font-weight:800;letter-spacing:.3em;opacity:.62}
+.r1 h1{margin:14px 0 0;font-size:var(--h1);font-weight:900;letter-spacing:-.05em;line-height:1.08}
+.r1 p{margin:14px 0 0;font-size:var(--sub);font-weight:600;opacity:.82}
+
+/* 2 · 베이지 숫자띠 */
+.r2{background:var(--beige);flex:1}
+.r2 .big{font-size:var(--big);font-weight:900;letter-spacing:-.06em;line-height:1;color:var(--wine);white-space:nowrap}
+.r2 .big u{text-decoration:none;font-size:var(--bigu);margin-left:5px}
+.r2 .t{font-size:var(--t);font-weight:800;line-height:1.45}
+.r2 .t small{display:block;margin-top:9px;font-size:var(--tsub);color:var(--mute);font-weight:600}
+.r2 .sp{margin-left:auto;display:flex;gap:40px;text-align:right}
+.r2 .sp div b{display:block;font-size:var(--spb);font-weight:900;letter-spacing:-.04em;line-height:1}
+.r2 .sp div span{display:block;margin-top:9px;font-size:var(--sps);color:var(--mute);font-weight:700;white-space:nowrap}
+
+/* 3 · 흰 막대띠 */
+.r3{background:#fff;flex:1;flex-direction:column;align-items:stretch;gap:0;justify-content:center}
+.r3 .lab{font-size:var(--lab);font-weight:800;letter-spacing:.2em;color:var(--mute);margin-bottom:18px}
+.r3 .row{display:flex;align-items:center;gap:20px;padding:16px 0;border-bottom:1px solid #eee7da}
+.r3 .row:last-child{border-bottom:0}
+.r3 .row .nm{width:140px;font-size:var(--nm);font-weight:800}
+.r3 .row .bar{flex:1;height:18px;border-radius:3px;background:#f0eade;overflow:hidden}
+.r3 .row .bar i{display:block;height:100%}
+.r3 .row .n{width:214px;text-align:right;font-size:var(--n);font-weight:800;white-space:nowrap}
+.r3 .row .n u{text-decoration:none;font-size:var(--nu);color:var(--mute);margin-left:7px}
+
+/* 4 · 와인 바닥띠 */
+.r4{background:var(--wine);color:#fff;padding-top:34px;padding-bottom:38px}
+.r4 p{margin:0;font-size:var(--end);font-weight:800;letter-spacing:-.02em}
+.r4 .who{margin-left:auto;font-size:var(--who);font-weight:800;opacity:.88}
+</style></head><body><main id="m"></main>
+<script type="module">
+const D = {
+  학원:'리딩브레인영어학원', 학교:'빛가온중학교', 학년:'중2', 학기:'1학기', 시험:'중간고사', 과목:'영어',
+  날짜:'2026년 4월 28일', 범위:'영어2 능률(김) 5~6과',
+  문항:25, 배점:105, 체감:'보통', 서답형:24,
+  난이도:[{이름:'하',수:5,색:'var(--low)'},{이름:'중',수:10,색:'var(--mid)'},{이름:'상',수:10,색:'var(--high)'}],
+  영역:[{이름:'독해',수:7,점:30,비율:28},{이름:'어휘',수:6,점:25,비율:24},
+        {이름:'어법',수:6,점:25,비율:24},{이름:'대화문',수:6,점:25,비율:24}],
+  한줄:'영어 25문항 가운데 10문항에서 점수가 갈렸습니다',
+};
+const E=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+// 글씨 크기 한 벌. 전과 똑같은 짜임에 크기만 올린다.
+const 크기 = {
+  전: { eye:15,h1:62,sub:22,big:96,bigu:30,t:24,tsub:18,spb:40,sps:16,lab:15,nm:21,n:21,nu:15,end:25,who:17 },
+  큼: { eye:18,h1:76,sub:27,big:124,bigu:38,t:31,tsub:23,spb:54,sps:20,lab:18,nm:27,n:27,nu:19,end:31,who:21 },
+  더큼:{ eye:20,h1:86,sub:30,big:142,bigu:44,t:35,tsub:26,spb:62,sps:23,lab:20,nm:31,n:30,nu:21,end:35,who:23 },
+};
+const 변수 = (k) => Object.entries(크기[k]).map(([n,v])=>`--${n}:${v}px`).join(';');
+
+const 카드 = (k)=>`<div class="c" style="${변수(k)}">
+  <div class="r r1"><span class="eye">${E(D.과목)} · 내신 분석</span>
+    <h1>${E(D.학교)} ${E(D.학년)}<br>${E(D.학기)} ${E(D.시험)}</h1>
+    <p>${E(D.날짜)} · ${E(D.범위)}</p></div>
+  <div class="r r2">
+    <span class="big num">${D.문항}<u>문항</u></span>
+    <span class="t">${D.배점}점짜리 시험이었습니다<small>체감 난이도 ${E(D.체감)} · 서답형 배점 ${D.서답형}%</small></span>
+    <span class="sp num">${D.난이도.map(x=>`<div><b style="color:${x.색}">${x.수}</b><span>${E(x.이름)} 난이도</span></div>`).join('')}</span>
+  </div>
+  <div class="r r3"><div style="width:100%">
+    <div class="lab">영역별 출제</div>
+    ${D.영역.map(a=>`<div class="row"><span class="nm">${E(a.이름)}</span>
+      <span class="bar"><i style="width:${a.비율}%;background:var(--wine2)"></i></span>
+      <span class="n num">${a.수}문항<u>${a.점}점 · ${a.비율}%</u></span></div>`).join('')}
+  </div></div>
+  <div class="r r4"><p>${E(D.한줄)}</p><span class="who">${E(D.학원)}</span></div>
+</div>`;
+
+const 목록=[['전','지금 크기 (견주기용)'],['큼','한 단계 크게'],['더큼','두 단계 크게']];
+document.getElementById('m').innerHTML = 목록.map(([k,설명])=>
+  `<section><h2><b>${k}</b><small>${설명}</small></h2><div class="hold"><div class="scale">${카드(k)}</div></div></section>`).join('');
+const fit=()=>document.querySelectorAll('.scale').forEach(b=>{const c=b.firstElementChild; if(c)c.style.transform=`scale(${b.clientWidth/1080})`;});
+fit(); addEventListener('resize',fit); document.fonts?.ready.then(fit);
+</script></body></html>

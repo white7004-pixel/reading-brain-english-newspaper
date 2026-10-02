@@ -827,3 +827,21 @@ input[type=file]::file-selector-button { border-color: var(--wine); color: var(-
 /* 한 줄 설명 칸 — 분석지의 글이 여기서 나오므로 넉넉히 둔다 */
 #items td[data-field=note] input { min-width: 240px; }
 #items th:nth-child(11) { min-width: 240px; }
+
+/* ---------- 기출 적중 (선택) — 학원 교재 사진은 올리실 때만 ---------- */
+.hit { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.hit > .check small { color: var(--muted); }
+#hit-fields { margin-top: 14px; padding: 16px 18px 18px; border-radius: 12px; background: var(--soft, rgba(0, 0, 0, .03)); }
+.hit-row { display: flex; flex-wrap: wrap; gap: 14px; }
+.hit-row label { flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
+.hit-row input { padding: 10px 12px; }
+.hit-row small, .hit-file small { font-weight: 500; color: var(--muted); }
+.hit-file { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; font-weight: 700; }
+.hit-file input { padding: 8px 0; }
+.hit-shots { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.hit-shots:empty { margin-top: 0; }
+.hit-shots figure { position: relative; margin: 0; width: 124px; }
+.hit-shots img { width: 124px; height: 124px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); display: block; }
+.hit-shots button { position: absolute; right: 6px; top: 6px; padding: 4px 9px; font-size: 12px; font-weight: 700;
+  border-radius: 7px; border: 0; background: rgba(0, 0, 0, .66); color: #fff; cursor: pointer; }
+.hit-shots button:hover { background: rgba(0, 0, 0, .82); }
