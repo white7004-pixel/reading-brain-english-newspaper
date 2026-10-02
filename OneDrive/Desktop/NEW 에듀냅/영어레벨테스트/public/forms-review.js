@@ -1,12 +1,12 @@
-// 문제지 검수: 1차 A·B, 2차(넬트식) A·B 를 번호 순으로 고치고 통과/버리기. 브라우저에 임시 저장하고 forms.json 으로 내려받는다.
-import { validateForm, isWrite, AREA_KO, STAGE_KO } from './core/forms.js';
+// 문제지 검수: 한 시험 A·B(먼저), 예전 1차·2차 A·B 를 번호 순으로 고치고 통과/버리기. 브라우저에 임시 저장하고 forms.json 으로 내려받는다.
+import { validateForm, isWrite, AREA_KO, STAGE_KO, testStage } from './core/forms.js';
 import { openNotes } from './notes.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const KEY = 'elt:review-forms';
 const STATUS_KO = { draft: '검수 전', ok: '통과', rejected: '버림' };
-const BOOKS = [['stage1', 'A', '1차 A'], ['stage1', 'B', '1차 B'], ['stage2', 'A', '2차 A'], ['stage2', 'B', '2차 B']];
+const BOOKS = [['test', 'A', '한 시험 A'], ['test', 'B', '한 시험 B'], ['stage1', 'A', '예전 1차 A'], ['stage1', 'B', '예전 1차 B'], ['stage2', 'A', '예전 2차 A'], ['stage2', 'B', '예전 2차 B']];
 const arr = (x) => (Array.isArray(x) ? x.filter((i) => i && i.id) : []);
 const status = (t, k = '') => { $('#review-status').textContent = t; $('#review-status').className = `status ${k}`; };
 
@@ -50,7 +50,7 @@ function draw() {
 }
 
 function card(it, book) {
-  const stage = book === 'stage2' ? 2 : 1;
+  const stage = book === 'stage2' ? 2 : book === 'test' ? testStage(it) : 1;
   const el = document.createElement('section');
   el.className = 'card review-item';
   const write = isWrite(it);
