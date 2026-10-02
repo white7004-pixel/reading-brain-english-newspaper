@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>리딩브레인 시험지 분석</title>
+<title>에듀냅 시험지 분석</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Montserrat:wght@600;700&family=Hahmlet:wght@500;700&family=Nanum+Myeongjo:wght@700;800&family=Gothic+A1:wght@700;800&family=Gowun+Dodum&display=swap" rel="stylesheet" crossorigin>
@@ -15,8 +15,9 @@
 <body>
 <div class="shell">
 <nav class="side" aria-label="차례">
-  <a class="side-logo" href="#step-upload"><img src="brand/rb-mark.png" alt="">
-    <span>리딩브레인영어학원<small>시험지 분석 · 학교 분석 &amp; 학생 리포트</small></span></a>
+  <a class="side-logo" href="#step-upload">
+    <span class="side-mark" aria-hidden="true">E</span>
+    <span>에듀냅<small>시험지 분석 · 학교 분석 자료 만들기</small></span></a>
   <p class="side-label">MENU</p>
   <ul class="side-menu">
     <li><a href="#step-upload" data-nav="step-upload">시험 정보<small>EXAM SETUP</small></a></li>
@@ -24,7 +25,7 @@
     <li><a href="#step-result" data-nav="step-result">분석 자료<small>REPORT</small></a></li>
   </ul>
   <div class="side-foot">
-    <div class="side-me"><p class="side-label">우리 학원</p><b id="side-academy">리딩브레인영어학원</b></div>
+    <div class="side-me"><p class="side-label">우리 학원</p><b id="side-academy">아직 적지 않았습니다</b></div>
     <p class="side-note">문항마다 유형·배점·난이도를 정하면<br>발표 슬라이드 한 벌이 나옵니다</p>
   </div>
 </nav>
@@ -32,7 +33,7 @@
   <div class="hero">
     <p class="eyebrow">EXAM ANALYSIS</p>
     <h1>시험지 분석</h1>
-    <p class="lede">문항마다 유형·배점·영역·난이도를 정하면 학교 분석 슬라이드와 학생 리포트를 만듭니다 · 국어 영어 수학 과학 사회·역사</p>
+    <p class="lede">문항마다 유형·배점·영역·난이도를 정하면 학교 분석 발표 슬라이드 한 벌을 만듭니다 · 국어 영어 수학 과학 사회·역사</p>
     <p class="hero-date"><b id="today"></b><span id="today-dow"></span></p>
     <p class="hero-rule"><span>선택형 · 단답형 · 서술형을 가려 적습니다</span></p>
   </div>
@@ -70,7 +71,7 @@
     <details class="academy">
       <summary>리포트에 들어갈 학원 정보 <span id="academy-now"></span></summary>
       <form id="academy-form" class="grid">
-        <label>학원 이름<input name="academyName" required placeholder="리딩브레인영어학원"></label>
+        <label>학원 이름<input name="academyName" required placeholder="○○영어학원"></label>
         <label>연락처<input name="phone" placeholder="031-000-0000"></label>
         <label>로고 이미지 <small>올리면 로고에서 대표 색을 뽑아 둡니다</small>
           <input name="logo" type="file" accept="image/*"></label>

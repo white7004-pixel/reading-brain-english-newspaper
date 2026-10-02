@@ -10,7 +10,7 @@ export function makeHandler(run) {
       res.end(JSON.stringify(body));
     };
     if (req.method !== 'POST') return send(405, { error: 'POST 로 보내 주세요' });
-    // 이 앱은 리딩브레인영어학원 것이다. 에듀냅과 묶지 않는다 (2026-10-01 원장 결정).
+    // 에듀냅 시험지 분석 (2026-10-02 원장 결정 — 간판을 에듀냅으로).
     // 암호는 두지 않는다 (2026-10-02 원장 결정).
     let body;
     try { body = req.body || {}; } catch { return send(400, { error: '요청을 읽지 못했습니다' }); } // Vercel 은 깨진 JSON 이면 여기서 던진다
