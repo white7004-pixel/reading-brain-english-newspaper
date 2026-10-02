@@ -1,46 +1,42 @@
-// 시험 화면: 1차 문제지 → 80점 이상이면 2차 넬트식 문제지(어휘·문법·독해·듣기·영작) → 결과.
+// 시험 화면: 한 시험(초3~고2~3, 단계마다 10문항) — 두 단계 연속 절반 미만이면 끝 → 결과리포트.
 // 진행은 localStorage(elt:session)에 두어 새로고침해도 이어진다. 문항마다 제한 시간(secondsFor), 모름 칸은 없다(10/2).
 import { stepData } from './core/scale.js';
-import { usableForm, checkWrite, isWrite, stage1Score, levelStep, railFor, secondsFor, AREA_KO, MIN_STAGE1, PASS } from './core/forms.js';
+import { usableTest, testReady, stopAfter, railFor, secondsFor, levelStep, checkWrite, isWrite } from './core/forms.js';
 import { showMC, showWrite, startTimer, stopTimer, picking } from './form-ui.js';
 
 const $ = (s) => document.querySelector(s);
 const WPM_AT_RATE_1 = 170; // [추정] 브라우저 음성 rate 1.0 의 분당 단어 수. 실제 기기에서 재서 맞춘다.
 const MAX_PLAYS = 2;
 const LISTEN_INTRO = '▶ 듣기를 눌러 대화나 담화를 듣고 답합니다. 문항마다 두 번까지 들을 수 있고, 첫 듣기가 끝나면 90초를 셉니다. 이어폰을 확인해 주세요.';
-const MIN_STAGE2 = 40; // 2차 통과 문항이 이보다 적으면 2차를 열지 않는다 (샘플은 1)
 
 const load = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
 const status = (text, kind = '') => { $('#test-status').textContent = text; $('#test-status').className = `status ${kind}`; };
 const keep = () => save('elt:session', session);
-// 안내·1차 결과 단추는 뜬 뒤 400ms 동안 누름을 받지 않는다 (마지막 문항의 두 번 누름이 넘어오지 않게)
+// 안내 단추는 뜬 뒤 400ms 동안 누름을 받지 않는다 (마지막 문항의 두 번 누름이 넘어오지 않게)
 const armed = (fn) => { const t = performance.now(); return () => { if (performance.now() - t >= 400) fn(); }; };
 
 const session = load('elt:session');
 if (!session) {
   location.replace('index.html');
 } else {
-  session.stage ??= 2; // 두 단계 이전에 시작한 시험은 2차로 이어간다
   $('#who').textContent = session.name;
   const set = session.set || 'A';
-  const forms = await loadForms(set);
+  const { list: all, sample } = await loadForms(set);
   const voices = await englishVoices();
-  if (!voices) for (const k of ['stage1', 'stage2']) forms[k] = forms[k].filter((i) => i.area !== 'listening'); // 영어 음성이 없으면 듣기는 빼고 센다
-  const areas2 = [...new Set(forms.stage2.map((i) => AREA_KO[i.area]))].join('·'); // 2차에 실제로 나오는 영역 (듣기를 뺐으면 빠진다)
+  const list = voices ? all : all.filter((i) => i.area !== 'listening'); // 영어 음성이 없으면 듣기는 빼고 센다
+  // 예전 세션(1차·2차)은 새 시험으로 시작한다
+  if ((session.stage !== 'test' && session.stage !== 'end') || !session.t) { session.stage = 'test'; session.t = { i: 0, log: [], started: false, stopped: null }; session.shownAt = null; session.current = null; keep(); }
   route();
 
   function route() {
     stopTimer();
-    $('#sample').hidden = !forms.sample;
-    if (session.stage === 1) return stage1();
-    if (session.stage === 'gate') return gate();
-    if (session.stage === 2) return stage2();
-    return finishTest();
+    $('#sample').hidden = !sample;
+    return session.stage === 'end' ? finishTest() : run();
   }
 
   function show(id) {
-    for (const s of ['#intro', '#item', '#gate']) $(s).hidden = s !== id;
+    for (const s of ['#intro', '#item']) $(s).hidden = s !== id;
     $('#foot').hidden = id !== '#item';
     status('');
     window.scrollTo(0, 0);
@@ -53,48 +49,29 @@ if (!session) {
     $('#intro-go').onclick = armed(go);
   }
 
-  // ── 1차 문제지 ──
-  function stage1() {
-    if (!forms.stage1.length) { show(''); return status('1차 문제지가 없습니다. 문제지 검수에서 문항을 통과시켜 주세요.', 'error'); }
-    const it = forms.stage1[session.s1.i];
-    if (!it) { session.stage = 'gate'; keep(); return route(); }
-    top(`1차 ${set}`, railFor(forms.stage1, session.s1.i), session.s1.i + 1, forms.stage1.length);
-    if (!session.s1.started) {
-      const listen = forms.stage1.some((i) => i.area === 'listening') ? `듣기, 영어 글 읽기, 소리, 문법, 영작 문제입니다. 모두 고르는 문제입니다. ${LISTEN_INTRO}` : '영어 글 읽기, 소리, 문법, 영작 문제입니다. 모두 고르는 문제입니다.';
-      return intro(`1차 (${forms.stage1.length}문항)`, `${listen} 문항마다 90초 안에 답합니다.`, () => { session.s1.started = true; keep(); route(); });
-    }
-    ask(it, (rec) => { session.s1.log.push(rec); session.s1.i += 1; });
-  }
-
-  function gate() {
-    const r = stage1Score(session.s1.log);
-    show('#gate');
-    top('1차 결과', railFor(forms.stage1, forms.stage1.length));
-    $('#gate-title').textContent = `1차 점수 ${r.score}점`;
-    const go2 = r.passed && forms.stage2.length > 0;
-    $('#gate-text').textContent = !r.passed ? '1차 시험이 끝났습니다. 결과지를 보여 드립니다.' : go2 ? `${PASS}점 이상이라 2차로 넘어갑니다. 2차는 ${areas2}입니다.` : `${PASS}점 이상입니다. 2차 문제지가 아직 준비되지 않았습니다. 결과지를 보여 드립니다.`;
-    $('#gate-go').textContent = go2 ? '2차로' : '결과 보기';
-    $('#gate-go').onclick = armed(() => { session.stage = go2 ? 2 : 'end'; keep(); route(); });
-  }
-
-  // ── 2차 문제지 (넬트식) ──
-  function stage2() {
-    if (!forms.stage2.length) { session.stage = 'end'; keep(); return route(); }
-    if (!session.s2) { session.s2 = { i: 0, log: [], started: false }; session.shownAt = null; session.current = null; } // 예전 세션에 남은 시각으로 시계가 시작되지 않게
-    const it = forms.stage2[session.s2.i];
+  // ── 한 시험 ──
+  function run() {
+    if (!list.length) { show(''); return status('문제지가 없습니다. 문제지 검수에서 문항을 통과시켜 주세요.', 'error'); }
+    const it = list[session.t.i];
     if (!it) { session.stage = 'end'; keep(); return route(); }
-    top(`2차 ${set}`, railFor(forms.stage2, session.s2.i, 2), session.s2.i + 1, forms.stage2.length);
-    if (!session.s2.started) {
-      const listen = forms.stage2.some((i) => i.area === 'listening') ? ` ${LISTEN_INTRO}` : '';
-      return intro(`2차 (${forms.stage2.length}문항)`, `${areas2} 문제입니다.${listen} 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다.`, () => { session.s2.started = true; keep(); route(); });
+    top(`레벨테스트 ${set}`, railFor(list, session.t.i, 2), session.t.i + 1, list.length);
+    if (!session.t.started) {
+      const n = new Set(list.map((i) => i.level)).size;
+      const listen = list.some((i) => i.area === 'listening') ? ` ${LISTEN_INTRO}` : '';
+      return intro(`영어 레벨테스트 (${n}단계)`, `초3부터 한 단계씩 올라가며 풉니다. 어려워져서 두 단계 연속으로 절반 넘게 틀리면 그 자리에서 끝납니다. 어휘는 20초, 문법은 60초, 그 밖은 90초 안에 답합니다.${listen}`, () => { session.t.started = true; keep(); route(); });
     }
-    ask(it, (rec) => { session.s2.log.push({ ...rec, kind: it.kind || '' }); session.s2.i += 1; }, 2);
+    ask(it, (rec) => {
+      session.t.log.push({ ...rec, kind: it.kind || '' });
+      session.t.i += 1;
+      const s = stopAfter(list, session.t.log);
+      if (s) { session.t.stopped = s; session.stage = 'end'; }
+    });
   }
 
   // 문제지 문항 하나: 답하거나 시간이 다 되면 기록하고 다음으로
-  // 제한 시간은 secondsFor(it, stage). 듣기 문항은 첫 듣기가 끝난 때부터 센다
-  function ask(it, push, stage = 1) {
-    const seconds = secondsFor(it, stage);
+  // 제한 시간은 secondsFor(it, 2). 듣기 문항은 첫 듣기가 끝난 때부터 센다
+  function ask(it, push) {
+    const seconds = secondsFor(it, 2);
     show('#item');
     const listening = it.area === 'listening';
     $('#listen').hidden = !listening;
@@ -106,8 +83,8 @@ if (!session) {
       fired = true;
       stopTimer();
       window.speechSynthesis?.cancel();
-      const correct = !res.timeout && !res.dontKnow && (isWrite(it) ? checkWrite(it, res.entries) : res.choice === it.answer);
-      push({ id: it.id, no: it.no, area: it.area, level: it.level, point: it.point || '', correct, dontKnow: !!res.dontKnow, timeout: !!res.timeout, ms: session.shownAt ? (res.at ?? Date.now()) - session.shownAt : 0, given: res.entries ?? res.choice ?? null });
+      const correct = !res.timeout && (isWrite(it) ? checkWrite(it, res.entries) : res.choice === it.answer);
+      push({ id: it.id, no: it.no, area: it.area, level: it.level, point: it.point || '', correct, timeout: !!res.timeout, ms: session.shownAt ? (res.at ?? Date.now()) - session.shownAt : 0, given: res.entries ?? res.choice ?? null });
       session.shownAt = null;
       session.current = null;
       keep();
@@ -189,12 +166,10 @@ if (!session) {
   }
 
   function finishTest() {
-    const s1 = session.s1 ? stage1Score(session.s1.log) : null;
     const result = {
       id: session.id, name: session.name, school: session.school || '', grade: session.grade, date: session.date, start: session.start || session.date, academy: { ...session.academy, logo: undefined },
-      stage1: s1 && { set: session.set, ...s1, log: session.s1.log },
-      stage2: session.s2?.log.length ? { set, log: session.s2.log } : null,
-      sections: {}, // 결과지가 2차 영역을 stage2 로 채운다 (지금 결과지는 sections 를 읽는다)
+      test: { set, log: session.t.log, stopped: session.t.stopped ?? null },
+      sections: {}, // 결과리포트가 test.log 로 채운다
     };
     if (!save(`elt:result:${result.id}`, result)) return status('결과를 이 브라우저에 저장하지 못했습니다. 저장 공간을 비운 뒤 이 화면을 새로고침해 주세요.', 'error');
     localStorage.removeItem('elt:session');
@@ -202,20 +177,18 @@ if (!session) {
   }
 }
 
-// 문제지: 고른 세트의 1차 통과 문항이 MIN_STAGE1 개 이상이면 forms.json, 아니면 샘플. 2차는 MIN_STAGE2 개 이상일 때만
+// 문제지: 고른 세트의 한 시험 통과 문항이 9단계 모두 6개 이상이면 forms.json, 아니면 연습 문항(샘플)
 async function loadForms(set) {
   for (const [file, sample] of [['data/forms.json', false], ['data/forms.sample.json', true]]) {
     try {
       const r = await fetch(file, { cache: 'no-store' });
       if (!r.ok) continue;
       const d = await r.json();
-      const stage1 = usableForm(d?.stage1?.[set]);
-      if (stage1.length < (sample ? 1 : MIN_STAGE1)) continue;
-      const stage2 = usableForm(d?.stage2?.[set], 2);
-      return { stage1, stage2: stage2.length >= (sample ? 1 : MIN_STAGE2) ? stage2 : [], sample };
+      const list = usableTest(d?.test?.[set] ?? (sample ? d?.test?.A : null));
+      if (sample ? list.length : testReady(list)) return { list, sample };
     } catch { /* 다음 파일 */ }
   }
-  return { stage1: [], stage2: [], sample: false };
+  return { list: [], sample: false };
 }
 
 // 영어 목소리 목록. 늦게 오는 브라우저가 있어 잠깐 기다린다. speechSynthesis 가 없는 기기(일부 웹뷰)도 있다.
