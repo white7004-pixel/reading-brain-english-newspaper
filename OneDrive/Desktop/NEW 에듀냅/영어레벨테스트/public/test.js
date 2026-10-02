@@ -1,4 +1,4 @@
-// 시험 화면: 한 시험(초5~고2~3, 단계마다 10문항) — 두 단계 연속 절반 미만이면 끝 → 결과리포트.
+// 시험 화면: 한 시험(초5~고2~3, 50문항 — 초5 8 · 나머지 단계 7) — 두 단계 연속 절반 미만이면 끝 → 결과리포트.
 // 진행은 localStorage(elt:session)에 두어 새로고침해도 이어진다. 문항마다 제한 시간(secondsFor), 모름 칸은 없다(10/2).
 import { stepData } from './core/scale.js';
 import { usableTest, testReady, stopAfter, railFor, secondsFor, levelStep, checkWrite, isWrite } from './core/forms.js';

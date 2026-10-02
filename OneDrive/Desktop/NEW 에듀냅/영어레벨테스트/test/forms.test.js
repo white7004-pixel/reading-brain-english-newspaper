@@ -298,6 +298,9 @@ test('stopAfter: 마친 단계 중 마지막 두 단계가 모두 절반 미만�
   assert.equal(stopAfter(list, [...answers('초5', 2), ...answers('초6', 2, 6)]), null, '초6 을 다 풀지 않았으면 세지 않음');
   const nine = [...stageItems('중1', 9), ...stageItems('중2', 9)];
   assert.equal(stopAfter(nine, [...answers('중1', 4, 9), ...answers('중2', 4, 9)]), '중2', '듣기를 뺀 9문항 단계: 4/9 는 절반 미만');
+  const seven = [...stageItems('중1', 7), ...stageItems('중2', 7)];
+  assert.equal(stopAfter(seven, [...answers('중1', 3, 7), ...answers('중2', 3, 7)]), '중2', '7문항 단계: 3/7 은 절반 미만');
+  assert.equal(stopAfter(seven, [...answers('중1', 3, 7), ...answers('중2', 4, 7)]), null, '4/7 은 절반 이상');
 });
 
 test('testLevels: 초3부터 영역마다 3분의 2, 어형은 문법, 없는 단계는 건너뜀', () => {
@@ -322,17 +325,19 @@ test('stage2Est: 통과한 단계의 다음 학년 1학기(초등도 실제 자�
   assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
 });
 
-test('한 시험 문제지(실제): A·B 각 70문항, 단계마다 10, 파닉스 없음, 순서·검사 통과', () => {
+test('한 시험 문제지(실제): A·B 각 50문항(원장 결정 10/2: 초5 8 · 나머지 7), 파닉스 없음, 영역 빠짐없음, 순서·검사 통과', () => {
   const forms = JSON.parse(readFileSync(new URL('../public/data/forms.json', import.meta.url), 'utf8'));
   for (const set of ['A', 'B']) {
     const list = forms.test[set];
-    assert.equal(list.length, 70, set);
+    assert.equal(list.length, 50, set);
     assert.equal(list.filter((x) => x.area === 'phonics').length, 0, `${set} 파닉스`);
-    for (const lv of TEST_STAGES) assert.equal(list.filter((x) => x.level === lv).length, 10, `${set} ${lv}`);
+    for (const lv of TEST_STAGES) assert.equal(list.filter((x) => x.level === lv).length, lv === '초5' ? 8 : 7, `${set} ${lv}`);
+    const MID = ['listening', 'vocab', 'grammar', 'reading', 'sentence'];
+    for (const lv of TEST_STAGES.slice(2)) assert.deepEqual(MID.map((a) => list.filter((x) => x.level === lv && x.area === a).length), [1, 2, 1, 2, 1], `${set} ${lv} 구성`);
     assert.deepEqual(checkOrder(list), [], set);
     assert.deepEqual([...list].sort((a, b) => a.no - b.no).map((x) => x.no), list.map((_, i) => i + 1));
     for (const it of list) assert.deepEqual(validateTest(it), [], it.id);
-    assert.equal(new Set(list.map((x) => x.id)).size, 70);
+    assert.equal(new Set(list.map((x) => x.id)).size, 50);
   }
 });
 
