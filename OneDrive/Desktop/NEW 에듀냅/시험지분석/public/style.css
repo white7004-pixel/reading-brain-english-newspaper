@@ -780,3 +780,44 @@ input[type=file]::file-selector-button { border-color: var(--dark); color: var(-
 /* 분석 자료 만들기 — 문항표 아래 (STEP 03 을 없앴다, 2026-10-02 원장 결정) */
 .make { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 .make button { width: 100%; padding: 15px 20px; font-size: 15.5px; }
+
+/* ── 화면 바탕을 학원 로고색으로 (2026-10-02 원장 결정 — "네이비로 바탕을 깔고 버건디로 강조")
+   로고에서 뽑은 두 색: 네이비 #082D49 · 버건디 #7D1D1D.
+   분석지(.page)는 제 --paper: #fff 를 따로 들고 있어 여기 바뀜에 안 끌려간다. ─────── */
+:root {
+  --paper: #082d49;       /* 화면 바탕 — 로고 네이비 */
+  --dark: #04192c;        /* 차림표는 한 단계 더 깊게 */
+  --dark-2: #0d3155;
+  --dark-line: #15405f;
+  /* 금색 자리를 버건디가 대신한다. 어두운 바탕 위에서는 그대로 쓰면 안 읽혀 한 단계 밝힌다 */
+  --gold: #a8383a;
+  --gold-dim: #dc9a96;
+  --on-dark: #e9eff5;
+  --on-dark-mute: #8da3b8;
+}
+
+/* 바탕 위에 바로 놓이는 글자들 — 카드 밖은 전부 밝은 글자로 */
+.hero h1, .hero-date b { color: #fff; }
+.lede, .hero-date span, .hero-rule { color: #b7c6d4; }
+.hero-rule { border-top-color: var(--gold); }
+.hero-rule::before { background: var(--gold); }
+.eyebrow { color: var(--gold-dim); }
+.app > .status, .app > .hint { color: #b7c6d4; }
+
+/* 강조는 버건디 — 누르는 단추가 가장 크게 말한다 */
+button { background: var(--wine); }
+button:hover:not(:disabled) { background: #952526; }
+.step { color: var(--wine); }
+.card h2 { color: var(--navy); }
+input:focus, select:focus, textarea:focus { border-color: var(--wine); box-shadow: 0 0 0 3px rgba(125,29,30,.2); }
+input[type=file]::file-selector-button { border-color: var(--wine); color: var(--wine); }
+#items input[type=checkbox] { accent-color: var(--wine); }
+.side-menu a[aria-current=true] { box-shadow: inset 2px 0 0 var(--gold); }
+.bulk { background: var(--navy); }
+.bulk .bulk-n { color: var(--gold-dim); }
+.bulk button:not(.ghost) { background: var(--wine); }
+.tally-row span:nth-child(1) { border-left-color: var(--wine); }
+.tally-row span:nth-child(3) { border-left-color: var(--navy); }
+
+/* 카드가 네이비 위에 떠 보이게 그림자를 깊게 */
+.card { box-shadow: 0 2px 4px rgba(0,0,0,.14), 0 18px 44px -24px rgba(0,0,0,.55); }
