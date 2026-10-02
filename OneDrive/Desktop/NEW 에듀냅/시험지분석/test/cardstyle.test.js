@@ -43,3 +43,12 @@ test('모양·색 이름이 비어 있지 않고 겹치지 않는다', () => {
   }
   assert.ok(SKINS.every((x) => x.설명.trim()), '모양에는 한 줄 설명이 있어야 고르실 수 있다');
 });
+
+test('바탕을 빌려 쓰는 모양은 그 바탕 클래스도 함께 붙는다', () => {
+  // '빛' 은 '번지는 색' 의 글씨색을 그대로 쓰고 짜임만 바꾼다.
+  assert.equal(deckCls('glow', 'plum'), 'card-news deck mesh glow c-plum');
+  for (const s of SKINS) {
+    if (!s.바탕) continue;
+    assert.ok(SKINS.some((x) => x.키 === s.바탕), `${s.키} 의 바탕 ${s.바탕} 이 목록에 없다`);
+  }
+});

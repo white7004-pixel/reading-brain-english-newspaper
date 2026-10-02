@@ -9,6 +9,7 @@ export const SKINS = [
   { 키: 'mesh', 이름: '번지는 색', 설명: '색이 번지는 바탕에 유리 패널. 인스타·쓰레드에 잘 맞습니다' },
   { 키: 'split', 이름: '세로 분할', 설명: '왼쪽 기둥에 제목, 오른쪽에 내용. 책 표지처럼 보입니다' },
   { 키: 'poster', 이름: '편집', 설명: '선으로만 나누고 꼭지를 왼쪽에 세웁니다. 신문 조판처럼 깔끔합니다' },
+  { 키: 'glow', 이름: '빛', 바탕: 'mesh', 설명: '빛이 번지는 바탕에 상자 없이 선으로만. 제목과 숫자가 가장 큽니다' },
 ];
 
 export const COLORS = [
@@ -25,6 +26,9 @@ export const 기본색 = COLORS[0].키;
 const 있나 = (목록, 키, 기본) => (목록.some((x) => x.키 === 키) ? 키 : 기본);
 
 // 카드 한 장에 붙는 클래스. 모르는 값이 와도 기본으로 떨어뜨린다.
+// 바탕이 적힌 모양은 그 모양의 글씨색을 그대로 쓰고 짜임만 바꾼다 — 같은 규칙을 두 번 적지 않으려고.
 export function deckCls(모양, 색) {
-  return `card-news deck ${있나(SKINS, 모양, 기본모양)} c-${있나(COLORS, 색, 기본색)}`;
+  const 키 = 있나(SKINS, 모양, 기본모양);
+  const 바탕 = SKINS.find((x) => x.키 === 키)?.바탕;
+  return `card-news deck ${[바탕, 키].filter(Boolean).join(' ')} c-${있나(COLORS, 색, 기본색)}`;
 }

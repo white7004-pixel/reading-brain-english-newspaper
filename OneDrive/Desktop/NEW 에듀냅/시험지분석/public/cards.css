@@ -442,3 +442,56 @@
 .deck.poster .kf p { color: #17202a; }
 .deck.poster .kf s { background: var(--k-wine); box-shadow: none; }
 .deck.poster .kf .pg { color: #9aa3ab; }
+
+/* ──────────── 빛 — 상자를 없애고 선으로만. 바탕은 '번지는 색'을 그대로 쓴다 ──────────── */
+.page.card-news.deck.glow {
+  padding: 56px 58px 48px; gap: 0;
+  background:
+    radial-gradient(760px 620px at 10% 0%, color-mix(in srgb, var(--m1) 92%, #fff), transparent 62%),
+    radial-gradient(700px 600px at 95% 18%, color-mix(in srgb, var(--m2) 92%, #fff), transparent 60%),
+    radial-gradient(820px 700px at 60% 108%, color-mix(in srgb, var(--m3) 92%, #fff), transparent 62%),
+    linear-gradient(160deg, #1b1340, #0b0a1f);
+}
+
+.deck.glow .kband { padding-bottom: 0; }
+.deck.glow .kh { margin-top: 30px; align-items: flex-end; }
+.deck.glow .kh h1 { font-size: 72px; line-height: 1.07; letter-spacing: -.055em; }
+.deck.glow .kh .sub { font-size: 34px; font-weight: 800; letter-spacing: -.04em; margin-bottom: 2px; color: rgba(255, 255, 255, .9); }
+.deck.glow .kh .rt { font-size: 17px; }
+
+/* 상자를 전부 걷어내고 가는 선으로만 나눈다 */
+.deck.glow .kp {
+  background: none; border: 0; box-shadow: none; backdrop-filter: none;
+  border-radius: 0; padding: 22px 0 0; margin-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, .2);
+}
+.deck.glow .low { gap: 34px; margin-top: 0; }
+.deck.glow .low .kp:nth-child(2) { padding-left: 0; }
+.deck.glow .lab { border-bottom: 0; padding-bottom: 0; margin-bottom: 16px; }
+.deck.glow .lab b { background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .3); color: #fff; }
+.deck.glow .lab span { font-size: 19px; }
+
+/* 한눈에 숫자 넷은 알약으로 — 원장님이 고르신 판의 핵심 */
+.deck.glow .st { flex-direction: row; flex-wrap: wrap; gap: 12px; align-content: flex-start; flex: 0 0 auto; }
+.deck.glow .st div, .deck.glow .st div + div {
+  margin: 0; padding: 13px 22px; border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 999px; background: rgba(255, 255, 255, .13); gap: 9px;
+}
+.deck.glow .st b { font-size: 31px; }
+.deck.glow .st b u { font-size: 16px; }
+.deck.glow .st span { margin-left: 0; font-size: 16px; color: rgba(255, 255, 255, .8); }
+
+/* 동그라미 그래프를 크게 */
+.deck.glow .ring { gap: 26px; padding-top: 10px; }
+.deck.glow .key .ring { gap: 8px; padding-top: 0; }  /* 범례 안의 동그라미까지 벌어지지 않게 */
+.deck.glow .ring svg { width: 140px; height: 140px; }
+.deck.glow .ring .lg b, .deck.glow .ring .lg u { font-size: 19px; }
+
+.deck.glow .ac, .deck.glow .way {
+  background: none; border: 0; border-top: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 0; padding: 14px 0 0;
+}
+.deck.glow .chip, .deck.glow .kkey .dg { background: rgba(255, 255, 255, .14); }
+.deck.glow .kf { margin-top: auto; padding-top: 22px; border-top-color: rgba(255, 255, 255, .24); }
+.deck.glow .kf p { font-size: 23px; }
+.deck.glow .kf s { background: #fff; box-shadow: none; }
