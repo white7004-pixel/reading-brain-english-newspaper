@@ -199,6 +199,7 @@ export function stage2Est(level) {
   if (!level) return null;
   const m = /^(.+) 수준 아래$/.exec(level);
   if (m) return { step: levelStep(m[1]), unit: 0 }; // 그 학년 1학기 시작 전 (초3 수준 아래 = 초3 1학기)
+  if (level === '고3') return { step: 20, unit: 4 }; // 예전 1차 듣기 고3 통과 = 척도 끝(고3 2학기 4단원)
   return { step: levelStep(level) + 2, unit: 0 };
 }
 

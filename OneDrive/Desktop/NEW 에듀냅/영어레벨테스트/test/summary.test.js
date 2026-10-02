@@ -84,3 +84,11 @@ test('초등 자리(중1 전 단계)는 단원 없이 과정 이름으로', asyn
   assert.equal(f.sections[0].next, '초6 1학기 과정');
   assert.ok(templateComment(f).summary);
 });
+
+test('예전 1차 듣기 고3 통과도 척도 안에서 (리포트가 비지 않게)', async () => {
+  const { stage2Est } = await import('../public/core/forms.js');
+  const est = stage2Est('고3');
+  assert.deepEqual(est, { step: 20, unit: 4 });
+  const r = { name: '김OO', grade: '고1', date: '2026-10-02', sections: { listening: { est, level: '고3' } } };
+  assert.doesNotThrow(() => commentFacts(r, null));
+});
