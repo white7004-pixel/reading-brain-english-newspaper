@@ -13,9 +13,7 @@
     "local": "node --env-file-if-exists=.env.local scripts/local.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.125.0"
-  },
-  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@rhwp/core": "^0.8.6",
     "pdfjs-dist": "6.3.289"
   }

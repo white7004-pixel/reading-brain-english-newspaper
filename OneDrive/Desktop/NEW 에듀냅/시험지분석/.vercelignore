@@ -3,4 +3,6 @@ docs
 test
 .claude
 .playwright-mcp
-public/vendor
+# public/vendor 는 올린다 — 여기 뺐더니 올린 사이트에서 pdf.js·rhwp 가 404 라
+# PDF·한글 파일을 못 읽었다 (2026-10-02). 빌드 때 다시 만들어지지 않는다.
+public/vendor/_test
