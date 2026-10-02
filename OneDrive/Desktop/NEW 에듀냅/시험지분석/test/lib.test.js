@@ -86,21 +86,20 @@ test('studentStats 는 점수와 약점 영역을 계산한다', () => {
 });
 
 test('parseStudents 는 한 줄에 한 명씩 읽고 문제를 알려 준다', () => {
-  const text = '김OO 4(③), 9, 25, 9\nB 0\n홍길동 1\n이OO\n박OO 99';
+  const text = '4(③), 9, 25, 9\n0\n적을 번호를 잊음\n99';
   const { students, problems } = parseStudents(text, ['1', '4', '9', '25']);
-  assert.deepEqual(students[0], { label: '김OO', wrong: [{ no: '4', chosen: '③' }, { no: '9', chosen: '' }, { no: '25', chosen: '' }] });
-  assert.deepEqual(students[1], { label: 'B', wrong: [] });
-  assert.equal(problems.length, 3);
-  assert.match(problems[0], /홍길동/);
-  assert.match(problems[1], /4번째 줄/);
-  assert.match(problems[2], /99/);
+  assert.deepEqual(students[0], { wrong: [{ no: '4', chosen: '③' }, { no: '9', chosen: '' }, { no: '25', chosen: '' }] });
+  assert.deepEqual(students[1], { wrong: [] });
+  assert.equal(problems.length, 2);
+  assert.match(problems[0], /3번째 줄/);
+  assert.match(problems[1], /99/);
 });
 
-test('parseStudents 는 한글 두 글자 이상이 이어진 표기를 막는다', () => {
-  const { problems } = parseStudents('김철수학생 1\n김 철수 1\n김OO 1\n김○○ 1\nB 1\nKM 1', [1]);
-  assert.equal(problems.length, 2);
-  assert.match(problems[0], /^김철수학생: 전체 이름 대신/);
-  assert.match(problems[1], /^김 철수: 전체 이름 대신/);
+// 학교 시험지 분석이라 이름은 아예 받지 않는다 (2026-10-02 원장 결정). 적어 넣어도 번호만 읽는다.
+test('parseStudents 는 학생 이름을 담지 않는다', () => {
+  const { students } = parseStudents('김OO 4, 9\n홍길동 25', ['4', '9', '25']);
+  assert.deepEqual(Object.keys(students[0]), ['wrong']);
+  assert.deepEqual(students[1].wrong, [{ no: '25', chosen: '' }]);
 });
 
 test('to3 와 esc', () => {
@@ -145,7 +144,7 @@ test('examStats 는 글자 번호를 그대로 들고 다닌다', () => {
 });
 
 test('parseStudents 는 글자 번호도 읽는다', () => {
-  const { students, problems } = parseStudents('김OO 4(③), 논술형2-1\nB 0', ['4', '9', '논술형2-1']);
+  const { students, problems } = parseStudents('4(③), 논술형2-1\n0', ['4', '9', '논술형2-1']);
   assert.deepEqual(students[0].wrong, [{ no: '4', chosen: '③' }, { no: '논술형2-1', chosen: '' }]);
   assert.deepEqual(students[1].wrong, []);
   assert.deepEqual(problems, []);

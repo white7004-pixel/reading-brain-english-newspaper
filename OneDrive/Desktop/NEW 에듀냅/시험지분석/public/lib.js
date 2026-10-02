@@ -206,7 +206,8 @@ export function studentStats(items, wrong) {
   };
 }
 
-// "김OO 4(③), 9, 25" 한 줄에 한 명. 다 맞으면 "김OO 0".
+// "4(③), 9, 25" 한 줄에 한 명. 다 맞으면 "0".
+// 학교 시험지 분석이라 학생 이름은 받지 않는다 (2026-10-02 원장 결정). 줄 순서로만 구분한다.
 const reEsc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export function parseStudents(text, itemNos) {
@@ -215,25 +216,24 @@ export function parseStudents(text, itemNos) {
   // 긴 것부터 맞춰야 `논술형2-1` 이 `논술형2` 에서 잘리지 않는다.
   const labels = [...known].filter((n) => !/^\d/.test(n)).sort((a, b) => b.length - a.length).map(reEsc);
   const alt = labels.join('|');
-  const line1 = new RegExp(`^(.+?)\\s+(${labels.length ? `(?:\\d|${alt})` : '\\d'}.*)$`);
   const token = new RegExp(`(${labels.length ? `${alt}|` : ''}\\d+)\\s*(?:\\(([^)]*)\\))?`, 'g');
   const students = [];
   const problems = [];
   text.split('\n').map((l) => l.trim()).filter(Boolean).forEach((line, i) => {
-    const m = line.match(line1);
-    if (!m) return problems.push(`${i + 1}번째 줄: 이름 뒤에 틀린 번호를 적어 주세요 (다 맞으면 0)`);
-    const label = m[1].trim();
-    if (/[가-힣]{2,}/.test(label)) problems.push(`${label}: 전체 이름 대신 성+OO 또는 이니셜로 적어 주세요`);
+    const 줄 = `${i + 1}번째 줄`;
     const seen = new Set();
     const wrong = [];
-    for (const [, no, chosen] of m[2].matchAll(token)) {
+    for (const [, no, chosen] of line.matchAll(token)) {
       if (no === '0' || seen.has(no)) continue;
       seen.add(no);
       wrong.push({ no, chosen: (chosen || '').trim() });
     }
+    if (!wrong.length && !/(^|[^\d])0([^\d]|$)/.test(line)) { // 0 도 번호도 없는 줄은 실수로 본다
+      return problems.push(`${줄}: 틀린 번호만 적어 주세요 (다 맞으면 0)`);
+    }
     const unknown = wrong.filter((w) => !known.has(w.no)).map((w) => w.no);
-    if (unknown.length) problems.push(`${label}: 시험에 없는 번호 ${unknown.join(', ')}`);
-    students.push({ label, wrong: wrong.filter((w) => known.has(w.no)) });
+    if (unknown.length) problems.push(`${줄}: 시험에 없는 번호 ${unknown.join(', ')}`);
+    students.push({ wrong: wrong.filter((w) => known.has(w.no)) });
   });
   return { students, problems };
 }

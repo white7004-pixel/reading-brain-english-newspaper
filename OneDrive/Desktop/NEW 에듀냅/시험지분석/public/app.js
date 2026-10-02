@@ -476,7 +476,7 @@ $('#make-report').addEventListener('click', async (e) => {
     $('#pages').innerHTML = slideDeck(ctx, school)
       + (state.academy.cards ? shareCards(ctx, school) : '')
       + (state.academy.a4 ? schoolPage(ctx, school) : '')
-      + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i])).join('')
+      + students.map((s, i) => studentPage(ctx, s, studentStats(items, s.wrong), written[i], i + 1)).join('')
       + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
     // 버튼은 이번에 실제로 나온 것만 보여 준다 — 눌러도 아무 일 없는 버튼을 두지 않는다
     const 카드 = document.querySelectorAll('#pages .sheet.card-news').length;

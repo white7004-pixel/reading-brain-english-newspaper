@@ -100,15 +100,14 @@ test('전 문항 표는 문항 수와 상관없이 늘 둘째 장이다', () => 
   });
 });
 
-test('학생 리포트 종이에는 학생 이름이 들어가지 않는다', () => {
-  const student = { label: '김OO', wrong: [{ no: '2', chosen: '' }] };
+test('학생 리포트는 어디에도 학생 이름을 쓰지 않는다', () => {
+  const student = { wrong: [{ no: '2', chosen: '' }] };
   const stats = studentStats(items, student.wrong);
   const text = { summary: '기본 개념은 안정적입니다.', causes: [{ no: '2', cause: '단서 놓침·추론 오류', explain: '근거를 못 찾았을 수 있습니다.' }], directions: ['오답 재풀이'] };
-  const html = studentPage(ctx, student, stats, text);
-  // 인쇄되는 종이(.page) 안에는 이름이 없다. 파일 이름(data-png)에만 남아 원장님이 구분한다.
+  const html = studentPage(ctx, student, stats, text, 3);
+  // 학교 시험지 분석이라 이름은 종이에도 파일 이름에도 없다. 적어 넣은 순서로만 구분한다.
   const page = html.slice(html.indexOf('<article'));
-  assert.doesNotMatch(page, /김OO/);
-  assert.match(html, /data-png="김OO-영어리포트"/);
+  assert.match(html, /data-png="에듀냅중학교-영어-학생리포트-3"/);
   assert.match(page, /학생<\/b>/); // 손으로 적을 자리
 });
 
