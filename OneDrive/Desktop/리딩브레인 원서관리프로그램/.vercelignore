@@ -1,0 +1,39 @@
+# 배포에 올리지 않는 것 — 화면에 쓰이지 않거나 밖에 보이면 안 되는 것들.
+# 올라가는 것은 html·css·js 와 books/ · act/ · vid/ · assets/ · catalog*.js 다.
+#
+# 주의: 이 파일은 .gitignore 와 같은 문법이라 **줄 끝 주석을 읽지 못한다.**
+# "scripts   # 도구" 라고 쓰면 그 줄 전체가 패턴이 되어 아무것도 안 걸린다.
+# 2026-10-02 첫 배포에서 실제로 scripts/ 와 .superpowers/ 가 그대로 올라갔다.
+# 주석은 반드시 제 줄에 쓴다.
+
+node_modules
+package.json
+package-lock.json
+
+# 자료를 만드는 도구 — 브라우저가 부르지 않는다
+scripts
+
+# 서버 함수는 vercel 이 아니라 supabase 로 올린다
+supabase
+
+# 안내 문서
+docs
+README.md
+
+# 책 근거와 지시서 — 안에 작업 메모가 있다
+.superpowers
+
+# 손대기 전 원본 그림
+assets-orig
+
+# 임시 출력
+out
+
+.claude
+.playwright-mcp
+.gitignore
+
+# 진짜 config 는 여기 두고 올리지 않는다. 화면은 config.js 를 읽는다
+config.server.js
+
+*.pdf
