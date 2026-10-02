@@ -28,8 +28,61 @@ const RATE_EN = process.env.RB_RATE_EN || "-10%";   // 아이가 따라 읽을 �
 
 export const isKo = s => /[가-힣]/.test(s);
 export const want = s => isKo(s) ? VOICE_KO : VOICE_EN;
-// app.html 의 sayMix 와 똑같이 나눈다 — 나눈 문장이 그대로 열쇠가 된다
-export const split = t => String(t || "").replace(/([.!?…])\s+/g, "$1\n").split(/\n+/).map(x => x.trim()).filter(Boolean);
+/* ★ 아래 세 함수는 scripts/tts.mjs 와 app.html 에 **똑같이** 들어 있다.
+   미리 만들 때 끊은 자리와 화면이 찾을 때 끊는 자리가 다르면 만들어 둔 소리를 못 찾는다.
+   한쪽만 고치지 않는다. 고쳤으면 `node scripts/make-tts.mjs --dry` 로 새로 만들 것이 몇 개인지 본다.
+   뒤돌아보기(lookbehind) 정규식은 쓰지 않는다 — 옛 사파리·카톡 브라우저가 화면째 멈춘다. */
+
+/* 문장 끊기. 마침표 뒤에 닫는 따옴표가 와도 거기까지 한 문장으로 본다 —
+   2026-10-02 전에는 화면이 닫는 따옴표 하나만 남게 끊어서 미리 만든 소리 402개를 못 찾고 있었다. */
+const saySents = t => String(t || "")
+  .replace(/([.!?\u2026]+["'\u2019\u201D\u00BB)\]]*)\s+/g, "$1\n")
+  .split(/\n+/).map(x => x.trim()).filter(Boolean);
+
+/* 한 문장을 '말이 같은 토막' 으로 끊는다 — 토막마다 그 말의 목소리로 읽히게.
+   영어가 두 낱말 이상 이어질 때만 끊는다. 이름 하나쯤 섞인 것은 한국어 목소리로 읽어도 자연스럽다
+   ("정답은 Buzz." 는 "버즈" 가 맞다). 세 토막까지만 끊는다 — 더 부서지면 토막 사이가 끊겨 들리고
+   조사 하나만 남은 토막("...와...")은 더 이상하다. */
+function sayParts(text){
+  const s = String(text || "").trim();
+  if (!s) return [];
+  if (!/[가-힣]/.test(s) || !/[A-Za-z]{2}/.test(s)) return [s];     // 한 가지 말이면 그대로
+  const g = [];                                                     // [{ ko, w:[낱말] }]
+  for (const w of s.replace(/\(([^()가-힣]+)\)/g, " ($1) ").split(/\s+/)){   // 괄호 안이 영어뿐이면 띄운다
+    if (!w) continue;
+    const ko = /[가-힣]/.test(w);
+    const en = !ko && /[A-Za-z]/.test(w);
+    const last = g.length ? g[g.length - 1] : null;
+    if (!ko && !en && last){ last.w.push(w); continue; }             // 숫자·기호는 앞 토막에 붙인다
+    if (last && last.ko === ko) last.w.push(w); else g.push({ ko: ko, w: [w] });
+  }
+  for (let i = 0; i < g.length; i++){                               // 영어가 한 낱말뿐인 토막은 끊지 않는다
+    if (g[i].ko || g[i].w.length > 1) continue;
+    const to = i > 0 ? g[i - 1] : g[1];
+    if (!to) continue;
+    to.w = i > 0 ? to.w.concat(g[i].w) : g[i].w.concat(to.w);
+    g.splice(i, 1); i--;
+  }
+  for (let i = 1; i < g.length; i++){                               // 붙이고 나서 같은 말이 나란히 놓이면 이어 준다
+    if (g[i].ko !== g[i - 1].ko) continue;
+    g[i - 1].w = g[i - 1].w.concat(g[i].w); g.splice(i, 1); i--;
+  }
+  if (g.length < 2 || g.length > 3) return [s];
+  const out = g.map(x => x.w.join(" "));
+  // 괄호를 띄우다가 토막 안에 '마침표 + 빈칸' 이 생기면 화면이 또 끊어 못 찾는다 — 그런 문장은 그냥 둔다
+  for (const x of out) if (saySents(x).length > 1) return [s];
+  return out;
+}
+
+/* 읽어 줄 차례대로 — 문장으로 끊고, 섞인 문장은 토막으로 또 끊는다 */
+function sayLines(t){
+  const out = [];
+  for (const s of saySents(t)) for (const p of sayParts(s)) out.push(p);
+  return out;
+}
+
+// 나눈 토막이 그대로 열쇠(파일 이름)가 된다
+export const split = sayLines;
 export const nameOf = s => createHash("sha1").update(s).digest("hex").slice(0, 16) + ".mp3";
 
 // 목소리마다 연결을 하나씩 두고 다시 쓴다. 화면 서버는 오래 켜져 있으므로 문장마다 새로 열지 않는다.
