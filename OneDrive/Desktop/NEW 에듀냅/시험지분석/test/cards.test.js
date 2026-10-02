@@ -54,6 +54,19 @@ test('카드에 보이는 난이도 이름은 학부모 말로 바꿔 쓴다', (
   assert.ok(html.includes('어려움 10문항') || html.includes('어려움 3문항'), '카드에는 풀어 쓴 이름이 나온다');
 });
 
+test('동그라미 그래프는 한 바퀴를 비율대로 나눠 갖고 가운데에 체감 난이도를 쓴다', () => {
+  const c = ctx();
+  const html = cardDeck(c, draftSchool(c));
+  const 동그라미 = html.match(/<svg viewBox="0 0 150 150"[\s\S]*?<\/svg>/)?.[0] ?? '';
+  const 호 = [...동그라미.matchAll(/stroke-dasharray="([\d.]+) ([\d.]+)"/g)];
+  assert.equal(호.length, 3, '바탕 한 줄은 dasharray 가 없고 난이도 셋만 그린다');
+  const 둘레 = 2 * Math.PI * 56;
+  const 그린길이 = 호.reduce((s2, m) => s2 + Number(m[1]) + 3, 0);
+  assert.ok(Math.abs(그린길이 - 둘레) < 2, `호를 합하면 한 바퀴여야 한다 (${그린길이} vs ${둘레})`);
+  assert.ok(html.includes('>체감 난이도<'));
+  assert.ok(html.includes(`>${examStats(items).overallLabel}<`));
+});
+
 test('영역은 문항 수가 많은 차례로, 그 영역에 실제로 나온 세부유형만 적는다', () => {
   const d = 짓기();
   assert.equal(d.영역[0].이름, '어법'); // 4문항으로 가장 많다

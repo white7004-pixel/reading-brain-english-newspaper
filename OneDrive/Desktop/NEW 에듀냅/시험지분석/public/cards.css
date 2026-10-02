@@ -91,13 +91,24 @@
 .deck .key .ring s { background: transparent; box-shadow: 0 0 0 2.5px var(--k-ink); }
 
 /* ── 가로 막대 줄 ── */
-.deck .row { display: flex; align-items: center; gap: 14px; padding: 11px 0; }
+.deck .row { display: flex; align-items: center; gap: 14px; padding: 9px 0; }
 .deck .row + .row { border-top: 1px solid rgba(14, 27, 41, .1); }
 .deck .row .nm { width: 68px; font-size: 17px; font-weight: 800; }
 .deck .row .bar { flex: 1; height: 11px; border-radius: 6px; background: rgba(14, 27, 41, .1); overflow: hidden; }
 .deck .row .bar s { display: block; height: 100%; border-radius: 6px; text-decoration: none; background: linear-gradient(90deg, #b43b3b, var(--k-wine)); }
 .deck .row .n { width: 116px; text-align: right; font-size: 16px; font-weight: 800; }
 .deck .row .n u { text-decoration: none; margin-left: 5px; font-size: 14px; font-weight: 600; color: rgba(14, 27, 41, .5); }
+
+/* ── 난이도 도넛 ── */
+.deck .ring { margin-top: auto; padding-top: 16px; display: flex; align-items: center; gap: 22px; }
+.deck .ring svg { flex: 0 0 auto; }
+.deck .ring .lg { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.deck .ring .lg i { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; font-style: normal; }
+.deck .ring .lg i + i { border-top: 1px solid rgba(14, 27, 41, .1); }
+.deck .ring .lg s { flex: 0 0 auto; width: 11px; height: 11px; border-radius: 3px; text-decoration: none; }
+.deck .ring .lg b { font-size: 16.5px; font-weight: 800; }
+.deck .ring .lg u { text-decoration: none; margin-left: auto; font-size: 16px; font-weight: 800; }
+.deck .ring .lg em { font-style: normal; width: 48px; text-align: right; font-size: 14.5px; font-weight: 700; color: var(--k-dim); }
 
 /* ── 어려움 정도 띠 ── */
 .deck .mix { margin-top: auto; padding-top: 20px; }

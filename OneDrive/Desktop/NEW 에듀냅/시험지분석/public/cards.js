@@ -93,6 +93,24 @@ const 짧게 = (no) => {
   return m ? `${m[1]}${m[2]}` : t.slice(0, 4);
 };
 
+// 난이도 도넛. 가운데에는 체감 난이도를 쓴다
+function donut(rows, 가운데, 위) {
+  const r = 56, w = 22, C = 2 * Math.PI * r;
+  let at = 0;
+  // 비율은 반올림한 값이라 그대로 더하면 한 바퀴를 넘는다. 마지막 호는 남은 만큼으로 닫는다.
+  const 호 = rows.map((x, i) => {
+    const len = i === rows.length - 1 ? C - at : (x.비율 / 100) * C;
+    const el = `<circle cx="75" cy="75" r="${r}" fill="none" stroke="${x.색}" stroke-width="${w}"
+      stroke-dasharray="${Math.max(len - 3, 0).toFixed(1)} ${(C - len + 3).toFixed(1)}"
+      stroke-dashoffset="${(-at).toFixed(1)}" transform="rotate(-90 75 75)"/>`;
+    at += len; return el;
+  }).join('');
+  return `<svg viewBox="0 0 150 150" width="118" height="118" aria-hidden="true">
+    <circle cx="75" cy="75" r="${r}" fill="none" stroke="rgba(14,27,41,.09)" stroke-width="${w}"/>${호}
+    <text x="75" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="rgba(14,27,41,.5)">${esc(위)}</text>
+    <text x="75" y="93" text-anchor="middle" font-size="27" font-weight="900" fill="#0e1b29">${esc(가운데)}</text></svg>`;
+}
+
 // 출처별 세로막대
 function vbars(rows) {
   const w = 470, h = 212, 칸 = w / Math.max(rows.length, 1), 폭 = Math.min(72, 칸 * 0.5), 바닥 = h - 48;
@@ -174,9 +192,10 @@ export function cardDeck(ctx, school, opts = {}) {
         ${d.영역.slice(0, 4).map((a) => `<div class="row"><span class="nm">${esc(a.이름)}</span>
           <span class="bar"><s style="width:${견줌(d, a.비율)}%"></s></span>
           <span class="n num">${a.수}문항<u>${점(a.점)}</u></span></div>`).join('')}
-        <div class="mix"><div class="t">어려움 정도</div>
-          <div class="b num">${d.난이도.map((x) => `<i style="width:${x.비율}%;background:${x.색}">${x.비율}%</i>`).join('')}</div>
-          <div class="c2 num">${d.난이도.map((x) => `<span style="width:${x.비율}%">${esc(x.보임)} ${x.수}문항</span>`).join('')}</div>
+        <div class="ring">
+          ${donut(d.난이도, d.체감, '체감 난이도')}
+          <div class="lg num">${d.난이도.map((x) => `<i><s style="background:${x.색}"></s>
+            <b>${esc(x.보임)}</b><u>${x.수}문항</u><em>${x.비율}%</em></i>`).join('')}</div>
         </div>
       </div>
       <div class="kp">${패(3, '한눈에')}
