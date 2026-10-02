@@ -7,7 +7,9 @@
   /* 제목은 명조(고운바탕) — 웹설문·학원만족도조사와 같은 글씨체 (원장님 요청 2026-10-01) */
   --serif: 'Gowun Batang', 'Nanum Myeongjo', serif;
   --wordmark: 'Montserrat', 'Pretendard', sans-serif;
-  --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  /* 받아 오는 변수판은 'Pretendard Variable' 이라는 이름으로 등록된다 — 이름을 빠뜨리면
+     조용히 맑은고딕으로 떨어진다 (2026-10-02 실제로 그랬다). 둘 다 적어 둔다. */
+  --sans: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   /* A4 종이 (흰 바탕) — 학원 정보의 색이 덮어쓴다 */
   --brand: #0b2c46; --gold: #7d1d1e;
 }
