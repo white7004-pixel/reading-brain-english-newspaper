@@ -42,8 +42,8 @@ test('실제 시험지 21문항 100점이 그대로 계산된다', () => {
   assert.equal(s.count, 21);
   assert.equal(s.total, 100);
   // 서술형이 없는 시험지 — 0 으로 나오고 깨지지 않는다
-  assert.equal(s.essayCount, 0);
-  assert.equal(s.essayPointsPct, 0);
+  assert.equal(s.writtenCount, 0);
+  assert.equal(s.writtenPointsPct, 0);
   assert.deepEqual(s.byKind.map((r) => [r.label, r.count]), [['객관식', 21]]);
   // 영역별: 독해 11 · 어휘 4 · 어법 4 · 대화문 2
   assert.deepEqual(s.byArea.map((r) => [r.label, r.count, r.points]), [
@@ -114,7 +114,7 @@ test('고덕중 27문항 — 글에 적힌 총점 구성이 그대로 나온다'
   assert.equal(s.total, 100);
   assert.deepEqual(s.byKind.map((r) => [r.label, r.count, r.points]), [['객관식', 21, 65], ['서술형', 6, 35]]);
   // 글의 결론: "서답형 문항에 35점이 배점되었기에 학생들의 부담이 있었을 것"
-  assert.equal(s.essayPointsPct, 35);
+  assert.equal(s.writtenPointsPct, 35);
   assert.deepEqual(s.byPoints.map((r) => [r.points, r.count]), [[6, 5], [5, 1], [4, 2], [3, 19]]);
 });
 

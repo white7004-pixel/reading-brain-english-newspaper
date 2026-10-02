@@ -21,19 +21,32 @@
   </div>
 
   <section id="step-upload" class="card">
-    <h2><span class="step">STEP 01</span>시험지 올리기 <small>과목·학교·학년은 AI가 시험지 머리글에서 읽습니다</small></h2>
-    <form id="upload-form" class="grid">
-      <label class="wide">시험지 파일 (1~6쪽, 쪽 순서대로 선택) — 사진·PDF·한글 다 됩니다. 정답지는 필요 없습니다<input name="pages" type="file" accept="image/*,application/pdf,.pdf,.hwp,.hwpx" multiple required></label>
-      <button class="wide">올리면 바로 분석합니다</button>
-      <details class="wide">
-        <summary>과목·학년 고르기</summary>
-        <div class="grid">
-          <label>과목<select name="subject"><option value="">— AI가 읽습니다</option></select></label>
-          <label>학년<select name="grade"><option value="">— AI가 읽습니다</option></select></label>
-          <p class="hint wide">골라 두시면 그 학년 교육과정을 함께 보내 AI가 영역·세부 포인트를 더 정확히 적습니다.</p>
-        </div>
-      </details>
+    <h2><span class="step">STEP 01</span>시험 정보와 문항 수 <small>적어 넣으면 문항표가 그만큼 깔립니다. 거기에 문항마다 유형·난이도를 정하시면 됩니다</small></h2>
+    <form id="start-form" class="grid">
+      <label>과목<select name="subject"></select></label>
+      <label>학교<input name="school" placeholder="○○중학교"></label>
+      <label>학년<select name="grade"></select></label>
+      <label>학기<input name="term" placeholder="1학기"></label>
+      <label>시험<input name="exam" placeholder="중간고사"></label>
+      <label>시험 날짜<input name="date" type="date"></label>
+      <label>선택형 문항 수<input name="choice" type="number" min="0" max="80" value="20"></label>
+      <label>단답형 문항 수<input name="short" type="number" min="0" max="40" value="0"></label>
+      <label>서술형 문항 수<input name="essay" type="number" min="0" max="40" value="5"></label>
+      <p class="hint wide">선택형은 <code>1, 2, 3…</code>, 서답형은 <code>서답형 1, 서답형 2…</code> 로 번호를 매겨 둡니다.
+        번호도 배점도 표에서 바로 고치실 수 있습니다.</p>
+      <button class="wide">문항표 만들기</button>
     </form>
+    <details id="by-photo">
+      <summary>시험지 사진으로 초안 받기 <small>AI가 읽어 문항표를 미리 채웁니다</small></summary>
+      <form id="upload-form" class="grid">
+        <label class="wide">시험지 파일 (1~6쪽, 쪽 순서대로 선택) — 사진·PDF·한글 다 됩니다. 정답지는 필요 없습니다<input name="pages" type="file" accept="image/*,application/pdf,.pdf,.hwp,.hwpx" multiple required></label>
+        <label>과목<select name="subject"><option value="">— AI가 읽습니다</option></select></label>
+        <label>학년<select name="grade"><option value="">— AI가 읽습니다</option></select></label>
+        <p class="hint wide">골라 두시면 그 학년 교육과정을 함께 보내 AI가 영역·세부 포인트를 더 정확히 적습니다.
+          읽어 온 문항표는 STEP 02 에서 그대로 고치시면 됩니다.</p>
+        <button class="wide">올리면 바로 분석합니다</button>
+      </form>
+    </details>
     <datalist id="unit-list"></datalist>
     <p id="upload-status" class="status" role="status"></p>
     <!-- 리포트에 찍히는 학원 정보. 한 번 적으면 이 브라우저에 기억한다. -->
@@ -65,7 +78,7 @@
   </section>
 
   <section id="step-confirm" class="card" hidden>
-    <h2><span class="step">STEP 02</span>문항표 확인 <small>금색 칸은 AI가 자신 없는 곳입니다. 고치면 금색 표시가 사라집니다 · <b>대표</b>를 1~3개 고르면 그 문항이 리포트에 카드로 실립니다 (안 고르면 AI가 고릅니다)</small></h2>
+    <h2><span class="step">STEP 02</span>문항별 설정 <small>문항마다 유형·배점·영역·난이도를 정합니다. 왼쪽 칸으로 여러 줄을 골라 한 번에 넣으실 수 있습니다 (Shift 로 사이 줄 모두) · <b>대표</b>를 1~3개 고르면 그 문항이 리포트에 카드로 실립니다 · 붉은 칸은 사진으로 받은 초안에서 AI가 자신 없어 한 곳입니다</small></h2>
     <form id="meta-form" class="grid meta" aria-label="시험 정보">
       <label>과목<select name="subject"></select></label>
       <label>학교<input name="school" placeholder="○○중학교"></label>
@@ -77,14 +90,36 @@
       <label class="wide">출제 범위<input name="range" placeholder="동아(이병민) 5과 · 6과"></label>
     </form>
     <p id="confirm-notes" class="notes"></p>
-    <p id="confirm-total" class="status"></p>
+
+    <!-- 한눈에 보는 지금 상태 — 배점 합·유형별·난이도 분포 -->
+    <div id="tally" class="tally" aria-live="polite"></div>
+
+    <!-- 고른 줄에 한 번에 넣기. 24문항을 하나씩 누르지 않게 하는 것이 목적이다. -->
+    <div id="bulk" class="bulk" hidden>
+      <span class="bulk-n">0줄 선택</span>
+      <label>유형<select data-bulk="kind"></select></label>
+      <label>난이도<select data-bulk="difficulty"></select></label>
+      <label>영역<select data-bulk="area"></select></label>
+      <label>출처<select data-bulk="source"></select></label>
+      <label>배점<input data-bulk="points" type="number" step="0.1" min="0" placeholder="3"></label>
+      <label>단원<input data-bulk="unit" list="unit-list" placeholder="5과"></label>
+      <button type="button" id="bulk-apply">고른 줄에 넣기</button>
+      <button type="button" id="bulk-copy" class="ghost">줄 복제</button>
+      <button type="button" id="bulk-del" class="ghost">줄 삭제</button>
+    </div>
+
     <div class="table-wrap">
       <table id="items">
-        <thead><tr><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th title="리포트에 카드로 실을 문항. 1~3개를 고르면 AI 가 그 문항만 씁니다">대표</th><th>판단 근거</th><th></th></tr></thead>
+        <thead><tr><th class="c"><input id="pick-all" type="checkbox" aria-label="전체 선택"></th><th>번호</th><th>유형</th><th>배점</th><th>단원</th><th>영역</th><th>세부유형</th><th>난이도</th><th>출처</th><th>정답</th><th title="리포트에 카드로 실을 문항. 1~3개를 고르면 AI 가 그 문항만 씁니다">대표</th><th>판단 근거</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
-    <button id="add-item" type="button" class="ghost">문항 추가</button>
+    <div class="rowbar">
+      <button id="add-item" type="button" class="ghost">문항 한 줄 추가</button>
+      <label class="addn">여러 줄<input id="add-n" type="number" min="1" max="40" value="5"><button id="add-many" type="button" class="ghost">추가</button></label>
+      <button id="renumber" type="button" class="ghost" title="선택형은 1부터, 서답형은 '서답형 1' 부터 다시 매깁니다">번호 다시 매기기</button>
+    </div>
+    <p id="confirm-total" class="status"></p>
   </section>
 
   <section id="step-students" class="card" hidden>

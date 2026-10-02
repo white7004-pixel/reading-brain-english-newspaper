@@ -262,7 +262,37 @@ academyForm.addEventListener('submit', (e) => {
   academyForm.closest('details').open = false;
 });
 
-// ---------- 1. 사진 올리기 ----------
+// ---------- 1. 문항표부터 직접 적기 (기본 길) ----------
+// 사진 한 장으로 24문항을 정확히 읽어 내기는 어렵다 (2026-10-02 원장 판단).
+// 그래서 빈 문항표를 먼저 깔고, 문항마다 유형·난이도를 원장님이 정하신다.
+$('#start-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target.elements;
+  const 수 = (name, max) => Math.min(max, Math.max(0, Number(f[name].value) || 0));
+  const [선택, 단답, 서술] = [수('choice', 80), 수('short', 40), 수('essay', 40)];
+  if (!(선택 + 단답 + 서술)) return setStatus('#upload-status', '문항 수를 적어 주세요', true);
+
+  state.meta = {
+    subject: f.subject.value, school: f.school.value.trim(), grade: f.grade.value,
+    term: f.term.value.trim(), exam: f.exam.value.trim(), date: f.date.value, minutes: 0, range: '',
+  };
+  // 번호는 학교가 쓰는 꼴로 미리 매겨 둔다 — 선택형은 1부터, 서답형은 "서답형 1" 부터.
+  let 서답번호 = 0;
+  state.items = [
+    ...Array.from({ length: 선택 }, (_, i) => blankItem(String(i + 1), '객관식')),
+    ...Array.from({ length: 단답 }, () => blankItem(`서답형 ${++서답번호}`, '단답형')),
+    ...Array.from({ length: 서술 }, () => blankItem(`서답형 ${++서답번호}`, '서술형')),
+  ];
+  $('#confirm-notes').textContent = '문항마다 배점·영역·난이도를 정해 주세요. 여러 줄을 골라 한 번에 넣으실 수 있습니다.';
+  renderMeta();
+  renderItems();
+  setStatus('#upload-status', '');
+  show('#step-confirm');
+  $('#step-students').hidden = false;
+  $('#step-confirm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ---------- 1-나. 시험지 사진으로 초안 받기 (접어 둔 길) ----------
 $('#upload-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target.elements;
@@ -329,11 +359,12 @@ function drawUnitList() {
   $('#unit-list').innerHTML = 목록.map((u) => `<option value="${esc(u)}"></option>`).join('');
 }
 
-function renderItems() {
+function renderItems(keepPicked = null) {
   $('#items tbody').innerHTML = state.items.map((it, i) => {
     const cell = (field, html) => `<td data-field="${field}" class="${it.unsure.includes(field) ? 'unsure' : ''}">${html}</td>`;
     const no = esc(it.no);
-    return `<tr data-i="${i}">
+    return `<tr data-i="${i}" class="k-${esc(it.kind)}">
+      <td class="c"><input type="checkbox" data-pick aria-label="${no}번 줄 선택"></td>
       ${cell('no', `<input value="${no}" aria-label="${no}번 번호" placeholder="7">`)}
       ${cell('kind', `<select aria-label="${no}번 유형">${options(KINDS, it.kind)}</select>`)}
       ${cell('points', `<input type="number" step="0.1" min="0" value="${esc(it.points)}" aria-label="${no}번 배점">`)}
@@ -348,8 +379,34 @@ function renderItems() {
       <td><button type="button" class="ghost" data-del aria-label="${no}번 삭제">삭제</button></td>
     </tr>`;
   }).join('');
+  // 일괄 지정을 누른 뒤에는 고른 줄을 그대로 둔다 — 같은 줄에 난이도도 이어서 넣게
+  if (keepPicked) {
+    const 그대로 = new Set(keepPicked);
+    $$('#items tbody [data-pick]').forEach((c, i) => { c.checked = 그대로.has(i); });
+  }
+  fillBulkPickers();
+  drawBulk();
   drawUnitList();
   updateTotal();
+}
+
+// 지금 문항표가 어떤 시험인지 한 줄로 — 배점 합, 유형별, 난이도 분포.
+// 다 적고 나서 세어 보는 것이 아니라 적는 동안 보이게 둔다.
+function drawTally() {
+  const s = examStats(state.items);
+  if (!s.count) return ($('#tally').innerHTML = '');
+  const 칩 = (label, value, cls = '') => `<span class="${cls}"><b>${esc(value)}</b>${esc(label)}</span>`;
+  const 유형 = s.byKind.filter((r) => r.count).map((r) => 칩(r.label, `${r.count}문항 ${r.points}점`)).join('');
+  const 막대 = s.byDifficulty.filter((r) => r.count).map((r) =>
+    `<i class="d-${esc(r.label)}" style="--w:${r.pct}%" title="${esc(r.label)} ${r.count}문항"><b>${esc(r.label)} ${r.count}</b></i>`).join('');
+  $('#tally').innerHTML = `
+    <div class="tally-row">
+      ${칩('문항', s.count)}
+      ${칩('배점 합', `${s.total}점`, s.total === 100 ? 'ok' : 'warn')}
+      ${유형}
+      ${칩('체감 난이도', `${s.overallLabel} ${s.overallScore}/5`)}
+    </div>
+    <div class="tally-bar">${막대}</div>`;
 }
 
 // 번호가 비었거나 겹치면 리포트 숫자가 틀어진다 → 고칠 때까지 만들지 않는다
@@ -364,8 +421,9 @@ function itemProblem() {
 function updateTotal() {
   const { count, total } = examStats(state.items);
   const notes = [total !== 100 && '100점이 아닙니다. 배점을 확인해 주세요', itemProblem()].filter(Boolean);
-  $('#confirm-total').textContent = `${count}문항 · 배점 합계 ${total}점${notes.length ? ` — ${notes.join(' · ')}` : ''}`;
+  $('#confirm-total').textContent = notes.length ? notes.join(' · ') : `${count}문항 · 배점 합계 ${total}점 — 다 채우셨습니다`;
   $('#confirm-total').classList.toggle('warn', notes.length > 0);
+  drawTally();
   checkStudents(); // 학생 번호 확인도 지금 번호로
 }
 
@@ -382,8 +440,23 @@ $('#items').addEventListener('input', (e) => {
 });
 
 $('#items').addEventListener('change', (e) => {
+  if (e.target.matches('[data-pick]')) return drawBulk(); // 줄을 고르면 일괄 지정 바가 뜬다
   if (!e.target.matches('[data-key]')) return;
   state.items[Number(e.target.closest('tr').dataset.i)].key = e.target.checked;
+});
+
+// 줄 하나를 누르고 Shift 를 누른 채 다른 줄을 누르면 그 사이가 다 골라진다 — 서답형 여섯 줄을 한 번에
+let 마지막선택 = -1;
+$('#items').addEventListener('click', (e) => {
+  const box = e.target.closest('[data-pick]');
+  if (!box) return;
+  const i = Number(box.closest('tr').dataset.i);
+  if (e.shiftKey && 마지막선택 >= 0) {
+    const [a, b] = [Math.min(마지막선택, i), Math.max(마지막선택, i)];
+    $$('#items tbody [data-pick]').forEach((c, n) => { if (n >= a && n <= b) c.checked = box.checked; });
+    drawBulk();
+  }
+  마지막선택 = i;
 });
 
 $('#items').addEventListener('click', (e) => {
@@ -393,11 +466,88 @@ $('#items').addEventListener('click', (e) => {
   renderItems();
 });
 
-$('#add-item').addEventListener('click', () => {
-  // 숫자 번호 중 가장 큰 것 다음. 글자 번호(논술형2-1)는 세지 않는다
-  const no = String(Math.max(0, ...state.items.map((it) => (noNum(it.no) === Infinity ? 0 : noNum(it.no)))) + 1);
-  state.items.push({ no, key: false, kind: '객관식', points: 0, unit: '', area: areasNow()[0], subtype: '', difficulty: '중', source: '', answer: '', reason: '원장님 추가', unsure: [] });
+// 빈 문항 한 줄. 원장님이 직접 적는 길에서도, 줄 추가에서도 이것 하나를 쓴다.
+const blankItem = (no, kind = '객관식') => ({
+  no, key: false, kind, points: 0, unit: '', area: areasNow()[0],
+  subtype: '', difficulty: '중', source: '', answer: '', reason: '', unsure: [],
+});
+
+// 숫자 번호 중 가장 큰 것 다음. 글자 번호(논술형2-1)는 세지 않는다
+const nextNo = () => String(Math.max(0, ...state.items.map((it) => (noNum(it.no) === Infinity ? 0 : noNum(it.no)))) + 1);
+
+const addRows = (n) => {
+  for (let i = 0; i < n; i += 1) state.items.push(blankItem(nextNo()));
   renderItems();
+};
+
+$('#add-item').addEventListener('click', () => addRows(1));
+$('#add-many').addEventListener('click', () => addRows(Math.min(40, Math.max(1, Number($('#add-n').value) || 1))));
+
+// 번호 다시 매기기 — 선택형은 1부터, 서답형(단답형·서술형)은 "서답형 1" 부터.
+// 가운데 줄을 지우고 나면 번호가 비는데, 그때 한 번 누르면 정리된다.
+$('#renumber').addEventListener('click', () => {
+  let 선택 = 0;
+  let 서답 = 0;
+  state.items.forEach((it) => {
+    it.no = it.kind === '객관식' ? String(++선택) : `서답형 ${++서답}`;
+  });
+  renderItems();
+});
+
+// ---------- 2-1. 고른 줄에 한 번에 넣기 ----------
+const picked = () => $$('#items tbody [data-pick]:checked').map((c) => Number(c.closest('tr').dataset.i));
+
+function drawBulk() {
+  const n = picked().length;
+  $('#bulk').hidden = !n;
+  $('#bulk .bulk-n').textContent = `${n}줄 선택`;
+  const all = $$('#items tbody [data-pick]');
+  $('#pick-all').checked = !!all.length && n === all.length;
+  $('#pick-all').indeterminate = n > 0 && n < all.length;
+}
+
+// 일괄 지정 바의 고르는 칸들. 영역은 과목을 바꾸면 따라 바뀐다.
+function fillBulkPickers() {
+  const 비움 = '<option value="">— 그대로</option>';
+  $('[data-bulk=kind]').innerHTML = 비움 + options(KINDS, null);
+  $('[data-bulk=difficulty]').innerHTML = 비움 + options(DIFF5, null);
+  $('[data-bulk=area]').innerHTML = 비움 + options(areasNow(), null);
+  $('[data-bulk=source]').innerHTML = 비움 + options(SOURCES, null);
+}
+
+$('#bulk-apply').addEventListener('click', () => {
+  const 줄 = picked();
+  if (!줄.length) return;
+  for (const el of $$('#bulk [data-bulk]')) {
+    const value = el.value.trim();
+    if (!value) continue;
+    const field = el.dataset.bulk;
+    줄.forEach((i) => {
+      state.items[i][field] = field === 'points' ? Number(value) : value;
+      state.items[i].unsure = state.items[i].unsure.filter((name) => name !== field);
+    });
+  }
+  renderItems(줄);
+});
+
+$('#bulk-copy').addEventListener('click', () => {
+  const 줄 = picked();
+  if (!줄.length) return;
+  // 뒤에서부터 넣어야 앞 줄의 자리가 밀리지 않는다
+  [...줄].reverse().forEach((i) => state.items.splice(i + 1, 0, { ...state.items[i], key: false, unsure: [] }));
+  renderItems();
+});
+
+$('#bulk-del').addEventListener('click', () => {
+  const 줄 = new Set(picked());
+  if (!줄.size) return;
+  state.items = state.items.filter((_, i) => !줄.has(i));
+  renderItems();
+});
+
+$('#pick-all').addEventListener('change', (e) => {
+  $$('#items tbody [data-pick]').forEach((c) => { c.checked = e.target.checked; });
+  drawBulk();
 });
 
 // ---------- 4. 학생 입력 ----------
@@ -588,3 +738,8 @@ setTheme(store.get('theme')); // 기억해 둔 디자인을 처음부터 입힌�
 const uploadPick = $('#upload-form').elements;
 uploadPick.subject.insertAdjacentHTML('beforeend', options(Object.keys(SUBJECTS), ''));
 uploadPick.grade.insertAdjacentHTML('beforeend', options(GRADES, ''));
+
+// 직접 적는 길의 과목·학년은 비워 둘 수 없다 — 영역 목록과 교육과정이 여기서 갈린다.
+const startPick = $('#start-form').elements;
+startPick.subject.innerHTML = options(Object.keys(SUBJECTS), '영어');
+startPick.grade.innerHTML = options(GRADES, '중2');

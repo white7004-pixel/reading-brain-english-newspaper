@@ -42,8 +42,9 @@ const groupRows = (label, rows) => rows.map((r, i) => `<tr>${i ? '' : `<th class
 // 시험 정보 한 줄: 날짜 · 시간 · 구성 · 범위. 시험지에서 못 읽은 것은 빼고 잇는다.
 const dateText = (d) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? d.replace(/-0?/g, '. ').trim() + '.' : d);
 export function examLine(meta, stats) {
-  const kind = (label) => stats.byKind.find((r) => r.label === label)?.count || 0;
-  const made = [kind('객관식') && `선택형 ${kind('객관식')}문항`, kind('서술형') && `서술형 ${kind('서술형')}문항`].filter(Boolean).join(' + ');
+  // 유형 칸은 셋이다 — 객관식(선택형)·단답형·서술형. 없는 유형은 빼고 잇는다.
+  const 이름 = { 객관식: '선택형' };
+  const made = stats.byKind.filter((r) => r.count).map((r) => `${이름[r.label] ?? r.label} ${r.count}문항`).join(' + ');
   const head = [meta.date && dateText(meta.date), meta.minutes && `${meta.minutes}분`, made && `${made} (${stats.total}점)`].filter(Boolean).join(' · ');
   const range = meta.range || stats.byUnit.map((r) => r.label).join(' · ');
   return `<p class="r-line">${esc(head)}${range ? `<span class="r-range"><b>범위</b> ${esc(range)}</span>` : ''}</p>`;
@@ -58,7 +59,7 @@ export const kpi = (stats) => nums([
     : `중상 이상 문항 (${esc(stats.hard.points)}점)`],
   stats.bySource.length
     ? [`${esc(stats.textbookPct)}%`, '교과서에서 출제']
-    : [`${esc(stats.essayPointsPct)}%`, `서술형 배점 (${esc(stats.essayCount)}문항)`],
+    : [`${esc(stats.writtenPointsPct)}%`, `서답형 배점 (${esc(stats.writtenCount)}문항)`],
 ]);
 
 // 출제 경향 요약 — AI 가 쓴 항목들
@@ -135,7 +136,7 @@ export const strategyTable = (strategy) => table(['영역', '준비 방법'],
 export const typeTable = (items) => table(['#번호', '문제 유형', '#배점', '난이도'],
   items.map((it) => {
     // 카드는 두 단이라 칸이 좁다. 영역은 줄임말(abbr)로 적고 범례는 표 아래에 붙는다.
-    const 유형 = [it.kind === '서술형' ? '서술형' : '', [abbr(it.area), it.subtype].filter(Boolean).join(' - ')].filter(Boolean).join(' · ');
+    const 유형 = [it.kind === '객관식' ? '' : it.kind, [abbr(it.area), it.subtype].filter(Boolean).join(' - ')].filter(Boolean).join(' · ');
     return `<tr>${num(it.no)}<td>${esc(유형)}</td>${num(it.points)}<td class="c">${badge(it.difficulty)}</td></tr>`;
   }), 't-2');
 
@@ -146,7 +147,7 @@ export function itemsTable(items) {
   const rows = (list) => list.map((it) => `<tr>${num(`${it.difficulty === '상' ? '★' : ''}${it.no}`)}<td class="c">${esc(it.kind[0])}</td><td>${esc(abbr(it.area))}</td><td class="pt">${esc(it.subtype)}</td>${num(it.points)}<td class="c">${badge(it.difficulty)}</td><td class="c">${esc(srcAbbr(it.source))}</td></tr>`);
   const half = Math.ceil(items.length / 2);
   return `<div class="r-row r-row-tight">${table(ITEM_HEAD, rows(items.slice(0, half)))}${table(ITEM_HEAD, rows(items.slice(half)))}</div>
-    <p class="r-legend">★ 고난도 · 유형: 객=객관식, 서=서술형 · 출처: 교과=교과서, 부교=부교재, 기출=기출변형, —=확인 안 됨${esc(abbrLegend(items))}</p>`;
+    <p class="r-legend">★ 고난도 · 유형: 객=객관식, 단=단답형, 서=서술형 · 출처: 교과=교과서, 부교=부교재, 기출=기출변형, —=확인 안 됨${esc(abbrLegend(items))}</p>`;
 }
 
 // 문항 칸 격자: 한 줄 10칸
@@ -243,7 +244,7 @@ const EXPLAIN_PER_PAGE = 16; // 한 장에 열여섯 문항. 풀이 120자(세 �
 
 const explainRow = (it) => `<tr>
   <td class="num">${esc(it.difficulty === '상' ? '★' : '')}${esc(it.no)}</td>
-  <td class="c">${esc(it.kind === '서술형' ? '서' : '객')}</td>
+  <td class="c">${esc(it.kind[0])}</td>
   <td>${esc([it.area, it.subtype].filter(Boolean).join(' - '))}</td>
   <td class="num">${esc(it.points ?? '')}</td>
   <td class="c">${badge(it.difficulty)}</td>
@@ -303,5 +304,5 @@ export function studentPage({ academy, meta, items }, student, stats, text, 순�
       <div class="r-sum"><h3>시험 총평</h3><p contenteditable>${esc(text.summary)}</p></div>
       <div class="r-sum"><h3>학원 지도 방향</h3><ol class="r-dir">${text.directions.map((d) => `<li contenteditable>${esc(d)}</li>`).join('')}</ol></div>
     </section>
-    ${footer(academy, '* 추정 점수는 서술형 부분점수를 반영하지 않았습니다.')}`);
+    ${footer(academy, '* 추정 점수는 서답형 부분점수를 반영하지 않았습니다.')}`);
 }

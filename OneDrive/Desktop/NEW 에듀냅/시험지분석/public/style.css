@@ -93,6 +93,57 @@ code { font: 600 13px/1 var(--sans); background: var(--pane); color: var(--navy)
 .academy form { margin-top: 14px; }
 #items .reason { color: var(--muted); font-size: 12px; min-width: 200px; }
 #items td[data-field=no] input { width: 64px; }
+
+/* ── STEP 01 사진 길은 접어 둔다 (2026-10-02 원장 결정 — "이미지만 올려서 분석하는건 히든으로") ── */
+#by-photo { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+#by-photo summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+#by-photo summary small { color: var(--faint); margin-left: 6px; }
+#by-photo[open] summary { color: var(--navy); font-weight: 600; margin-bottom: 12px; }
+
+/* ── 지금 문항표가 어떤 시험인지 — 적는 동안 계속 보인다 ── */
+.tally { margin: 2px 0 14px; }
+.tally:empty { display: none; }
+.tally-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.tally-row span { display: inline-flex; align-items: baseline; gap: 6px; padding: 7px 12px; border-radius: 99px;
+  background: var(--pane); border: 1px solid var(--line); font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.tally-row b { font: 700 13.5px/1 var(--sans); color: var(--navy); letter-spacing: -.01em; }
+.tally-row .ok { background: var(--tint); border-color: #cddbe6; }
+.tally-row .ok b { color: var(--navy); }
+.tally-row .warn { background: var(--wine-soft); border-color: rgba(125,29,30,.3); }
+.tally-row .warn b { color: var(--wine); }
+.tally-bar { display: flex; height: 22px; margin-top: 9px; border-radius: 3px; overflow: hidden; background: var(--pane); }
+.tally-bar i { width: var(--w); display: grid; place-items: center; min-width: 0; transition: width .18s ease; }
+.tally-bar b { font: 700 11px/1 var(--sans); color: #fff; white-space: nowrap; overflow: hidden; }
+.tally-bar .d-하 { background: #8fa0c4; }
+.tally-bar .d-중하 { background: #6f86c9; }
+.tally-bar .d-중 { background: #4f6fd0; }
+.tally-bar .d-중상 { background: #d9604f; }
+.tally-bar .d-상 { background: #c33a2b; }
+
+/* ── 고른 줄에 한 번에 넣기 ── */
+.bulk { position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
+  margin: 0 0 10px; padding: 12px 14px; background: var(--navy); border-radius: 4px; }
+.bulk .bulk-n { align-self: center; font: 700 13px/1 var(--sans); color: #fff; white-space: nowrap;
+  padding-right: 12px; border-right: 1px solid rgba(255,255,255,.22); }
+.bulk label { gap: 5px; font-size: 11px; letter-spacing: .06em; color: rgba(255,255,255,.65); }
+.bulk :is(select, input) { padding: 7px 9px; font-size: 13px; border-color: transparent; background: #fff; }
+.bulk input[type=number] { width: 78px; }
+.bulk button { padding: 8px 14px; font-size: 13px; }
+.bulk .ghost { background: transparent; color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.3); }
+.bulk .ghost:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+/* ── 줄 늘리기 줄 ── */
+.rowbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.rowbar .addn { flex-direction: row; align-items: center; gap: 7px; font-size: 12.5px; }
+.rowbar .addn input { width: 66px; padding: 7px 9px; }
+
+/* ── 문항표: 유형별로 왼쪽에 색 띠를 둔다. 선택형과 서답형 덩어리가 눈에 바로 들어오게 ── */
+#items tbody tr { border-left: 3px solid transparent; }
+#items tbody tr.k-단답형 { border-left-color: var(--champagne); }
+#items tbody tr.k-서술형 { border-left-color: var(--wine); }
+#items tbody tr:has([data-pick]:checked) { background: var(--tint); }
+#items td:first-child, #items th:first-child { width: 34px; padding-left: 8px; }
+#items input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--navy); }
 button.ghost { background: #fff; color: var(--navy); border: 1px solid var(--navy); font-weight: 600; }
 button.ghost:hover:not(:disabled) { background: var(--tint); }
 #items button.ghost { padding: 4px 10px; font-size: 13px; white-space: nowrap; }

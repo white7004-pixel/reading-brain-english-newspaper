@@ -25,7 +25,7 @@ test('카드는 A4 와 같은 숫자를 쓰고, 장수는 문항 수가 정한�
   assert.equal(html.match(/class="page card-news"/g).length, 4);
   assert.match(html, /에듀냅중학교 중3 1학기 중간고사/);
   assert.match(html, new RegExp(`${ctx.stats.count}`));
-  assert.match(html, new RegExp(`${ctx.stats.essayPointsPct}%`));
+  assert.match(html, new RegExp(`${ctx.stats.writtenPointsPct}%`));
   assert.match(html, /기하 · 삼각비/); // 변별 문항 줄의 영역·세부유형
   assert.match(html, /<td class="num">2<\/td>/); // 그 문항 번호
 });

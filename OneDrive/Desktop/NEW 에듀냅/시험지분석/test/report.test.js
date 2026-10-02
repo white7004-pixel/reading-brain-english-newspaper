@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable, coverPage, backPage, keyCards } from '../public/report.js';
+import { sheet, header, barCell, examName, table, schoolPage, studentPage, verdictTitle, explainPages, crossTable, coverPage, backPage, keyCards, typeTable } from '../public/report.js';
 import { examStats, studentStats } from '../public/lib.js';
 
 test('sheet 는 넘긴 종류(cls)를 .page 에 붙인다', () => {
@@ -243,4 +243,31 @@ test('대표 문항은 둘째 장으로 가고 첫 장에서는 빠진다', () =
   const 첫장 = html.slice(0, html.indexOf('class="page"', 10));
   assert.doesNotMatch(첫장, /대표 문항/);
   assert.match(html, /대표 문항 — 점수가 갈린 곳/);
+});
+
+// ── 유형 셋이 종이에도 그대로 ──
+test('구성 줄·전 문항표·해설표가 단답형과 서술형을 따로 적는다', () => {
+  const 셋 = [
+    { no: '1', kind: '객관식', points: 50, area: '어휘', subtype: '문맥 어휘', difficulty: '중', source: '교과서', answer: '③' },
+    { no: '서답 1', kind: '단답형', points: 20, area: '어법', subtype: '빈칸 쓰기', difficulty: '중', source: '교과서', answer: 'were' },
+    { no: '서답 2', kind: '서술형', points: 30, area: '독해', subtype: '조건 영작', difficulty: '상', source: '', answer: 'x' },
+  ];
+  const c = { ...ctx, items: 셋, stats: examStats(셋) };
+  const html = schoolPage(c, school);
+  assert.match(html, /선택형 1문항 \+ 단답형 1문항 \+ 서술형 1문항 \(100점\)/);
+  // 전 문항표는 한 글자로 — 객·단·서
+  assert.match(html, /<td class="c">단<\/td>/);
+  assert.match(html, /객=객관식, 단=단답형, 서=서술형/);
+  // 학원용 해설표도 같은 한 글자를 쓴다
+  assert.match(explainPages(c), /<td class="c">단<\/td>/);
+});
+
+test('카드 유형 칸은 객관식이면 비우고, 단답형·서술형은 그대로 적는다', () => {
+  const 셋 = [
+    { no: '1', kind: '객관식', points: 50, area: '어휘', subtype: '문맥 어휘', difficulty: '중' },
+    { no: '2', kind: '단답형', points: 50, area: '어법', subtype: '빈칸 쓰기', difficulty: '중' },
+  ];
+  const html = table(['x'], []) && typeTable(셋);
+  assert.match(html, /단답형 · 어법 - 빈칸 쓰기/);
+  assert.doesNotMatch(html, /객관식 · 어휘/);
 });

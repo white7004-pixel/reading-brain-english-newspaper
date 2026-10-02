@@ -9,7 +9,10 @@ export const SUBJECTS = {
 };
 export const AREAS = [...new Set(Object.values(SUBJECTS).flat())];
 export const DIFF5 = ['하', '중하', '중', '중상', '상'];
-export const KINDS = ['객관식', '서술형'];
+// 학교 시험지가 "서답형"으로 묶어 내는 것을 둘로 가른다 (2026-10-02 원장 결정).
+// 단답형 = 한 단어~한 구를 쓰는 것(빈칸 쓰기·어형 바꾸기), 서술형 = 문장·조건 영작·풀이 과정.
+export const KINDS = ['객관식', '단답형', '서술형'];
+export const WRITTEN = ['단답형', '서술형']; // 둘을 합쳐 "서답형"
 // 학원 분석 글이 늘 따지는 출처. 시험지만 보고 알기 어려우면 AI 가 확인 칸(unsure)으로 표시한다.
 export const SOURCES = ['교과서', '부교재', '외부', '기출변형'];
 
@@ -139,7 +142,7 @@ export function crossTab(items, rowKey, colKey, colOrder, rowOrder = null, weigh
 
 export function examStats(items) {
   const total = sumPoints(items);
-  const essay = items.filter((it) => it.kind === '서술형');
+  const written = items.filter((it) => WRITTEN.includes(it.kind)); // 서답형 = 단답형 + 서술형
   const hard = items.filter((it) => it.difficulty === '중상' || it.difficulty === '상');
   const killer = items.filter((it) => it.difficulty === '상'); // 학원 글이 말하는 킬러 문항
   const weighted = items.reduce((s, it) => s + DIFF5.indexOf(it.difficulty) * (Number(it.points) || 0), 0);
@@ -147,8 +150,8 @@ export function examStats(items) {
   return {
     count: items.length,
     total,
-    essayCount: essay.length,
-    essayPointsPct: pct(sumPoints(essay), total),
+    writtenCount: written.length,
+    writtenPointsPct: pct(sumPoints(written), total),
     hardPct: pct(hard.length, items.length),
     overall,
     overallScore: DIFF5.indexOf(overall) + 1,

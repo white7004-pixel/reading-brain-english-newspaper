@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier, crossTab, DIFF5, difficultyFlow, donutSlices } from '../public/lib.js';
+import { examStats, studentStats, parseStudents, nosText, to3, esc, weightTier, crossTab, DIFF5, KINDS, difficultyFlow, donutSlices } from '../public/lib.js';
 
 const items = [
   { no: 1, kind: '객관식', points: 30, area: '어휘', difficulty: '하', source: '교과서' },
@@ -12,8 +12,8 @@ test('examStats 는 문항표로 분포와 비율을 계산한다', () => {
   const s = examStats(items);
   assert.equal(s.count, 3);
   assert.equal(s.total, 100);
-  assert.equal(s.essayCount, 1);
-  assert.equal(s.essayPointsPct, 40);
+  assert.equal(s.writtenCount, 1);
+  assert.equal(s.writtenPointsPct, 40);
   assert.equal(s.hardPct, 67);
   assert.equal(s.overall, '중상'); // 배점 가중 평균 (0*30+3*30+4*40)/100 = 2.5 → 3
   assert.deepEqual(s.byArea.map((r) => [r.label, r.count, r.points, r.pct]), [['어휘', 1, 30, 33], ['어법', 1, 40, 33], ['독해', 1, 30, 33]]);
@@ -232,4 +232,21 @@ test('통계칩에 쓸 최고 배점과 최다 출제 단원이 나온다', () =
 
   const 빈 = examStats([]);
   assert.deepEqual([빈.maxPoints, 빈.topUnit, 빈.areaKinds], [0, '', 0]);
+});
+
+// ── 유형 셋 (2026-10-02 원장 결정) ──
+// 학교 시험지의 "서답형"은 한 단어를 쓰는 것과 문장·조건 영작이 섞여 있다.
+// 둘을 한 칸으로 묶으면 "서술형 6문항"이 실제보다 무겁게 읽힌다.
+test('유형은 객관식·단답형·서술형 셋이고, 서답형 수치는 단답형까지 센다', () => {
+  const 셋 = [
+    { no: '1', kind: '객관식', points: 50, area: '어휘', difficulty: '중' },
+    { no: '2', kind: '단답형', points: 20, area: '어법', difficulty: '중' },
+    { no: '3', kind: '서술형', points: 30, area: '독해', difficulty: '상' },
+  ];
+  assert.deepEqual(KINDS, ['객관식', '단답형', '서술형']);
+  const s = examStats(셋);
+  assert.deepEqual(s.byKind.map((r) => [r.label, r.count, r.points]), [['객관식', 1, 50], ['단답형', 1, 20], ['서술형', 1, 30]]);
+  // 서답형 = 단답형 + 서술형
+  assert.equal(s.writtenCount, 2);
+  assert.equal(s.writtenPointsPct, 50);
 });
