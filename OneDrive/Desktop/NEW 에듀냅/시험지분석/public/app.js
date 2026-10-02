@@ -3,7 +3,7 @@ import { unitsFor, GRADES } from './curriculum.js';
 import { subtypesFor, sourcesFor } from './subtypes.js';
 import { schoolPage, explainPages } from './report.js';
 import { draftSchool } from './draft.js';
-import { shareCards } from './share.js';
+import { cardDeck } from './cards.js';
 import { slideDeck } from './slides.js';
 import { pickBrandColor, PALETTE } from './color.js';
 
@@ -600,7 +600,7 @@ $('#make-report').addEventListener('click', async (e) => {
     // 학교 분석은 발표 슬라이드 한 벌이 기본이다 (원장님 결정 2026-10-01 — 여러 형태를 한꺼번에 쏟지 않는다).
     // A4 종이와 정사각 카드는 원장님이 켜실 때만 뒤에 붙는다.
     $('#pages').innerHTML = slideDeck(ctx, school)
-      + (state.academy.cards ? shareCards(ctx, school) : '')
+      + (state.academy.cards ? cardDeck(ctx, school, { 적중: state.적중 }) : '')
       + (state.academy.a4 ? schoolPage(ctx, school) : '')
       + explainPages(ctx); // 학원용 문항 해설은 맨 뒤에 (학부모 종이와 섞이지 않게)
     // 버튼은 이번에 실제로 나온 것만 보여 준다 — 눌러도 아무 일 없는 버튼을 두지 않는다

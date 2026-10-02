@@ -1,0 +1,180 @@
+/* 카드뉴스 덱 (.page.card-news.deck) — 2026-10-02 원장님이 고르신 어두운 판.
+   A4·슬라이드와 색이 다르다. 여기만 로고 네이비를 바탕에 깔고 버건디로 강조한다.
+   1080×1080 고정이라 --fit 을 쓰지 않는다 — 글자가 줄면 숫자가 안 읽힌다. */
+.page.card-news.deck {
+  --k-bg: #06192b; --k-bg2: #0a2740;
+  --k-wine: #a8383a; --k-wine-hi: #c9565a; --k-gold: #d9a441;
+  --k-paper: #faf6ec; --k-paper2: #fffdf8; --k-ink: #16202b; --k-ink2: #55616e; --k-hair: #e6ddc9;
+  --d-low: #2f6fe0; --d-mid: #ef8c20; --d-high: #d63b3b;
+  --k-hand: 'Nanum Pen Script', var(--sans);
+  width: 1080px; height: 1080px; padding: 44px 46px 34px; gap: 20px;
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+  font-family: var(--sans); font-size: 16px; line-height: 1.5; color: #fff;
+  background:
+    radial-gradient(1100px 620px at 86% -12%, rgba(168, 56, 58, .26), transparent 62%),
+    radial-gradient(900px 560px at -8% 108%, rgba(14, 63, 99, .55), transparent 60%),
+    var(--k-bg);
+}
+.page.card-news.deck::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px) 0 0/60px 60px,
+              linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px) 0 0/60px 60px;
+}
+.page.card-news.deck > * { position: relative; z-index: 1; }
+/* 쪽지만 떠 있어야 한다 — 위 규칙이 absolute 를 덮어쓰지 않도록 여기서 되돌린다 */
+.page.card-news.deck > .k-memo { position: absolute; }
+
+/* ── 머리 ── */
+.deck .k-top { display: flex; align-items: center; gap: 18px; }
+.deck .k-nm { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 800; letter-spacing: .14em; }
+.deck .k-nm s { width: 4px; height: 26px; background: var(--k-wine-hi); border-radius: 2px; text-decoration: none; }
+.deck .k-rule { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,.26), rgba(255,255,255,.04)); }
+.deck .k-pg { font-size: 27px; font-weight: 900; letter-spacing: -.02em; }
+.deck .k-pg u { text-decoration: none; font-size: 17px; font-weight: 700; opacity: .45; }
+.deck .k-head h2 { margin: 0; font-size: 22px; font-weight: 600; opacity: .72; color: #fff; }
+.deck .k-head h1 { margin: 6px 0 0; font-size: 66px; font-weight: 900; letter-spacing: -.05em; line-height: 1.04; color: #fff; }
+.deck .k-head h1 em { font-style: normal; color: var(--k-wine-hi); }
+.deck .k-kick { margin: 12px 0 0; display: flex; align-items: center; gap: 15px; font-size: 14px; font-weight: 800; letter-spacing: .34em; opacity: .5; }
+.deck .k-kick s { flex: 1; height: 1px; background: rgba(255,255,255,.2); text-decoration: none; }
+.deck .k-memo {
+  position: absolute; right: 44px; top: 112px; width: 320px; padding: 22px 26px 28px; z-index: 2;
+  background: linear-gradient(#fdf8e2, #f8f1d6); box-shadow: 0 14px 30px rgba(0,0,0,.34);
+  transform: rotate(2.4deg); font-family: var(--k-hand); font-size: 30px; line-height: 1.42; color: #3d3522;
+}
+.deck .k-memo b { font-weight: 400; background: linear-gradient(transparent 56%, #f6c9cb 56%); }
+.deck .k-memo::before {
+  content: ''; position: absolute; left: 50%; top: -12px; width: 112px; height: 26px; margin-left: -56px;
+  background: rgba(201,86,90,.42); transform: rotate(-1.6deg);
+}
+
+/* ── 칸 ── */
+.deck .k-grid { flex: 1; display: grid; gap: 18px; min-height: 0; }
+.deck .k-22 { grid-template-columns: 1fr 1fr; }
+.deck .k-31 { grid-template-columns: 1.32fr 1fr; }
+.deck .k-rows { grid-template-rows: 1.25fr 1fr; }
+.deck .k-rows2 { grid-template-rows: auto 1fr; }
+.deck .k-rows3 { grid-template-rows: 1fr auto; }
+.deck .k-p {
+  background: var(--k-paper); border-radius: 20px; padding: 22px 24px; color: var(--k-ink);
+  display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+}
+.deck .k-ph { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.deck .k-ph b {
+  display: inline-flex; align-items: center; gap: 9px; padding: 7px 16px 7px 9px; border-radius: 999px;
+  background: var(--k-wine); color: #fff; font-size: 18px; font-weight: 800;
+}
+.deck .k-ph b i {
+  display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px;
+  background: rgba(255,255,255,.22); font-style: normal; font-size: 13px; font-weight: 800;
+}
+.deck .k-ph small { font-size: 14px; color: var(--k-ink2); font-weight: 600; }
+.deck .k-none { font-size: 17px; color: var(--k-ink2); font-weight: 600; }
+
+/* ── 조각 ── */
+.deck .k-row { display: flex; align-items: center; gap: 14px; }
+.deck .k-kv { display: flex; gap: 12px; padding: 7px 2px; border-bottom: 1px solid var(--k-hair); font-size: 17.5px; }
+.deck .k-kv:last-of-type { border-bottom: 0; }
+.deck .k-kv .k { width: 112px; flex: none; color: var(--k-ink2); font-weight: 700; }
+.deck .k-kv .v { font-weight: 600; line-height: 1.42; }
+.deck .k-kv .k-pt { width: 72px; color: var(--k-wine); font-weight: 800; }
+.deck .k-dot { width: 13px; height: 13px; border-radius: 50%; flex: none; display: inline-block; }
+.deck .k-ring { background: #fff; box-shadow: 0 0 0 3px var(--d-high) inset; }
+.deck .k-leg { display: flex; flex-direction: column; gap: 11px; font-size: 18px; font-weight: 700; white-space: nowrap; }
+.deck .k-leg i { display: flex; align-items: center; gap: 9px; font-style: normal; }
+.deck .k-leg i s { margin-left: auto; text-decoration: none; color: var(--k-ink2); font-weight: 600; }
+.deck .k-feel { margin-top: 7px; font-size: 19px; }
+.deck .k-feel b { color: var(--k-wine); margin-left: 4px; }
+.deck .k-bar { height: 10px; border-radius: 999px; background: var(--k-hair); overflow: hidden; }
+.deck .k-bar > i { display: block; height: 100%; border-radius: 999px; }
+.deck .k-stk { display: flex; height: 13px; border-radius: 999px; overflow: hidden; background: var(--k-hair); margin: 14px 0 15px; }
+.deck .k-stk i { display: block; height: 100%; }
+.deck .k-tip {
+  display: flex; gap: 10px; background: #f3ece0; border-radius: 12px; padding: 13px 15px;
+  font-size: 16px; line-height: 1.55; color: #4a4335; font-weight: 600; margin-top: auto;
+}
+.deck .k-tip::before { content: '\2713'; color: var(--k-wine); font-weight: 900; flex: none; }
+.deck .k-chip { display: inline-block; padding: 4px 11px; border-radius: 7px; background: #efe6d3; color: #6b5a39; font-size: 15px; font-weight: 700; }
+.deck .k-chip.w { background: #f6e3e3; color: var(--k-wine); }
+.deck .k-chips { display: flex; gap: 9px; margin-top: 14px; flex-wrap: wrap; }
+.deck .k-plot { flex: 1; min-height: 0; }
+.deck .k-keys { display: flex; gap: 16px; justify-content: center; font-size: 15px; font-weight: 700; padding-top: 6px; }
+.deck .k-keys span { display: flex; align-items: center; gap: 7px; }
+.deck .k-step { margin-bottom: 10px; }
+.deck .k-step:last-child { margin-bottom: 0; }
+.deck .k-step-h { display: flex; align-items: baseline; gap: 11px; font-size: 16px; color: var(--k-ink2); font-weight: 700; }
+.deck .k-step-h > b { font-size: 21px; font-weight: 900; }
+.deck .k-step-h .n { margin-left: auto; font-size: 29px; font-weight: 900; }
+.deck .k-step-h .n u { text-decoration: none; font-size: 15px; color: var(--k-ink2); }
+.deck .k-step-no { font-size: 14px; color: #8b8372; font-weight: 600; margin: 2px 0 6px; }
+.deck .k-lv3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+.deck .k-lv3 > div { border-radius: 13px; padding: 13px 4px 12px; background: #f1ebdd; }
+.deck .k-lv3 b { display: grid; place-items: center; width: 28px; height: 28px; margin: 0 auto 6px; border-radius: 50%; color: #fff; font-size: 15px; font-weight: 800; }
+.deck .k-lv3 u { display: block; text-decoration: none; font-size: 25px; font-weight: 900; }
+.deck .k-lv3 s { display: block; text-decoration: none; font-size: 15px; color: var(--k-ink2); font-weight: 600; }
+.deck .k-lv3 .a b { background: var(--d-low); }
+.deck .k-lv3 .a u { color: var(--d-low); }
+.deck .k-lv3 .b b { background: var(--d-mid); }
+.deck .k-lv3 .b u { color: var(--d-mid); }
+.deck .k-lv3 .c b { background: var(--d-high); }
+.deck .k-lv3 .c u { color: var(--d-high); }
+
+/* ── 영역 카드 ── */
+.deck .k-areas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; flex: 1; min-height: 0; }
+.deck .k-ac { background: var(--k-paper2); border-radius: 16px; padding: 18px 17px; display: flex; flex-direction: column; min-height: 0; }
+.deck .k-ac .nm { font-size: 20px; font-weight: 800; }
+.deck .k-ac .big { display: flex; align-items: baseline; gap: 7px; margin: 8px 0 10px; }
+.deck .k-ac .big b { font-size: 46px; font-weight: 900; letter-spacing: -.05em; line-height: 1; color: var(--k-wine); }
+.deck .k-ac .big span { font-size: 16px; color: var(--k-ink2); font-weight: 700; }
+.deck .k-ac ul { margin: 12px 0 0; padding: 0; list-style: none; font-size: 15.5px; line-height: 1.72; color: #3f4953; font-weight: 600; }
+.deck .k-ac ul li::before { content: '\B7'; margin-right: 7px; color: var(--k-wine); }
+.deck .k-ac .fin { margin-top: auto; padding-top: 11px; border-top: 1px dashed var(--k-hair); font-size: 15px; font-weight: 800; color: var(--k-wine); }
+
+/* ── 변별 ── */
+.deck .k-key { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--k-hair); }
+.deck .k-key:last-of-type { border-bottom: 0; }
+.deck .k-key b.no {
+  display: grid; place-items: center; min-width: 56px; height: 42px; border-radius: 11px;
+  background: var(--k-bg2); color: #fff; font-size: 19px; font-weight: 800; flex: none;
+}
+.deck .k-key .t { font-size: 19px; font-weight: 800; line-height: 1.3; }
+.deck .k-key .t small { display: block; font-size: 15.5px; color: var(--k-ink2); font-weight: 600; margin-top: 3px; }
+.deck .k-key .d { margin-left: auto; flex: none; padding: 5px 13px; border-radius: 999px; background: #fbe6e6; color: var(--d-high); font-size: 15px; font-weight: 800; }
+
+/* ── 적중 ── */
+.deck .k-hit { display: flex; align-items: center; gap: 26px; }
+.deck .k-hit .big { font-size: 88px; font-weight: 900; letter-spacing: -.06em; line-height: 1; color: var(--k-wine); }
+.deck .k-hit .big u { text-decoration: none; font-size: 30px; margin-left: 4px; }
+.deck .k-hit .r { font-size: 19px; line-height: 1.65; font-weight: 700; color: #3f4953; }
+.deck .k-hit .r .s { font-size: 16px; color: #6b7580; font-weight: 600; }
+.deck .k-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; flex: 1; min-height: 0; }
+.deck .k-shot { border-radius: 14px; overflow: hidden; background: #efe8da; display: flex; flex-direction: column; }
+.deck .k-shot .cap { padding: 9px 13px; font-size: 15px; font-weight: 800; color: var(--k-wine); background: #f8f2e6; }
+.deck .k-shot img { width: 100%; flex: 1; min-height: 0; object-fit: cover; }
+
+/* ── 방향 ── */
+.deck .k-ways { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; min-height: 0; }
+.deck .k-way { background: var(--k-paper2); border-radius: 16px; padding: 18px 19px; display: flex; flex-direction: column; min-height: 0; color: var(--k-ink); }
+.deck .k-way .h { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.deck .k-way .h b { display: grid; place-items: center; width: 34px; height: 28px; border-radius: 7px; background: var(--k-bg2); color: #fff; font-size: 15px; font-weight: 800; }
+.deck .k-way .h span { font-size: 19px; font-weight: 800; }
+.deck .k-way p { margin: 0 0 10px; font-size: 16px; line-height: 1.6; color: #4a5560; font-weight: 600; }
+.deck .k-way .ck { margin: 0; padding: 0; list-style: none; font-size: 16px; line-height: 1.75; font-weight: 700; color: #36404a; }
+.deck .k-way .ck li::before { content: '\2713'; color: var(--k-wine); font-weight: 900; margin-right: 8px; }
+.deck .k-way .pen {
+  margin-top: auto; align-self: flex-start; background: #fdf6dd; padding: 11px 15px 13px;
+  font-family: var(--k-hand); font-size: 25px; line-height: 1.3; color: #4a4228;
+  transform: rotate(-1deg); box-shadow: 0 5px 14px rgba(0,0,0,.1);
+}
+.deck .k-end { flex-direction: row; align-items: center; gap: 22px; background: var(--k-paper2); }
+.deck .k-end .lb { font-size: 14px; font-weight: 800; letter-spacing: .24em; color: var(--k-wine); margin-bottom: 8px; }
+.deck .k-end .ms { font-size: 25px; font-weight: 800; line-height: 1.42; }
+.deck .k-end .sb { font-size: 17px; color: var(--k-ink2); font-weight: 600; margin-top: 7px; }
+.deck .k-end .rr { flex: none; text-align: right; }
+.deck .k-end .rr .k-chip { display: block; margin-bottom: 7px; }
+
+/* ── 바닥 ── */
+.deck .k-foot { display: flex; align-items: center; gap: 14px; padding: 2px 4px 0; }
+.deck .k-bulb { display: grid; place-items: center; width: 33px; height: 33px; border-radius: 50%; background: var(--k-gold); color: #4a3600; font-size: 18px; flex: none; }
+.deck .k-foot q { font-size: 21px; font-weight: 700; quotes: none; color: #fff; }
+.deck .k-foot .k-who { margin-left: auto; text-align: right; font-size: 17px; font-weight: 800; opacity: .9; }
+.deck svg { display: block; }
