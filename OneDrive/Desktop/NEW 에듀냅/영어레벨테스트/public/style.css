@@ -218,7 +218,7 @@ details.card[open] > summary { margin-bottom: 18px; }
 .sheet .steps b { display: block; font: 600 14px/1.35 var(--serif); }
 .sheet .steps span { font-size: 10.5px; color: var(--muted); }
 
-/* ── 원장용·1차 쪽: 머리·글꼴·색만 새 모양, 내용은 그대로 ── */
+/* ── 문항별 결과 쪽: 머리·글꼴·색만 새 모양, 내용은 그대로 ── */
 .sheet.plain { height: auto; min-height: 297mm; padding: 0 56px 70px; }
 .sheet.plain .shead { margin: 0 -56px 18px; }
 .sheet.plain .shead h2 { margin: 8px 0 0; padding: 0; border: 0; font: 700 28px/1 var(--serif); }
@@ -255,7 +255,6 @@ details.card[open] > summary { margin-bottom: 18px; }
   .app { max-width: none; padding: 0; }
   .sheets, .pages { gap: 0; }
   .sheet { box-shadow: none; break-after: page; }
-  body.print-parent #director, body.print-director #parent { display: none; }
 }
 
 /* 검수 */

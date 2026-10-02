@@ -1,10 +1,10 @@
-// 리포트 (시안1 업그레이드): 학부모용 = 표지 + 응시한 영역마다 1쪽, 원장용 = 1쪽. 교재명은 원장용에만.
+// 결과리포트 하나 (10/2 원장 결정): 표지 → 응시한 영역마다 1쪽 → 문항별 결과. 한 시험·예전 1차·1차+2차 결과 모두 같은 모양.
 // 숫자는 전부 core 가 계산한다. 여기서는 그리기만. AI 는 총평 문장만 쓰고, 실패하면 틀 문장이 남는다. 글은 눌러서 고칠 수 있다.
 import { ACADEMY } from './core/academy.js';
 import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, ym, track, earlyText, END } from './core/progress.js';
-import { commentFacts, templateComment, shaky, bookFor, nextLabel, estLabel, nextUnits } from './core/summary.js';
-import { areaLevels, startLevel, phonicsNote, writeSummary, stage2Sections, stageText, kindTally, LEVEL_AREAS, AREA_KO, PASS } from './core/forms.js';
+import { commentFacts, templateComment, shaky, nextLabel, estLabel, nextUnits } from './core/summary.js';
+import { areaLevels, phonicsNote, writeSummary, stage2Sections, stageText, kindTally, AREA_KO, STAGE_KO } from './core/forms.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -16,6 +16,8 @@ const COUNT = ['', '한', '두', '세', '네'];
 const dotDate = (d) => esc(String(d ?? '').replaceAll('-', '.'));
 // 지금 자리: 2차 문제지 결과는 학년 단위("중2 과정 수준"), 예전 적응형 결과는 단원 단위
 const where = (s) => (s.level ? stageText(s.level) : estLabel(s.est));
+// 한 시험 log, 아니면 예전 1차 + 2차(또는 2차 쓰기) log 를 잇는다
+const logOf = (r) => r.test?.log ?? [...(r.stage1?.log ?? []), ...(r.stage2?.log ?? r.write2?.log ?? [])];
 const doneLabel = (road) => (road.months === 0 ? '이미 도달' : road.done ? road.points.at(-1).when : '10년 넘게');
 
 const id = new URLSearchParams(location.search).get('id');
@@ -27,36 +29,30 @@ if (!result) {
 } else {
   result.academy = ACADEMY; // 학원 정보·로고는 리딩브레인으로 고정 (예전 결과도)
   document.documentElement.style.setProperty('--brand', ACADEMY.color);
-  $('#print-parent').onclick = () => printOnly('print-parent');
-  $('#print-director').onclick = () => printOnly('print-director');
+  $('#print').onclick = () => window.print();
   $('#png').onclick = png;
-  // 1차 통과 뒤 2차 문제지를 본 학생: 2차 수준으로 영역별 결과를 만든다 (그 뒤는 예전 결과지 그대로)
-  if (result.stage1?.passed && result.stage2?.log?.length) result.sections = stage2Sections(result.stage2.log);
-  if (result.stage1 && (!result.stage1.passed || !SECTIONS.some((k) => result.sections[k]?.est))) {
-    const s1 = result.stage1;
-    $('#parent').innerHTML = stage1Page(result);
-    $('#director').innerHTML = `${band(result, '원장용', '레벨테스트 상세')}<p class="meta">${esc(result.name)} · ${esc(schoolGrade(result))} · 응시일 ${esc(result.date)}</p><div class="logs">${formLog(`1차 (${s1.set}세트)`, s1.log)}<p class="small">시간 초과 ${s1.log.filter((x) => x.timeout).length}</p>${result.write2?.log.length ? formLog('2차 쓰기', result.write2.log) : ''}</div>${foot(result, '원장용')}`;
-  } else {
-    const start = result.start || result.date;
-    const taken = SECTIONS.filter((k) => result.sections[k]?.est);
-    const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
-    const proj = project({ grade: result.grade, start, ests });
-    const facts = commentFacts(result, proj);
-    for (const f of facts.sections) f.level = where(result.sections[f.key]);
-    const c = templateComment(facts);
-    const pages = 1 + taken.length;
-    $('#parent').innerHTML = cover(result, proj, c, facts, start, pages) + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start, pages)).join('');
-    $('#director').innerHTML = director(result, c);
-    fitCover();
-    document.fonts?.ready.then(fitCover);
-    $('#summary')?.addEventListener('input', fitCover);
-    fillComment(facts);
-  }
+  const log = logOf(result);
+  if (log.length) result.sections = stage2Sections(log);
+  const start = result.start || result.date;
+  const taken = SECTIONS.filter((k) => result.sections[k]?.est);
+  const ests = Object.fromEntries(taken.map((k) => [k, result.sections[k].est]));
+  const proj = project({ grade: result.grade, start, ests });
+  const facts = commentFacts(result, proj);
+  for (const f of facts.sections) f.level = where(result.sections[f.key]);
+  const c = templateComment(facts);
+  const pages = 2 + taken.length; // 표지 + 영역 쪽 + 문항별 결과
+  $('#report').innerHTML = cover(result, proj, c, facts, start, pages)
+    + taken.map((k, i) => sectionPage(result, proj, k, i + 1, start, pages)).join('')
+    + (log.length ? detailPage(result, c, log, pages) : director(result, c, pages));
+  fitCover();
+  document.fonts?.ready.then(fitCover);
+  $('#summary')?.addEventListener('input', fitCover);
+  fillComment(facts);
 }
 
 // 표지는 A4 한 쪽 고정이라 총평이 길어지면 바닥 줄과 겹친다: 글자 → 줄 간격 순으로 줄이고, 그래도 넘치면 알린다 (몰래 자르지 않음)
 function fitCover() {
-  const sheet = $('#parent .sheet.cover');
+  const sheet = $('#report .sheet.cover');
   if (!sheet) return;
   const foot = sheet.querySelector('.foot').getBoundingClientRect().top - 6;
   const over = () => [...sheet.querySelectorAll('.sec')].at(-1).getBoundingClientRect().bottom > foot;
@@ -76,7 +72,7 @@ function brandMark(r) {
   return `<span class="mark">${src ? `<span class="plate"><img src="${esc(src)}" alt=""></span>` : ''}${esc(r.academy?.name)}</span>`;
 }
 
-// 원장용·1차 쪽 머리
+// 문항별 결과 쪽 머리
 function band(r, kicker, title) {
   return `<header class="shead"><div><span class="cap">${esc(kicker)}</span><h2>${esc(title)}</h2></div><div class="r">${brandMark(r)}</div></header>`;
 }
@@ -92,18 +88,15 @@ function sec(n, label, cls, body, style = '') {
   return `<section class="sec"${style ? ` style="${style}"` : ''}><div class="lbl"><b>${n}</b><span>${label}</span></div><div class="body ${cls}">${body}</div></section>`;
 }
 
-function info(r) {
-  const a = r.academy || {};
-  return `<div class="info"><div><b>시험</b><span>영어 레벨테스트</span></div><div><b>이름</b><span>${esc(r.name)}</span></div><div><b>학원(학교·학년)</b><span>${esc(a.name)} (${esc(schoolGrade(r))})</span></div><div><b>응시일</b><span>${esc(r.date)}</span></div></div>`;
-}
-
-// 2차까지 본 학생: 1차 점수와 쓰기 결과 한 줄
+// 한 시험: 멈춘 단계와 쓰기(영작) 한 줄. 예전 결과는 쓰기만. 중1 아래 영역이 있으면 진도 계산 기준 한 줄.
 function stageLine(r) {
-  if (!r.stage1) return '';
-  const wlog = r.stage2?.log?.length ? r.stage2.log.filter((x) => x.area === 'sentence') : r.write2?.log ?? [];
-  const w = wlog.length ? writeSummary(wlog) : null;
-  const wtext = w ? ` · 쓰기 ${w.correct}/${w.total} (${w.missed.length ? `다시 볼 문법: ${esc(w.missed.join(', '))}` : '모두 맞힘'})` : '';
-  return `<p class="fine">1차 ${esc(r.stage1.score)}점 통과 (${PASS}점 이상)${wtext}</p>`;
+  const log = logOf(r);
+  const w = writeSummary(log.filter((x) => x.area === 'sentence'));
+  const stop = r.test ? (r.test.stopped ? `${esc(STAGE_KO[r.test.stopped] ?? r.test.stopped)} 단계까지 풀고 끝났습니다` : '모든 단계를 풀었습니다') : '';
+  const wtext = w.total ? `쓰기 ${w.correct}/${w.total} (${w.missed.length ? `다시 볼 문법: ${esc(w.missed.join(', '))}` : '모두 맞힘'})` : '';
+  const below = SECTIONS.some((k) => r.sections[k]?.level && r.sections[k].est?.step === 9) ? '<p class="fine">중1 과정 전 단계 영역은 중1 과정을 시작하는 때부터 계산했습니다.</p>' : '';
+  const line = [stop, wtext].filter(Boolean).join(' · ');
+  return `${line ? `<p class="fine">${line}</p>` : ''}${below}`;
 }
 
 function gauge(sc) {
@@ -126,7 +119,7 @@ function cover(r, proj, c, facts, start, pages) {
   const early = road ? earlyText(road, proj.left) : '';
   const earlyLine = early === '이미 도달' ? '이미 고3 과정 수준에 도달했습니다' : early === '졸업 뒤' ? '고3 졸업 전에 마치기 어렵습니다' : early === '졸업 무렵' ? '고3 졸업 무렵에 마칩니다' : early ? `고3 졸업보다 ${early}` : '';
   const hero = `<header class="top">
-    <div class="mast">${brandMark(r)}<span class="cap">학부모용 결과지</span></div>
+    <div class="mast">${brandMark(r)}<span class="cap">결과리포트</span></div>
     <div class="top-grid">
       <div><p class="kick cap">영어 레벨테스트 결과</p><h1>현재 수준과<br><strong>앞으로의 진도</strong></h1>
         <p class="who"><span>${esc(r.name)}</span><span>${esc(schoolGrade(r))}</span><span>응시 ${dotDate(r.date)}</span></p></div>
@@ -282,28 +275,8 @@ function stair(r, est, start, now) {
 
 // function 선언: 위쪽 최상위 코드가 먼저 실행되므로 const 면 초기화 전에 불려 오류가 난다
 function mark(x) { return x.correct ? '○' : x.timeout ? '시간' : x.dontKnow ? '모름' : '×'; }
-// 2차 유형별 정답 한 줄
+// 유형별 정답 한 줄
 function tally(log, area) { return kindTally(log, area).map((t) => `${t.kind ? `${esc(t.kind)} ` : ''}${t.correct}/${t.total}`).join(' · ') || '문항 없음'; }
-
-// 1차에서 끝난 학생: A4 한 쪽 (설계서 8장)
-function stage1Page(r) {
-  const s = r.stage1;
-  const lv = areaLevels(s.log);
-  const rows = Object.entries(LEVEL_AREAS).map(([k, ko]) => `<tr><td>${ko}</td><td>${esc(lv[k] ?? '응시하지 않음')}</td></tr>`).join('')
-    + (lv.phonics.total ? `<tr><td>파닉스</td><td>${lv.phonics.total}문항 중 ${lv.phonics.correct}개</td></tr>` : '');
-  const note = phonicsNote(lv);
-  const wrong = s.log.filter((x) => !x.correct).map((x) => x.no);
-  return `<article class="sheet plain">${band(r, '학부모용 결과지', '영어 레벨테스트 결과 (1차)')}
-    ${info(r)}
-    <h2>1차 결과</h2>
-    <div class="boxes3"><div><b>1차 점수</b><strong>${s.score}점</strong></div><div><b>맞힌 문항</b><strong>${s.correct} / ${s.total}</strong></div><div><b>추천 시작 수준</b><strong>${esc(startLevel(lv) ?? '-')}</strong></div></div>
-    ${note ? `<p class="summary">${note}</p>` : ''}
-    <h2>영역별 수준</h2>
-    <table class="scores"><thead><tr><th>영역</th><th>수준</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="small">수준은 초3부터 한 학년씩 올라가며 그 학년 문항을 3분의 2 이상 맞힌 데까지입니다. ${s.passed ? '1차는 통과했지만 2차 문항이 아직 준비되지 않아 2차 결과는 없습니다.' : `중·고등 과정을 보는 2차는 1차 ${PASS}점 이상일 때 봅니다.`}</p>
-    <p class="small">틀린 문항 번호: ${wrong.length ? wrong.join(', ') : '없음'}</p>
-    ${foot(r)}</article>`;
-}
 
 function formLog(title, log) {
   return `<div><h2>${esc(title)}</h2><table><thead><tr><th>번호</th><th>영역</th><th>수준</th><th>정오</th><th>쓴 답</th><th>초</th></tr></thead><tbody>
@@ -311,32 +284,36 @@ function formLog(title, log) {
     </tbody></table></div>`;
 }
 
-function director(r, c) {
+// 문항별 결과: 문항표, 시간 초과·파닉스·유형별 맞힌 수, 멈춘 단계·쓰기, 지도 방향(눌러서 고침)
+function detailPage(r, c, log, pages) {
+  const ph = areaLevels(log);
+  const lines = [
+    `시간 초과 ${log.filter((x) => x.timeout).length}`,
+    ph.phonics.total ? `파닉스 ${ph.phonics.correct}/${ph.phonics.total}${phonicsNote(ph) ? ` (${phonicsNote(ph)})` : ''}` : '',
+    ...['vocab', 'grammar', 'form', 'reading', 'listening', 'sentence'].filter((a) => log.some((x) => x.area === a)).map((a) => `${AREA_KO[a]} · ${tally(log, a)}`),
+  ].filter(Boolean);
+  const title = r.test ? `레벨테스트 (${r.test.set}세트)` : r.stage2?.log?.length ? '1차 + 2차' : '1차';
+  return `<article class="sheet plain">${band(r, '결과리포트', '문항별 결과')}<p class="meta">${esc(r.name)} · ${esc(schoolGrade(r))} · 응시일 ${esc(r.date)}</p>
+    <div class="logs">${formLog(title, log)}</div>${lines.map((l) => `<p class="small">${l}</p>`).join('')}${stageLine(r)}
+    <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>
+    ${foot(r, '', `${pages} / ${pages}`)}</article>`;
+}
+
+// 예전 적응형 결과(sections 에 log): 영역별 문항표를 마지막 쪽으로
+function director(r, c, pages) {
   const logs = SECTIONS.map((k) => {
     const s = r.sections[k] || { log: [] };
-    if (s.level) {
-      const book = bookFor(r.academy?.books, k, s.est.step);
-      return `<div><h2>${SECTION_KO[k]}</h2><p class="small">${esc(stageText(s.level))} · 다음 시작 ${esc(nextLabel(k, s.est))}${book ? ` · 교재 ${esc(book)}` : ''}</p><p class="small">${tally(r.stage2.log, k)}</p></div>`;
-    }
     if (!s.log?.length) return `<div><h2>${SECTION_KO[k]}</h2><p class="small">${esc(s.skipped || '응시하지 않음')}</p></div>`;
     const range = shaky(s.log);
-    const book = s.est ? bookFor(r.academy?.books, k, s.est.step) : '';
     return `<div><h2>${SECTION_KO[k]}</h2>
       <table><thead><tr><th>#</th><th>학기</th><th>단원</th><th>유형</th><th>정오</th><th>초</th></tr></thead><tbody>
       ${s.log.map((x, i) => `<tr class="${x.correct ? '' : 'wrong'}"><td>${i + 1}</td><td>${labelOf(x.step)}</td><td>${x.unit}</td><td>${esc(x.kind)}</td><td>${mark(x)}</td><td>${Math.round(x.ms / 1000)}</td></tr>`).join('')}
       </tbody></table>
-      <p class="small">시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}${book ? ` · 교재 ${esc(book)}` : ''}</p></div>`;
+      <p class="small">시간 초과 ${s.log.filter((x) => x.timeout).length} · ${range ? `흔들린 구간 ${labelOf(range.from)} ~ ${labelOf(range.to)}` : '흔들린 구간 없음'} · 다음 시작 ${s.est ? esc(nextLabel(k, s.est)) : '-'}</p></div>`;
   }).join('');
-  return `${band(r, '원장용', '레벨테스트 상세')}<p class="meta">${esc(r.name)} · ${esc(schoolGrade(r))} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>${r.stage1 ? `<div class="logs">${formLog(`1차 (${r.stage1.set}세트)`, r.stage1.log)}${r.stage2?.log?.length ? `${formLog(`2차 (${r.stage2.set}세트)`, r.stage2.log)}<p class="small">영작 · ${tally(r.stage2.log, 'sentence')}</p>` : r.write2 ? formLog('2차 쓰기', r.write2.log) : ''}</div>` : ''}
+  return `<article class="sheet plain">${band(r, '결과리포트', '문항별 결과')}<p class="meta">${esc(r.name)} · ${esc(schoolGrade(r))} · 응시일 ${esc(r.date)}</p><div class="logs">${logs}</div>
     <h2>지도 방향</h2><ol id="directions" contenteditable>${c.directions.map((d) => `<li>${esc(d)}</li>`).join('')}</ol>
-    ${foot(r, '원장용')}`;
-}
-
-// 인쇄할 쪽만 남긴다 (나머지는 print CSS 가 숨김)
-function printOnly(cls) {
-  document.body.classList.add(cls);
-  addEventListener('afterprint', () => document.body.classList.remove(cls), { once: true });
-  print();
+    ${foot(r, '', `${pages} / ${pages}`)}</article>`;
 }
 
 async function fillComment(facts) {
@@ -357,7 +334,7 @@ async function fillComment(facts) {
 
 async function png() {
   try {
-    const url = await window.htmlToImage.toPng($('#parent .sheet'), { pixelRatio: 2, backgroundColor: '#fcfbf8' });
+    const url = await window.htmlToImage.toPng($('#report .sheet'), { pixelRatio: 2, backgroundColor: '#fcfbf8' });
     const a = document.createElement('a');
     a.href = url;
     a.download = `${result.name}-레벨테스트-표지.png`;
