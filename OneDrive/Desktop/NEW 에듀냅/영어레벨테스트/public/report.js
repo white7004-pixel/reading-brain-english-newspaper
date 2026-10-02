@@ -100,7 +100,7 @@ function stageLine(r) {
 
 function gauge(sc) {
   const C = 2 * Math.PI * 74;
-  const arc = sc ? `<circle cx="88" cy="88" r="74" fill="none" stroke="#D8BF65" stroke-width="5" stroke-linecap="round" stroke-dasharray="${((C * sc) / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 88 88)"/>` : '';
+  const arc = sc ? `<circle cx="88" cy="88" r="74" fill="none" stroke="#E7BDB8" stroke-width="5" stroke-linecap="round" stroke-dasharray="${((C * sc) / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 88 88)"/>` : '';
   return `<svg viewBox="0 0 176 176" aria-label="환산 점수 ${sc ?? '-'}점">
     <circle cx="88" cy="88" r="74" fill="none" stroke="rgba(247,243,235,.14)" stroke-width="5"/>${arc}
     <circle cx="88" cy="88" r="62" fill="none" stroke="rgba(247,243,235,.1)" stroke-width="1"/>
