@@ -55,6 +55,7 @@ export function unitName(section, step, unit) {
 export function positionText(section, est) {
   if (!est) return '응시하지 않음';
   const { step, unit } = est;
+  if (step < MIN_STEP) return `${labelOf(step)} 과정 수준`; // 초등 자리: 척도(중1~)에 단원이 없다
   if (unit == null) return `${labelOf(step)} 수준 (단원은 확인하지 못함)`;
   if (unit === 0) return `${labelOf(step)} 1단원(${unitName(section, step, 1)}) 전 단계`;
   return `${labelOf(step)} ${unit}단원(${unitName(section, step, unit)})까지 이해`;

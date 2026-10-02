@@ -198,7 +198,7 @@ export function kindTally(log, area) {
 export function stage2Est(level) {
   if (!level) return null;
   const m = /^(.+) 수준 아래$/.exec(level);
-  if (m || LEVELS.indexOf(level) < LEVELS.indexOf('중1')) return { step: 9, unit: 0 }; // 중1 과정 시작 전
+  if (m) return { step: levelStep(m[1]), unit: 0 }; // 그 학년 1학기 시작 전 (초3 수준 아래 = 초3 1학기)
   return { step: levelStep(level) + 2, unit: 0 };
 }
 

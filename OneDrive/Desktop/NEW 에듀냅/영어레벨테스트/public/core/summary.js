@@ -1,5 +1,5 @@
 // 리포트용 사실 정리와 틀 문장. AI 가 없거나 실패해도 리포트는 이 문장으로 나온다.
-import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf, positionText, nextUnit, unitName } from './scale.js';
+import { SECTIONS, SECTION_KO, SECTION_TOPIC, MIN_STEP, labelOf, positionText, nextUnit, unitName } from './scale.js';
 import { position, score, gradePos } from './progress.js';
 
 export function estLabel(est) {
@@ -9,12 +9,14 @@ export function estLabel(est) {
 }
 
 export function nextLabel(section, est) {
+  if (est.step < MIN_STEP) return `${labelOf(est.step)} 과정`; // 초등 자리는 단원 없이
   const n = nextUnit(est);
   return n ? `${labelOf(n.step)} ${n.unit}단원(${unitName(section, n.step, n.unit)})` : '고3 과정 복습';
 }
 
 // 다음 단원 n개 (고3 과정 끝을 넘으면 있는 만큼만)
 export function nextUnits(section, est, n) {
+  if (est.step < MIN_STEP) return [];
   const out = [];
   for (let u = nextUnit(est); u && out.length < n; u = nextUnit(u)) {
     out.push({ ...u, label: `${labelOf(u.step)} ${u.unit}단원`, name: unitName(section, u.step, u.unit) });

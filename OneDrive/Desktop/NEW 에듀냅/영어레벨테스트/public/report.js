@@ -1,7 +1,7 @@
 // 결과리포트 하나 (10/2 원장 결정): 표지 → 응시한 영역마다 1쪽 → 문항별 결과. 한 시험·예전 1차·1차+2차 결과 모두 같은 모양.
 // 숫자는 전부 core 가 계산한다. 여기서는 그리기만. AI 는 총평 문장만 쓰고, 실패하면 틀 문장이 남는다. 글은 눌러서 고칠 수 있다.
 import { ACADEMY } from './core/academy.js';
-import { SECTIONS, SECTION_KO, SECTION_TOPIC, labelOf } from './core/scale.js';
+import { SECTIONS, SECTION_KO, SECTION_TOPIC, MIN_STEP, labelOf } from './core/scale.js';
 import { project, position, score, levelOf, gradePos, gapText, ym, track, earlyText, END } from './core/progress.js';
 import { commentFacts, templateComment, shaky, nextLabel, estLabel, nextUnits } from './core/summary.js';
 import { areaLevels, phonicsNote, writeSummary, stage2Sections, stageText, kindTally, AREA_KO, STAGE_KO } from './core/forms.js';
@@ -88,15 +88,14 @@ function sec(n, label, cls, body, style = '') {
   return `<section class="sec"${style ? ` style="${style}"` : ''}><div class="lbl"><b>${n}</b><span>${label}</span></div><div class="body ${cls}">${body}</div></section>`;
 }
 
-// 한 시험: 멈춘 단계와 쓰기(영작) 한 줄. 예전 결과는 쓰기만. 중1 아래 영역이 있으면 진도 계산 기준 한 줄.
+// 한 시험: 멈춘 단계와 쓰기(영작) 한 줄. 예전 결과는 쓰기만.
 function stageLine(r) {
   const log = logOf(r);
   const w = writeSummary(log.filter((x) => x.area === 'sentence'));
   const stop = r.test ? (r.test.stopped ? `${esc(STAGE_KO[r.test.stopped] ?? r.test.stopped)} 단계까지 풀고 끝났습니다` : '모든 단계를 풀었습니다') : '';
   const wtext = w.total ? `쓰기 ${w.correct}/${w.total} (${w.missed.length ? `다시 볼 문법: ${esc(w.missed.join(', '))}` : '모두 맞힘'})` : '';
-  const below = SECTIONS.some((k) => r.sections[k]?.level && r.sections[k].est?.step === 9) ? '<p class="fine">중1 과정 전 단계 영역은 중1 과정을 시작하는 때부터 계산했습니다.</p>' : '';
   const line = [stop, wtext].filter(Boolean).join(' · ');
-  return `${line ? `<p class="fine">${line}</p>` : ''}${below}`;
+  return `${line ? `<p class="fine">${line}</p>` : ''}`;
 }
 
 function gauge(sc) {
@@ -215,7 +214,7 @@ function sectionPage(r, proj, k, n, start, pages) {
   const units = nextUnits(k, est, 4);
   const steps = units.length
     ? `<div class="body steps" style="--k:${units.length}">${units.map((u, i) => `<div${i ? '' : ' class="first"'}><i>${i + 1}</i><b>${esc(u.name)}</b><span>${esc(u.label)}</span></div>`).join('')}</div>`
-    : '<div class="body"><p class="quote">고3 과정 복습</p></div>';
+    : `<div class="body"><p class="quote">${est.step < MIN_STEP ? `${esc(labelOf(est.step))} 과정부터 시작합니다` : '고3 과정 복습'}</p></div>`;
   return `<article class="sheet section-page" style="--c:var(--${k})">
     <header class="shead"><div><span class="cap">영역별 결과 · ${String(n).padStart(2, '0')}</span><h2>${SECTION_KO[k]}<small>${EN[k]}</small></h2></div>
       <div class="r">${esc(r.name)} · ${esc(schoolGrade(r))}<b>${esc(head)}</b></div></header>

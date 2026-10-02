@@ -72,3 +72,15 @@ test('nextUnits: 다음 단원 n개, 고3 끝을 넘으면 있는 만큼만', ()
   assert.deepEqual(nextUnits('grammar', { step: 20, unit: 2 }, 4).map((u) => u.label), ['고3 2학기 3단원', '고3 2학기 4단원']);
   assert.deepEqual(nextUnits('grammar', { step: 20, unit: 4 }, 4), []);
 });
+
+test('초등 자리(중1 전 단계)는 단원 없이 과정 이름으로', async () => {
+  const { positionText } = await import('../public/core/scale.js');
+  const est = { step: 7, unit: 0 };
+  assert.equal(positionText('reading', est), '초6 1학기 과정 수준');
+  assert.equal(nextLabel('reading', est), '초6 1학기 과정');
+  assert.deepEqual(nextUnits('reading', est, 4), []);
+  const r = { name: '김OO', grade: '초6', date: '2026-10-02', sections: { reading: { est, level: '초5' } } };
+  const f = commentFacts(r, null);
+  assert.equal(f.sections[0].next, '초6 1학기 과정');
+  assert.ok(templateComment(f).summary);
+});

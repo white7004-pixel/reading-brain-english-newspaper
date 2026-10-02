@@ -313,9 +313,10 @@ test('testLevels: 초3부터 영역마다 3분의 2, 어형은 문법, 없는 �
   assert.equal(testLevels([T('초3', 'vocab', false), T('초3', 'vocab', false)]).vocab.level, '초3 수준 아래');
 });
 
-test('stage2Est: 초등 수준·수준 아래는 중1 시작 전(step 9), 중1 이상은 다음 학기', () => {
-  assert.deepEqual(stage2Est('초5'), { step: 9, unit: 0 });
-  assert.deepEqual(stage2Est('초3 수준 아래'), { step: 9, unit: 0 });
+test('stage2Est: 통과한 단계의 다음 학년 1학기(초등도 실제 자리), 수준 아래는 그 학년 1학기', () => {
+  assert.deepEqual(stage2Est('초5'), { step: 7, unit: 0 });
+  assert.deepEqual(stage2Est('초3 수준 아래'), { step: 1, unit: 0 });
+  assert.deepEqual(stage2Est('중1 수준 아래'), { step: 9, unit: 0 });
   assert.deepEqual(stage2Est('중2'), { step: 13, unit: 0 });
 });
 
