@@ -51,7 +51,8 @@ test('카드에 보이는 난이도 이름은 학부모 말로 바꿔 쓴다', (
   assert.deepEqual(d.난이도.map((x) => x.보임), ['쉬움', '보통', '어려움']);
   const c = ctx();
   const html = cardDeck(c, draftSchool(c));
-  assert.ok(html.includes('어려움 10문항') || html.includes('어려움 3문항'), '카드에는 풀어 쓴 이름이 나온다');
+  assert.ok(/<b>어려움<\/b><u>\d+문항<\/u>/.test(html), '카드에는 풀어 쓴 이름이 나온다');
+  assert.ok(!/<b>상<\/b>/.test(html), '카드에 하·중·상 을 그대로 보이지 않는다');
 });
 
 test('동그라미 그래프는 한 바퀴를 비율대로 나눠 갖고 가운데에 체감 난이도를 쓴다', () => {

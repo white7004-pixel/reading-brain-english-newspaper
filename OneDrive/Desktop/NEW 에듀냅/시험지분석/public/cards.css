@@ -141,6 +141,15 @@
 .deck .st b.g { color: var(--k-wine); }
 .deck .st span { margin-left: auto; font-size: 15.5px; font-weight: 700; color: rgba(14, 27, 41, .52); }
 
+/* 01 한눈에 — 넉 줄이 아니라 가로 넷으로 (문항 지도를 빼면서 1번 카드의 머리가 되었다) */
+.deck .st.wide { flex: 0 0 auto; padding: 8px 0 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; }
+.deck .st.wide div { flex-direction: column; align-items: flex-start; gap: 11px; padding: 0 30px; }
+.deck .st.wide div + div { margin: 0; padding-top: 0; border-top: 0; border-left: 1px solid rgba(14, 27, 41, .12); }
+.deck .st.wide div:first-child { padding-left: 2px; }
+.deck .st.wide b { font-size: 64px; }
+.deck .st.wide b u { font-size: 25px; }
+.deck .st.wide span { margin-left: 0; font-size: 17.5px; }
+
 /* ── 02 영역별 출제 ── */
 .deck .areas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .deck .ac { display: flex; flex-direction: column; padding: 16px 16px 14px; border-radius: 14px; background: rgba(14, 27, 41, .045); border: 1px solid rgba(14, 27, 41, .08); }
@@ -338,6 +347,7 @@
 .deck.mesh .lv3 div + div, .deck.mesh .st div + div, .deck.mesh .ring .lg i + i {
   border-top-color: rgba(255, 255, 255, .18);
 }
+.deck.mesh .st.wide div + div { border-left-color: rgba(255, 255, 255, .22); }
 .deck.mesh .row .bar, .deck.mesh .ac .bar { background: rgba(255, 255, 255, .18); }
 .deck.mesh .ac, .deck.mesh .way { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .18); }
 .deck.mesh .ac li, .deck.mesh .way p { color: rgba(255, 255, 255, .82); }
@@ -379,6 +389,11 @@
 .deck.split .big.fill { min-height: 372px; }
 /* 좁은 칸에서 세로로 늘어나면 그래프가 비율에 맞춰 작아진다 — 높이를 잡고 가운데 둔다 */
 .deck.split .plot { flex: 0 0 auto; height: 236px; margin: auto 0; }
+/* 칸이 좁아 64px 숫자는 옆 칸을 넘는다 */
+.deck.split .st.wide div { padding: 0 20px; }
+.deck.split .st.wide b { font-size: 50px; }
+.deck.split .st.wide b u { font-size: 21px; }
+.deck.split .st.wide span { font-size: 16px; }
 /* 좁은 칸에 그래프를 넣으면 비율에 눌려 작아진다 — 그래프가 있는 줄만 한 칸으로 편다 */
 .deck.split .low:has(.plot), .deck.split .low.one { grid-template-columns: 1fr; }
 .deck.split .low { grid-column: 2; grid-row: 2; margin: 16px 28px 0; padding: 0; grid-template-columns: 1fr 292px; }
@@ -477,6 +492,12 @@
   margin: 0; padding: 13px 22px; border: 1px solid rgba(255, 255, 255, .3);
   border-radius: 999px; background: rgba(255, 255, 255, .13); gap: 9px;
 }
+/* 가로 넷이어도 알약은 내용만큼만 — 칸을 꽉 채우면 알약으로 안 보인다 */
+.deck.glow .st.wide { display: flex; flex-wrap: wrap; align-items: center; padding: 0; }
+.deck.glow .st.wide div { flex-direction: row; align-items: baseline; gap: 9px; padding: 13px 24px; border-left: 0; }
+.deck.glow .st.wide b { font-size: 33px; }
+.deck.glow .st.wide b u { font-size: 17px; }
+.deck.glow .st.wide span { font-size: 16px; }
 .deck.glow .st b { font-size: 31px; }
 .deck.glow .st b u { font-size: 16px; }
 .deck.glow .st span { margin-left: 0; font-size: 16px; color: rgba(255, 255, 255, .8); }

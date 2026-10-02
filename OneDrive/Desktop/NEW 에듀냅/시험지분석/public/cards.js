@@ -184,12 +184,15 @@ export function cardDeck(ctx, school, opts = {}) {
   장.push(sheet(파일(d, '카드1-한눈에'), `
     ${머리(d, [d.학기, d.시험].filter(Boolean).join(' '))}
     <div class="kp big">
-      ${패(1, '문항 지도', `${d.문항}문항을 번호 차례로 폈습니다`)}
-      ${번호판(d)}
-      <div class="key num">${d.난이도.map((x) => `<i><s style="background:${x.색}"></s>${esc(x.보임)} ${x.수}문항 · ${x.비율}%</i>`).join('')}
-        <i class="ring"><s></s>점수가 갈린 문항</i></div>
+      ${패(1, '한눈에', '시험 전체를 숫자 넷으로')}
+      <div class="st wide num">
+        <div><b>${d.문항}</b><span>문항 수</span></div>
+        <div><b>${d.배점}<u>점</u></b><span>만점</span></div>
+        <div><b>${d.서답형비율}<u>%</u></b><span>서답형 몫</span></div>
+        <div><b class="g">${d.난이도.at(-1)?.수 ?? 0}</b><span>${esc(d.난이도.at(-1)?.보임 ?? '')} 문항</span></div>
+      </div>
     </div>
-    <div class="low">
+    <div class="low one">
       <div class="kp">${패(2, '어디서 많이 물었나')}
         ${d.영역.slice(0, 4).map((a) => `<div class="row"><span class="nm">${esc(a.이름)}</span>
           <span class="bar"><s style="width:${견줌(d, a.비율)}%"></s></span>
@@ -198,14 +201,6 @@ export function cardDeck(ctx, school, opts = {}) {
           ${donut(d.난이도, d.체감, '체감 난이도')}
           <div class="lg num">${d.난이도.map((x) => `<i><s style="background:${x.색}"></s>
             <b>${esc(x.보임)}</b><u>${x.수}문항</u><em>${x.비율}%</em></i>`).join('')}</div>
-        </div>
-      </div>
-      <div class="kp">${패(3, '한눈에')}
-        <div class="st num">
-          <div><b>${d.문항}</b><span>문항 수</span></div>
-          <div><b>${d.배점}<u>점</u></b><span>만점</span></div>
-          <div><b>${d.서답형비율}<u>%</u></b><span>서답형 몫</span></div>
-          <div><b class="g">${d.난이도.at(-1)?.수 ?? 0}</b><span>${esc(d.난이도.at(-1)?.보임 ?? '')} 문항</span></div>
         </div>
       </div>
     </div>
