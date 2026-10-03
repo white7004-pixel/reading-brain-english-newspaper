@@ -172,14 +172,18 @@ function 띠(d) {
   const W = 1000, H = 86, 사이 = 4, y = 16, h = 32;
   const w = (W - 사이 * (n - 1)) / n;
   const 색 = ['var(--d-low)', 'var(--d-mid)', 'var(--d-high)'];
+  const 간격 = n <= 14 ? 1 : n <= 28 ? 5 : n <= 44 ? 7 : 10;
   const 칸 = d.흐름.map((v, i) => {
     const x = i * (w + 사이), 가운데 = x + w / 2;
     const 갈림 = d.변별.includes(d.흐름번호[i]);
-    const 적을때 = n <= 14 || i % 5 === 0 || i === n - 1 || 갈림;
+    // 고등부는 50문항이 넘기도 한다 — 번호가 겹치지 않게 간격을 문항 수에 맞춘다
+    const 적을때 = i % 간격 === 0 || i === n - 1;
+    const 끝 = i === n - 1;
     return `<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${h}" rx="5" fill="${색[v] || 색[1]}"/>`
       + (갈림 ? `<circle cx="${가운데.toFixed(1)}" cy="7" r="4.5" fill="var(--k-chart-ink)"/>` : '')
-      + (적을때 ? `<text x="${가운데.toFixed(1)}" y="${y + h + 22}" text-anchor="middle" font-size="14"
-          font-weight="${갈림 ? 800 : 600}" fill="${갈림 ? 'var(--k-chart-ink)' : 'var(--k-chart-dim)'}">${esc(짧게(d.흐름번호[i]))}</text>` : '');
+      + (적을때 ? `<text x="${(i === 0 ? 0 : 끝 ? W : 가운데).toFixed(1)}" y="${y + h + 22}"
+          text-anchor="${i === 0 ? 'start' : 끝 ? 'end' : 'middle'}" font-size="14"
+          font-weight="600" fill="var(--k-chart-dim)">${esc(짧게(d.흐름번호[i]))}</text>` : '');
   }).join('');
   return `<div class="strip"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" aria-hidden="true">${칸}</svg></div>`;
 }

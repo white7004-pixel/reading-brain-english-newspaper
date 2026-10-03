@@ -99,13 +99,13 @@
 .deck .map .q.l1 { background: var(--d-mid); }
 .deck .map .q.l2 { background: var(--d-high); }
 .deck .map .q.key { box-shadow: 0 0 0 3px var(--k-ink), inset 0 1px 0 rgba(255, 255, 255, .35); }
-.deck .key { margin-top: 16px; display: flex; align-items: center; gap: 22px; font-size: 14.5px; font-weight: 700; color: rgba(14, 27, 41, .66); }
+.deck .key { margin-top: 10px; display: flex; align-items: center; gap: 22px; font-size: 14.5px; font-weight: 700; color: rgba(14, 27, 41, .66); }
 .deck .key i { display: flex; align-items: center; gap: 8px; font-style: normal; }
 .deck .key s { width: 11px; height: 11px; border-radius: 3px; text-decoration: none; }
 .deck .key .ring s { background: transparent; box-shadow: 0 0 0 2.5px var(--k-ink); }
 
 /* ── 가로 막대 줄 ── */
-.deck .row { display: flex; align-items: center; gap: 14px; padding: 9px 0; }
+.deck .row { display: flex; align-items: center; gap: 14px; padding: 7px 0; }
 .deck .row + .row { border-top: 1px solid rgba(14, 27, 41, .1); }
 .deck .row .nm { width: 68px; font-size: 17px; font-weight: 800; }
 .deck .row .bar { flex: 1; height: 11px; border-radius: 6px; background: rgba(14, 27, 41, .1); overflow: hidden; }
@@ -308,7 +308,7 @@
 /* 글씨를 키운 만큼 줄 간격을 줄여야 한 장에 들어간다 */
 .deck.band .row { padding: 6px 0; }
 .deck.band .ring { padding-top: 6px; gap: 18px; }
-.deck.band .ring svg { width: 138px; height: 138px; }  /* 글씨를 키운 판이라 그래프 자리가 좁다 */
+.deck.band .ring svg { width: 128px; height: 128px; }  /* 글씨를 키운 판이라 그래프 자리가 좁다 */
 .deck.band .ring .lg i { padding: 5px 0; }
 .deck.band .kf .pg { color: rgba(255, 255, 255, .62); }
 
@@ -519,6 +519,6 @@
 .deck.glow .kf s { background: #fff; box-shadow: none; }
 
 /* ── 문항 띠 — 한 줄로 편 문항 지도 ── */
-.deck .strip { margin-top: 16px; }
-.deck .strip svg { display: block; width: 100%; height: 86px; }
+.deck .strip { margin-top: 12px; }
+.deck .strip svg { display: block; width: 100%; height: 78px; }
 .deck .key .dot s { width: 9px; height: 9px; border-radius: 50%; background: var(--k-chart-ink); }
