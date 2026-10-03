@@ -164,8 +164,25 @@ const 패 = (no, 이름, 작게 = '') =>
 const 바닥 = (d, 말, n, 다) => `<div class="kf"><s></s>
   <p contenteditable>${esc(말 || d.한줄)}</p><span class="pg">0${n} / 0${다}</span></div>`;
 
-const 번호판 = (d) => `<div class="map num">${d.흐름.map((v, i) =>
-  `<div class="q l${v}${d.변별.includes(d.흐름번호[i]) ? ' key' : ''}">${esc(짧게(d.흐름번호[i]))}</div>`).join('')}</div>`;
+// 문항 띠 — 1번부터 차례로 한 줄. 색은 난이도, 위 점은 점수가 갈린 문항.
+// 번호를 네모로 늘어놓던 판을 물리셔서 한 줄로 바꿨다 (2026-10-03 원장 결정).
+function 띠(d) {
+  const n = d.흐름.length;
+  if (!n) return '';
+  const W = 1000, H = 86, 사이 = 4, y = 16, h = 32;
+  const w = (W - 사이 * (n - 1)) / n;
+  const 색 = ['var(--d-low)', 'var(--d-mid)', 'var(--d-high)'];
+  const 칸 = d.흐름.map((v, i) => {
+    const x = i * (w + 사이), 가운데 = x + w / 2;
+    const 갈림 = d.변별.includes(d.흐름번호[i]);
+    const 적을때 = n <= 14 || i % 5 === 0 || i === n - 1 || 갈림;
+    return `<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${h}" rx="5" fill="${색[v] || 색[1]}"/>`
+      + (갈림 ? `<circle cx="${가운데.toFixed(1)}" cy="7" r="4.5" fill="var(--k-chart-ink)"/>` : '')
+      + (적을때 ? `<text x="${가운데.toFixed(1)}" y="${y + h + 22}" text-anchor="middle" font-size="14"
+          font-weight="${갈림 ? 800 : 600}" fill="${갈림 ? 'var(--k-chart-ink)' : 'var(--k-chart-dim)'}">${esc(짧게(d.흐름번호[i]))}</text>` : '');
+  }).join('');
+  return `<div class="strip"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" aria-hidden="true">${칸}</svg></div>`;
+}
 
 // 가장 많은 영역을 100으로 두고 나머지를 견준다 — 작은 차이도 눈에 보이게
 const 견줌 = (d, 비율) => (d.영역[0]?.비율 ? Math.round((비율 * 100) / d.영역[0].비율) : 0);
@@ -184,13 +201,16 @@ export function cardDeck(ctx, school, opts = {}) {
   장.push(sheet(파일(d, '카드1-한눈에'), `
     ${머리(d, [d.학기, d.시험].filter(Boolean).join(' '))}
     <div class="kp big">
-      ${패(1, '한눈에', '시험 전체를 숫자 넷으로')}
+      ${패(1, '한눈에', '아래 띠는 1번부터 차례로 — 색이 난이도입니다')}
       <div class="st wide num">
         <div><b>${d.문항}</b><span>문항 수</span></div>
         <div><b>${d.배점}<u>점</u></b><span>만점</span></div>
         <div><b>${d.서답형비율}<u>%</u></b><span>서답형 몫</span></div>
         <div><b class="g">${d.난이도.at(-1)?.수 ?? 0}</b><span>${esc(d.난이도.at(-1)?.보임 ?? '')} 문항</span></div>
       </div>
+      ${띠(d)}
+      <div class="key num">${d.난이도.map((x) => `<i><s style="background:${x.색}"></s>${esc(x.보임)} ${x.수}문항</i>`).join('')}
+        <i class="dot"><s></s>점수가 갈린 문항</i></div>
     </div>
     <div class="low one">
       <div class="kp">${패(2, '어디서 많이 물었나')}

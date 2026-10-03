@@ -114,8 +114,8 @@
 .deck .row .n u { text-decoration: none; margin-left: 5px; font-size: 14px; font-weight: 600; color: rgba(14, 27, 41, .5); }
 
 /* ── 난이도 도넛 ── */
-.deck .ring { margin-top: auto; padding-top: 16px; display: flex; align-items: center; gap: 22px; }
-.deck .ring svg { flex: 0 0 auto; }
+.deck .ring { margin-top: auto; padding-top: 8px; display: flex; align-items: center; gap: 22px; }
+.deck .ring svg { flex: 0 0 auto; width: 148px; height: 148px; }
 .deck .ring .lg { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .deck .ring .lg i { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; font-style: normal; }
 .deck .ring .lg i + i { border-top: 1px solid rgba(14, 27, 41, .1); }
@@ -307,7 +307,8 @@
 .deck.band .tip { font-size: 16px; }
 /* 글씨를 키운 만큼 줄 간격을 줄여야 한 장에 들어간다 */
 .deck.band .row { padding: 6px 0; }
-.deck.band .ring { padding-top: 12px; gap: 18px; }
+.deck.band .ring { padding-top: 6px; gap: 18px; }
+.deck.band .ring svg { width: 138px; height: 138px; }  /* 글씨를 키운 판이라 그래프 자리가 좁다 */
 .deck.band .ring .lg i { padding: 5px 0; }
 .deck.band .kf .pg { color: rgba(255, 255, 255, .62); }
 
@@ -505,7 +506,7 @@
 /* 동그라미 그래프를 크게 */
 .deck.glow .ring { gap: 26px; padding-top: 10px; }
 .deck.glow .key .ring { gap: 8px; padding-top: 0; }  /* 범례 안의 동그라미까지 벌어지지 않게 */
-.deck.glow .ring svg { width: 140px; height: 140px; }
+.deck.glow .ring svg { width: 158px; height: 158px; }
 .deck.glow .ring .lg b, .deck.glow .ring .lg u { font-size: 19px; }
 
 .deck.glow .ac, .deck.glow .way {
@@ -516,3 +517,8 @@
 .deck.glow .kf { margin-top: auto; padding-top: 22px; border-top-color: rgba(255, 255, 255, .24); }
 .deck.glow .kf p { font-size: 23px; }
 .deck.glow .kf s { background: #fff; box-shadow: none; }
+
+/* ── 문항 띠 — 한 줄로 편 문항 지도 ── */
+.deck .strip { margin-top: 16px; }
+.deck .strip svg { display: block; width: 100%; height: 86px; }
+.deck .key .dot s { width: 9px; height: 9px; border-radius: 50%; background: var(--k-chart-ink); }
