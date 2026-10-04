@@ -51,19 +51,17 @@ export const Hook: React.FC = () => {
           position: "relative",
         }}
       >
-        <Line text="영어학원 3년," size={112} weight={800} fadeFrames={5} />
         <Line
           text={
             <>
-              아직도 <GoldMark delay={14} color={BRAND.white}>단어만</GoldMark>
+              아직도 <GoldMark delay={12} color={BRAND.white}>단어만</GoldMark>
             </>
           }
           size={112}
           weight={800}
-          delay={5}
           fadeFrames={5}
         />
-        <Line text="외우나요?" size={112} weight={800} delay={10} fadeFrames={5} />
+        <Line text="외우고 있나요?" size={112} weight={800} delay={6} fadeFrames={5} />
       </div>
     </AbsoluteFill>
   );

@@ -37,33 +37,8 @@ export const Cta: React.FC = () => {
           marginTop: -70,
         }}
       >
-        {/* 실제 로고 — 흰 카드 위에, gold 링이 살짝 커지며 등장 */}
+        {/* 실제 로고 — 흰 카드가 길게 올라오며 정착 */}
         <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
-          <Interactive.Div
-            name="GoldRing"
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              width: 620,
-              height: 620,
-              marginLeft: -310,
-              marginTop: -310,
-              borderRadius: "50%",
-              border: `2px solid ${BRAND.gold}`,
-              opacity: interpolate(frame, [0.15 * fps, 0.6 * fps], [0, 0.55], {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-                easing: Easing.bezier(0.16, 1, 0.3, 1),
-              }),
-              scale: interpolate(frame, [0.15 * fps, 1.0 * fps], [0.82, 1], {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-                easing: Easing.spring({ damping: 200 }),
-                output: "perceptual-scale",
-              }),
-            }}
-          />
           <Interactive.Div
             name="LogoCard"
             style={{

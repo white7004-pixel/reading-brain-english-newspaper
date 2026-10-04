@@ -49,7 +49,7 @@ const SHOTS = [
     src: "work/w1-crop.jpg",
     caption: (
       <>
-        원서 한 권을 읽고, <span style={{ color: BRAND.burgundy }}>이해를 확인합니다</span>
+        읽고, <span style={{ color: BRAND.burgundy }}>이해를 확인하고</span>
       </>
     ),
     zoomIn: true,
@@ -58,7 +58,7 @@ const SHOTS = [
     src: "work/w4-crop.jpg",
     caption: (
       <>
-        틀린 문제는 <span style={{ color: BRAND.burgundy }}>책에서 근거를 찾습니다</span>
+        <span style={{ color: BRAND.burgundy }}>책에서 근거</span>를 찾고
       </>
     ),
     zoomIn: false,
@@ -67,7 +67,7 @@ const SHOTS = [
     src: "work/w5-crop.jpg",
     caption: (
       <>
-        문장은 <span style={{ color: BRAND.burgundy }}>손으로 직접</span> 만들어 보고
+        문장은 <span style={{ color: BRAND.burgundy }}>직접</span> 만들고
       </>
     ),
     zoomIn: true,
@@ -76,7 +76,7 @@ const SHOTS = [
     src: "work/w2-crop.jpg",
     caption: (
       <>
-        배운 걸로 <span style={{ color: BRAND.burgundy }}>글 한 편을 구성합니다</span>
+        <span style={{ color: BRAND.burgundy }}>글 한 편</span>을 씁니다
       </>
     ),
     zoomIn: false,
@@ -85,7 +85,7 @@ const SHOTS = [
     src: "work/w3-crop.jpg",
     caption: (
       <>
-        이게 <span style={{ color: BRAND.burgundy }}>초등학생이 쓴 영어 글</span>입니다
+        <span style={{ color: BRAND.burgundy }}>초등학생이 쓴 영어</span>입니다
       </>
     ),
     zoomIn: true,

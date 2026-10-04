@@ -31,7 +31,7 @@ export const Problem: React.FC = () => {
         <Pill
           text={
             <>
-              문제는 암기가 아니라, <span style={{ color: BRAND.burgundy }}>독해력</span>
+              문제는 <span style={{ color: BRAND.burgundy }}>독해력</span>입니다
             </>
           }
           delay={Math.round(1.8 * fps)}

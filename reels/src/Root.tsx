@@ -13,6 +13,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="Reels"
         component={Reels}
+        defaultProps={{ audio: "full" as const }}
         durationInFrames={900}
         fps={30}
         width={1080}
