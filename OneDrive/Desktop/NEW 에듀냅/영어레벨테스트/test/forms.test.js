@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText, TEST_STAGES, testStage, validateTest, usableTest, testReady, stopAfter, testLevels, AREA_BLOCKS, byArea, areaStops, nextIndex, areaRail } from '../public/core/forms.js';
+import { checkWrite, isWrite, validateForm, usableForm, marked, nextSet, blanks, stage1Score, areaLevels, startLevel, phonicsNote, writeSummary, levelStep, railFor, checkOrder, choiceCount, secondsFor, stage2Levels, kindTally, stage2Est, stage2Sections, stageText, TEST_STAGES, testStage, validateTest, usableTest, testReady, testLevels, AREA_BLOCKS, byArea, areaRail } from '../public/core/forms.js';
 
 const mc = (o = {}) => ({ id: 'm', no: 13, area: 'grammar', level: '초4', question: '알맞은 것은?', choices: ['a', 'b', 'c', 'd'], answer: 0, status: 'ok', ...o });
 const wr = (o = {}) => ({ id: 'w', no: 38, area: 'form', level: '초5', question: '[break] 알맞은 꼴로', template: 'He {} the cup.', answers: [['broke']], status: 'ok', ...o });
@@ -260,7 +260,6 @@ test('문제지(실제·샘플)의 1차·2차에는 직접 쓰는 문항이 없�
 });
 
 const T = (level, area, correct = true, o = {}) => ({ id: `${level}-${area}-${Math.random()}`, level, area, correct, kind: '', ...o });
-const stageItems = (level, n = 10) => Array.from({ length: n }, (_, k) => ({ id: `${level}${k}`, level, area: 'reading' }));
 
 test('TEST_STAGES 는 초5~고2 7단계(원장 결정 10/2: 초3·초4·파닉스 뺌), testStage 는 초등 1·중고 2', () => {
   assert.deepEqual(TEST_STAGES, ['초5', '초6', '중1', '중2', '중3', '고1', '고2']);
@@ -287,20 +286,6 @@ test('usableTest·testReady: 통과 문항만, 7단계 모두 6개 이상이어�
   const short = full.filter((x) => !(x.level === '고2' && x.id.endsWith('5')));
   assert.equal(testReady(usableTest(short)), false);
   assert.equal(usableTest([{ ...full[0], status: 'draft' }]).length, 0);
-});
-
-test('stopAfter: 마친 단계 중 마지막 두 단계가 모두 절반 미만이면 그 단계', () => {
-  const list = [...stageItems('초5'), ...stageItems('초6'), ...stageItems('중1')];
-  const answers = (level, right, n = 10) => Array.from({ length: n }, (_, k) => T(level, 'reading', k < right));
-  assert.equal(stopAfter(list, [...answers('초5', 4), ...answers('초6', 4)]), '초6');
-  assert.equal(stopAfter(list, [...answers('초5', 5), ...answers('초6', 4)]), null, '5/10 은 절반 미만이 아님');
-  assert.equal(stopAfter(list, [...answers('초5', 3), ...answers('초6', 9), ...answers('중1', 2)]), null, '연속이 아님');
-  assert.equal(stopAfter(list, [...answers('초5', 2), ...answers('초6', 2, 6)]), null, '초6 을 다 풀지 않았으면 세지 않음');
-  const nine = [...stageItems('중1', 9), ...stageItems('중2', 9)];
-  assert.equal(stopAfter(nine, [...answers('중1', 4, 9), ...answers('중2', 4, 9)]), '중2', '듣기를 뺀 9문항 단계: 4/9 는 절반 미만');
-  const seven = [...stageItems('중1', 7), ...stageItems('중2', 7)];
-  assert.equal(stopAfter(seven, [...answers('중1', 3, 7), ...answers('중2', 3, 7)]), '중2', '7문항 단계: 3/7 은 절반 미만');
-  assert.equal(stopAfter(seven, [...answers('중1', 3, 7), ...answers('중2', 4, 7)]), null, '4/7 은 절반 이상');
 });
 
 test('testLevels: 초3부터 영역마다 3분의 2, 어형은 문법, 없는 단계는 건너뜀', () => {
@@ -366,32 +351,11 @@ test('byArea: 영역 묶음 차례, 묶음 안은 단계 → 번호', () => {
   assert.notEqual(byArea(mixed), mixed, '원본을 바꾸지 않는다');
 });
 
-test('areaStops·nextIndex: 그 영역만 두 단계 연속 절반 미만이면 남은 문항을 건너뛴다', () => {
+test('areaRail: 영역 칸마다 푼 수와 지금 칸', () => {
   const list = byArea(mixed);
-  const ans = (no, correct) => ({ ...mixed.find((x) => x.no === no), correct });
-  // 듣기 중1·중2 모두 틀림 → 듣기는 끝(남은 듣기 없음), 어휘 초5 맞힘
-  let log = [ans(6, false), ans(11, false)];
-  assert.deepEqual(areaStops(list, log), { listening: '중2' });
-  assert.equal(nextIndex(list, log, 2), 2, '어휘 첫 문항으로');
-  // 어휘 초5·중1 틀림 → 어휘 중2 는 건너뛰고 문법 첫 문항(초5 grammar)으로
-  log = [...log, ans(1, false), ans(7, false)];
-  assert.deepEqual(areaStops(list, log), { listening: '중2', vocab: '중1' });
-  assert.equal(list[nextIndex(list, log, 4)].no, 2);
-  // 문법: 초5 는 grammar+form 두 문항 중 하나 맞힘(절반 이상) → 계속
-  log = [...log, ans(2, true), ans(3, false)];
-  assert.deepEqual(areaStops(list, log), { listening: '중2', vocab: '중1' });
-  assert.equal(list[nextIndex(list, log, 7)].no, 8);
-  // 마지막까지 건너뛰면 list.length
-  const allWrong = list.map((x) => ({ ...x, correct: false }));
-  assert.equal(nextIndex(list, allWrong, list.length), list.length);
-});
-
-test('areaRail: 영역 칸마다 푼 수, 지금 칸, 멈춘 영역은 다 채움', () => {
-  const list = byArea(mixed);
-  const rail = areaRail(list, 5, { vocab: '중1' }); // 듣기 2 + 어휘 3 지나 문법 첫 문항
+  const rail = areaRail(list, 5); // 듣기 2 + 어휘 3 지나 문법 첫 문항
   assert.deepEqual(rail.map((c) => [c.label, c.done, c.total, c.current]), [['듣기', 2, 2, false], ['어휘', 3, 3, false], ['문법', 0, 4, true], ['독해', 0, 3, false], ['영작', 0, 3, false]]);
-  assert.equal(areaRail(list, 3, { vocab: '초5' })[1].done, 3, '멈춘 영역은 다 채움');
-  assert.equal(areaRail(list.filter((x) => x.area !== 'listening'), 0, {}).length, 4, '문항 없는 영역 칸은 없다');
+  assert.equal(areaRail(list.filter((x) => x.area !== 'listening'), 0).length, 4, '문항 없는 영역 칸은 없다');
 });
 
 test('byArea(실제 문제지): 듣기 5 → 어휘 → 문법 → 독해 → 영작, 같은 지문은 붙어 있다', () => {

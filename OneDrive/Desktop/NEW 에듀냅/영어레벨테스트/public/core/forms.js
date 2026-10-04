@@ -17,16 +17,9 @@ export const testStage = (it) => (LEVELS.indexOf(it?.level) <= LEVELS.indexOf('�
 export const validateTest = (it) => (TEST_STAGES.includes(it?.level) ? validateForm(it, testStage(it)) : ['수준']);
 export const usableTest = (list) => (Array.isArray(list) ? list : []).filter((i) => i?.status === 'ok' && !validateTest(i).length).sort((a, b) => a.no - b.no);
 export const testReady = (list) => TEST_STAGES.every((lv) => list.filter((i) => i.level === lv).length >= MIN_PER_STAGE);
-// 마친 단계(그 단계 문항을 모두 풂) 가운데 마지막 두 단계가 모두 절반 미만이면 그 단계 이름
-export function stopAfter(list, log) {
-  const done = TEST_STAGES.filter((lv) => { const n = list.filter((i) => i.level === lv).length; return n && log.filter((x) => x.level === lv).length >= n; });
-  const weak = (lv) => { const at = log.filter((x) => x.level === lv); return at.filter((x) => x.correct).length * 2 < at.length; };
-  const [a, b] = done.slice(-2);
-  return b && weak(a) && weak(b) ? b : null;
-}
 
 // 영역별로 묶어 풀기 (원장 결정 10/2): 듣기 → 어휘 → 문법(어형 포함) → 독해 → 영작, 영역 안은 초5 → 고2~3.
-// 영역마다 따로 멈춘다 — 그 영역에서 두 단계 연속 절반 미만이면 그 영역의 남은 문항은 건너뛴다.
+// 중간에 끝나지 않고 50문항을 모두 푼다 (원장 결정 10/4).
 export const AREA_BLOCKS = [
   { key: 'listening', label: '듣기', areas: ['listening'] },
   { key: 'vocab', label: '어휘', areas: ['vocab'] },
@@ -36,29 +29,12 @@ export const AREA_BLOCKS = [
 ];
 const blockAt = (area) => AREA_BLOCKS.findIndex((b) => b.areas.includes(area));
 export const byArea = (list) => [...list].sort((a, b) => (blockAt(a.area) - blockAt(b.area)) || (LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)) || (a.no - b.no));
-// 멈춘 영역: { 영역 key: 멈춘 단계 }
-export function areaStops(list, log) {
-  const out = {};
-  for (const b of AREA_BLOCKS) {
-    const inB = (x) => b.areas.includes(x.area);
-    const s = stopAfter(list.filter(inB), log.filter(inB));
-    if (s) out[b.key] = s;
-  }
-  return out;
-}
-// i 번째부터 멈추지 않은 영역의 첫 문항 자리 (없으면 list.length)
-export function nextIndex(list, log, i) {
-  const stops = areaStops(list, log);
-  let j = i;
-  while (j < list.length && stops[AREA_BLOCKS[blockAt(list[j].area)]?.key]) j += 1;
-  return j;
-}
-// 위 띠 영역 칸: 푼 수(i 앞 문항), 지금 칸, 멈춘 영역은 다 채운다. 문항 없는 영역은 칸이 없다
-export function areaRail(list, i, stops = {}) {
+// 위 띠 영역 칸: 푼 수(i 앞 문항)와 지금 칸. 문항 없는 영역은 칸이 없다
+export function areaRail(list, i) {
   return AREA_BLOCKS.map((b) => {
     const idx = list.flatMap((x, n) => (b.areas.includes(x.area) ? [n] : []));
     const total = idx.length;
-    return { key: b.key, label: b.label, total, done: stops[b.key] ? total : idx.filter((n) => n < i).length, current: idx.includes(i) && !stops[b.key] };
+    return { key: b.key, label: b.label, total, done: idx.filter((n) => n < i).length, current: idx.includes(i) };
   }).filter((c) => c.total);
 }
 
