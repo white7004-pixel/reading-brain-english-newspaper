@@ -12,7 +12,7 @@ import { Cta } from "./scenes/Cta";
 /*
  * 총 900프레임(30초 @30fps).
  * 씬 합계 940 - 전환 4회 × 10프레임 = 900.
- *  훅 75 · 문제 165 · 전환 180 · 증거 300 · CTA 220
+ *  훅 75 · 문제 150 · 전환 165 · 증거 330(결과물 5컷) · CTA 220
  */
 const T = 10;
 
@@ -24,15 +24,15 @@ export const Reels: React.FC = () => {
         <Hook />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: T })} />
-      <TransitionSeries.Sequence durationInFrames={165}>
+      <TransitionSeries.Sequence durationInFrames={150}>
         <Problem />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: T })} />
-      <TransitionSeries.Sequence durationInFrames={180}>
+      <TransitionSeries.Sequence durationInFrames={165}>
         <Shift />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: T })} />
-      <TransitionSeries.Sequence durationInFrames={300}>
+      <TransitionSeries.Sequence durationInFrames={330}>
         <Evidence />
       </TransitionSeries.Sequence>
       <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: T })} />

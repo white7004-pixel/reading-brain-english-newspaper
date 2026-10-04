@@ -1,5 +1,14 @@
 import React from "react";
-import { AbsoluteFill, Easing, Interactive, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Easing,
+  Img,
+  Interactive,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { BRAND } from "../brand";
 import { FONT } from "../fonts";
 import { GoldMark, Line } from "../ui";
@@ -71,9 +80,10 @@ const Arrow: React.FC<{ delay: number }> = ({ delay }) => {
   );
 };
 
-/* 씬3 · 전환 (약 6초) — 리딩브레인 관점: 읽는 힘, 한 줄→한 페이지→한 권 */
+/* 씬3 · 전환 — 리딩브레인 관점: 읽는 힘, 한 줄→한 페이지→한 권 */
 export const Shift: React.FC = () => {
   const { fps } = useVideoConfig();
+  const frame = useCurrentFrame();
   return (
     <AbsoluteFill
       name="Shift"
@@ -84,6 +94,30 @@ export const Shift: React.FC = () => {
         padding: "0 90px",
       }}
     >
+      {/* 실제 교실 사진 — 아주 은은한 배경 */}
+      <AbsoluteFill style={{ overflow: "hidden" }}>
+        <Img
+          src={staticFile("photos/p1-crop.jpg")}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: 0.2,
+            scale: interpolate(frame, [0, 165], [1.0, 1.07], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: Easing.bezier(0.33, 0, 0.67, 1),
+              output: "perceptual-scale",
+            }),
+          }}
+        />
+      </AbsoluteFill>
+      <AbsoluteFill
+        style={{
+          background: `linear-gradient(to bottom, rgba(20,32,58,0.86) 0%, rgba(27,42,74,0.78) 50%, rgba(20,32,58,0.92) 100%)`,
+        }}
+      />
+
       <div
         style={{
           display: "flex",
@@ -91,6 +125,7 @@ export const Shift: React.FC = () => {
           gap: 16,
           alignItems: "center",
           marginTop: -50,
+          position: "relative",
         }}
       >
         <Line

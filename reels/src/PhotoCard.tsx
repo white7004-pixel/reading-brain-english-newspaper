@@ -24,7 +24,9 @@ export const PhotoCard: React.FC<{
   total: number;
   /** 켄번즈 방향 */
   zoomIn?: boolean;
-}> = ({ src, caption, index, total, zoomIn = true }) => {
+  /** 네이비 틴트 세기 — 흰 종이(학습 결과물)는 낮게 */
+  tint?: number;
+}> = ({ src, caption, index, total, zoomIn = true, tint = 0.34 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
@@ -56,7 +58,7 @@ export const PhotoCard: React.FC<{
       </AbsoluteFill>
 
       {/* 브랜드 톤 유지용 네이비 틴트 */}
-      <AbsoluteFill style={{ backgroundColor: BRAND.navy, opacity: 0.34 }} />
+      <AbsoluteFill style={{ backgroundColor: BRAND.navy, opacity: tint }} />
 
       {/* 하단 그라데이션 — 캡션 가독성 */}
       <AbsoluteFill
@@ -112,7 +114,7 @@ export const PhotoCard: React.FC<{
             display: "inline-block",
             fontFamily: FONT,
             fontWeight: 700,
-            fontSize: 56,
+            fontSize: 52,
             lineHeight: 1.34,
             color: BRAND.navy,
             backgroundColor: BRAND.white,

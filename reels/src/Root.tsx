@@ -20,9 +20,9 @@ export const RemotionRoot: React.FC = () => {
       />
       <Folder name="Scenes">
         <Composition id="Hook" component={Hook} durationInFrames={75} fps={30} width={1080} height={1920} />
-        <Composition id="Problem" component={Problem} durationInFrames={165} fps={30} width={1080} height={1920} />
-        <Composition id="Shift" component={Shift} durationInFrames={180} fps={30} width={1080} height={1920} />
-        <Composition id="Evidence" component={Evidence} durationInFrames={300} fps={30} width={1080} height={1920} />
+        <Composition id="Problem" component={Problem} durationInFrames={150} fps={30} width={1080} height={1920} />
+        <Composition id="Shift" component={Shift} durationInFrames={165} fps={30} width={1080} height={1920} />
+        <Composition id="Evidence" component={Evidence} durationInFrames={330} fps={30} width={1080} height={1920} />
         <Composition id="Cta" component={Cta} durationInFrames={220} fps={30} width={1080} height={1920} />
       </Folder>
     </>

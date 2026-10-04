@@ -1,10 +1,19 @@
 import React from "react";
-import { AbsoluteFill, Easing, Interactive, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Easing,
+  Img,
+  Interactive,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { BRAND } from "../brand";
 import { FONT } from "../fonts";
 import { Pill } from "../ui";
 
-/* 씬5 · CTA (약 6초) — gold 링 엠블럼 + 워드마크 + 슬로건 + 행동 한 줄 */
+/* 씬5 · CTA (220프레임 ≈ 7.3초) — 실제 학원 로고 + 한글 학원명 + 행동 한 줄 */
 export const Cta: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -23,92 +32,101 @@ export const Cta: React.FC = () => {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 28,
+          gap: 40,
           alignItems: "center",
-          marginTop: -60,
+          marginTop: -70,
         }}
       >
-        {/* gold 링 엠블럼 — 살짝 커지며 등장, 1초 안에 정지 */}
-        <Interactive.Div
-          name="Ring"
-          style={{
-            width: 300,
-            height: 300,
-            borderRadius: "50%",
-            border: `3px solid ${BRAND.gold}`,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            opacity: interpolate(frame, [0, 0.3 * fps], [0, 1], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: Easing.bezier(0.16, 1, 0.3, 1),
-            }),
-            scale: interpolate(frame, [0, 0.9 * fps], [0.86, 1], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: Easing.spring({ damping: 200 }),
-              output: "perceptual-scale",
-            }),
-          }}
-        >
-          <span
+        {/* 실제 로고 — 흰 카드 위에, gold 링이 살짝 커지며 등장 */}
+        <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+          <Interactive.Div
+            name="GoldRing"
             style={{
-              fontFamily: FONT,
-              fontWeight: 800,
-              fontSize: 74,
-              color: BRAND.white,
-              letterSpacing: "0.02em",
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: 620,
+              height: 620,
+              marginLeft: -310,
+              marginTop: -310,
+              borderRadius: "50%",
+              border: `2px solid ${BRAND.gold}`,
+              opacity: interpolate(frame, [0.15 * fps, 0.6 * fps], [0, 0.55], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: Easing.bezier(0.16, 1, 0.3, 1),
+              }),
+              scale: interpolate(frame, [0.15 * fps, 1.0 * fps], [0.82, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: Easing.spring({ damping: 200 }),
+                output: "perceptual-scale",
+              }),
+            }}
+          />
+          <Interactive.Div
+            name="LogoCard"
+            style={{
+              backgroundColor: BRAND.white,
+              borderRadius: 32,
+              padding: "44px 56px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              opacity: interpolate(frame, [0, 0.3 * fps], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: Easing.bezier(0.16, 1, 0.3, 1),
+              }),
+              scale: interpolate(frame, [0, 0.85 * fps], [0.88, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: Easing.spring({ damping: 200 }),
+                output: "perceptual-scale",
+              }),
+              translate:
+                "0px " +
+                interpolate(frame, [0, 0.85 * fps], [30, 0], {
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                  easing: Easing.spring({ damping: 200 }),
+                }) +
+                "px",
             }}
           >
-            RB
-          </span>
-        </Interactive.Div>
+            <Img src={staticFile("logo.png")} style={{ width: 470, height: "auto" }} />
+          </Interactive.Div>
+        </div>
 
         <Interactive.Div
-          name="Wordmark"
+          name="KoreanName"
           style={{
             fontFamily: FONT,
             fontWeight: 800,
-            fontSize: 84,
+            fontSize: 66,
             color: BRAND.white,
-            letterSpacing: "0.1em",
-            opacity: interpolate(frame, [0.5 * fps, 0.8 * fps], [0, 1], {
+            letterSpacing: "0.02em",
+            opacity: interpolate(frame, [0.9 * fps, 1.25 * fps], [0, 1], {
               extrapolateLeft: "clamp",
               extrapolateRight: "clamp",
               easing: Easing.bezier(0.16, 1, 0.3, 1),
             }),
-            translate: "0px " + interpolate(frame, [0.5 * fps, 0.9 * fps], [26, 0], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: Easing.spring({ damping: 200 }),
-            }) + "px",
+            translate:
+              "0px " +
+              interpolate(frame, [0.9 * fps, 1.3 * fps], [24, 0], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: Easing.spring({ damping: 200 }),
+              }) +
+              "px",
           }}
         >
-          READING BRAIN
+          리딩브레인 영어학원
         </Interactive.Div>
 
-        <Interactive.Div
-          name="Slogan"
-          style={{
-            fontFamily: FONT,
-            fontWeight: 600,
-            fontSize: 44,
-            color: BRAND.goldSoft,
-            letterSpacing: "0.06em",
-            opacity: interpolate(frame, [1.0 * fps, 1.3 * fps], [0, 1], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            }),
-          }}
-        >
-          {BRAND.slogan}
-        </Interactive.Div>
-
-        <div style={{ height: 34 }} />
         <Pill
           text="프로필 링크에서 레벨 테스트 신청"
-          delay={Math.round(1.8 * fps)}
+          delay={Math.round(1.9 * fps)}
           size={48}
           bg={BRAND.gold}
           color={BRAND.navy}
