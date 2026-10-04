@@ -85,7 +85,7 @@ const SHOTS = [
     src: "work/w3-crop.jpg",
     caption: (
       <>
-        <span style={{ color: BRAND.burgundy }}>초등학생이 쓴 영어</span>입니다
+        리딩브레인의 <span style={{ color: BRAND.burgundy }}>에세이 쓰기</span>
       </>
     ),
     zoomIn: true,

@@ -51,6 +51,15 @@ held = np.convolve(active, np.ones(int(HOLD * SR)), "full")[:N] > 0
 gate = np.maximum(gate, held.astype(np.float64))
 la = int(LOOKAHEAD * SR)
 gate = np.concatenate([gate[la:], np.zeros(la)])
+
+# 임팩트 보호: 컷 시점(HITS)에 말이 없으면 임팩트 첫 HIT_WIN초 동안은 더킹을 풀어 타격감을 살린다
+HITS = [0.0, 2.17, 6.83, 12.0, 14.2, 16.4, 18.6, 20.8, 22.67]
+HIT_WIN = 0.14
+for h in HITS:
+    a, b = int(h * SR), int((h + HIT_WIN) * SR)
+    lo = max(0, int((h - 0.03) * SR))
+    if np.abs(vo[lo:b]).max() < 0.02:        # 그 순간 말이 없을 때만
+        gate[a:b] = 0.0
 atk, rel = int(0.12 * SR), int(0.45 * SR)
 sm = np.zeros(N); cur = 0.0
 for i in range(N):
