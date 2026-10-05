@@ -1,0 +1,79 @@
+{
+  "id": "irregular-past",
+  "fps": 30,
+  "academy": {
+    "name": "리딩브레인 영어학원",
+    "logo": "logo.png",
+    "cta": "프로필 링크에서 레벨 테스트 신청",
+    "colors": { "bg": "#1B2A4A", "accent": "#C9A227", "paper": "#F7F4EC" }
+  },
+  "series": "문법 만화",
+  "episode": "EP.1",
+  "topic": "불규칙 동사",
+  "cast": {
+    "narrator": { "name": "", "voice": "05f19352e8f74b0392a8f411eba40de1", "speed": 1.1 },
+    "teacher": { "name": "선생님", "voice": "05f19352e8f74b0392a8f411eba40de1", "speed": 1.08, "color": "#7CC4F5" },
+    "boy": { "name": "학생", "voice": "44a6e603e3714f1fbba1370aac82f7af", "speed": 1.1, "color": "#FFD84D" },
+    "girl": { "name": "친구", "voice": "1cd326303dc3411eaa9fcda84ee7b921", "speed": 1.1, "color": "#FF9EC4" }
+  },
+  "beats": [
+    {
+      "type": "hook",
+      "title": "이 일기, 뭐가 틀렸을까?",
+      "diary": ["I *goed* to the zoo.", "I *seed* a lion!"],
+      "art": "p1",
+      "lines": [{ "who": "narrator", "text": "이 일기, 뭐가 틀렸을까요?" }]
+    },
+    {
+      "type": "panel",
+      "art": "p1",
+      "lines": [
+        { "who": "boy", "text": "I *goed*! lion도 *seed*!", "focus": [0.5, 0.35] },
+        { "who": "teacher", "text": "*goed*? *seed*? 특이한 일기네…", "focus": [0.3, 0.7] },
+        { "who": "girl", "text": "푸훗~", "focus": [0.85, 0.5] }
+      ]
+    },
+    {
+      "type": "panel",
+      "art": "p2",
+      "lines": [
+        { "who": "teacher", "text": "대부분은 끝에 *ed*! 하지만…", "focus": [0.2, 0.5] },
+        { "who": "boy", "text": "*go*는 *went*, *see*는 *saw*?", "focus": [0.62, 0.5] },
+        { "who": "teacher", "text": "그래! 자주 쓰는 동사는 제멋대로!", "focus": [0.2, 0.5] }
+      ]
+    },
+    {
+      "type": "swap",
+      "stamp": "불규칙 동사",
+      "pairs": [["go", "goed", "went"], ["see", "seed", "saw"]],
+      "lines": [{ "who": "narrator", "text": "*go*는 *went*, *see*는 *saw*. 모양이 바뀌는 동사를 불규칙 동사라고 해요." }]
+    },
+    {
+      "type": "panel",
+      "art": "p3",
+      "lines": [
+        { "who": "boy", "text": "I *went* to the zoo yesterday!", "lang": "en", "focus": [0.55, 0.5] },
+        { "who": "girl", "text": "이제 맞았어!", "focus": [0.2, 0.5] }
+      ]
+    },
+    {
+      "type": "panel",
+      "art": "p4",
+      "lines": [
+        { "who": "boy", "text": "근데 코끼리는 못 봤어…", "focus": [0.58, 0.5] },
+        { "who": "girl", "text": "못 봤다는 건?", "focus": [0.82, 0.6] }
+      ]
+    },
+    {
+      "type": "quiz",
+      "label": "다음 편 퀴즈",
+      "sentence": "I ______ see the elephant.",
+      "hint": "코끼리를 못 봤다면?",
+      "lines": [{ "who": "narrator", "text": "코끼리를 못 봤다면? 정답은 다음 편에서!" }]
+    },
+    {
+      "type": "cta",
+      "lines": [{ "who": "narrator", "text": "문법이 쉬워지는 리딩브레인. 프로필 링크에서 레벨 테스트를 신청하세요." }]
+    }
+  ]
+}
